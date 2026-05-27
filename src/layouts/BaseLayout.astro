@@ -1,0 +1,21 @@
+---
+import "../styles/global.css";
+
+const {
+  title = "My Academic Tutor | Statistics, Data Science & Bioinformatics",
+  description = "Structured academic support in statistics, biostatistics, data science, bioinformatics and research methods.",
+} = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body class="bg-slate-950 text-white">
+    <slot />
+  </body>
+</html>
