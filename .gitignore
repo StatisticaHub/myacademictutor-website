@@ -22,3 +22,9 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Build output
+/dist/
+
+# Temporary/local folders
+virtual-visual/
