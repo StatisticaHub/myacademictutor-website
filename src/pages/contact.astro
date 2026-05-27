@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
+import ContactCTA from "../components/ContactCTA.astro";
 import Footer from "../components/Footer.astro";
 ---
 
@@ -10,57 +11,8 @@ import Footer from "../components/Footer.astro";
 >
   <Header />
 
-  <main class="px-6 pb-24 pt-36 md:px-10 lg:px-20">
-    <section class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_0.8fr] lg:items-start">
-      <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
-          Contact
-        </p>
-
-        <h1 class="mt-4 text-5xl font-semibold tracking-tight md:text-6xl">
-          Submit your academic support requirement.
-        </h1>
-
-        <p class="mt-7 text-lg leading-8 text-slate-300">
-          Share your subject, level of study, topic, software requirement,
-          deadline and the type of support you need.
-        </p>
-
-        <div class="mt-10 grid gap-4">
-          <div class="rounded-3xl border border-white/10 bg-white/[0.05] p-6">
-            <h2 class="text-xl font-semibold">What to include</h2>
-            <p class="mt-3 text-sm leading-6 text-slate-400">
-              Subject area, university level, deadline, software requirement,
-              assignment/project type and any specific questions.
-            </p>
-          </div>
-
-          <div class="rounded-3xl border border-white/10 bg-white/[0.05] p-6">
-            <h2 class="text-xl font-semibold">Support areas</h2>
-            <p class="mt-3 text-sm leading-6 text-slate-400">
-              Statistics, biostatistics, R, Python, SPSS, SAS, Stata,
-              data science, bioinformatics and quantitative research methods.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="rounded-[2rem] border border-cyan-300/20 bg-cyan-300 p-6 text-slate-950">
-        <h2 class="text-2xl font-semibold">Email</h2>
-
-        <p class="mt-3 text-sm leading-6 text-slate-800">
-          For now, enquiries can be sent directly by email. Later, this page can
-          include a form for structured submissions.
-        </p>
-
-        <a
-          href="mailto:contact@myacademictutor.com"
-          class="mt-6 inline-flex w-full justify-center rounded-full bg-slate-950 px-6 py-3 font-semibold text-white transition hover:bg-slate-800"
-        >
-          contact@myacademictutor.com
-        </a>
-      </div>
-    </section>
+  <main class="pt-24">
+    <ContactCTA />
   </main>
 
   <Footer />
