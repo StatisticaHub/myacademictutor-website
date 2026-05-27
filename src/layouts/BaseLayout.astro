@@ -2,8 +2,8 @@
 import "../styles/global.css";
 
 const {
-  title = "My Academic Tutor | Statistics, Data Science & Bioinformatics",
-  description = "Structured academic support in statistics, biostatistics, data science, bioinformatics and research methods.",
+  title = "My Academic Tutor | Statistics, Biostatistics, Data Science & Bioinformatics",
+  description = "Structured academic support in statistics, biostatistics, programming, data science, bioinformatics and quantitative research methods.",
 } = Astro.props;
 ---
 
@@ -11,11 +11,24 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
+
     <title>{title}</title>
     <meta name="description" content={description} />
+
+    <meta name="author" content="My Academic Tutor" />
+    <meta
+      name="keywords"
+      content="statistics tutoring, biostatistics, R programming, Python, SPSS, SAS, Stata, data science, bioinformatics, medical statistics, quantitative research"
+    />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <link rel="icon" href="/favicon.svg" />
   </head>
 
-  <body class="bg-slate-950 text-white">
+  <body class="bg-slate-950 text-white antialiased">
     <slot />
   </body>
 </html>

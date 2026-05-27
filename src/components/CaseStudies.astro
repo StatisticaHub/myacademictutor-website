@@ -1,0 +1,75 @@
+---
+const examples = [
+  {
+    area: "Statistics",
+    title: "Regression and statistical modelling support",
+    text:
+      "Guidance on choosing regression models, checking assumptions, interpreting coefficients and presenting results clearly.",
+  },
+  {
+    area: "Biostatistics",
+    title: "Survival analysis for health research",
+    text:
+      "Support with Kaplan-Meier curves, log-rank tests, Cox models, proportional hazards checks and time-to-event interpretation.",
+  },
+  {
+    area: "Programming",
+    title: "R, Python, SPSS, SAS and Stata workflows",
+    text:
+      "Support with data cleaning, coding, statistical analysis, visualisation and reproducible reporting across major software tools.",
+  },
+  {
+    area: "Data Science",
+    title: "Predictive modelling and model evaluation",
+    text:
+      "Guidance on data preparation, machine learning models, validation, performance metrics and explanation of model outputs.",
+  },
+  {
+    area: "Bioinformatics",
+    title: "Gene expression and omics analysis",
+    text:
+      "Support with gene expression concepts, RNA-seq workflows, differential expression and interpretation of biological results.",
+  },
+  {
+    area: "Research Projects",
+    title: "Dissertation and thesis data analysis",
+    text:
+      "Structured guidance for analysis planning, methodology writing, results interpretation, tables, figures and academic reporting.",
+  },
+];
+---
+
+<section id="examples" class="px-6 py-24 md:px-10 lg:px-20">
+  <div class="mx-auto max-w-7xl">
+    <div class="max-w-3xl">
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
+        Example support areas
+      </p>
+
+      <h2 class="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">
+        Practical guidance for academic and research needs.
+      </h2>
+
+      <p class="mt-5 text-lg leading-8 text-slate-300">
+        These examples show the kind of academic support that can be provided
+        across subjects, software and research contexts.
+      </p>
+    </div>
+
+    <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {examples.map((item) => (
+        <article class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-7 transition hover:border-cyan-300/30">
+          <p class="text-sm font-semibold text-cyan-300">{item.area}</p>
+
+          <h3 class="mt-4 text-2xl font-semibold leading-snug">
+            {item.title}
+          </h3>
+
+          <p class="mt-4 text-sm leading-6 text-slate-400">
+            {item.text}
+          </p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

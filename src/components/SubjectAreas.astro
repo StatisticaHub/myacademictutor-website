@@ -1,0 +1,134 @@
+---
+const subjectGroups = [
+  {
+    title: "Programming & Statistical Software",
+    description:
+      "Support with statistical software, programming, data analysis and reproducible workflows used in academic and applied research.",
+    items: [
+      "R programming",
+      "Python for data analysis",
+      "SPSS",
+      "SAS",
+      "Stata",
+      "R Markdown / Quarto",
+      "Data cleaning",
+      "Reproducible analysis",
+    ],
+  },
+  {
+    title: "Statistics",
+    description:
+      "Core statistical subjects for undergraduate, postgraduate and research-level study.",
+    items: [
+      "Probability theory",
+      "Statistical inference",
+      "Hypothesis testing",
+      "Regression analysis",
+      "Generalised linear models",
+      "Multivariate analysis",
+      "Time series analysis",
+      "Bayesian statistics",
+    ],
+  },
+  {
+    title: "Biostatistics & Medical Statistics",
+    description:
+      "Medical statistics and health-data methods used in clinical, epidemiological and biomedical research.",
+    items: [
+      "Survival analysis",
+      "Clinical trials",
+      "Epidemiology",
+      "Sample size calculation",
+      "Diagnostic test evaluation",
+      "Logistic regression",
+      "Longitudinal data analysis",
+      "Meta-analysis",
+    ],
+  },
+  {
+    title: "Data Science & Machine Learning",
+    description:
+      "Applied data science support from data preparation to modelling, validation and communication of results.",
+    items: [
+      "Data cleaning",
+      "Exploratory data analysis",
+      "Data visualisation",
+      "Machine learning",
+      "Classification models",
+      "Prediction modelling",
+      "Model evaluation",
+      "Feature engineering",
+    ],
+  },
+  {
+    title: "Bioinformatics & Omics",
+    description:
+      "Support for biological data analysis, omics workflows and interpretation of computational biology outputs.",
+    items: [
+      "RNA-seq concepts",
+      "Gene expression analysis",
+      "Differential expression",
+      "Bioconductor workflows",
+      "Single-cell concepts",
+      "Omics data analysis",
+      "Pathway analysis",
+      "Biological interpretation",
+    ],
+  },
+  {
+    title: "Quantitative Research Support",
+    description:
+      "Guidance for dissertations, theses, research projects and academic data-analysis reports.",
+    items: [
+      "Research design",
+      "Dissertation analysis",
+      "Survey analysis",
+      "Questionnaire data",
+      "Results interpretation",
+      "Academic reporting",
+      "Tables and figures",
+      "Methodology writing",
+    ],
+  },
+];
+---
+
+<section id="areas" class="border-y border-white/10 bg-white/[0.03] px-6 py-24 md:px-10 lg:px-20">
+  <div class="mx-auto max-w-7xl">
+    <div class="max-w-3xl">
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
+        Areas of support
+      </p>
+
+      <h2 class="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">
+        Structured guidance across quantitative subjects and software.
+      </h2>
+
+      <p class="mt-5 text-lg leading-8 text-slate-300">
+        Support is organised around subject understanding, software skills,
+        analysis planning, interpretation and clear academic communication.
+      </p>
+    </div>
+
+    <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {subjectGroups.map((group) => (
+        <article class="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-xl shadow-black/10 transition hover:-translate-y-1 hover:border-cyan-300/30">
+          <h3 class="text-2xl font-semibold">{group.title}</h3>
+
+          <p class="mt-4 text-sm leading-6 text-slate-400">
+            {group.description}
+          </p>
+
+          <div class="mt-6 grid gap-2">
+            {group.items.map((item) => (
+              <div class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+                <span class="h-1.5 w-1.5 rounded-full bg-cyan-300"></span>
+                <span class="text-sm text-slate-300">{item}</span>
+              </div>
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
