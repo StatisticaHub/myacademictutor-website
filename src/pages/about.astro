@@ -2,56 +2,159 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import ContactCTA from "../components/ContactCTA.astro";
 ---
 
 <BaseLayout
   title="About | My Academic Tutor"
-  description="About My Academic Tutor and its academic support approach."
+  description="My Academic Tutor has mentored students globally since 2020. Founded by Rahul, IIT Kanpur alumnus with MSc Statistics from IIT Kanpur and MSc Medical Statistics and Health Data Science from the University of Bristol."
 >
   <Header />
 
-  <main class="px-6 pb-24 pt-36 md:px-10 lg:px-20">
-    <section class="mx-auto max-w-5xl">
-      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
-        About
-      </p>
+  <main>
+    <section class="relative overflow-hidden px-6 pb-20 pt-36 md:px-10 lg:px-20">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_35%),radial-gradient(circle_at_left,rgba(99,102,241,0.12),transparent_35%)]"></div>
 
-      <h1 class="mt-4 text-5xl font-semibold tracking-tight md:text-6xl">
-        Clear academic guidance for quantitative learning and research.
-      </h1>
+      <div class="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_0.8fr] lg:items-center">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
+            About My Academic Tutor
+          </p>
 
-      <p class="mt-7 text-lg leading-8 text-slate-300">
-        My Academic Tutor supports students, researchers and professionals working
-        with statistics, biostatistics, programming, data science, bioinformatics
-        and quantitative research methods.
-      </p>
+          <h1 class="mt-4 text-5xl font-semibold tracking-tight md:text-6xl">
+            Academic support built on statistical training, teaching experience and applied research.
+          </h1>
 
-      <div class="mt-12 grid gap-5 md:grid-cols-3">
-        <div class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6">
-          <h2 class="text-xl font-semibold">Structured learning</h2>
-          <p class="mt-3 text-sm leading-6 text-slate-400">
-            Support is organised around concepts, examples, software practice and
-            interpretation.
+          <p class="mt-7 max-w-3xl text-lg leading-8 text-slate-300">
+            My Academic Tutor has mentored students across the globe since 2020,
+            supporting learners and researchers in statistics, biostatistics,
+            programming, data science, bioinformatics and quantitative research methods.
           </p>
         </div>
 
-        <div class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6">
-          <h2 class="text-xl font-semibold">Applied analysis</h2>
+        <div class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6 shadow-2xl shadow-black/20">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
+            Founded by
+          </p>
+
+          <h2 class="mt-4 text-4xl font-semibold">Rahul</h2>
+
+          <div class="mt-6 grid gap-3">
+            <div class="rounded-2xl border border-white/10 bg-slate-950/70 p-4">
+              <p class="font-semibold">IIT Kanpur Alumnus</p>
+              <p class="mt-1 text-sm text-slate-400">
+                MSc Statistics, IIT Kanpur, India
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-white/10 bg-slate-950/70 p-4">
+              <p class="font-semibold">University of Bristol</p>
+              <p class="mt-1 text-sm text-slate-400">
+                MSc Medical Statistics & Health Data Science, United Kingdom
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-white/10 bg-slate-950/70 p-4">
+              <p class="font-semibold">Teaching since 2020</p>
+              <p class="mt-1 text-sm text-slate-400">
+                Global academic mentoring across quantitative subjects
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-y border-white/10 bg-white/[0.03] px-6 py-20 md:px-10 lg:px-20">
+      <div class="mx-auto grid max-w-7xl gap-5 md:grid-cols-3">
+        <div class="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6">
+          <p class="text-4xl font-semibold">2020</p>
           <p class="mt-3 text-sm leading-6 text-slate-400">
-            Guidance connects statistical methods to real academic and research
-            problems.
+            Started mentoring students and researchers in quantitative subjects.
           </p>
         </div>
 
-        <div class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6">
-          <h2 class="text-xl font-semibold">Clear communication</h2>
+        <div class="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6">
+          <p class="text-4xl font-semibold">Global</p>
           <p class="mt-3 text-sm leading-6 text-slate-400">
-            Emphasis is placed on explaining outputs, writing results and
-            presenting findings clearly.
+            Academic support for learners across different countries and education systems.
+          </p>
+        </div>
+
+        <div class="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6">
+          <p class="text-4xl font-semibold">Quantitative</p>
+          <p class="mt-3 text-sm leading-6 text-slate-400">
+            Focused on statistics, biostatistics, programming, data science and research methods.
           </p>
         </div>
       </div>
     </section>
+
+    <section class="px-6 py-24 md:px-10 lg:px-20">
+      <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.85fr_1.15fr]">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
+            Teaching approach
+          </p>
+
+          <h2 class="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">
+            Clear explanations, structured workflows and academic integrity.
+          </h2>
+
+          <p class="mt-5 text-lg leading-8 text-slate-300">
+            The aim is not only to help students complete a topic, but to help them
+            understand the method, apply the correct software workflow and explain
+            their findings with confidence.
+          </p>
+        </div>
+
+        <div class="grid gap-4">
+          <div class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6">
+            <h3 class="text-2xl font-semibold">Concept-first learning</h3>
+            <p class="mt-3 text-sm leading-6 text-slate-400">
+              Topics are explained from the underlying idea before moving into formulas,
+              software and interpretation.
+            </p>
+          </div>
+
+          <div class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6">
+            <h3 class="text-2xl font-semibold">Software with interpretation</h3>
+            <p class="mt-3 text-sm leading-6 text-slate-400">
+              R, Python, SPSS, SAS and Stata support is connected to the statistical
+              question, not treated as button-clicking or code copying.
+            </p>
+          </div>
+
+          <div class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6">
+            <h3 class="text-2xl font-semibold">Research-aware support</h3>
+            <p class="mt-3 text-sm leading-6 text-slate-400">
+              For dissertations and projects, support focuses on appropriate methods,
+              clear assumptions, reproducible analysis and careful reporting.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-y border-white/10 bg-white/[0.03] px-6 py-20 md:px-10 lg:px-20">
+      <div class="mx-auto max-w-5xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
+          Academic support boundaries
+        </p>
+
+        <h2 class="mt-4 text-4xl font-semibold tracking-tight">
+          Support is designed to guide learning, not replace it.
+        </h2>
+
+        <p class="mt-5 text-lg leading-8 text-slate-300">
+          My Academic Tutor focuses on explanation, tutoring, analysis guidance,
+          software support and research interpretation. The aim is to help students
+          understand their work and communicate it clearly while maintaining academic integrity.
+        </p>
+      </div>
+    </section>
+
+    <ContactCTA />
   </main>
 
   <Footer />
