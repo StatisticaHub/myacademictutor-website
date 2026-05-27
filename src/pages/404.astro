@@ -1,0 +1,47 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<BaseLayout
+  title="Page Not Found | My Academic Tutor"
+  description="The page you are looking for could not be found."
+>
+  <Header />
+
+  <main class="px-6 pb-24 pt-36 md:px-10 lg:px-20">
+    <section class="mx-auto max-w-4xl text-center">
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
+        404
+      </p>
+
+      <h1 class="mt-4 text-5xl font-semibold tracking-tight md:text-6xl">
+        Page not found.
+      </h1>
+
+      <p class="mt-6 text-lg leading-8 text-slate-300">
+        The page may have moved, or the link may be incorrect. You can return to
+        the homepage or explore the main support areas.
+      </p>
+
+      <div class="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
+        <a
+          href="/"
+          class="rounded-full bg-cyan-300 px-7 py-4 font-semibold text-slate-950 transition hover:bg-cyan-200"
+        >
+          Go to homepage
+        </a>
+
+        <a
+          href="/services"
+          class="rounded-full border border-white/15 bg-white/5 px-7 py-4 font-semibold text-white transition hover:bg-white/10"
+        >
+          View services
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
