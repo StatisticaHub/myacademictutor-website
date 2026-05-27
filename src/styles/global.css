@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+:root {
+  --mat-bg: #050816;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--mat-bg);
+}

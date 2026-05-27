@@ -1,17 +1,102 @@
 ---
-
+import "../styles/global.css";
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>My Academic Tutor | Statistics, Data Science & Bioinformatics</title>
+    <meta
+      name="description"
+      content="Premium academic mentorship in statistics, biostatistics, data science, bioinformatics and research methods."
+    />
+  </head>
+
+  <body class="bg-slate-950 text-white">
+    <header class="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <a href="/" class="flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-300 text-slate-950 font-bold">
+            MAT
+          </div>
+          <div>
+            <p class="text-lg font-semibold leading-tight">My Academic Tutor</p>
+            <p class="text-xs text-slate-400">Premium Quantitative Mentorship</p>
+          </div>
+        </a>
+
+        <nav class="hidden items-center gap-8 text-sm text-slate-300 md:flex">
+          <a href="#services" class="hover:text-cyan-300">Services</a>
+          <a href="#courses" class="hover:text-cyan-300">Courses</a>
+          <a href="#case-studies" class="hover:text-cyan-300">Case Studies</a>
+          <a href="#contact" class="hover:text-cyan-300">Contact</a>
+        </nav>
+
+        <a
+          href="#contact"
+          class="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-slate-950 hover:bg-cyan-200"
+        >
+          Book Consultation
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <section class="relative overflow-hidden px-6 pb-24 pt-36 md:px-10 lg:px-20">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.18),transparent_35%),radial-gradient(circle_at_left,rgba(99,102,241,0.18),transparent_35%)]"></div>
+
+        <div class="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+          <div>
+            <p class="mb-6 inline-flex rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-200">
+              Statistics • Biostatistics • Data Science • Bioinformatics
+            </p>
+
+            <h1 class="max-w-4xl text-5xl font-semibold leading-tight tracking-tight md:text-7xl">
+              Premium academic support for complex quantitative subjects.
+            </h1>
+
+            <p class="mt-7 max-w-2xl text-lg leading-8 text-slate-300">
+              My Academic Tutor helps university students, MSc researchers, PhD candidates and professionals master statistics, medical statistics, data science, bioinformatics and research methods with structured, research-level mentorship.
+            </p>
+
+            <div class="mt-9 flex flex-col gap-4 sm:flex-row">
+              <a
+                href="#courses"
+                class="rounded-full bg-cyan-300 px-7 py-4 text-center font-semibold text-slate-950 shadow-xl shadow-cyan-500/20 hover:bg-cyan-200"
+              >
+                Explore Courses
+              </a>
+
+              <a
+                href="#contact"
+                class="rounded-full border border-white/15 bg-white/5 px-7 py-4 text-center font-semibold text-white hover:bg-white/10"
+              >
+                Submit Requirement
+              </a>
+            </div>
+          </div>
+
+          <div class="rounded-[2rem] border border-white/10 bg-white/5 p-4 shadow-2xl shadow-black/30">
+            <div class="flex h-[520px] items-center justify-center rounded-[1.5rem] bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-950 p-8">
+              <div class="w-full">
+                <p class="text-sm uppercase tracking-[0.3em] text-cyan-300">Featured pathway</p>
+                <h2 class="mt-4 text-4xl font-semibold">Survival Analysis in R</h2>
+                <p class="mt-4 max-w-md text-slate-300">
+                  Kaplan-Meier curves, Cox models, diagnostics, interpretation and publication-ready reporting.
+                </p>
+
+                <div class="mt-8 grid gap-3">
+                  <div class="rounded-2xl border border-white/10 bg-white/5 p-4">Kaplan-Meier and log-rank tests</div>
+                  <div class="rounded-2xl border border-white/10 bg-white/5 p-4">Cox proportional hazards models</div>
+                  <div class="rounded-2xl border border-white/10 bg-white/5 p-4">Model diagnostics and assumptions</div>
+                  <div class="rounded-2xl border border-white/10 bg-white/5 p-4">R code, tables and visualisation</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
 </html>
