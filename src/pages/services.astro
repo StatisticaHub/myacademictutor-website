@@ -1,21 +1,114 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
-import SubjectAreas from "../components/SubjectAreas.astro";
-import ResearchSupport from "../components/ResearchSupport.astro";
 import ContactCTA from "../components/ContactCTA.astro";
 import Footer from "../components/Footer.astro";
+
+const serviceGroups = [
+  {
+    title: "Programming & Statistical Software",
+    intro:
+      "Practical support with statistical software and coding workflows used in academic research and applied analysis.",
+    items: [
+      "R programming",
+      "Python for data analysis",
+      "SPSS",
+      "SAS",
+      "Stata",
+      "R Markdown / Quarto",
+      "Data cleaning",
+      "Reproducible reports",
+    ],
+  },
+  {
+    title: "Statistics",
+    intro:
+      "Core statistical subjects for undergraduate, postgraduate and research-level study.",
+    items: [
+      "Probability theory",
+      "Statistical inference",
+      "Hypothesis testing",
+      "Regression analysis",
+      "Generalised linear models",
+      "Multivariate analysis",
+      "Time series analysis",
+      "Bayesian statistics",
+    ],
+  },
+  {
+    title: "Biostatistics & Medical Statistics",
+    intro:
+      "Support for clinical, epidemiological and biomedical data-analysis topics.",
+    items: [
+      "Survival analysis",
+      "Clinical trials",
+      "Epidemiology",
+      "Sample size calculation",
+      "Diagnostic test evaluation",
+      "Logistic regression",
+      "Longitudinal data analysis",
+      "Meta-analysis",
+    ],
+  },
+  {
+    title: "Data Science & Machine Learning",
+    intro:
+      "Applied support from data preparation to modelling, validation and communication.",
+    items: [
+      "Exploratory data analysis",
+      "Data visualisation",
+      "Machine learning",
+      "Classification models",
+      "Prediction modelling",
+      "Feature engineering",
+      "Model evaluation",
+      "Interpretability",
+    ],
+  },
+  {
+    title: "Bioinformatics & Omics",
+    intro:
+      "Support for biological data analysis and computational biology workflows.",
+    items: [
+      "RNA-seq concepts",
+      "Gene expression analysis",
+      "Differential expression",
+      "Bioconductor workflows",
+      "Single-cell concepts",
+      "Omics data analysis",
+      "Pathway analysis",
+      "Biological interpretation",
+    ],
+  },
+  {
+    title: "Quantitative Research Support",
+    intro:
+      "Guidance for dissertations, theses, reports and academic data-analysis projects.",
+    items: [
+      "Research design",
+      "Dissertation analysis",
+      "Survey analysis",
+      "Questionnaire data",
+      "Methodology writing",
+      "Results interpretation",
+      "Tables and figures",
+      "Academic reporting",
+    ],
+  },
+];
 ---
 
 <BaseLayout
   title="Services | My Academic Tutor"
-  description="Academic support services in statistics, biostatistics, programming, data science, bioinformatics and research methods."
+  description="Academic support services in statistics, biostatistics, R, Python, SPSS, SAS, Stata, data science, bioinformatics and research methods."
 >
   <Header />
 
-  <main class="pt-16">
-    <section class="px-6 pb-10 pt-32 md:px-10 lg:px-20">
-      <div class="mx-auto max-w-5xl">
+  <main>
+    <section class="relative overflow-hidden px-6 pb-20 pt-36 md:px-10 lg:px-20">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_35%),radial-gradient(circle_at_left,rgba(99,102,241,0.12),transparent_35%)]"></div>
+
+      <div class="relative mx-auto max-w-5xl">
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
           Services
         </p>
@@ -24,16 +117,64 @@ import Footer from "../components/Footer.astro";
           Academic support across subjects, software and research projects.
         </h1>
 
-        <p class="mt-7 text-lg leading-8 text-slate-300">
-          Explore support areas by category, including statistical software,
-          core statistics, medical statistics, data science, bioinformatics and
-          quantitative research support.
+        <p class="mt-7 max-w-3xl text-lg leading-8 text-slate-300">
+          Support is organised around clear explanation, software practice,
+          analytical planning, interpretation and academic communication.
         </p>
       </div>
     </section>
 
-    <SubjectAreas />
-    <ResearchSupport />
+    <section class="px-6 pb-24 md:px-10 lg:px-20">
+      <div class="mx-auto grid max-w-7xl gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {serviceGroups.map((group) => (
+          <article class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6 transition hover:border-cyan-300/30">
+            <h2 class="text-2xl font-semibold">{group.title}</h2>
+
+            <p class="mt-4 text-sm leading-6 text-slate-400">
+              {group.intro}
+            </p>
+
+            <div class="mt-6 grid gap-2">
+              {group.items.map((item) => (
+                <div class="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3">
+                  <span class="h-1.5 w-1.5 rounded-full bg-cyan-300"></span>
+                  <span class="text-sm text-slate-300">{item}</span>
+                </div>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="border-y border-white/10 bg-white/[0.03] px-6 py-20 md:px-10 lg:px-20">
+      <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-3">
+        <div class="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6">
+          <p class="text-sm font-semibold text-cyan-300">01</p>
+          <h2 class="mt-3 text-2xl font-semibold">Understand the requirement</h2>
+          <p class="mt-3 text-sm leading-6 text-slate-400">
+            The topic, academic level, software, deadline and expected output are clarified first.
+          </p>
+        </div>
+
+        <div class="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6">
+          <p class="text-sm font-semibold text-cyan-300">02</p>
+          <h2 class="mt-3 text-2xl font-semibold">Plan the support</h2>
+          <p class="mt-3 text-sm leading-6 text-slate-400">
+            The support is structured around concepts, methods, code, interpretation or reporting.
+          </p>
+        </div>
+
+        <div class="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6">
+          <p class="text-sm font-semibold text-cyan-300">03</p>
+          <h2 class="mt-3 text-2xl font-semibold">Work through clearly</h2>
+          <p class="mt-3 text-sm leading-6 text-slate-400">
+            The focus is on clear explanation, appropriate methods and understandable results.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <ContactCTA />
   </main>
 
