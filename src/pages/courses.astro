@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import CoursesPreview from "../components/CoursesPreview.astro";
+import ContactCTA from "../components/ContactCTA.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<BaseLayout
+  title="Courses | My Academic Tutor"
+  description="Courses in statistics, biostatistics, R, Python, SPSS, SAS, Stata, bioinformatics and data science."
+>
+  <Header />
+
+  <main class="pt-16">
+    <section class="px-6 pb-10 pt-32 md:px-10 lg:px-20">
+      <div class="mx-auto max-w-5xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
+          Courses
+        </p>
+
+        <h1 class="mt-4 text-5xl font-semibold tracking-tight md:text-6xl">
+          Organised learning pathways for quantitative subjects.
+        </h1>
+
+        <p class="mt-7 text-lg leading-8 text-slate-300">
+          Courses will be structured around explanations, worked examples,
+          software demonstrations, exercises and applied academic use cases.
+        </p>
+      </div>
+    </section>
+
+    <CoursesPreview />
+    <ContactCTA />
+  </main>
+
+  <Footer />
+</BaseLayout>

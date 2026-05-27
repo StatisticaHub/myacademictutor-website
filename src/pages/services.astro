@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import SubjectAreas from "../components/SubjectAreas.astro";
+import ResearchSupport from "../components/ResearchSupport.astro";
+import ContactCTA from "../components/ContactCTA.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<BaseLayout
+  title="Services | My Academic Tutor"
+  description="Academic support services in statistics, biostatistics, programming, data science, bioinformatics and research methods."
+>
+  <Header />
+
+  <main class="pt-16">
+    <section class="px-6 pb-10 pt-32 md:px-10 lg:px-20">
+      <div class="mx-auto max-w-5xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
+          Services
+        </p>
+
+        <h1 class="mt-4 text-5xl font-semibold tracking-tight md:text-6xl">
+          Academic support across subjects, software and research projects.
+        </h1>
+
+        <p class="mt-7 text-lg leading-8 text-slate-300">
+          Explore support areas by category, including statistical software,
+          core statistics, medical statistics, data science, bioinformatics and
+          quantitative research support.
+        </p>
+      </div>
+    </section>
+
+    <SubjectAreas />
+    <ResearchSupport />
+    <ContactCTA />
+  </main>
+
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,58 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<BaseLayout
+  title="About | My Academic Tutor"
+  description="About My Academic Tutor and its academic support approach."
+>
+  <Header />
+
+  <main class="px-6 pb-24 pt-36 md:px-10 lg:px-20">
+    <section class="mx-auto max-w-5xl">
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
+        About
+      </p>
+
+      <h1 class="mt-4 text-5xl font-semibold tracking-tight md:text-6xl">
+        Clear academic guidance for quantitative learning and research.
+      </h1>
+
+      <p class="mt-7 text-lg leading-8 text-slate-300">
+        My Academic Tutor supports students, researchers and professionals working
+        with statistics, biostatistics, programming, data science, bioinformatics
+        and quantitative research methods.
+      </p>
+
+      <div class="mt-12 grid gap-5 md:grid-cols-3">
+        <div class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6">
+          <h2 class="text-xl font-semibold">Structured learning</h2>
+          <p class="mt-3 text-sm leading-6 text-slate-400">
+            Support is organised around concepts, examples, software practice and
+            interpretation.
+          </p>
+        </div>
+
+        <div class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6">
+          <h2 class="text-xl font-semibold">Applied analysis</h2>
+          <p class="mt-3 text-sm leading-6 text-slate-400">
+            Guidance connects statistical methods to real academic and research
+            problems.
+          </p>
+        </div>
+
+        <div class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6">
+          <h2 class="text-xl font-semibold">Clear communication</h2>
+          <p class="mt-3 text-sm leading-6 text-slate-400">
+            Emphasis is placed on explaining outputs, writing results and
+            presenting findings clearly.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
