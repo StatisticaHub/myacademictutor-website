@@ -4,6 +4,8 @@ import Header from "../components/Header.astro";
 import ContactCTA from "../components/ContactCTA.astro";
 import Footer from "../components/Footer.astro";
 
+const base = import.meta.env.BASE_URL;
+
 const courses = [
   {
     title: "Core Statistics",
@@ -148,13 +150,21 @@ const courses = [
           <article class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6 transition hover:border-cyan-300/30">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <p class="text-sm font-semibold text-cyan-300">{course.status}</p>
-                <h2 class="mt-2 text-2xl font-semibold">{course.title}</h2>
-                <p class="mt-2 text-sm text-slate-400">{course.level}</p>
+                <p class="text-sm font-semibold text-cyan-300">
+                  {course.status}
+                </p>
+
+                <h2 class="mt-2 text-2xl font-semibold">
+                  {course.title}
+                </h2>
+
+                <p class="mt-2 text-sm text-slate-400">
+                  {course.level}
+                </p>
               </div>
 
               <a
-                href="/contact"
+                href={`${base}contact`}
                 class="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/40 hover:bg-white/[0.08]"
               >
                 Enquire
@@ -174,7 +184,9 @@ const courses = [
                 {course.modules.map((module) => (
                   <div class="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3">
                     <span class="h-1.5 w-1.5 rounded-full bg-cyan-300"></span>
-                    <span class="text-sm text-slate-300">{module}</span>
+                    <span class="text-sm text-slate-300">
+                      {module}
+                    </span>
                   </div>
                 ))}
               </div>
