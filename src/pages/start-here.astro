@@ -1,0 +1,152 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+const paths = [
+  {
+    title: "I need tutoring or project support",
+    description:
+      "Use this if you want help with a topic, coursework concepts, software, dissertation analysis or research guidance.",
+    action: "Submit requirement",
+    href: `${base}contact`,
+    emphasis: true,
+  },
+  {
+    title: "I want to learn from structured course materials",
+    description:
+      "Use this if you want full course-style materials such as lectures, notes, exercises, code examples and learning pathways.",
+    action: "Go to Learning Hub",
+    href: `${base}learning-hub`,
+    emphasis: false,
+  },
+  {
+    title: "I need quick guidance before analysis",
+    description:
+      "Use this if you want short guides on statistical tests, data preparation, dissertation analysis mistakes or software choice.",
+    action: "View Resources",
+    href: `${base}resources`,
+    emphasis: false,
+  },
+  {
+    title: "I want to check what subjects are covered",
+    description:
+      "Use this if you want to explore support areas across statistics, biostatistics, programming, data science, bioinformatics and research methods.",
+    action: "View Services",
+    href: `${base}services`,
+    emphasis: false,
+  },
+];
+
+const quickLinks = [
+  {
+    label: "Choosing a statistical test",
+    href: `${base}resources/choosing-statistical-test`,
+  },
+  {
+    label: "Preparing data before analysis",
+    href: `${base}resources/prepare-data-before-analysis`,
+  },
+  {
+    label: "Software guide",
+    href: `${base}resources/statistical-software-guide`,
+  },
+  {
+    label: "Machine Learning in Biostatistics",
+    href: "https://rahulbalwan.github.io/ml-biostatistics-course/",
+    external: true,
+  },
+];
+---
+
+<BaseLayout
+  title="Start Here | My Academic Tutor"
+  description="Find the right academic support route for tutoring, learning materials, resources and research guidance."
+>
+  <Header />
+
+  <main>
+    <section class="bg-[#f8f6f2] px-6 pb-20 pt-36 md:px-10 lg:px-20">
+      <div class="mx-auto max-w-7xl">
+        <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+          Start here
+        </p>
+
+        <h1 class="mt-4 max-w-5xl text-5xl font-semibold tracking-tight text-neutral-950 md:text-6xl">
+          Find the right support route.
+        </h1>
+
+        <p class="mt-7 max-w-3xl text-lg leading-8 text-neutral-700">
+          Choose the option that best matches what you need. This page helps you
+          quickly decide whether to request support, explore structured learning
+          materials or read a short guide first.
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-white px-6 py-20 md:px-10 lg:px-20">
+      <div class="mx-auto grid max-w-7xl gap-6 md:grid-cols-2">
+        {paths.map((item) => (
+          <article class="border border-neutral-200 bg-[#f8f6f2] p-6 shadow-sm">
+            <h2 class="text-2xl font-semibold tracking-tight text-neutral-950">
+              {item.title}
+            </h2>
+
+            <p class="mt-4 text-sm leading-6 text-neutral-600">
+              {item.description}
+            </p>
+
+            <a
+              href={item.href}
+              class={`mt-6 inline-flex rounded-sm px-5 py-3 text-sm font-medium transition ${
+                item.emphasis
+                  ? "bg-[#8C1515] text-white hover:bg-[#6f1111]"
+                  : "border border-neutral-300 bg-white text-neutral-950 hover:border-[#8C1515] hover:text-[#8C1515]"
+              }`}
+            >
+              {item.action}
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="bg-[#f8f6f2] px-6 py-20 md:px-10 lg:px-20">
+      <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.75fr_1.25fr]">
+        <div>
+          <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+            Quick links
+          </p>
+
+          <h2 class="mt-4 text-4xl font-semibold tracking-tight text-neutral-950">
+            Popular starting points.
+          </h2>
+
+          <p class="mt-5 text-lg leading-8 text-neutral-700">
+            Start with one of these pages if you already know what you are
+            looking for.
+          </p>
+        </div>
+
+        <div class="grid gap-4">
+          {quickLinks.map((item) => (
+            <a
+              href={item.href}
+              target={item.external ? "_blank" : undefined}
+              rel={item.external ? "noopener noreferrer" : undefined}
+              class="border border-neutral-200 bg-white p-5 text-sm font-medium text-neutral-950 shadow-sm transition hover:border-[#8C1515] hover:text-[#8C1515]"
+            >
+              {item.label} →
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

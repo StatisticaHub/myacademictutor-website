@@ -4,14 +4,14 @@ const base = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 ---
 
-<section class="bg-[#f8f6f2] px-6 pb-24 pt-36 md:px-10 lg:px-20">
-  <div class="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-[1.05fr_0.95fr]">
+<section class="bg-[#f8f6f2] px-6 pb-20 pt-36 md:px-10 lg:px-20">
+  <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
     <div>
-      <p class="mb-6 text-sm font-medium uppercase tracking-[0.22em] text-[#8C1515]">
+      <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
         Academic tutoring · Quantitative methods · Research support
       </p>
 
-      <h1 class="max-w-4xl text-5xl font-semibold leading-[1.05] tracking-tight text-neutral-950 md:text-7xl">
+      <h1 class="mt-5 max-w-4xl text-4xl font-semibold leading-[1.05] tracking-tight text-neutral-950 md:text-6xl">
         Subject-focused academic support for students and researchers.
       </h1>
 
@@ -21,32 +21,30 @@ const base = import.meta.env.BASE_URL.endsWith("/")
         bioinformatics and quantitative research methods.
       </p>
 
-      <div class="mt-7 max-w-2xl border-l-4 border-[#8C1515] bg-white px-5 py-4">
-        <p class="text-base leading-7 text-neutral-700">
-          Founded by Rahul, Indian Institute of Technology Kanpur alumnus, with
-          expertise in statistics, medical statistics and health data science.
-        </p>
-      </div>
+      <p class="mt-5 max-w-2xl text-base leading-7 text-neutral-600">
+        Founded by Rahul, Indian Institute of Technology Kanpur alumnus, with
+        expertise in statistics, medical statistics and health data science.
+      </p>
 
       <div class="mt-9 flex flex-col gap-4 sm:flex-row">
         <a
-          href={`${base}courses`}
+          href={`${base}start-here`}
           class="rounded-sm bg-[#8C1515] px-7 py-4 text-center font-medium text-white transition hover:bg-[#6f1111]"
         >
-          Explore Subject Areas
+          Start here
         </a>
 
         <a
           href={`${base}contact`}
           class="rounded-sm border border-neutral-300 bg-white px-7 py-4 text-center font-medium text-neutral-950 transition hover:border-[#8C1515] hover:text-[#8C1515]"
         >
-          Request Support
+          Request support
         </a>
       </div>
     </div>
 
-    <div class="border border-neutral-200 bg-white p-3 shadow-sm">
-      <div class="relative min-h-[520px] overflow-hidden">
+    <div class="border border-neutral-200 bg-white p-4 shadow-sm">
+      <div class="relative min-h-[480px] overflow-hidden">
         <img
           src={`${base}images/hero-research.jpg`}
           alt="Academic research and data analysis workspace"
@@ -56,15 +54,15 @@ const base = import.meta.env.BASE_URL.endsWith("/")
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent"></div>
 
         <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
-          <p class="text-sm uppercase tracking-[0.25em] text-neutral-200">
+          <p class="text-sm uppercase tracking-[0.3em] text-white/80">
             Tutor-led learning
           </p>
 
-          <h2 class="mt-4 text-4xl font-semibold leading-tight">
+          <h2 class="mt-3 text-3xl font-semibold tracking-tight">
             From concept to interpretation.
           </h2>
 
-          <p class="mt-4 max-w-md text-neutral-200">
+          <p class="mt-4 max-w-md text-sm leading-6 text-white/80">
             Support for coursework, software, dissertations, projects and
             research-level data analysis.
           </p>
