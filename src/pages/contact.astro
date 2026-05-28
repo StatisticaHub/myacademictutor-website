@@ -1,19 +1,245 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
-import ContactCTA from "../components/ContactCTA.astro";
 import Footer from "../components/Footer.astro";
 ---
 
 <BaseLayout
-  title="Contact | My Academic Tutor"
-  description="Contact My Academic Tutor for academic support in statistics, data science, bioinformatics and quantitative research."
+  title="Requirement Form | My Academic Tutor"
+  description="Submit your academic tutoring or research support requirement to My Academic Tutor."
 >
   <Header />
 
-  <main class="pt-24">
-    <ContactCTA />
+  <main>
+    <section class="bg-[#f8f6f2] px-6 pb-20 pt-36 md:px-10 lg:px-20">
+      <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.85fr_1.15fr]">
+        <div>
+          <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+            Requirement form
+          </p>
+
+          <h1 class="mt-4 text-5xl font-semibold tracking-tight text-neutral-950 md:text-6xl">
+            Tell us what you need support with.
+          </h1>
+
+          <p class="mt-6 max-w-xl text-lg leading-8 text-neutral-700">
+            Share your subject, level, software requirements, deadline and the
+            kind of academic support you need. We will review your requirement
+            and suggest a suitable tutor or support route.
+          </p>
+
+          <div class="mt-10 border-l-4 border-[#8C1515] bg-white p-5">
+            <p class="text-sm font-semibold text-neutral-950">
+              Tutor-led support
+            </p>
+            <p class="mt-2 text-sm leading-6 text-neutral-600">
+              My Academic Tutor works as a small team of subject-focused tutors.
+              Rahul is the Founder and Statistics Lead.
+            </p>
+          </div>
+
+          <div class="mt-8 bg-white p-5">
+            <p class="text-sm font-semibold text-neutral-950">
+              Sending files?
+            </p>
+            <p class="mt-2 text-sm leading-6 text-neutral-600">
+              Submit the form first. If you need to share files, datasets,
+              screenshots or assignment briefs, email them separately to
+              contact@myacademictutor.com.
+            </p>
+          </div>
+        </div>
+
+        <form
+          id="requirement-form"
+          class="border border-neutral-200 bg-white p-6 shadow-sm md:p-8"
+        >
+          <div class="grid gap-5">
+            <div class="grid gap-5 md:grid-cols-2">
+              <label class="grid gap-2">
+                <span class="text-sm font-medium text-neutral-950">Full name</span>
+                <input
+                  id="name"
+                  type="text"
+                  required
+                  class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition focus:border-[#8C1515]"
+                />
+              </label>
+
+              <label class="grid gap-2">
+                <span class="text-sm font-medium text-neutral-950">Email</span>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition focus:border-[#8C1515]"
+                />
+              </label>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-2">
+              <label class="grid gap-2">
+                <span class="text-sm font-medium text-neutral-950">Current level</span>
+                <select
+                  id="level"
+                  required
+                  class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition focus:border-[#8C1515]"
+                >
+                  <option value="">Select one</option>
+                  <option>Undergraduate</option>
+                  <option>Postgraduate / MSc</option>
+                  <option>PhD / Research</option>
+                  <option>Professional</option>
+                  <option>Other</option>
+                </select>
+              </label>
+
+              <label class="grid gap-2">
+                <span class="text-sm font-medium text-neutral-950">Subject area</span>
+                <select
+                  id="subjectArea"
+                  required
+                  class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition focus:border-[#8C1515]"
+                >
+                  <option value="">Select one</option>
+                  <option>Statistics</option>
+                  <option>Biostatistics / Medical Statistics</option>
+                  <option>R / Python / SPSS / SAS / Stata</option>
+                  <option>Data Science / Machine Learning</option>
+                  <option>Bioinformatics</option>
+                  <option>Dissertation / Research Project</option>
+                  <option>Other</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="grid gap-2">
+              <span class="text-sm font-medium text-neutral-950">
+                Software required, if any
+              </span>
+              <input
+                id="software"
+                type="text"
+                placeholder="Example: R, Python, SPSS, SAS, Stata, Excel"
+                class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition placeholder:text-neutral-400 focus:border-[#8C1515]"
+              />
+            </label>
+
+            <div class="grid gap-5 md:grid-cols-2">
+              <label class="grid gap-2">
+                <span class="text-sm font-medium text-neutral-950">Deadline</span>
+                <input
+                  id="deadline"
+                  type="date"
+                  class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition focus:border-[#8C1515]"
+                />
+              </label>
+
+              <label class="grid gap-2">
+                <span class="text-sm font-medium text-neutral-950">
+                  Preferred support
+                </span>
+                <select
+                  id="supportType"
+                  class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition focus:border-[#8C1515]"
+                >
+                  <option value="">Select one</option>
+                  <option>1:1 tutoring</option>
+                  <option>Coursework concept support</option>
+                  <option>Software/code support</option>
+                  <option>Dissertation/research guidance</option>
+                  <option>Long-term learning plan</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="grid gap-2">
+              <span class="text-sm font-medium text-neutral-950">
+                Describe your requirement
+              </span>
+              <textarea
+                id="message"
+                rows="7"
+                required
+                placeholder="Briefly explain your topic, task, dataset, difficulty, deadline and what kind of help you need."
+                class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition placeholder:text-neutral-400 focus:border-[#8C1515]"
+              ></textarea>
+            </label>
+
+            <button
+              type="submit"
+              class="mt-2 rounded-sm bg-[#8C1515] px-7 py-4 text-center font-medium text-white transition hover:bg-[#6f1111]"
+            >
+              Prepare email
+            </button>
+
+            <p class="text-xs leading-5 text-neutral-500">
+              This static form will open your email app with the details filled
+              in. Please review the email and press send.
+            </p>
+          </div>
+        </form>
+      </div>
+    </section>
   </main>
 
   <Footer />
 </BaseLayout>
+
+<script>
+  const form = document.querySelector("#requirement-form");
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const getValue = (id) => document.querySelector(`#${id}`)?.value || "Not provided";
+
+    const name = getValue("name");
+    const email = getValue("email");
+    const level = getValue("level");
+    const subjectArea = getValue("subjectArea");
+    const software = getValue("software");
+    const deadline = getValue("deadline");
+    const supportType = getValue("supportType");
+    const message = getValue("message");
+
+    const subject = `New requirement: ${subjectArea}`;
+
+    const body = `
+New requirement from My Academic Tutor website
+
+Full name:
+${name}
+
+Email:
+${email}
+
+Current level:
+${level}
+
+Subject area:
+${subjectArea}
+
+Software required:
+${software}
+
+Deadline:
+${deadline}
+
+Preferred support:
+${supportType}
+
+Requirement details:
+${message}
+
+Files:
+If relevant, I will email files separately to contact@myacademictutor.com.
+`;
+
+    const mailtoLink = `mailto:contact@myacademictutor.com?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+
+    window.location.href = mailtoLink;
+  });
+</script>
