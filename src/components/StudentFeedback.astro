@@ -1,29 +1,25 @@
 ---
-const feedback = [
-  {
-    quote:
-      "The sessions helped me understand statistical concepts more clearly and strengthened my problem-solving during exam preparation.",
-    student: "Statistics student",
-    location: "USA",
-  },
-  {
-    quote:
-      "The teaching connected probability and statistics with real-world examples, making difficult concepts easier to understand.",
-    student: "Engineering student",
-    location: "Canada",
-  },
-  {
-    quote:
-      "The support helped me organise my analysis, understand statistical outputs and explain my results with more confidence.",
-    student: "Research student",
-    location: "Australia",
-  },
-  {
-    quote:
-      "The classes were focused on my course requirements and helped me understand where to concentrate during preparation.",
-    student: "University student",
-    location: "Italy",
-  },
+const supportAreas = [
+  "Statistics and probability",
+  "Biostatistics and medical statistics",
+  "R, Python, SPSS, SAS and Stata",
+  "Data science and machine learning",
+  "Bioinformatics and omics",
+  "Dissertation and research projects",
+];
+
+const countries = [
+  "India",
+  "USA",
+  "Canada",
+  "Australia",
+  "Italy",
+  "UAE",
+  "Ireland",
+  "UK",
+  "South Korea",
+  "Singapore",
+  "Kuwait",
 ];
 ---
 
@@ -32,11 +28,11 @@ const feedback = [
     <div class="grid gap-10 lg:grid-cols-[0.75fr_1.25fr]">
       <div>
         <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
-          Student feedback
+          Student support record
         </p>
 
         <h2 class="mt-4 text-4xl font-semibold tracking-tight text-neutral-950 md:text-5xl">
-          Student experiences across countries.
+          Supporting students across countries and subjects.
         </h2>
 
         <p class="mt-5 text-lg leading-8 text-neutral-700">
@@ -45,23 +41,48 @@ const feedback = [
         </p>
 
         <p class="mt-5 text-sm leading-6 text-neutral-500">
-          Feedback is shown as short anonymised excerpts to protect student
-          privacy while reflecting common themes from tutoring support.
+          Instead of displaying personal student messages publicly, we keep
+          feedback anonymised and focus on the types of academic support
+          students commonly request.
         </p>
       </div>
 
-      <div class="grid gap-5">
-        {feedback.map((item) => (
-          <article class="border border-neutral-200 bg-[#f8f6f2] p-6 shadow-sm">
-            <p class="text-lg leading-8 text-neutral-800">
-              “{item.quote}”
-            </p>
+      <div class="grid gap-8">
+        <div>
+          <h3 class="text-xl font-semibold tracking-tight text-neutral-950">
+            Common support areas
+          </h3>
 
-            <p class="mt-5 text-sm font-medium text-[#8C1515]">
-              — {item.student}, {item.location}
-            </p>
-          </article>
-        ))}
+          <div class="mt-5 grid gap-3 sm:grid-cols-2">
+            {supportAreas.map((item) => (
+              <div class="border border-neutral-200 bg-[#f8f6f2] px-4 py-3">
+                <span class="text-sm text-neutral-700">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold tracking-tight text-neutral-950">
+            Student locations
+          </h3>
+
+          <div class="mt-5 flex flex-wrap gap-2">
+            {countries.map((country) => (
+              <span class="border border-neutral-200 bg-[#f8f6f2] px-3 py-2 text-sm text-neutral-700">
+                {country}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div class="border-l-4 border-[#8C1515] bg-[#f8f6f2] p-5">
+          <p class="text-sm leading-6 text-neutral-700">
+            Student privacy is important to us. Public examples are kept
+            general unless a student gives clear permission to share identifiable
+            feedback.
+          </p>
+        </div>
       </div>
     </div>
   </div>
