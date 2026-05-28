@@ -3,12 +3,16 @@ import "../styles/global.css";
 
 const {
   title = "My Academic Tutor | Academic Tutoring & Research Support",
-  description = "A academic tutoring team supporting students and researchers across statistics, biostatistics, programming, data science, bioinformatics and quantitative research.",
+  description = "An academic tutoring team supporting students and researchers across statistics, biostatistics, programming, data science, bioinformatics and quantitative research.",
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
+
+const siteUrl = "https://statisticahub.github.io";
+const canonicalUrl = `${siteUrl}${base}`;
+const ogImage = `${siteUrl}${base}images/hero-research.jpg`;
 ---
 
 <html lang="en">
@@ -22,14 +26,23 @@ const base = import.meta.env.BASE_URL.endsWith("/")
     <meta name="author" content="My Academic Tutor" />
     <meta
       name="keywords"
-      content="academic tutoring, statistics tutor, biostatistics tutor, R programming, Python tutor, SPSS, SAS, Stata, data science tutor, bioinformatics tutor, dissertation data analysis"
+      content="academic tutoring, statistics tutor, biostatistics tutor, medical statistics, R programming, Python tutor, SPSS, SAS, Stata, data science tutor, bioinformatics tutor, dissertation data analysis, research support"
     />
+
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" href={`${base}logo.png`} />
 
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content="My Academic Tutor" />
 
-    <link rel="icon" href={`${base}favicon.svg`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
   </head>
 
   <body class="bg-[#f8f6f2] text-neutral-950 antialiased">
