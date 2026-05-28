@@ -4,8 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
-  site: "https://statisticahub.github.io",
-  base: "/myacademictutor-website",
+  site: "https://www.myacademictutor.com",
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
