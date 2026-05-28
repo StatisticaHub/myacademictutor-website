@@ -1,0 +1,120 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+const faqs = [
+  {
+    question: "What kind of support does My Academic Tutor provide?",
+    answer:
+      "We provide academic tutoring, concept explanation, software guidance, research support and data-analysis guidance across statistics, biostatistics, programming, data science, bioinformatics and related quantitative subjects.",
+  },
+  {
+    question: "Do you complete assignments or coursework for students?",
+    answer:
+      "No. We provide teaching, explanation, guidance, code walkthroughs and research support. We do not submit work on behalf of students or provide ghostwritten academic work.",
+  },
+  {
+    question: "Which software do you support?",
+    answer:
+      "Support may include R, Python, SPSS, SAS, Stata, Excel and related tools depending on the subject area and tutor availability.",
+  },
+  {
+    question: "Can I get help with dissertation or thesis data analysis?",
+    answer:
+      "Yes. We can support research question refinement, analysis planning, method selection, software implementation, interpretation of results, tables, figures and reporting structure.",
+  },
+  {
+    question: "How do I submit my requirement?",
+    answer:
+      "Use the requirement form on the Contact page. Include your subject, level, deadline, software requirements and a short explanation of the support needed.",
+  },
+  {
+    question: "Can I share files or datasets?",
+    answer:
+      "Yes, but do not upload confidential logins, passwords or highly sensitive personal data. Submit the form first, then email relevant files separately to contact@myacademictutor.com.",
+  },
+];
+---
+
+<BaseLayout
+  title="FAQ | My Academic Tutor"
+  description="Frequently asked questions about academic tutoring, research support, software support and academic integrity at My Academic Tutor."
+>
+  <Header />
+
+  <main>
+    <section class="bg-[#f8f6f2] px-6 pb-20 pt-36 md:px-10 lg:px-20">
+      <div class="mx-auto max-w-7xl">
+        <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+          FAQ
+        </p>
+
+        <h1 class="mt-4 max-w-5xl text-5xl font-semibold tracking-tight text-neutral-950 md:text-6xl">
+          Frequently asked questions.
+        </h1>
+
+        <p class="mt-7 max-w-3xl text-lg leading-8 text-neutral-700">
+          Clear answers about our academic support, subject areas, software
+          guidance and how to submit a requirement.
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-white px-6 py-20 md:px-10 lg:px-20">
+      <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.75fr_1.25fr]">
+        <div>
+          <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+            Academic integrity
+          </p>
+
+          <h2 class="mt-4 text-4xl font-semibold tracking-tight text-neutral-950">
+            Support is guidance-based.
+          </h2>
+
+          <p class="mt-5 text-lg leading-8 text-neutral-700">
+            Our work focuses on helping students understand concepts, methods,
+            software and interpretation. We do not replace independent academic
+            work.
+          </p>
+
+          <a
+            href={`${base}contact`}
+            class="mt-8 inline-flex rounded-sm bg-[#8C1515] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#6f1111]"
+          >
+            Submit requirement
+          </a>
+        </div>
+
+        <div class="border-y border-neutral-300">
+          {faqs.map((item, index) => (
+            <details
+              class="group border-b border-neutral-200 py-6 last:border-b-0"
+              open={index === 0}
+            >
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-6">
+                <h3 class="text-xl font-semibold tracking-tight text-neutral-950">
+                  {item.question}
+                </h3>
+
+                <span class="text-2xl leading-none text-[#8C1515] transition group-open:rotate-45">
+                  +
+                </span>
+              </summary>
+
+              <p class="mt-4 max-w-3xl text-sm leading-6 text-neutral-700">
+                {item.answer}
+              </p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
