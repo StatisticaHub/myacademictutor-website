@@ -1,0 +1,68 @@
+---
+const feedback = [
+  {
+    quote:
+      "The sessions helped me understand statistical concepts more clearly and strengthened my problem-solving during exam preparation.",
+    student: "Statistics student",
+    location: "USA",
+  },
+  {
+    quote:
+      "The teaching connected probability and statistics with real-world examples, making difficult concepts easier to understand.",
+    student: "Engineering student",
+    location: "Canada",
+  },
+  {
+    quote:
+      "The support helped me organise my analysis, understand statistical outputs and explain my results with more confidence.",
+    student: "Research student",
+    location: "Australia",
+  },
+  {
+    quote:
+      "The classes were focused on my course requirements and helped me understand where to concentrate during preparation.",
+    student: "University student",
+    location: "Italy",
+  },
+];
+---
+
+<section class="bg-white px-6 py-20 md:px-10 lg:px-20">
+  <div class="mx-auto max-w-7xl">
+    <div class="grid gap-10 lg:grid-cols-[0.75fr_1.25fr]">
+      <div>
+        <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+          Student feedback
+        </p>
+
+        <h2 class="mt-4 text-4xl font-semibold tracking-tight text-neutral-950 md:text-5xl">
+          Guidance that helps students understand.
+        </h2>
+
+        <p class="mt-5 text-lg leading-8 text-neutral-700">
+          We have supported students based in India, USA, Canada, Australia,
+          Italy, UAE, Ireland, UK, South Korea, Singapore and Kuwait.
+        </p>
+
+        <p class="mt-5 text-sm leading-6 text-neutral-500">
+          Feedback is shown as short anonymised excerpts to protect student
+          privacy while reflecting common themes from tutoring support.
+        </p>
+      </div>
+
+      <div class="grid gap-5">
+        {feedback.map((item) => (
+          <article class="border border-neutral-200 bg-[#f8f6f2] p-6 shadow-sm">
+            <p class="text-lg leading-8 text-neutral-800">
+              “{item.quote}”
+            </p>
+
+            <p class="mt-5 text-sm font-medium text-[#8C1515]">
+              — {item.student}, {item.location}
+            </p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
