@@ -24,17 +24,17 @@ import Footer from "../components/Footer.astro";
 
           <p class="mt-6 max-w-xl text-lg leading-8 text-neutral-700">
             Share your subject, level, software requirements, deadline and the
-            kind of academic support you need. We will review your requirement
-            and suggest a suitable tutor or support route.
+            kind of academic support you need. Clear details help us suggest the
+            most suitable tutor or support route.
           </p>
 
           <div class="mt-10 border-l-4 border-[#8C1515] bg-white p-5">
             <p class="text-sm font-semibold text-neutral-950">
-              Founded by Rahul
+              Before submitting
             </p>
             <p class="mt-2 text-sm leading-6 text-neutral-600">
-              Indian Institute of Technology Kanpur alumnus, with expertise in
-              statistics, medical statistics and health data science.
+              Please include your course/module name, topic, deadline, software
+              requirement and what you have tried so far.
             </p>
           </div>
 
@@ -45,7 +45,8 @@ import Footer from "../components/Footer.astro";
             <p class="mt-2 text-sm leading-6 text-neutral-600">
               Submit this form first. If you need to share files, datasets,
               screenshots or assignment briefs, email them separately to
-              contact@myacademictutor.com.
+              contact@myacademictutor.com. Please do not share passwords,
+              confidential logins or highly sensitive personal data.
             </p>
           </div>
         </div>
@@ -109,10 +110,23 @@ import Footer from "../components/Footer.astro";
                   <option>Data Science / Machine Learning</option>
                   <option>Bioinformatics</option>
                   <option>Dissertation / Research Project</option>
+                  <option>Exam preparation</option>
                   <option>Other</option>
                 </select>
               </label>
             </div>
+
+            <label class="grid gap-2">
+              <span class="text-sm font-medium text-neutral-950">
+                Course / module name
+              </span>
+              <input
+                id="moduleName"
+                type="text"
+                placeholder="Example: Medical Statistics, Econometrics, Biostatistics, Data Science"
+                class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition placeholder:text-neutral-400 focus:border-[#8C1515]"
+              />
+            </label>
 
             <label class="grid gap-2">
               <span class="text-sm font-medium text-neutral-950">
@@ -137,6 +151,23 @@ import Footer from "../components/Footer.astro";
               </label>
 
               <label class="grid gap-2">
+                <span class="text-sm font-medium text-neutral-950">Urgency</span>
+                <select
+                  id="urgency"
+                  class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition focus:border-[#8C1515]"
+                >
+                  <option value="">Select one</option>
+                  <option>Within 24 hours</option>
+                  <option>2–3 days</option>
+                  <option>This week</option>
+                  <option>More than one week</option>
+                  <option>No fixed deadline</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-2">
+              <label class="grid gap-2">
                 <span class="text-sm font-medium text-neutral-950">
                   Preferred support
                 </span>
@@ -149,11 +180,36 @@ import Footer from "../components/Footer.astro";
                   <option>Coursework concept support</option>
                   <option>Software/code support</option>
                   <option>Dissertation/research guidance</option>
+                  <option>Exam preparation</option>
                   <option>Long-term learning plan</option>
                   <option>Not sure yet</option>
                 </select>
               </label>
+
+              <label class="grid gap-2">
+                <span class="text-sm font-medium text-neutral-950">
+                  Preferred time zone
+                </span>
+                <input
+                  id="timeZone"
+                  type="text"
+                  placeholder="Example: India, UK, EST, Dubai, Singapore"
+                  class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition placeholder:text-neutral-400 focus:border-[#8C1515]"
+                />
+              </label>
             </div>
+
+            <label class="grid gap-2">
+              <span class="text-sm font-medium text-neutral-950">
+                What have you tried so far?
+              </span>
+              <textarea
+                id="tried"
+                rows="4"
+                placeholder="Briefly mention any code, method, lecture notes, assignment attempt or analysis you have already tried."
+                class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition placeholder:text-neutral-400 focus:border-[#8C1515]"
+              ></textarea>
+            </label>
 
             <label class="grid gap-2">
               <span class="text-sm font-medium text-neutral-950">
@@ -203,9 +259,13 @@ import Footer from "../components/Footer.astro";
     const email = getValue("email");
     const level = getValue("level");
     const subjectArea = getValue("subjectArea");
+    const moduleName = getValue("moduleName");
     const software = getValue("software");
     const deadline = getValue("deadline");
+    const urgency = getValue("urgency");
     const supportType = getValue("supportType");
+    const timeZone = getValue("timeZone");
+    const tried = getValue("tried");
     const message = getValue("message");
 
     const subject = `New requirement: ${subjectArea}`;
@@ -225,14 +285,26 @@ ${level}
 Subject area:
 ${subjectArea}
 
+Course / module name:
+${moduleName}
+
 Software required:
 ${software}
 
 Deadline:
 ${deadline}
 
+Urgency:
+${urgency}
+
 Preferred support:
 ${supportType}
+
+Preferred time zone:
+${timeZone}
+
+What I have tried so far:
+${tried}
 
 Requirement details:
 ${message}
