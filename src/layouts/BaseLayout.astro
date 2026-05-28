@@ -2,8 +2,8 @@
 import "../styles/global.css";
 
 const {
-  title = "My Academic Tutor | Statistics, Biostatistics, Data Science & Bioinformatics",
-  description = "Structured academic support in statistics, biostatistics, programming, data science, bioinformatics and quantitative research methods.",
+  title = "My Academic Tutor | Academic Tutoring & Research Support",
+  description = "A small academic tutoring team supporting students and researchers across statistics, biostatistics, programming, data science, bioinformatics and quantitative research.",
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL.endsWith("/")
@@ -22,7 +22,7 @@ const base = import.meta.env.BASE_URL.endsWith("/")
     <meta name="author" content="My Academic Tutor" />
     <meta
       name="keywords"
-      content="statistics tutoring, biostatistics, R programming, Python, SPSS, SAS, Stata, data science, bioinformatics, medical statistics, quantitative research"
+      content="academic tutoring, statistics tutor, biostatistics tutor, R programming, Python tutor, SPSS, SAS, Stata, data science tutor, bioinformatics tutor, dissertation data analysis"
     />
 
     <meta property="og:title" content={title} />
@@ -32,7 +32,7 @@ const base = import.meta.env.BASE_URL.endsWith("/")
     <link rel="icon" href={`${base}favicon.svg`} />
   </head>
 
-  <body class="bg-slate-950 text-white antialiased">
+  <body class="bg-[#f8f6f2] text-neutral-950 antialiased">
     <slot />
   </body>
 </html>

@@ -5,67 +5,69 @@ const base = import.meta.env.BASE_URL.endsWith("/")
 ---
 
 <section class="px-6 pb-24 pt-36 md:px-10 lg:px-20">
-  <div class="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
+  <div class="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-[1.05fr_0.95fr]">
     <div>
-      <p class="mb-6 inline-flex rounded-full border border-neutral-300 bg-white px-4 py-2 text-sm text-neutral-600">
-        Academic tutoring · Quantitative subjects · Research support
+      <p class="mb-6 text-sm font-medium uppercase tracking-[0.22em] text-[#8C1515]">
+        Academic tutoring · Quantitative methods · Research support
       </p>
 
       <h1 class="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-tight text-neutral-950 md:text-7xl">
-        Clear academic support from subject-focused tutors.
+        Subject-focused academic support for students and researchers.
       </h1>
 
-      <p class="mt-7 max-w-2xl text-lg leading-8 text-neutral-600">
-        My Academic Tutor is a small academic tutoring team supporting students
-        and researchers across statistics, biostatistics, programming, data
-        science, bioinformatics and quantitative research methods.
+      <p class="mt-7 max-w-2xl text-lg leading-8 text-neutral-700">
+        My Academic Tutor is a small academic tutoring team supporting learners
+        across statistics, biostatistics, programming, data science,
+        bioinformatics and quantitative research methods.
       </p>
 
-      <p class="mt-5 max-w-2xl border-l-2 border-red-900 pl-5 text-base leading-7 text-neutral-600">
-        Founded by Rahul, Founder and Statistics Lead, the platform brings
-        together tutors for different subject areas while keeping support
-        structured, personal and academically focused.
-      </p>
+      <div class="mt-7 max-w-2xl border-l-4 border-[#8C1515] bg-white px-5 py-4">
+        <p class="text-base leading-7 text-neutral-700">
+          Founded by Rahul, Founder and Statistics Lead, the platform connects
+          students with tutors aligned to their subject area, level and academic
+          goals.
+        </p>
+      </div>
 
       <div class="mt-9 flex flex-col gap-4 sm:flex-row">
         <a
           href={`${base}courses`}
-          class="rounded-full bg-red-950 px-7 py-4 text-center font-medium text-white transition hover:bg-neutral-950"
+          class="rounded-sm bg-[#8C1515] px-7 py-4 text-center font-medium text-white transition hover:bg-[#6f1111]"
         >
-          View Subject Areas
+          Explore Subject Areas
         </a>
 
         <a
           href={`${base}contact`}
-          class="rounded-full border border-neutral-300 bg-white px-7 py-4 text-center font-medium text-neutral-950 transition hover:border-red-950 hover:text-red-950"
+          class="rounded-sm border border-neutral-300 bg-white px-7 py-4 text-center font-medium text-neutral-950 transition hover:border-[#8C1515] hover:text-[#8C1515]"
         >
           Request Support
         </a>
       </div>
     </div>
 
-    <div class="rounded-[2rem] border border-neutral-200 bg-white p-3 shadow-sm">
-      <div class="relative min-h-[520px] overflow-hidden rounded-[1.5rem]">
+    <div class="border border-neutral-200 bg-white p-3 shadow-sm">
+      <div class="relative min-h-[520px] overflow-hidden">
         <img
           src={`${base}images/hero-research.jpg`}
           alt="Academic research and data analysis workspace"
           class="absolute inset-0 h-full w-full object-cover"
         />
 
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent"></div>
 
         <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
-          <p class="text-sm uppercase tracking-[0.28em] text-neutral-200">
-            Tutor-led academic support
+          <p class="text-sm uppercase tracking-[0.25em] text-neutral-200">
+            Tutor-led learning
           </p>
 
-          <h2 class="mt-4 text-4xl font-semibold">
-            From concepts to interpretation.
+          <h2 class="mt-4 text-4xl font-semibold leading-tight">
+            From concept to interpretation.
           </h2>
 
           <p class="mt-4 max-w-md text-neutral-200">
-            Support is matched to the subject area, level and academic goal —
-            from foundational learning to research-level data analysis.
+            Support for coursework, software, dissertations, projects and
+            research-level data analysis.
           </p>
         </div>
       </div>
