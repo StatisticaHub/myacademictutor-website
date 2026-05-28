@@ -3,31 +3,58 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
 const tools = [
   {
     name: "R",
     best: "Statistics, visualisation, reproducible reports and advanced methods",
-    note: "Excellent for statistical learning, but beginners need time to learn coding.",
+    note: "Excellent for statistical learning, reproducible reports and academic statistics, but beginners need time to become comfortable with coding.",
   },
   {
     name: "Python",
     best: "Data science, machine learning, automation and general programming",
-    note: "Very flexible, but some statistical workflows require more setup.",
+    note: "Very flexible for data science and automation, but some statistical workflows require more setup than menu-based software.",
   },
   {
     name: "SPSS",
     best: "Menu-based analysis, social science coursework and quick descriptive analysis",
-    note: "Beginner-friendly, but less flexible for reproducible code-based workflows.",
+    note: "Beginner-friendly and useful for standard analyses, but less flexible for reproducible code-based workflows.",
   },
   {
     name: "SAS",
     best: "Clinical trials, regulated environments and large institutional workflows",
-    note: "Powerful and widely used in some industries, but can have a steeper learning curve.",
+    note: "Powerful and widely used in some clinical and industry settings, but can have a steeper learning curve.",
   },
   {
     name: "Stata",
     best: "Econometrics, epidemiology, public health and applied regression workflows",
-    note: "Strong for applied statistical analysis, especially in economics and health research.",
+    note: "Strong for applied statistical analysis, especially in economics, public health and epidemiology.",
+  },
+];
+
+const choices = [
+  {
+    need: "I need strong statistics and reproducible reports",
+    tool: "R",
+  },
+  {
+    need: "I need data science, machine learning or automation",
+    tool: "Python",
+  },
+  {
+    need: "I want a menu-based tool for standard analysis",
+    tool: "SPSS",
+  },
+  {
+    need: "I am working in a clinical trial or regulated workflow",
+    tool: "SAS",
+  },
+  {
+    need: "I am doing econometrics, epidemiology or public health analysis",
+    tool: "Stata",
   },
 ];
 ---
@@ -85,44 +112,73 @@ const tools = [
     </section>
 
     <section class="bg-[#f8f6f2] px-6 py-20 md:px-10 lg:px-20">
-      <div class="mx-auto max-w-4xl">
+      <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.75fr_1.25fr]">
+        <div>
+          <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+            Quick choice
+          </p>
+
+          <h2 class="mt-4 text-4xl font-semibold tracking-tight text-neutral-950">
+            Choose based on your academic requirement.
+          </h2>
+
+          <p class="mt-5 text-lg leading-8 text-neutral-700">
+            Use the software required by your module first. If you have a choice,
+            choose based on the type of analysis, reporting requirement and how
+            comfortable you are with coding.
+          </p>
+        </div>
+
+        <div class="grid gap-4">
+          {choices.map((item) => (
+            <div class="border border-neutral-200 bg-white p-5 shadow-sm">
+              <p class="text-sm font-medium text-[#8C1515]">
+                {item.need}
+              </p>
+
+              <p class="mt-2 text-xl font-semibold tracking-tight text-neutral-950">
+                Consider {item.tool}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white px-6 py-16 md:px-10 lg:px-20">
+      <div class="mx-auto max-w-4xl border-t border-neutral-200 pt-10">
         <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
-          Recommendation
+          Apply this guide
         </p>
 
-        <h2 class="mt-4 text-4xl font-semibold tracking-tight text-neutral-950">
-          Choose based on your academic requirement.
+        <h2 class="mt-4 text-3xl font-semibold tracking-tight text-neutral-950 md:text-4xl">
+          Need help choosing or using software for your analysis?
         </h2>
 
-        <p class="mt-5 text-lg leading-8 text-neutral-700">
-          Use the software required by your module first. If you have a choice,
-          R is often strong for statistics and reproducible reporting, Python is
-          strong for data science and automation, SPSS is useful for menu-based
-          analysis, SAS is common in regulated clinical settings, and Stata is
-          popular in applied economics, epidemiology and public health.
+        <p class="mt-4 text-lg leading-8 text-neutral-700">
+          Share your course requirement, dataset, software options and deadline.
+          We can help you choose a suitable workflow and understand how to run,
+          interpret and report your analysis.
         </p>
+
+        <div class="mt-8 flex flex-col gap-4 sm:flex-row">
+          <a
+            href={`${base}contact`}
+            class="rounded-sm bg-[#8C1515] px-6 py-3 text-center text-sm font-medium text-white transition hover:bg-[#6f1111]"
+          >
+            Submit requirement
+          </a>
+
+          <a
+            href={`${base}resources`}
+            class="rounded-sm border border-neutral-300 bg-white px-6 py-3 text-center text-sm font-medium text-neutral-950 transition hover:border-[#8C1515] hover:text-[#8C1515]"
+          >
+            View all resources
+          </a>
+        </div>
       </div>
     </section>
   </main>
 
   <Footer />
 </BaseLayout>
-<section class="bg-white px-6 py-16 md:px-10 lg:px-20">
-  <div class="mx-auto max-w-4xl border-t border-neutral-200 pt-10">
-    <h2 class="text-3xl font-semibold tracking-tight text-neutral-950">
-      Need help applying this to your own work?
-    </h2>
-
-    <p class="mt-4 text-lg leading-8 text-neutral-700">
-      Share your topic, dataset, software requirement and deadline. We can help
-      you understand the method, plan the analysis and interpret the results.
-    </p>
-
-    <a
-      href={`${base}contact`}
-      class="mt-8 inline-flex rounded-sm bg-[#8C1515] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#6f1111]"
-    >
-      Submit requirement
-    </a>
-  </div>
-</section>
