@@ -1,0 +1,121 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+const resources = [
+  {
+    title: "How to choose the correct statistical test",
+    description:
+      "A practical guide for students deciding between t-tests, ANOVA, chi-square tests, correlation, regression and non-parametric methods.",
+    tag: "Statistics",
+    status: "Coming soon",
+  },
+  {
+    title: "How to prepare your data before analysis",
+    description:
+      "A student-friendly checklist covering missing values, variable coding, outliers, data types and basic exploratory analysis.",
+    tag: "Data analysis",
+    status: "Coming soon",
+  },
+  {
+    title: "Common mistakes in dissertation data analysis",
+    description:
+      "A guide to avoiding unclear research questions, unsuitable methods, weak interpretation and poor reporting of results.",
+    tag: "Research support",
+    status: "Coming soon",
+  },
+  {
+    title: "R, Python, SPSS, SAS or Stata: which should I use?",
+    description:
+      "A practical comparison for students choosing software for coursework, dissertation analysis or research projects.",
+    tag: "Software",
+    status: "Coming soon",
+  },
+];
+---
+
+<BaseLayout
+  title="Resources | My Academic Tutor"
+  description="Student resources on statistics, biostatistics, data analysis, software and dissertation research support."
+>
+  <Header />
+
+  <main>
+    <section class="bg-[#f8f6f2] px-6 pb-20 pt-36 md:px-10 lg:px-20">
+      <div class="mx-auto max-w-7xl">
+        <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+          Resources
+        </p>
+
+        <h1 class="mt-4 max-w-5xl text-5xl font-semibold tracking-tight text-neutral-950 md:text-6xl">
+          Practical guides for students and researchers.
+        </h1>
+
+        <p class="mt-7 max-w-3xl text-lg leading-8 text-neutral-700">
+          Short, student-friendly resources to help with statistics,
+          biostatistics, software, data analysis and research projects.
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-white px-6 py-20 md:px-10 lg:px-20">
+      <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.75fr_1.25fr]">
+        <div>
+          <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+            Learning support
+          </p>
+
+          <h2 class="mt-4 text-4xl font-semibold tracking-tight text-neutral-950">
+            Start with the basics before requesting support.
+          </h2>
+
+          <p class="mt-5 text-lg leading-8 text-neutral-700">
+            These resources are designed to help students ask better questions,
+            understand common decisions and prepare for tutoring or research
+            support.
+          </p>
+
+          <a
+            href={`${base}contact`}
+            class="mt-8 inline-flex rounded-sm bg-[#8C1515] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#6f1111]"
+          >
+            Submit requirement
+          </a>
+        </div>
+
+        <div class="grid gap-5">
+          {resources.map((item) => (
+            <article class="border border-neutral-200 bg-[#f8f6f2] p-6 shadow-sm">
+              <div class="flex flex-wrap items-center gap-3">
+                <p class="text-sm font-medium text-[#8C1515]">
+                  {item.tag}
+                </p>
+
+                <span class="text-sm text-neutral-400">/</span>
+
+                <p class="text-sm text-neutral-500">
+                  {item.status}
+                </p>
+              </div>
+
+              <h3 class="mt-3 text-2xl font-semibold tracking-tight text-neutral-950">
+                {item.title}
+              </h3>
+
+              <p class="mt-3 text-sm leading-6 text-neutral-600">
+                {item.description}
+              </p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
