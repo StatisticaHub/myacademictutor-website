@@ -13,30 +13,280 @@ const resources = [
     description:
       "A practical guide for students deciding between t-tests, ANOVA, chi-square tests, correlation, regression and non-parametric methods.",
     tag: "Statistics",
+    level: "Foundation",
     href: "resources/choosing-statistical-test",
+    status: "Read guide",
+    keywords:
+      "statistical test t-test anova chi-square correlation regression non-parametric hypothesis testing",
   },
   {
     title: "How to prepare your data before analysis",
     description:
       "A student-friendly checklist covering missing values, variable coding, outliers, data types and basic exploratory analysis.",
     tag: "Data analysis",
+    level: "Foundation",
     href: "resources/prepare-data-before-analysis",
+    status: "Read guide",
+    keywords:
+      "data cleaning missing values outliers coding variables data preparation exploratory analysis",
   },
   {
     title: "Common mistakes in dissertation data analysis",
     description:
       "A guide to avoiding unclear research questions, unsuitable methods, weak interpretation and poor reporting of results.",
     tag: "Research support",
+    level: "Foundation",
     href: "resources/dissertation-data-analysis-mistakes",
+    status: "Read guide",
+    keywords:
+      "dissertation analysis research project mistakes methodology results interpretation reporting",
   },
   {
     title: "R, Python, SPSS, SAS or Stata: which should I use?",
     description:
       "A practical comparison for students choosing software for coursework, dissertation analysis or research projects.",
     tag: "Software",
+    level: "Foundation",
     href: "resources/statistical-software-guide",
+    status: "Read guide",
+    keywords:
+      "R Python SPSS SAS Stata software statistical software data analysis programming",
+  },
+
+  {
+    title: "Understanding p-values, confidence intervals and effect sizes",
+    description:
+      "A clearer explanation of statistical significance, practical importance and how to report results responsibly.",
+    tag: "Statistics",
+    level: "Intermediate",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "p value confidence interval effect size statistical significance practical significance interpretation",
+  },
+  {
+    title: "Linear regression assumptions and diagnostics",
+    description:
+      "A guide to checking linearity, residuals, heteroscedasticity, influential points and model fit.",
+    tag: "Regression",
+    level: "Intermediate",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "linear regression assumptions diagnostics residuals heteroscedasticity multicollinearity influence model fit",
+  },
+  {
+    title: "Logistic regression explained for health and social science students",
+    description:
+      "A practical introduction to odds ratios, binary outcomes, model interpretation and reporting logistic regression.",
+    tag: "Regression",
+    level: "Intermediate",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "logistic regression odds ratio binary outcome health data epidemiology interpretation",
+  },
+  {
+    title: "Survival analysis: Kaplan–Meier curves and Cox regression",
+    description:
+      "An introduction to time-to-event data, censoring, Kaplan–Meier curves, log-rank tests and Cox models.",
+    tag: "Biostatistics",
+    level: "Advanced",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "survival analysis Kaplan Meier Cox regression censoring hazard ratio log rank time to event",
+  },
+  {
+    title: "Choosing between correlation and regression",
+    description:
+      "A guide to when correlation is enough, when regression is better, and how to avoid overinterpreting association.",
+    tag: "Statistics",
+    level: "Intermediate",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "correlation regression association prediction relationship Pearson Spearman causation",
+  },
+  {
+    title: "ANOVA, ANCOVA and repeated measures ANOVA",
+    description:
+      "A practical guide to comparing groups, adjusting for covariates and handling repeated measurements.",
+    tag: "Statistics",
+    level: "Advanced",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "ANOVA ANCOVA repeated measures group comparison covariates within subject between subject",
+  },
+  {
+    title: "Non-parametric tests: when and how to use them",
+    description:
+      "A guide to Mann–Whitney, Wilcoxon, Kruskal–Wallis and Spearman tests for non-normal or ordinal data.",
+    tag: "Statistics",
+    level: "Intermediate",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "non parametric Mann Whitney Wilcoxon Kruskal Wallis Spearman ordinal data non normal",
+  },
+  {
+    title: "Missing data: deletion, imputation and reporting",
+    description:
+      "A student-friendly guide to understanding missingness, complete case analysis and basic imputation choices.",
+    tag: "Data analysis",
+    level: "Advanced",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "missing data imputation complete case deletion MCAR MAR MNAR reporting data analysis",
+  },
+  {
+    title: "Sample size, power and precision explained",
+    description:
+      "A guide to understanding sample size calculations, statistical power, detectable effects and confidence interval precision.",
+    tag: "Research methods",
+    level: "Intermediate",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "sample size power calculation precision effect size study design hypothesis test",
+  },
+  {
+    title: "How to write a statistical analysis plan",
+    description:
+      "A practical guide to planning outcomes, variables, methods, subgroup analyses and reporting before analysis begins.",
+    tag: "Research support",
+    level: "Advanced",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "statistical analysis plan SAP methods outcomes variables subgroup analysis reporting",
+  },
+  {
+    title: "How to report regression results in a dissertation",
+    description:
+      "A guide to writing regression methods, tables, coefficients, confidence intervals and interpretation clearly.",
+    tag: "Research support",
+    level: "Intermediate",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "report regression results dissertation coefficients confidence interval interpretation table",
+  },
+  {
+    title: "Confounding, mediation and effect modification",
+    description:
+      "A conceptual guide to three common ideas students meet in epidemiology, medical statistics and social research.",
+    tag: "Epidemiology",
+    level: "Advanced",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "confounding mediation effect modification interaction epidemiology causal inference",
+  },
+  {
+    title: "Introduction to causal inference and DAGs",
+    description:
+      "A beginner-to-intermediate guide to causal questions, confounder selection, directed acyclic graphs and adjustment.",
+    tag: "Causal inference",
+    level: "Advanced",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "causal inference DAG directed acyclic graph confounding adjustment causal effect",
+  },
+  {
+    title: "Model validation: overfitting, train-test split and cross-validation",
+    description:
+      "A practical guide to evaluating prediction models and avoiding overly optimistic performance estimates.",
+    tag: "Data science",
+    level: "Advanced",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "model validation overfitting train test split cross validation prediction performance",
+  },
+  {
+    title: "ROC curves, sensitivity, specificity and AUC",
+    description:
+      "A guide to diagnostic test evaluation and classification model performance in health and data science.",
+    tag: "Biostatistics",
+    level: "Intermediate",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "ROC curve AUC sensitivity specificity diagnostic test classification performance",
+  },
+  {
+    title: "Multiple testing and false discovery rate",
+    description:
+      "A guide to p-value adjustment, Bonferroni correction and false discovery rate in high-dimensional analysis.",
+    tag: "Statistics",
+    level: "Advanced",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "multiple testing false discovery rate FDR Bonferroni p value adjustment high dimensional",
+  },
+  {
+    title: "Introduction to meta-analysis",
+    description:
+      "A guide to effect sizes, forest plots, heterogeneity, fixed-effect models and random-effects models.",
+    tag: "Evidence synthesis",
+    level: "Advanced",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "meta analysis forest plot heterogeneity fixed effect random effects systematic review",
+  },
+  {
+    title: "Longitudinal data analysis: repeated measurements over time",
+    description:
+      "A guide to analysing outcomes measured repeatedly using repeated measures, mixed models and growth patterns.",
+    tag: "Statistics",
+    level: "Advanced",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "longitudinal data repeated measures mixed models time outcome growth curve",
+  },
+  {
+    title: "Introduction to mixed-effects models",
+    description:
+      "A practical explanation of fixed effects, random effects, clustering and hierarchical data structures.",
+    tag: "Regression",
+    level: "Advanced",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "mixed effects model fixed effects random effects multilevel hierarchical clustered data",
+  },
+  {
+    title: "RNA-seq and differential expression analysis: basic concepts",
+    description:
+      "A student-friendly introduction to counts, normalisation, differential expression and biological interpretation.",
+    tag: "Bioinformatics",
+    level: "Advanced",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "RNA-seq differential expression counts normalization DESeq2 edgeR bioinformatics",
+  },
+  {
+    title: "Reproducible analysis with R Markdown or Quarto",
+    description:
+      "A guide to combining code, outputs, interpretation and reporting in one reproducible academic workflow.",
+    tag: "Software",
+    level: "Intermediate",
+    href: "",
+    status: "Guide planned",
+    keywords:
+      "R Markdown Quarto reproducible analysis report code output academic writing",
   },
 ];
+
+const tags = [...new Set(resources.map((item) => item.tag))];
 ---
 
 <BaseLayout
@@ -63,7 +313,57 @@ const resources = [
       </div>
     </section>
 
-    <section class="bg-white px-6 py-20 md:px-10 lg:px-20">
+    <section class="bg-white px-6 py-12 md:px-10 lg:px-20">
+      <div class="mx-auto max-w-7xl">
+        <div class="grid gap-4 lg:grid-cols-[1fr_0.35fr]">
+          <label class="grid gap-2">
+            <span class="text-sm font-medium text-neutral-950">
+              Search resources
+            </span>
+
+            <input
+              id="resource-search"
+              type="search"
+              placeholder="Search: regression, p-value, survival analysis, SPSS, missing data, dissertation..."
+              class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition placeholder:text-neutral-400 focus:border-[#8C1515]"
+            />
+          </label>
+
+          <label class="grid gap-2">
+            <span class="text-sm font-medium text-neutral-950">
+              Filter by area
+            </span>
+
+            <select
+              id="resource-filter"
+              class="border border-neutral-300 bg-white px-4 py-3 text-neutral-950 outline-none transition focus:border-[#8C1515]"
+            >
+              <option value="all">All areas</option>
+              {tags.map((tag) => (
+                <option value={tag}>{tag}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div class="mt-5 flex flex-wrap gap-2 text-sm text-neutral-500">
+          <span>Popular searches:</span>
+          <span class="text-neutral-700">regression</span>
+          <span>·</span>
+          <span class="text-neutral-700">survival analysis</span>
+          <span>·</span>
+          <span class="text-neutral-700">missing data</span>
+          <span>·</span>
+          <span class="text-neutral-700">p-value</span>
+          <span>·</span>
+          <span class="text-neutral-700">dissertation analysis</span>
+          <span>·</span>
+          <span class="text-neutral-700">SPSS</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white px-6 pb-20 md:px-10 lg:px-20">
       <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.75fr_1.25fr]">
         <div>
           <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
@@ -88,29 +388,70 @@ const resources = [
           </a>
         </div>
 
-        <div class="grid gap-5">
-          {resources.map((item) => (
-            <a
-              href={`${base}${item.href}`}
-              class="block border border-neutral-200 bg-[#f8f6f2] p-6 shadow-sm transition hover:border-[#8C1515]"
-            >
-              <p class="text-sm font-medium text-[#8C1515]">
-                {item.tag}
-              </p>
+        <div>
+          <p id="resource-count" class="mb-5 text-sm text-neutral-500">
+            Showing {resources.length} resources
+          </p>
 
-              <h3 class="mt-3 text-2xl font-semibold tracking-tight text-neutral-950">
-                {item.title}
-              </h3>
+          <div id="resource-grid" class="grid gap-5">
+            {resources.map((item) => (
+              <article
+                class="resource-card border border-neutral-200 bg-[#f8f6f2] p-6 shadow-sm transition hover:border-[#8C1515]"
+                data-title={item.title.toLowerCase()}
+                data-description={item.description.toLowerCase()}
+                data-tag={item.tag.toLowerCase()}
+                data-level={item.level.toLowerCase()}
+                data-keywords={item.keywords.toLowerCase()}
+              >
+                <div class="flex flex-wrap items-center gap-3">
+                  <p class="text-sm font-medium text-[#8C1515]">
+                    {item.tag}
+                  </p>
 
-              <p class="mt-3 text-sm leading-6 text-neutral-600">
-                {item.description}
-              </p>
+                  <span class="text-sm text-neutral-400">/</span>
 
-              <p class="mt-5 text-sm font-medium text-neutral-950">
-                Read guide →
-              </p>
-            </a>
-          ))}
+                  <p class="text-sm text-neutral-500">
+                    {item.level}
+                  </p>
+
+                  <span class="text-sm text-neutral-400">/</span>
+
+                  <p class="text-sm text-neutral-500">
+                    {item.status}
+                  </p>
+                </div>
+
+                <h3 class="mt-3 text-2xl font-semibold tracking-tight text-neutral-950">
+                  {item.title}
+                </h3>
+
+                <p class="mt-3 text-sm leading-6 text-neutral-600">
+                  {item.description}
+                </p>
+
+                {item.href ? (
+                  <a
+                    href={`${base}${item.href}`}
+                    class="mt-5 inline-flex text-sm font-medium text-neutral-950 transition hover:text-[#8C1515]"
+                  >
+                    Read guide →
+                  </a>
+                ) : (
+                  <p class="mt-5 text-sm font-medium text-neutral-500">
+                    Guide planned
+                  </p>
+                )}
+              </article>
+            ))}
+          </div>
+
+          <p
+            id="no-results"
+            class="mt-8 hidden border border-neutral-200 bg-[#f8f6f2] p-6 text-sm leading-6 text-neutral-700"
+          >
+            No matching resources found. Try searching for a broader term such
+            as regression, data analysis, dissertation, software or statistics.
+          </p>
         </div>
       </div>
     </section>
@@ -118,3 +459,47 @@ const resources = [
 
   <Footer />
 </BaseLayout>
+
+<script>
+  const searchInput = document.querySelector("#resource-search");
+  const filterSelect = document.querySelector("#resource-filter");
+  const cards = Array.from(document.querySelectorAll(".resource-card"));
+  const count = document.querySelector("#resource-count");
+  const noResults = document.querySelector("#no-results");
+
+  const updateResources = () => {
+    const query = searchInput?.value.toLowerCase().trim() || "";
+    const selectedTag = filterSelect?.value.toLowerCase() || "all";
+
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const text = [
+        card.dataset.title,
+        card.dataset.description,
+        card.dataset.tag,
+        card.dataset.level,
+        card.dataset.keywords,
+      ].join(" ");
+
+      const matchesSearch = !query || text.includes(query);
+      const matchesTag = selectedTag === "all" || card.dataset.tag === selectedTag;
+      const shouldShow = matchesSearch && matchesTag;
+
+      card.classList.toggle("hidden", !shouldShow);
+
+      if (shouldShow) {
+        visibleCount += 1;
+      }
+    });
+
+    if (count) {
+      count.textContent = `Showing ${visibleCount} resource${visibleCount === 1 ? "" : "s"}`;
+    }
+
+    noResults?.classList.toggle("hidden", visibleCount !== 0);
+  };
+
+  searchInput?.addEventListener("input", updateResources);
+  filterSelect?.addEventListener("change", updateResources);
+</script>
