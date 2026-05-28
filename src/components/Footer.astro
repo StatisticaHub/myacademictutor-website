@@ -4,33 +4,39 @@ const base = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 ---
 
-<footer class="border-t border-white/10 px-6 py-10 md:px-10 lg:px-20">
+<footer class="border-t border-neutral-200 bg-neutral-50 px-6 py-10 md:px-10 lg:px-20">
   <div class="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.2fr_0.8fr_0.8fr]">
     <div>
-      <p class="text-lg font-semibold">My Academic Tutor</p>
+      <p class="text-lg font-semibold tracking-tight text-neutral-950">
+        My Academic Tutor
+      </p>
 
-      <p class="mt-3 max-w-md text-sm leading-6 text-slate-400">
-        Academic support in statistics, biostatistics, programming, data science,
-        bioinformatics and quantitative research methods.
+      <p class="mt-3 max-w-md text-sm leading-6 text-neutral-500">
+        A small academic tutoring team supporting students and researchers across
+        quantitative and data-driven subjects.
+      </p>
+
+      <p class="mt-3 text-sm leading-6 text-neutral-500">
+        Founded by Rahul, Founder and Statistics Lead.
       </p>
     </div>
 
     <div>
-      <p class="font-semibold">Pages</p>
+      <p class="font-semibold text-neutral-950">Pages</p>
 
-      <div class="mt-3 grid gap-2 text-sm text-slate-400">
-        <a href={`${base}about`} class="hover:text-cyan-300">About</a>
-        <a href={`${base}services`} class="hover:text-cyan-300">Services</a>
-        <a href={`${base}courses`} class="hover:text-cyan-300">Courses</a>
-        <a href={`${base}contact`} class="hover:text-cyan-300">Contact</a>
+      <div class="mt-3 grid gap-2 text-sm text-neutral-500">
+        <a href={`${base}about`} class="hover:text-neutral-950">About</a>
+        <a href={`${base}services`} class="hover:text-neutral-950">Services</a>
+        <a href={`${base}courses`} class="hover:text-neutral-950">Courses</a>
+        <a href={`${base}contact`} class="hover:text-neutral-950">Contact</a>
       </div>
     </div>
 
     <div>
-      <p class="font-semibold">Contact</p>
+      <p class="font-semibold text-neutral-950">Contact</p>
 
-      <div class="mt-3 grid gap-2 text-sm text-slate-400">
-        <a href="mailto:contact@myacademictutor.com" class="hover:text-cyan-300">
+      <div class="mt-3 grid gap-2 text-sm text-neutral-500">
+        <a href="mailto:contact@myacademictutor.com" class="hover:text-neutral-950">
           contact@myacademictutor.com
         </a>
         <span>Online academic support</span>
@@ -38,8 +44,8 @@ const base = import.meta.env.BASE_URL.endsWith("/")
     </div>
   </div>
 
-  <div class="mx-auto mt-10 max-w-7xl border-t border-white/10 pt-6">
-    <p class="text-sm text-slate-500">
+  <div class="mx-auto mt-10 max-w-7xl border-t border-neutral-200 pt-6">
+    <p class="text-sm text-neutral-400">
       © 2026 My Academic Tutor. All rights reserved.
     </p>
   </div>

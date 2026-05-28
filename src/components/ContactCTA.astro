@@ -1,131 +1,38 @@
-<section id="contact" class="px-6 pb-24 md:px-10 lg:px-20">
-  <div class="mx-auto max-w-7xl rounded-[2.5rem] border border-white/10 bg-white/[0.04] p-6 md:p-10">
-    <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-      <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
-          Contact
-        </p>
+---
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
 
-        <h2 class="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">
-          Submit your academic support requirement.
-        </h2>
+<section class="bg-white px-6 py-24 md:px-10 lg:px-20">
+  <div class="mx-auto max-w-5xl border-t border-neutral-300 pt-12">
+    <p class="text-sm font-medium uppercase tracking-[0.2em] text-neutral-500">
+      Start here
+    </p>
 
-        <p class="mt-5 text-lg leading-8 text-slate-300">
-          Share your subject, level of study, topic, software requirement,
-          deadline and the type of support you need. This helps prepare a clear
-          and relevant response.
-        </p>
+    <h2 class="mt-4 text-4xl font-semibold tracking-tight text-neutral-950 md:text-5xl">
+      Tell us what you need support with.
+    </h2>
 
-        <div class="mt-8 grid gap-4">
-          <div class="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
-            <h3 class="font-semibold">Subjects covered</h3>
-            <p class="mt-2 text-sm leading-6 text-slate-400">
-              Statistics, biostatistics, programming, data science, bioinformatics
-              and quantitative research methods.
-            </p>
-          </div>
+    <p class="mt-5 max-w-3xl text-lg leading-8 text-neutral-600">
+      Share your subject, level, software requirements and deadline. We will
+      suggest the most suitable tutor or support route.
+    </p>
 
-          <div class="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
-            <h3 class="font-semibold">Software support</h3>
-            <p class="mt-2 text-sm leading-6 text-slate-400">
-              R, Python, SPSS, SAS, Stata, R Markdown, Quarto and reproducible
-              project workflows.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <form
-        class="rounded-[2rem] border border-white/10 bg-slate-950/80 p-6 shadow-2xl shadow-black/20"
-        action="mailto:contact@myacademictutor.com"
-        method="post"
-        enctype="text/plain"
+    <div class="mt-9 flex flex-col gap-4 sm:flex-row">
+      <a
+        href={`${base}contact`}
+        class="rounded-full bg-neutral-950 px-7 py-4 text-center font-medium text-white transition hover:bg-neutral-800"
       >
-        <div class="grid gap-5">
-          <div>
-            <label for="name" class="text-sm font-medium text-slate-200">
-              Full name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              class="mt-2 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
-              placeholder="Your name"
-            />
-          </div>
+        Contact us
+      </a>
 
-          <div>
-            <label for="email" class="text-sm font-medium text-slate-200">
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              class="mt-2 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div>
-            <label for="subject" class="text-sm font-medium text-slate-200">
-              Area of support
-            </label>
-            <select
-              id="subject"
-              name="subject"
-              class="mt-2 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white outline-none transition focus:border-cyan-300"
-            >
-              <option class="bg-slate-950">Statistics</option>
-              <option class="bg-slate-950">Biostatistics / Medical Statistics</option>
-              <option class="bg-slate-950">R / Python / SPSS / SAS / Stata</option>
-              <option class="bg-slate-950">Data Science / Machine Learning</option>
-              <option class="bg-slate-950">Bioinformatics / Omics</option>
-              <option class="bg-slate-950">Dissertation / Research Project</option>
-              <option class="bg-slate-950">Other</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="deadline" class="text-sm font-medium text-slate-200">
-              Deadline / timeline
-            </label>
-            <input
-              id="deadline"
-              name="deadline"
-              type="text"
-              class="mt-2 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
-              placeholder="For example: 2 weeks, 1 month, urgent, flexible"
-            />
-          </div>
-
-          <div>
-            <label for="message" class="text-sm font-medium text-slate-200">
-              Requirement details
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              rows="6"
-              class="mt-2 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
-              placeholder="Briefly describe your topic, course/project, software requirement and what kind of support you need."
-            ></textarea>
-          </div>
-
-          <button
-            type="submit"
-            class="rounded-full bg-cyan-300 px-6 py-4 font-semibold text-slate-950 transition hover:bg-cyan-200"
-          >
-            Send requirement
-          </button>
-
-          <p class="text-xs leading-5 text-slate-500">
-            This temporary form opens your email app. Later we can connect it to
-            Formspree, Tally or another form service for direct website submissions.
-          </p>
-        </div>
-      </form>
+      <a
+        href="mailto:contact@myacademictutor.com"
+        class="rounded-full border border-neutral-300 bg-white px-7 py-4 text-center font-medium text-neutral-950 transition hover:border-neutral-950"
+      >
+        Email directly
+      </a>
     </div>
   </div>
 </section>
