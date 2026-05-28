@@ -13,28 +13,28 @@ const resources = [
     description:
       "A practical guide for students deciding between t-tests, ANOVA, chi-square tests, correlation, regression and non-parametric methods.",
     tag: "Statistics",
-    status: "Coming soon",
+    href: "resources/choosing-statistical-test",
   },
   {
     title: "How to prepare your data before analysis",
     description:
       "A student-friendly checklist covering missing values, variable coding, outliers, data types and basic exploratory analysis.",
     tag: "Data analysis",
-    status: "Coming soon",
+    href: "resources/prepare-data-before-analysis",
   },
   {
     title: "Common mistakes in dissertation data analysis",
     description:
       "A guide to avoiding unclear research questions, unsuitable methods, weak interpretation and poor reporting of results.",
     tag: "Research support",
-    status: "Coming soon",
+    href: "resources/dissertation-data-analysis-mistakes",
   },
   {
     title: "R, Python, SPSS, SAS or Stata: which should I use?",
     description:
       "A practical comparison for students choosing software for coursework, dissertation analysis or research projects.",
     tag: "Software",
-    status: "Coming soon",
+    href: "resources/statistical-software-guide",
   },
 ];
 ---
@@ -71,7 +71,7 @@ const resources = [
           </p>
 
           <h2 class="mt-4 text-4xl font-semibold tracking-tight text-neutral-950">
-            Start with the basics before requesting support.
+            Start with a practical guide.
           </h2>
 
           <p class="mt-5 text-lg leading-8 text-neutral-700">
@@ -90,18 +90,13 @@ const resources = [
 
         <div class="grid gap-5">
           {resources.map((item) => (
-            <article class="border border-neutral-200 bg-[#f8f6f2] p-6 shadow-sm">
-              <div class="flex flex-wrap items-center gap-3">
-                <p class="text-sm font-medium text-[#8C1515]">
-                  {item.tag}
-                </p>
-
-                <span class="text-sm text-neutral-400">/</span>
-
-                <p class="text-sm text-neutral-500">
-                  {item.status}
-                </p>
-              </div>
+            <a
+              href={`${base}${item.href}`}
+              class="block border border-neutral-200 bg-[#f8f6f2] p-6 shadow-sm transition hover:border-[#8C1515]"
+            >
+              <p class="text-sm font-medium text-[#8C1515]">
+                {item.tag}
+              </p>
 
               <h3 class="mt-3 text-2xl font-semibold tracking-tight text-neutral-950">
                 {item.title}
@@ -110,7 +105,11 @@ const resources = [
               <p class="mt-3 text-sm leading-6 text-neutral-600">
                 {item.description}
               </p>
-            </article>
+
+              <p class="mt-5 text-sm font-medium text-neutral-950">
+                Read guide →
+              </p>
+            </a>
           ))}
         </div>
       </div>

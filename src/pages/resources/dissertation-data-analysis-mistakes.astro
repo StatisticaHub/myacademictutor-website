@@ -1,0 +1,100 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+
+const mistakes = [
+  {
+    title: "Unclear research question",
+    fix: "Write the research question before choosing the test. The method should answer the question, not the other way around.",
+  },
+  {
+    title: "Choosing the wrong statistical method",
+    fix: "Base the method on outcome type, study design, number of groups and assumptions.",
+  },
+  {
+    title: "Skipping data screening",
+    fix: "Check missing values, outliers, coding errors and descriptive statistics before modelling.",
+  },
+  {
+    title: "Reporting every output table",
+    fix: "Only include tables and figures that help answer the research question.",
+  },
+  {
+    title: "Weak interpretation",
+    fix: "Explain what the result means in the context of your study, not just whether the p-value is significant.",
+  },
+  {
+    title: "Ignoring limitations",
+    fix: "Mention sample size, missing data, measurement issues, assumptions and possible bias where relevant.",
+  },
+];
+---
+
+<BaseLayout
+  title="Common mistakes in dissertation data analysis | My Academic Tutor"
+  description="A student guide to avoiding common mistakes in dissertation data analysis."
+>
+  <Header />
+
+  <main>
+    <section class="bg-[#f8f6f2] px-6 pb-20 pt-36 md:px-10 lg:px-20">
+      <div class="mx-auto max-w-5xl">
+        <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+          Research support guide
+        </p>
+
+        <h1 class="mt-4 text-5xl font-semibold tracking-tight text-neutral-950 md:text-6xl">
+          Common mistakes in dissertation data analysis.
+        </h1>
+
+        <p class="mt-7 text-lg leading-8 text-neutral-700">
+          Many dissertation problems come from unclear questions, poor data
+          preparation, unsuitable methods or weak interpretation. These issues
+          can be avoided with better planning.
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-white px-6 py-20 md:px-10 lg:px-20">
+      <div class="mx-auto grid max-w-7xl gap-6 md:grid-cols-2">
+        {mistakes.map((item) => (
+          <article class="border border-neutral-200 bg-[#f8f6f2] p-6">
+            <h2 class="text-2xl font-semibold tracking-tight text-neutral-950">
+              {item.title}
+            </h2>
+
+            <p class="mt-4 text-sm font-medium text-[#8C1515]">
+              How to fix it
+            </p>
+
+            <p class="mt-2 text-sm leading-6 text-neutral-700">
+              {item.fix}
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="bg-[#f8f6f2] px-6 py-20 md:px-10 lg:px-20">
+      <div class="mx-auto max-w-4xl">
+        <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+          Good practice
+        </p>
+
+        <h2 class="mt-4 text-4xl font-semibold tracking-tight text-neutral-950">
+          Your analysis should tell a clear story.
+        </h2>
+
+        <p class="mt-5 text-lg leading-8 text-neutral-700">
+          A strong dissertation analysis connects the research question, data,
+          method, results and interpretation. The reader should understand why
+          the method was used, what the result means and what the limitations
+          are.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

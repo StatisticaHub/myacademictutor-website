@@ -1,0 +1,109 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+
+const tools = [
+  {
+    name: "R",
+    best: "Statistics, visualisation, reproducible reports and advanced methods",
+    note: "Excellent for statistical learning, but beginners need time to learn coding.",
+  },
+  {
+    name: "Python",
+    best: "Data science, machine learning, automation and general programming",
+    note: "Very flexible, but some statistical workflows require more setup.",
+  },
+  {
+    name: "SPSS",
+    best: "Menu-based analysis, social science coursework and quick descriptive analysis",
+    note: "Beginner-friendly, but less flexible for reproducible code-based workflows.",
+  },
+  {
+    name: "SAS",
+    best: "Clinical trials, regulated environments and large institutional workflows",
+    note: "Powerful and widely used in some industries, but can have a steeper learning curve.",
+  },
+  {
+    name: "Stata",
+    best: "Econometrics, epidemiology, public health and applied regression workflows",
+    note: "Strong for applied statistical analysis, especially in economics and health research.",
+  },
+];
+---
+
+<BaseLayout
+  title="R, Python, SPSS, SAS or Stata: which should I use? | My Academic Tutor"
+  description="A practical student guide comparing R, Python, SPSS, SAS and Stata for academic data analysis."
+>
+  <Header />
+
+  <main>
+    <section class="bg-[#f8f6f2] px-6 pb-20 pt-36 md:px-10 lg:px-20">
+      <div class="mx-auto max-w-5xl">
+        <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+          Software guide
+        </p>
+
+        <h1 class="mt-4 text-5xl font-semibold tracking-tight text-neutral-950 md:text-6xl">
+          R, Python, SPSS, SAS or Stata: which should I use?
+        </h1>
+
+        <p class="mt-7 text-lg leading-8 text-neutral-700">
+          The best software depends on your course, research question, dataset,
+          required output and whether your work needs reproducible code.
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-white px-6 py-20 md:px-10 lg:px-20">
+      <div class="mx-auto grid max-w-7xl gap-6 md:grid-cols-2">
+        {tools.map((tool) => (
+          <article class="border border-neutral-200 bg-[#f8f6f2] p-6">
+            <h2 class="text-2xl font-semibold tracking-tight text-neutral-950">
+              {tool.name}
+            </h2>
+
+            <p class="mt-4 text-sm font-medium text-[#8C1515]">
+              Best for
+            </p>
+
+            <p class="mt-2 text-sm leading-6 text-neutral-700">
+              {tool.best}
+            </p>
+
+            <p class="mt-4 text-sm font-medium text-[#8C1515]">
+              Student note
+            </p>
+
+            <p class="mt-2 text-sm leading-6 text-neutral-700">
+              {tool.note}
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="bg-[#f8f6f2] px-6 py-20 md:px-10 lg:px-20">
+      <div class="mx-auto max-w-4xl">
+        <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+          Recommendation
+        </p>
+
+        <h2 class="mt-4 text-4xl font-semibold tracking-tight text-neutral-950">
+          Choose based on your academic requirement.
+        </h2>
+
+        <p class="mt-5 text-lg leading-8 text-neutral-700">
+          Use the software required by your module first. If you have a choice,
+          R is often strong for statistics and reproducible reporting, Python is
+          strong for data science and automation, SPSS is useful for menu-based
+          analysis, SAS is common in regulated clinical settings, and Stata is
+          popular in applied economics, epidemiology and public health.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
