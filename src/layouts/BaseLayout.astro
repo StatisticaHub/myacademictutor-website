@@ -12,7 +12,37 @@ const base = import.meta.env.BASE_URL.endsWith("/")
 
 const siteUrl = "https://statisticahub.github.io";
 const canonicalUrl = `${siteUrl}${base}`;
+const logoUrl = `${siteUrl}${base}logo.png`;
 const ogImage = `${siteUrl}${base}images/hero-research.jpg`;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "My Academic Tutor",
+  url: canonicalUrl,
+  logo: logoUrl,
+  email: "contact@myacademictutor.com",
+  description,
+  founder: {
+    "@type": "Person",
+    name: "Rahul",
+    alumniOf: {
+      "@type": "CollegeOrUniversity",
+      name: "Indian Institute of Technology Kanpur",
+    },
+    knowsAbout: [
+      "Statistics",
+      "Medical Statistics",
+      "Health Data Science",
+      "Biostatistics",
+      "Data Science",
+    ],
+  },
+  sameAs: [
+    "https://www.linkedin.com/company/myacademictutor/",
+    "https://www.youtube.com/@StatisticaHub",
+  ],
+};
 ---
 
 <html lang="en">
@@ -43,6 +73,8 @@ const ogImage = `${siteUrl}${base}images/hero-research.jpg`;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   </head>
 
   <body class="bg-[#f8f6f2] text-neutral-950 antialiased">
