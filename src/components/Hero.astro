@@ -21,23 +21,23 @@ const base = import.meta.env.BASE_URL.endsWith("/")
         science, bioinformatics and quantitative research methods.
       </p>
 
-      <p class="mt-5 max-w-2xl text-base leading-7 text-neutral-500">
-        Founded by Rahul, Statistics Lead and IIT Kanpur alumnus, the platform
-        brings together tutors for different subject areas while keeping support
+      <p class="mt-5 max-w-2xl border-l-2 border-red-900 pl-5 text-base leading-7 text-neutral-600">
+        Founded by Rahul, Founder and Statistics Lead, the platform brings
+        together tutors for different subject areas while keeping support
         structured, personal and academically focused.
       </p>
 
       <div class="mt-9 flex flex-col gap-4 sm:flex-row">
         <a
           href={`${base}courses`}
-          class="rounded-full bg-neutral-950 px-7 py-4 text-center font-medium text-white transition hover:bg-neutral-800"
+          class="rounded-full bg-red-950 px-7 py-4 text-center font-medium text-white transition hover:bg-neutral-950"
         >
           View Subject Areas
         </a>
 
         <a
           href={`${base}contact`}
-          class="rounded-full border border-neutral-300 bg-white px-7 py-4 text-center font-medium text-neutral-950 transition hover:border-neutral-950"
+          class="rounded-full border border-neutral-300 bg-white px-7 py-4 text-center font-medium text-neutral-950 transition hover:border-red-950 hover:text-red-950"
         >
           Request Support
         </a>
@@ -49,13 +49,13 @@ const base = import.meta.env.BASE_URL.endsWith("/")
         <img
           src={`${base}images/hero-research.jpg`}
           alt="Academic research and data analysis workspace"
-          class="absolute inset-0 h-full w-full object-cover grayscale"
+          class="absolute inset-0 h-full w-full object-cover"
         />
 
-        <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
 
         <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
-          <p class="text-sm uppercase tracking-[0.28em] text-neutral-300">
+          <p class="text-sm uppercase tracking-[0.28em] text-neutral-200">
             Tutor-led academic support
           </p>
 
