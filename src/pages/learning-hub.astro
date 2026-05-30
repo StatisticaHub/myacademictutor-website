@@ -1,3 +1,12 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
 const courses = [
   {
     title: "Statistics Foundation for University Students",
@@ -72,3 +81,111 @@ const courses = [
     external: false,
   },
 ];
+---
+
+<BaseLayout
+  title="Learning Hub | My Academic Tutor"
+  description="Structured learning materials and full course pathways in statistics, R, biostatistics, machine learning and dissertation data analysis."
+>
+  <Header />
+
+  <main>
+    <section class="bg-[#f8f6f2] px-6 pb-20 pt-36 md:px-10 lg:px-20">
+      <div class="mx-auto max-w-7xl">
+        <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+          Learning Hub
+        </p>
+
+        <h1 class="mt-4 max-w-5xl text-5xl font-semibold tracking-tight text-neutral-950 md:text-6xl">
+          Structured courses and learning pathways.
+        </h1>
+
+        <p class="mt-7 max-w-3xl text-lg leading-8 text-neutral-700">
+          Explore course-style materials designed for students who want more
+          than short guides: lectures, notes, exercises, code examples and
+          applied learning pathways.
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-white px-6 py-20 md:px-10 lg:px-20">
+      <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.75fr_1.25fr]">
+        <div>
+          <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+            Course library
+          </p>
+
+          <h2 class="mt-4 text-4xl font-semibold tracking-tight text-neutral-950">
+            Free learning materials with optional tutoring support.
+          </h2>
+
+          <p class="mt-5 text-lg leading-8 text-neutral-700">
+            These courses are intended for self-study. Students who need help
+            applying the material to coursework, dissertations or research
+            projects can request academic support separately.
+          </p>
+
+          <a
+            href={`${base}contact`}
+            class="mt-8 inline-flex rounded-sm bg-[#8C1515] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#6f1111]"
+          >
+            Request support
+          </a>
+        </div>
+
+        <div class="grid gap-6">
+          {courses.map((course) => (
+            <article class="border border-neutral-200 bg-[#f8f6f2] p-6 shadow-sm">
+              <div class="flex flex-wrap items-center gap-3">
+                <p class="text-sm font-medium text-[#8C1515]">
+                  {course.status}
+                </p>
+
+                <span class="text-sm text-neutral-400">/</span>
+
+                <p class="text-sm text-neutral-500">
+                  {course.level}
+                </p>
+              </div>
+
+              <h3 class="mt-3 text-2xl font-semibold tracking-tight text-neutral-950">
+                {course.title}
+              </h3>
+
+              <p class="mt-3 text-sm leading-6 text-neutral-600">
+                {course.description}
+              </p>
+
+              <p class="mt-4 text-sm font-medium text-neutral-950">
+                Format
+              </p>
+
+              <p class="mt-1 text-sm leading-6 text-neutral-600">
+                {course.format}
+              </p>
+
+              <div class="mt-5 grid gap-2 sm:grid-cols-2">
+                {course.topics.map((topic) => (
+                  <div class="border border-neutral-200 bg-white px-4 py-3">
+                    <span class="text-sm text-neutral-700">{topic}</span>
+                  </div>
+                ))}
+              </div>
+
+              <a
+                href={course.href}
+                target={course.external ? "_blank" : undefined}
+                rel={course.external ? "noopener noreferrer" : undefined}
+                class="mt-6 inline-flex rounded-sm border border-neutral-300 bg-white px-5 py-3 text-sm font-medium text-neutral-950 transition hover:border-[#8C1515] hover:text-[#8C1515]"
+              >
+                {course.status === "Available" ? "Open course" : "Enquire about this course"}
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
