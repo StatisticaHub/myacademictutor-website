@@ -8,14 +8,89 @@ import HowSupportWorks from "../components/HowSupportWorks.astro";
 import StudentFeedback from "../components/StudentFeedback.astro";
 import ContactCTA from "../components/ContactCTA.astro";
 import Footer from "../components/Footer.astro";
+
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
 ---
 
-<BaseLayout>
+<BaseLayout
+  title="My Academic Tutor | Statistics, Data Science & Research Support"
+  description="Academic tutoring and structured learning support in statistics, R, biostatistics, machine learning, research methods and dissertation data analysis."
+>
   <Header />
 
   <main>
     <Hero />
+
     <TrustStrip />
+
+    <section class="bg-white px-6 py-20 md:px-10 lg:px-20">
+      <div class="mx-auto grid max-w-7xl gap-10 rounded-2xl border border-neutral-200 bg-[#f8f6f2] p-8 md:p-10 lg:grid-cols-[0.9fr_1.1fr]">
+        <div>
+          <p class="text-sm font-medium uppercase tracking-[0.2em] text-[#8C1515]">
+            Learning Hub
+          </p>
+
+          <h2 class="mt-4 text-4xl font-semibold tracking-tight text-neutral-950">
+            Free structured courses for university students.
+          </h2>
+
+          <p class="mt-5 text-lg leading-8 text-neutral-700">
+            Explore full course pathways developed by My Academic Tutor,
+            including theoretical notes, lecture-style explanations, exercises,
+            quizzes and applied learning support.
+          </p>
+
+          <div class="mt-8 flex flex-wrap gap-4">
+            <a
+              href={`${base}learning-hub/`}
+              class="inline-flex rounded-sm bg-[#8C1515] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#6f1111]"
+            >
+              Open Learning Hub
+            </a>
+
+            <a
+              href={`${base}learning-hub/foundational-statistics/`}
+              class="inline-flex rounded-sm border border-neutral-300 bg-white px-6 py-3 text-sm font-medium text-neutral-950 transition hover:border-[#8C1515] hover:text-[#8C1515]"
+            >
+              Start Statistics Foundation
+            </a>
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <a
+            href={`${base}learning-hub/foundational-statistics/`}
+            class="border border-neutral-200 bg-white p-5 transition hover:border-[#8C1515]"
+          >
+            <p class="text-sm font-medium text-[#8C1515]">Available</p>
+            <h3 class="mt-3 text-xl font-semibold tracking-tight text-neutral-950">
+              Statistics Foundation
+            </h3>
+            <p class="mt-3 text-sm leading-6 text-neutral-600">
+              A beginner-friendly theoretical course covering descriptive
+              statistics, probability, inference and regression foundations.
+            </p>
+          </a>
+
+          <a
+            href={`${base}learning-hub/`}
+            class="border border-neutral-200 bg-white p-5 transition hover:border-[#8C1515]"
+          >
+            <p class="text-sm font-medium text-[#8C1515]">Course library</p>
+            <h3 class="mt-3 text-xl font-semibold tracking-tight text-neutral-950">
+              More learning pathways
+            </h3>
+            <p class="mt-3 text-sm leading-6 text-neutral-600">
+              Browse statistics, R, biostatistics, machine learning and
+              dissertation data analysis learning materials.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <SubjectAreas />
     <HowSupportWorks />
     <StudentFeedback />

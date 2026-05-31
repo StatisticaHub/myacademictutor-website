@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.4 Discrete Distributions — Foundational Statistics</title>
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(', '\\)']],
+    displayMath: [['\\[', '\\]']],
+    processEscapes: true
+  },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f6f5f0;--bg3:#f0ede6;--border:#e0ddd6;
+  --text:#1a1a18;--text2:#5a5a56;--text3:#8a8a84;
+  --blue:#378ADD;--blue-bg:#E6F1FB;--blue-txt:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;
+  --amber:#BA7517;--amber-bg:#FAEEDA;--amber-txt:#633806;
+  --red:#A32D2D;--red-bg:#FCEBEB;
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-txt:#3C3489;
+  --radius:8px;--radius-lg:12px;--sans:system-ui,-apple-system,sans-serif
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--border:#3a3a36;
+    --text:#e8e6df;--text2:#a8a69f;--text3:#6a6a64;
+    --blue-bg:#0c1f35;--blue-txt:#85B7EB;--green-bg:#0f2005;
+    --amber-bg:#2a1800;--amber-txt:#FAC775;--red-bg:#2a0a0a;
+    --purple-bg:#1a1740;--purple-txt:#AFA9EC
+  }
+}
+html{font-family:var(--sans);font-size:16px;color:var(--text);background:var(--bg3);scroll-behavior:smooth}
+body{display:flex;min-height:100vh}
+.sidebar{width:278px;min-width:278px;background:var(--bg);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-brand{padding:16px;border-bottom:.5px solid var(--border)}
+.brand-course{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.brand-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}
+.progress-wrap{height:3px;background:var(--border)}
+.progress-bar{height:3px;background:var(--blue);width:56%}
+.nav-section{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:12px 16px 4px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12.5px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;text-decoration:none;transition:background .12s}
+.nav-item:hover{background:var(--bg2);color:var(--text)}
+.nav-item.active{color:var(--text);border-left-color:var(--blue);background:var(--bg2);font-weight:500}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0}
+.nav-item.active .nav-dot{background:var(--blue)}
+.main{flex:1;min-width:0}
+.tab-bar{background:var(--bg);border-bottom:.5px solid var(--border);display:flex;padding:0 32px;position:sticky;top:0;z-index:10;overflow-x:auto}
+.tab{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-.5px;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--text);border-bottom-color:var(--blue);font-weight:500}
+.content{max-width:960px;margin:0 auto;padding:34px}
+.section{display:none}
+.section.active{display:block}
+.lesson-eyebrow{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+h1{font-size:29px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.25}
+.lesson-meta{font-size:12px;color:var(--text3);margin-bottom:28px}
+h2{font-size:19px;font-weight:500;color:var(--text);margin:32px 0 11px}
+h3{font-size:15.5px;font-weight:500;color:var(--text);margin:22px 0 8px}
+p{font-size:14.7px;color:var(--text2);line-height:1.78;margin-bottom:14px}
+strong{color:var(--text);font-weight:500}
+ul,ol{padding-left:21px;margin-bottom:14px}
+li{font-size:14.5px;color:var(--text2);line-height:1.76;margin-bottom:4px}
+.scene-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:24px 0 12px;padding:6px 10px;background:var(--bg2);border-radius:var(--radius);display:inline-block}
+.dialogue{display:flex;flex-direction:column;gap:12px;margin:16px 0}
+.line{display:flex;gap:12px;align-items:flex-start}
+.line.right{flex-direction:row-reverse}
+.speaker-badge{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:2px}
+.sp-prof{background:var(--blue-bg);color:var(--blue-txt)}
+.sp-emma{background:var(--green-bg);color:var(--green)}
+.sp-oliver{background:var(--amber-bg);color:var(--amber-txt)}
+.sp-james{background:var(--purple-bg);color:var(--purple-txt)}
+.sp-sophia{background:var(--red-bg);color:var(--red)}
+.bubble{max-width:78%;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px}
+.line.right .bubble{background:var(--blue-bg);border-color:transparent}
+.speaker-name{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:3px}
+.bubble p{font-size:14px;color:var(--text);margin:0;line-height:1.62}
+.def-box{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin:17px 0}
+.def-box .def-label{font-size:11px;font-weight:500;color:var(--blue-txt);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.def-box.green{border-left-color:var(--green);background:var(--green-bg)}
+.def-box.green .def-label{color:var(--green)}
+.def-box.amber{border-left-color:var(--amber);background:var(--amber-bg)}
+.def-box.amber .def-label{color:var(--amber-txt)}
+.def-box.red{border-left-color:var(--red);background:var(--red-bg)}
+.def-box.red .def-label{color:var(--red)}
+.def-box p{font-size:13.7px;color:var(--text);margin:0;line-height:1.65}
+.math-block{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius);padding:15px 20px;margin:16px 0;text-align:center;font-size:15px;color:var(--text);overflow-x:auto;line-height:1.7}
+.tbl-wrap{overflow-x:auto;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead tr{background:var(--bg2)}
+th{padding:9px 12px;text-align:left;font-weight:500;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.05em}
+td{padding:9px 12px;color:var(--text2);border-bottom:.5px solid var(--border);line-height:1.55}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg2)}
+.takeaway{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin:25px 0}
+.takeaway .tk-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.takeaway ul{margin:0}
+.takeaway li{font-size:14px;color:var(--text)}
+.plot-grid{display:grid;grid-template-columns:1fr;gap:18px}
+.plot-box{border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;background:var(--bg)}
+.plot-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.plot-sub{font-size:12px;color:var(--text3);margin-bottom:14px}
+.chart-wrap{position:relative;width:100%;height:300px}
+.controls-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;align-items:center}
+.ctrl{display:flex;align-items:center;gap:8px}
+.ctrl label{font-size:12.5px;color:var(--text2);white-space:nowrap}
+.ctrl input[type=range]{width:145px;accent-color:var(--blue)}
+.ctrl select{padding:6px 8px;border:.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text)}
+.ctrl-val{font-size:12.5px;font-weight:500;color:var(--text);min-width:42px}
+.stat-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.stat-card{flex:1;min-width:120px;background:var(--bg2);border-radius:var(--radius);padding:10px 14px;text-align:center}
+.stat-card .sc-label{font-size:11px;color:var(--text3);margin-bottom:4px}
+.stat-card .sc-val{font-size:20px;font-weight:500;color:var(--text)}
+.activity-card{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:10px 0}
+.activity-inner{padding:12px 16px}
+.choice-btn{padding:6px 12px;border:.5px solid var(--border);border-radius:var(--radius);background:none;font-size:12.5px;cursor:pointer;font-family:var(--sans);color:var(--text2);margin-right:6px;margin-top:6px}
+.choice-btn:hover{background:var(--bg2);color:var(--text)}
+.feedback-mini{display:none;margin-top:10px;padding:10px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5}
+.exercise{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:16px 0}
+.ex-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer}
+.ex-header:hover{background:var(--bg2)}
+.ex-qnum{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.ex-qtitle{font-size:14px;font-weight:500;color:var(--text);margin-top:2px}
+.ex-difficulty{font-size:11px;padding:2px 8px;border-radius:10px}
+.diff-easy{background:var(--green-bg);color:var(--green)}
+.diff-medium{background:var(--amber-bg);color:var(--amber-txt)}
+.diff-hard{background:var(--red-bg);color:var(--red)}
+.ex-toggle{font-size:18px;color:var(--text3)}
+.ex-body{display:none;padding:0 16px 16px;border-top:.5px solid var(--border)}
+.ex-body.open{display:block}
+.ex-question{font-size:14px;color:var(--text2);line-height:1.7;margin:12px 0}
+.answer-toggle{background:none;border:.5px solid var(--border);border-radius:var(--radius);padding:7px 14px;font-size:12.5px;cursor:pointer;color:var(--text2);font-family:var(--sans);margin-top:10px}
+.answer-box{display:none;margin-top:12px;background:var(--green-bg);border:.5px solid var(--green);border-radius:var(--radius);padding:12px 16px}
+.answer-box.open{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.answer-box .ans-label{font-size:11px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.answer-box p,.answer-box li{font-size:13.5px;color:var(--text);line-height:1.65}
+.quiz-q{font-size:14.5px;font-weight:500;color:var(--text);margin-bottom:14px;line-height:1.55}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.quiz-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:.5px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13.5px;color:var(--text2)}
+.quiz-opt:hover:not(.locked){border-color:var(--blue);background:var(--blue-bg);color:var(--text)}
+.quiz-opt.selected{border-color:var(--blue);background:var(--blue-bg);color:var(--text)}
+.quiz-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.quiz-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.quiz-opt .opt-key{width:22px;height:22px;border-radius:50%;border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.feedback{padding:10px 14px;border-radius:var(--radius);font-size:13.5px;line-height:1.6;margin-bottom:14px;display:none}
+.feedback.show{display:block}
+.feedback.ok{background:var(--green-bg);color:var(--green);border:.5px solid var(--green)}
+.feedback.no{background:var(--red-bg);color:var(--red);border:.5px solid var(--red)}
+.quiz-actions{display:flex;gap:10px}
+.btn-check{padding:8px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:var(--sans)}
+.btn-check:disabled{opacity:.4;cursor:default}
+.btn-next{padding:8px 18px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer;background:none;color:var(--text2);font-family:var(--sans);display:none}
+.btn-next.show{display:inline-block}
+.quiz-progress{font-size:11.5px;color:var(--text3);margin-bottom:20px}
+.quiz-complete{text-align:center;padding:32px 0}
+.quiz-complete .score-big{font-size:48px;font-weight:500;color:var(--text)}
+@media(max-width:850px){
+  body{display:block}.sidebar{width:100%;height:auto;position:relative;min-width:0}
+  .content{padding:24px 18px}.tab-bar{padding:0 12px}.bubble{max-width:88%}
+}
+</style>
+
+</head>
+
+<body>
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-course">Foundational Statistics</div>
+    <div class="brand-title">Statistics Foundation for University Students</div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="sidebar-progress" style="width:60%;"></div></div>
+
+  <div class="nav-section">Course modules</div>
+  <a class="nav-item" href="../module-1/index.html"><div class="nav-dot"></div>Module 1 · Introduction</a>
+  <a class="nav-item" href="../module-2/index.html"><div class="nav-dot"></div>Module 2 · Descriptive statistics</a>
+  <a class="nav-item active" href="../module-3/index.html"><div class="nav-dot"></div>Module 3 · Probability</a>
+  <a class="nav-item" href="../module-4/index.html"><div class="nav-dot"></div>Module 4 · Statistical inference</a>
+  <a class="nav-item" href="../module-5/index.html"><div class="nav-dot"></div>Module 5 · Regression</a>
+
+  <div class="nav-section">Module 3 lessons</div>
+  <a class="nav-item done" href="3-1-probability-basics-axioms.html"><div class="nav-dot"></div>3.1 Probability basics & axioms</a>
+  <a class="nav-item done" href="3-2-conditional-probability-bayes.html"><div class="nav-dot"></div>3.2 Conditional probability & Bayes</a>
+  <a class="nav-item done" href="3-3-random-variables-expectation.html"><div class="nav-dot"></div>3.3 Random variables & expectation</a>
+  <a class="nav-item active" href="3-4-discrete-distributions.html"><div class="nav-dot"></div>3.4 Discrete distributions</a>
+  <a class="nav-item done" href="3-5-normal-distribution-clt.html"><div class="nav-dot"></div>3.5 Normal distribution & CLT</a>
+</nav>
+
+<div class="main">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('lecture',this)">Lecture</button>
+    <button class="tab" onclick="showTab('notes',this)">Notes</button>
+    <button class="tab" onclick="showTab('interactive',this)">Interactive</button>
+    <button class="tab" onclick="showTab('exercises',this)">Exercises</button>
+    <button class="tab" onclick="showTab('quiz',this)">Quiz</button>
+  </div>
+
+  <div class="content">
+
+<section id="sec-lecture" class="section active">
+  <div class="lesson-eyebrow">Module 3 · Lesson 3.4</div>
+  <h1>Discrete distributions</h1>
+  <div class="lesson-meta">Mr. R · Prof Stat · ~42 min · After random variables and expectation</div>
+
+  <div class="scene-label">📍 Scene — probability classroom, named models on the board</div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>Last lesson we learned random variables and expectation. Now I keep seeing named distributions: Bernoulli, binomial, geometric, Poisson. Why do we need so many names?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Because common random processes appear again and again. A named distribution is a reusable probability model for a specific kind of data-generating process.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>So we should not just memorise formulas. We should ask what process produced the data?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. Distribution choice is not decoration. It is a modelling decision.</p></div></div>
+  </div>
+
+  <h2>What is a discrete distribution?</h2>
+  <p>A discrete distribution describes a random variable whose possible values are countable. The values may be finite, such as 0 or 1, or countably infinite, such as 0, 1, 2, 3 and so on.</p>
+  <p>For a discrete random variable \(X\), the distribution tells us the value of \(P(X=x)\) for each possible value \(x\).</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>So a distribution is not just the list of values. It is the list of values and probabilities?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Correct. A distribution is a complete probability description of the random variable.</p></div></div>
+  </div>
+
+  <h2>Bernoulli distribution</h2>
+  <p>The simplest discrete distribution is the Bernoulli distribution. It models one binary trial: success or failure, yes or no, response or no response, infected or not infected.</p>
+
+  <div class="math-block">
+    \[
+    X\sim \operatorname{Bernoulli}(p)
+    \]
+  </div>
+
+  <p>The random variable takes value 1 with probability \(p\), and 0 with probability \(1-p\).</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>So if \(X=1\) means a patient responds to treatment, then \(p\) is the probability of response?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. Bernoulli is the probability model for a single binary outcome.</p></div></div>
+  </div>
+
+  <h2>Binomial distribution</h2>
+  <p>The binomial distribution extends Bernoulli. Instead of one binary trial, it counts the number of successes in a fixed number of independent Bernoulli trials with the same success probability.</p>
+
+  <div class="math-block">
+    \[
+    X\sim \operatorname{Binomial}(n,p)
+    \]
+  </div>
+
+  <p>Here, \(n\) is the number of trials and \(p\) is the success probability on each trial.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>For example, if 20 patients are treated and each either responds or does not respond, \(X\) could be the number who respond?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes, if we are willing to assume a fixed number of patients, independent responses, and the same response probability for each patient.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>So the assumptions are part of the distribution?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Absolutely. A formula without assumptions is dangerous.</p></div></div>
+  </div>
+
+  <h2>Where the binomial formula comes from</h2>
+  <p>If exactly \(x\) successes occur in \(n\) trials, one particular arrangement has probability \(p^x(1-p)^{n-x}\). But the \(x\) successes can occur in many different positions. The number of arrangements is \(\binom{n}{x}\).</p>
+
+  <div class="math-block">
+    \[
+    P(X=x)=\binom{n}{x}p^x(1-p)^{n-x}
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>So the binomial coefficient counts the number of ways to arrange the successes?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. The probability part gives the chance of one arrangement; the coefficient counts how many equivalent arrangements exist.</p></div></div>
+  </div>
+
+  <h2>Geometric distribution</h2>
+  <p>The geometric distribution answers a different question: how many trials are needed until the first success?</p>
+
+  <div class="math-block">
+    \[
+    X\sim \operatorname{Geometric}(p)
+    \]
+  </div>
+
+  <p>If \(X\) is the trial number of the first success, then:</p>
+
+  <div class="math-block">
+    \[
+    P(X=k)=(1-p)^{k-1}p,\qquad k=1,2,3,\ldots
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>So for the first success on trial 5, the first 4 trials must fail, then trial 5 succeeds?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. That gives \((1-p)^4p\).</p></div></div>
+  </div>
+
+  <h2>Poisson distribution</h2>
+  <p>The Poisson distribution models counts of events in a fixed interval of time, space, area, volume, or exposure, when events occur at an average rate.</p>
+
+  <div class="math-block">
+    \[
+    X\sim \operatorname{Poisson}(\lambda)
+    \]
+  </div>
+
+  <p>The parameter \(\lambda\) is the expected count in the interval.</p>
+
+  <div class="math-block">
+    \[
+    P(X=x)=\frac{e^{-\lambda}\lambda^x}{x!},\qquad x=0,1,2,\ldots
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>What kinds of things are Poisson counts?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Examples include calls per hour, disease cases per week, mutations in a genomic region, hospital arrivals per shift, or defects per manufactured batch.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>So Poisson is not for fixed number of trials like binomial?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Correct. Binomial counts successes out of fixed trials. Poisson counts events over exposure.</p></div></div>
+  </div>
+
+  <h2>The modelling question</h2>
+  <p>The most important skill is not memorising the formula. It is matching the random process to the correct distribution.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Question</th><th>Distribution</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td>One yes/no outcome?</td><td>Bernoulli</td><td>Single binary trial</td></tr>
+        <tr><td>Number of successes in fixed trials?</td><td>Binomial</td><td>Fixed \(n\), binary trials, same \(p\)</td></tr>
+        <tr><td>Trial number of first success?</td><td>Geometric</td><td>Waiting until first success</td></tr>
+        <tr><td>Number of events in an interval?</td><td>Poisson</td><td>Count over time, space, or exposure</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="takeaway">
+    <div class="tk-label">Key takeaways from this lecture</div>
+    <ul>
+      <li>A discrete distribution assigns probabilities to countable values.</li>
+      <li>Bernoulli models one binary outcome.</li>
+      <li>Binomial counts successes in a fixed number of independent Bernoulli trials.</li>
+      <li>Geometric models the waiting time until the first success.</li>
+      <li>Poisson models event counts over a fixed interval or exposure.</li>
+      <li>Distribution choice must follow the data-generating process and assumptions.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-notes" class="section">
+  <div class="lesson-eyebrow">Detailed theoretical notes</div>
+  <h1>Discrete distributions</h1>
+
+  <h2>1. What is a discrete probability distribution?</h2>
+  <p>A discrete probability distribution describes a random variable that can take countable values. The distribution assigns a probability to each possible value.</p>
+
+  <div class="math-block">
+    \[
+    p(x)=P(X=x)
+    \]
+  </div>
+
+  <p>For a valid probability mass function:</p>
+
+  <div class="math-block">
+    \[
+    p(x)\geq 0\quad \text{for all }x
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \sum_x p(x)=1
+    \]
+  </div>
+
+  <h2>2. Bernoulli distribution</h2>
+  <p>A Bernoulli random variable models one binary trial. It takes value 1 for success and 0 for failure.</p>
+
+  <div class="math-block">
+    \[
+    X\sim \operatorname{Bernoulli}(p)
+    \]
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>x</th><th>P(X=x)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>\(p\)</td></tr>
+        <tr><td>0</td><td>\(1-p\)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Expectation</h3>
+  <div class="math-block">
+    \[
+    E(X)=1(p)+0(1-p)=p
+    \]
+  </div>
+
+  <h3>Variance</h3>
+  <p>Since \(X^2=X\) for a Bernoulli variable:</p>
+
+  <div class="math-block">
+    \[
+    E(X^2)=E(X)=p
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(X)=E(X^2)-[E(X)]^2=p-p^2=p(1-p)
+    \]
+  </div>
+
+  <h2>3. Binomial distribution</h2>
+  <p>A binomial random variable counts the number of successes in \(n\) Bernoulli trials.</p>
+
+  <div class="math-block">
+    \[
+    X\sim \operatorname{Binomial}(n,p)
+    \]
+  </div>
+
+  <p>The assumptions are:</p>
+  <ul>
+    <li>There is a fixed number of trials \(n\).</li>
+    <li>Each trial has two outcomes: success or failure.</li>
+    <li>The trials are independent.</li>
+    <li>The success probability \(p\) is the same for each trial.</li>
+    <li>The random variable counts the number of successes.</li>
+  </ul>
+
+  <h3>Derivation of the binomial probability formula</h3>
+  <p>Suppose exactly \(x\) successes occur in \(n\) trials. One specific arrangement has probability:</p>
+
+  <div class="math-block">
+    \[
+    p^x(1-p)^{n-x}
+    \]
+  </div>
+
+  <p>There are \(\binom{n}{x}\) ways to choose which \(x\) of the \(n\) trials are successes:</p>
+
+  <div class="math-block">
+    \[
+    \binom{n}{x}=\frac{n!}{x!(n-x)!}
+    \]
+  </div>
+
+  <p>Therefore:</p>
+
+  <div class="math-block">
+    \[
+    P(X=x)=\binom{n}{x}p^x(1-p)^{n-x},\qquad x=0,1,\ldots,n
+    \]
+  </div>
+
+  <h3>Mean and variance of binomial</h3>
+  <p>A binomial random variable can be written as the sum of \(n\) Bernoulli random variables:</p>
+
+  <div class="math-block">
+    \[
+    X=X_1+X_2+\cdots+X_n
+    \]
+  </div>
+
+  <p>where each \(X_i\sim\operatorname{Bernoulli}(p)\).</p>
+
+  <p>Using linearity of expectation:</p>
+
+  <div class="math-block">
+    \[
+    E(X)=E(X_1)+E(X_2)+\cdots+E(X_n)=p+p+\cdots+p=np
+    \]
+  </div>
+
+  <p>If the trials are independent, variances add:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(X)=np(1-p)
+    \]
+  </div>
+
+  <h2>4. Geometric distribution</h2>
+  <p>A geometric random variable models the trial number on which the first success occurs.</p>
+
+  <div class="math-block">
+    \[
+    X\sim \operatorname{Geometric}(p)
+    \]
+  </div>
+
+  <p>For the first success to occur on trial \(k\), the first \(k-1\) trials must be failures and the \(k\)-th trial must be a success:</p>
+
+  <div class="math-block">
+    \[
+    P(X=k)=(1-p)^{k-1}p,\qquad k=1,2,3,\ldots
+    \]
+  </div>
+
+  <p>The mean and variance are:</p>
+
+  <div class="math-block">
+    \[
+    E(X)=\frac{1}{p}
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(X)=\frac{1-p}{p^2}
+    \]
+  </div>
+
+  <div class="def-box amber">
+    <div class="def-label">Convention warning</div>
+    <p>Some textbooks define the geometric distribution as the number of failures before the first success. In this course, \(X\) is the trial number of the first success.</p>
+  </div>
+
+  <h2>5. Poisson distribution</h2>
+  <p>A Poisson random variable models the number of events occurring in a fixed interval of time, area, volume, or exposure.</p>
+
+  <div class="math-block">
+    \[
+    X\sim \operatorname{Poisson}(\lambda)
+    \]
+  </div>
+
+  <p>The probability mass function is:</p>
+
+  <div class="math-block">
+    \[
+    P(X=x)=\frac{e^{-\lambda}\lambda^x}{x!},\qquad x=0,1,2,\ldots
+    \]
+  </div>
+
+  <p>The mean and variance are both equal to \(\lambda\):</p>
+
+  <div class="math-block">
+    \[
+    E(X)=\lambda
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(X)=\lambda
+    \]
+  </div>
+
+  <h2>6. When is Poisson reasonable?</h2>
+  <p>A Poisson model is often considered when:</p>
+  <ul>
+    <li>the outcome is a count,</li>
+    <li>events occur over a fixed exposure interval,</li>
+    <li>events are approximately independent,</li>
+    <li>the event rate is approximately constant within the interval,</li>
+    <li>two events are unlikely to occur at exactly the same instant or location.</li>
+  </ul>
+
+  <h2>7. Overdispersion</h2>
+  <p>For a Poisson distribution, the mean and variance are equal. In real count data, the variance is often larger than the mean because of clustering, unmeasured heterogeneity, or unequal exposure.</p>
+
+  <div class="def-box red">
+    <div class="def-label">Overdispersion</div>
+    <p>Overdispersion occurs when observed count data have variance larger than the mean. In that case, a simple Poisson model may underestimate uncertainty.</p>
+  </div>
+
+  <h2>8. Distribution choice summary</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Distribution</th><th>Random variable</th><th>Parameters</th><th>Mean</th><th>Variance</th></tr></thead>
+      <tbody>
+        <tr><td>Bernoulli</td><td>One binary outcome</td><td>\(p\)</td><td>\(p\)</td><td>\(p(1-p)\)</td></tr>
+        <tr><td>Binomial</td><td>Success count in fixed trials</td><td>\(n,p\)</td><td>\(np\)</td><td>\(np(1-p)\)</td></tr>
+        <tr><td>Geometric</td><td>Trial number of first success</td><td>\(p\)</td><td>\(1/p\)</td><td>\((1-p)/p^2\)</td></tr>
+        <tr><td>Poisson</td><td>Count over exposure interval</td><td>\(\lambda\)</td><td>\(\lambda\)</td><td>\(\lambda\)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>9. Common mistakes</h2>
+  <ul>
+    <li><strong>Using binomial without fixed \(n\):</strong> binomial requires a fixed number of trials.</li>
+    <li><strong>Ignoring unequal probabilities:</strong> binomial assumes common success probability \(p\).</li>
+    <li><strong>Ignoring dependence:</strong> binomial variance formula requires independent trials.</li>
+    <li><strong>Using Poisson for bounded counts:</strong> Poisson is not ideal when there is a clear fixed maximum number of successes.</li>
+    <li><strong>Ignoring exposure:</strong> count data should often be interpreted relative to time, population size, area, or another exposure measure.</li>
+    <li><strong>Confusing geometric conventions:</strong> check whether \(X\) counts trial number or failures before success.</li>
+  </ul>
+
+  <div class="takeaway">
+    <div class="tk-label">Notes summary</div>
+    <ul>
+      <li>Discrete distributions model countable random variables.</li>
+      <li>Bernoulli is the model for one binary trial.</li>
+      <li>Binomial is the model for the number of successes in fixed independent trials.</li>
+      <li>Geometric is the model for waiting until the first success.</li>
+      <li>Poisson is the model for counts over an interval or exposure.</li>
+      <li>The assumptions matter as much as the formulas.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-interactive" class="section">
+  <div class="lesson-eyebrow">Interactive probability lab</div>
+  <h1>Discrete distributions</h1>
+
+  <div class="plot-grid">
+
+    <div class="plot-box">
+      <div class="plot-title">1. Bernoulli distribution explorer</div>
+      <div class="plot-sub">Change \(p\). Watch the probability of success and failure change.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(p\)</label><input id="bernP" type="range" min="1" max="99" value="60" oninput="updateBernoulli()"><span id="bernPVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">E(X)</div><div id="bernMean" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Var(X)</div><div id="bernVar" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="bernChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">2. Binomial distribution explorer</div>
+      <div class="plot-sub">Change \(n\) and \(p\). Observe the shape, mean and variance.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(n\)</label><input id="binN" type="range" min="1" max="80" value="20" oninput="updateBinomial()"><span id="binNVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(p\)</label><input id="binP" type="range" min="1" max="99" value="30" oninput="updateBinomial()"><span id="binPVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Mean \(np\)</div><div id="binMean" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Variance</div><div id="binVar" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="binChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">3. Geometric distribution explorer</div>
+      <div class="plot-sub">Change \(p\). Observe the distribution of the trial number of the first success.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(p\)</label><input id="geoP" type="range" min="5" max="90" value="25" oninput="updateGeometric()"><span id="geoPVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">E(X)</div><div id="geoMean" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">P(X=1)</div><div id="geoFirst" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="geoChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">4. Poisson distribution explorer</div>
+      <div class="plot-sub">Change \(\lambda\). For Poisson, the mean and variance are both \(\lambda\).</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(\lambda\)</label><input id="poisLambda" type="range" min="5" max="120" value="30" oninput="updatePoisson()"><span id="poisLambdaVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Mean</div><div id="poisMean" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Variance</div><div id="poisVar" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="poisChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">5. Distribution choice helper</div>
+      <div class="plot-sub">Select a scenario and identify the most suitable discrete distribution.</div>
+      <div class="controls-row">
+        <div class="ctrl">
+          <label>Scenario</label>
+          <select id="scenario" onchange="updateChoice()">
+            <option value="bern">One patient responds or does not respond</option>
+            <option value="bin">Number of responders among 40 patients</option>
+            <option value="geo">Trial number of first success</option>
+            <option value="pois">Number of calls arriving in one hour</option>
+          </select>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Suggested distribution</div><div id="choiceName" class="sc-val" style="font-size:16px"></div></div>
+        <div class="stat-card"><div class="sc-label">Reason</div><div id="choiceReason" class="sc-val" style="font-size:14px"></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <h2>Interpretation activity</h2>
+  <p>Choose the best label for each statement. This trains careful distribution language.</p>
+  <div id="activity-area"></div>
+</section>
+
+<section id="sec-exercises" class="section">
+  <div class="lesson-eyebrow">Practice exercises</div>
+  <h1>Discrete distributions</h1>
+  <p>Try each exercise before revealing the answer. Focus on matching the distribution to the data-generating process.</p>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 1</div><div class="ex-qtitle">Bernoulli mean and variance</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If \(X\sim\operatorname{Bernoulli}(0.8)\), find \(E(X)\) and \(\operatorname{Var}(X)\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(E(X)=p=0.8\). Also, \(\operatorname{Var}(X)=p(1-p)=0.8(0.2)=0.16\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 2</div><div class="ex-qtitle">Binomial model conditions</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">List four conditions required for a binomial model.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>There must be a fixed number of trials, each trial must be binary, trials should be independent, and the success probability \(p\) should be the same on each trial.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 3</div><div class="ex-qtitle">Binomial probability</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Let \(X\sim\operatorname{Binomial}(5,0.4)\). Calculate \(P(X=2)\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(P(X=2)=\binom{5}{2}(0.4)^2(0.6)^3=10(0.16)(0.216)=0.3456\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 4</div><div class="ex-qtitle">Binomial mean and variance</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If \(X\sim\operatorname{Binomial}(40,0.25)\), find \(E(X)\) and \(\operatorname{Var}(X)\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(E(X)=np=40(0.25)=10\). \(\operatorname{Var}(X)=np(1-p)=40(0.25)(0.75)=7.5\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 5</div><div class="ex-qtitle">Geometric probability</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Let \(X\sim\operatorname{Geometric}(0.2)\), where \(X\) is the trial number of the first success. Calculate \(P(X=4)\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(P(X=4)=(1-0.2)^{3}(0.2)=0.8^3(0.2)=0.512(0.2)=0.1024\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 6</div><div class="ex-qtitle">Poisson probability</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Let \(X\sim\operatorname{Poisson}(3)\). Calculate \(P(X=2)\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(P(X=2)=\frac{e^{-3}3^2}{2!}=\frac{9e^{-3}}{2}\approx0.2240\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 7</div><div class="ex-qtitle">Choose the distribution</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A hospital records the number of emergency arrivals per hour. Which distribution might be considered first, and what assumptions should be checked?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>A Poisson distribution might be considered because the outcome is a count over a fixed time interval. We should check whether arrivals are approximately independent, whether the rate is reasonably constant, and whether the variance is close to the mean.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 8</div><div class="ex-qtitle">Overdispersion</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">In a count dataset, the sample mean is 4.2 and the sample variance is 15.8. Explain why a simple Poisson model may be questionable.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>A Poisson distribution has equal mean and variance. Here the variance is much larger than the mean, suggesting overdispersion. A simple Poisson model may underestimate uncertainty.</p></div></div></div>
+
+</section>
+
+<section id="sec-quiz" class="section">
+  <div class="lesson-eyebrow">Topic quiz</div>
+  <h1>Discrete distributions</h1>
+  <div id="quiz-container"></div>
+</section>
+
+  </div>
+</div>
+
+<script>
+let charts = {};
+let quizIndex = 0;
+let selectedOption = null;
+let answered = false;
+let score = 0;
+
+const activities = [
+  {
+    text: "A Bernoulli distribution models one binary trial.",
+    answer: "Correct statement",
+    explanation: "Correct. Bernoulli is the basic distribution for a single success/failure outcome."
+  },
+  {
+    text: "A binomial distribution can be used even when the number of trials is not fixed.",
+    answer: "Misinterpretation",
+    explanation: "Not correct. The binomial distribution requires a fixed number of trials."
+  },
+  {
+    text: "For a Poisson distribution, the mean and variance are both equal to lambda.",
+    answer: "Correct formula",
+    explanation: "Correct. This is a defining property of the Poisson distribution."
+  },
+  {
+    text: "Overdispersion means the variance is much larger than the mean in count data.",
+    answer: "Model diagnostic",
+    explanation: "Correct. Overdispersion suggests a simple Poisson model may be too restrictive."
+  }
+];
+
+const quiz = [
+  { q: "A Bernoulli random variable takes values:", opts: ["0 and 1", "1 to 6", "Any real number", "Only positive integers"], correct: 0 },
+  { q: "The mean of Bernoulli(p) is:", opts: ["p", "1-p", "p(1-p)", "np"], correct: 0 },
+  { q: "A binomial random variable counts:", opts: ["Successes in fixed binary trials", "Time until a continuous event", "The sample mean", "Only defects per hour"], correct: 0 },
+  { q: "The binomial probability formula is:", opts: ["C(n,x)p^x(1-p)^(n-x)", "e^{-lambda}lambda^x/x!", "p(1-p)", "1/p"], correct: 0 },
+  { q: "A geometric random variable in this lesson represents:", opts: ["Trial number of first success", "Number of successes in fixed trials", "Count over time", "A continuous measurement"], correct: 0 },
+  { q: "A Poisson distribution is commonly used for:", opts: ["Counts over a fixed exposure interval", "One binary trial", "Percentiles", "Continuous normal measurements only"], correct: 0 },
+  { q: "For Poisson(lambda), the variance is:", opts: ["lambda", "lambda squared", "p(1-p)", "np"], correct: 0 },
+  { q: "Overdispersion in Poisson modelling means:", opts: ["Variance is larger than the mean", "Mean is exactly zero", "All counts are binary", "There is no uncertainty"], correct: 0 }
+];
+
+function showTab(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'interactive') initInteractive();
+  if (name === 'quiz') initQuiz();
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+function makeChart(id, type, data, options = {}) {
+  if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart(document.getElementById(id), {
+    type,
+    data,
+    options: Object.assign({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } }
+    }, options)
+  });
+}
+
+function factorial(n) {
+  let out = 1;
+  for (let i = 2; i <= n; i++) out *= i;
+  return out;
+}
+
+function combination(n, k) {
+  if (k < 0 || k > n) return 0;
+  k = Math.min(k, n - k);
+  let c = 1;
+  for (let i = 1; i <= k; i++) c = c * (n - k + i) / i;
+  return c;
+}
+
+function updateBernoulli() {
+  const p = Number(document.getElementById('bernP').value) / 100;
+  const variance = p * (1 - p);
+
+  document.getElementById('bernPVal').textContent = p.toFixed(2);
+  document.getElementById('bernMean').textContent = p.toFixed(2);
+  document.getElementById('bernVar').textContent = variance.toFixed(2);
+
+  makeChart('bernChart', 'bar', {
+    labels: ['Failure (0)', 'Success (1)'],
+    datasets: [{
+      data: [1 - p, p],
+      backgroundColor: ['rgba(186,117,23,0.25)', 'rgba(55,138,221,0.35)'],
+      borderColor: ['#BA7517', '#378ADD'],
+      borderWidth: 1
+    }]
+  }, { scales: { y: { beginAtZero: true, max: 1 } } });
+}
+
+function updateBinomial() {
+  const n = Number(document.getElementById('binN').value);
+  const p = Number(document.getElementById('binP').value) / 100;
+  const labels = [];
+  const probs = [];
+
+  for (let x = 0; x <= n; x++) {
+    labels.push(String(x));
+    probs.push(combination(n, x) * Math.pow(p, x) * Math.pow(1 - p, n - x));
+  }
+
+  document.getElementById('binNVal').textContent = n;
+  document.getElementById('binPVal').textContent = p.toFixed(2);
+  document.getElementById('binMean').textContent = (n * p).toFixed(2);
+  document.getElementById('binVar').textContent = (n * p * (1 - p)).toFixed(2);
+
+  makeChart('binChart', 'bar', {
+    labels,
+    datasets: [{
+      data: probs,
+      backgroundColor: 'rgba(55,138,221,0.35)',
+      borderColor: '#378ADD',
+      borderWidth: 1
+    }]
+  }, { scales: { y: { beginAtZero: true } } });
+}
+
+function updateGeometric() {
+  const p = Number(document.getElementById('geoP').value) / 100;
+  const labels = [];
+  const probs = [];
+
+  for (let k = 1; k <= 25; k++) {
+    labels.push(String(k));
+    probs.push(Math.pow(1 - p, k - 1) * p);
+  }
+
+  document.getElementById('geoPVal').textContent = p.toFixed(2);
+  document.getElementById('geoMean').textContent = (1 / p).toFixed(2);
+  document.getElementById('geoFirst').textContent = p.toFixed(2);
+
+  makeChart('geoChart', 'bar', {
+    labels,
+    datasets: [{
+      data: probs,
+      backgroundColor: 'rgba(83,74,183,0.35)',
+      borderColor: '#534AB7',
+      borderWidth: 1
+    }]
+  }, { scales: { y: { beginAtZero: true } } });
+}
+
+function updatePoisson() {
+  const lambda = Number(document.getElementById('poisLambda').value) / 10;
+  const labels = [];
+  const probs = [];
+
+  for (let x = 0; x <= 25; x++) {
+    labels.push(String(x));
+    probs.push(Math.exp(-lambda) * Math.pow(lambda, x) / factorial(x));
+  }
+
+  document.getElementById('poisLambdaVal').textContent = lambda.toFixed(1);
+  document.getElementById('poisMean').textContent = lambda.toFixed(1);
+  document.getElementById('poisVar').textContent = lambda.toFixed(1);
+
+  makeChart('poisChart', 'bar', {
+    labels,
+    datasets: [{
+      data: probs,
+      backgroundColor: 'rgba(59,109,17,0.30)',
+      borderColor: '#3B6D11',
+      borderWidth: 1
+    }]
+  }, { scales: { y: { beginAtZero: true } } });
+}
+
+function updateChoice() {
+  const scenario = document.getElementById('scenario').value;
+  const map = {
+    bern: ['Bernoulli', 'one binary outcome'],
+    bin: ['Binomial', 'success count in fixed trials'],
+    geo: ['Geometric', 'waiting until first success'],
+    pois: ['Poisson', 'count over a fixed interval']
+  };
+  document.getElementById('choiceName').textContent = map[scenario][0];
+  document.getElementById('choiceReason').textContent = map[scenario][1];
+}
+
+function initInteractive() {
+  updateBernoulli();
+  updateBinomial();
+  updateGeometric();
+  updatePoisson();
+  updateChoice();
+  renderActivities();
+}
+
+function renderActivities() {
+  const area = document.getElementById('activity-area');
+  if (area.children.length) return;
+
+  const options = ["Correct statement", "Correct formula", "Misinterpretation", "Model diagnostic"];
+  activities.forEach((a, i) => {
+    const div = document.createElement('div');
+    div.className = 'activity-card';
+    div.innerHTML = `
+      <div class="activity-inner">
+        <div style="font-size:13.5px;color:var(--text);line-height:1.6;margin-bottom:8px;">${a.text}</div>
+        ${options.map(o => `<button class="choice-btn" onclick="checkActivity(${i}, '${o}', this)">${o}</button>`).join('')}
+        <div id="activity-${i}" class="feedback-mini"></div>
+      </div>
+    `;
+    area.appendChild(div);
+  });
+}
+
+function checkActivity(i, choice, btn) {
+  const item = activities[i];
+  const fb = document.getElementById('activity-' + i);
+  const correct = choice === item.answer;
+
+  fb.style.display = 'block';
+  fb.style.background = correct ? 'var(--green-bg)' : 'var(--red-bg)';
+  fb.style.color = correct ? 'var(--green)' : 'var(--red)';
+  fb.style.border = correct ? '.5px solid var(--green)' : '.5px solid var(--red)';
+  fb.innerHTML = `<strong>${correct ? '✓ Correct.' : '✗ Not quite.'}</strong> ${item.explanation}`;
+
+  btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
+}
+
+function toggleEx(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.ex-toggle');
+  const open = body.classList.toggle('open');
+  toggle.textContent = open ? '−' : '+';
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+function toggleAns(btn) {
+  const box = btn.nextElementSibling;
+  const open = box.classList.toggle('open');
+  btn.textContent = open ? 'Hide answer' : 'Show answer';
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+function initQuiz() {
+  quizIndex = 0;
+  selectedOption = null;
+  answered = false;
+  score = 0;
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+
+  if (quizIndex >= quiz.length) {
+    container.innerHTML = `
+      <div class="quiz-complete">
+        <div class="score-big">${score}/${quiz.length}</div>
+        <p>${score >= 7 ? 'Excellent — strong understanding of discrete distributions.' : score >= 5 ? 'Good work. Review the missed ideas.' : 'Review the notes and try the quiz again.'}</p>
+        <button class="btn-check" onclick="initQuiz()">Retry quiz</button>
+      </div>
+    `;
+    return;
+  }
+
+  const q = quiz[quizIndex];
+  container.innerHTML = `
+    <div class="quiz-progress">Question ${quizIndex + 1} of ${quiz.length}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">
+      ${q.opts.map((o, i) => `
+        <div class="quiz-opt" id="qo${i}" onclick="selectOption(${i})">
+          <div class="opt-key">${['A','B','C','D'][i]}</div>${o}
+        </div>
+      `).join('')}
+    </div>
+    <div id="quizFeedback" class="feedback"></div>
+    <div class="quiz-actions">
+      <button id="checkBtn" class="btn-check" onclick="checkQuiz()" disabled>Check answer</button>
+      <button id="nextBtn" class="btn-next" onclick="nextQuiz()">${quizIndex < quiz.length - 1 ? 'Next question →' : 'See result'}</button>
+    </div>
+  `;
+
+  selectedOption = null;
+  answered = false;
+}
+
+function selectOption(i) {
+  if (answered) return;
+  document.querySelectorAll('.quiz-opt').forEach(o => o.classList.remove('selected'));
+  document.getElementById('qo' + i).classList.add('selected');
+  selectedOption = i;
+  document.getElementById('checkBtn').disabled = false;
+}
+
+function checkQuiz() {
+  if (selectedOption === null || answered) return;
+  answered = true;
+
+  const q = quiz[quizIndex];
+  const correct = selectedOption === q.correct;
+  if (correct) score++;
+
+  document.querySelectorAll('.quiz-opt').forEach((el, i) => {
+    el.classList.add('locked');
+    if (i === q.correct) el.classList.add('correct');
+    if (i === selectedOption && i !== q.correct) el.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('quizFeedback');
+  fb.className = 'feedback show ' + (correct ? 'ok' : 'no');
+  fb.textContent = correct ? 'Correct.' : 'Not quite. Review the distribution definitions and assumptions in the notes.';
+
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function nextQuiz() {
+  quizIndex++;
+  renderQuiz();
+}
+</script>
+
+<!-- My Academic Tutor platform footer with logo -->
+<footer class="mat-platform-footer">
+  <div class="mat-footer-brand">
+    <img class="mat-footer-logo" src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <p><strong>Statistics Foundation for University Students</strong></p>
+  </div>
+  <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+  <p>© 2026 My Academic Tutor. All rights reserved.</p>
+</footer>
+<style>
+.mat-platform-footer{
+  max-width:960px;
+  margin:34px auto 0;
+  padding:22px 34px;
+  border-top:1px solid var(--border, #ded9cf);
+  color:var(--text2, #5f5f5a);
+  font-size:13px;
+  line-height:1.65;
+}
+.mat-platform-footer strong{color:var(--text, #171717);}
+.mat-footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.mat-footer-logo{width:36px;height:36px;object-fit:contain;border-radius:9px;background:#fff;border:1px solid var(--border, #ded9cf);padding:4px;}
+@media(max-width:850px){.mat-platform-footer{padding:20px 18px;}}
+</style>
+
+</body>
+</html>

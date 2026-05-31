@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.2 Conditional Probability and Bayes' Theorem — Foundational Statistics</title>
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(', '\\)']],
+    displayMath: [['\\[', '\\]']],
+    processEscapes: true
+  },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f6f5f0;--bg3:#f0ede6;--border:#e0ddd6;
+  --text:#1a1a18;--text2:#5a5a56;--text3:#8a8a84;
+  --blue:#378ADD;--blue-bg:#E6F1FB;--blue-txt:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;
+  --amber:#BA7517;--amber-bg:#FAEEDA;--amber-txt:#633806;
+  --red:#A32D2D;--red-bg:#FCEBEB;
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-txt:#3C3489;
+  --radius:8px;--radius-lg:12px;--mono:'Courier New',monospace;--sans:system-ui,-apple-system,sans-serif
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--border:#3a3a36;
+    --text:#e8e6df;--text2:#a8a69f;--text3:#6a6a64;
+    --blue-bg:#0c1f35;--blue-txt:#85B7EB;--green-bg:#0f2005;
+    --amber-bg:#2a1800;--amber-txt:#FAC775;--red-bg:#2a0a0a;
+    --purple-bg:#1a1740;--purple-txt:#AFA9EC
+  }
+}
+html{font-family:var(--sans);font-size:16px;color:var(--text);background:var(--bg3);scroll-behavior:smooth}
+body{display:flex;min-height:100vh}
+.sidebar{width:278px;min-width:278px;background:var(--bg);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-brand{padding:16px;border-bottom:.5px solid var(--border)}
+.brand-course{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.brand-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}
+.progress-wrap{height:3px;background:var(--border)}
+.progress-bar{height:3px;background:var(--blue);width:48%}
+.nav-section{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:12px 16px 4px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12.5px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;text-decoration:none;transition:background .12s}
+.nav-item:hover{background:var(--bg2);color:var(--text)}
+.nav-item.active{color:var(--text);border-left-color:var(--blue);background:var(--bg2);font-weight:500}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0}
+.nav-item.active .nav-dot{background:var(--blue)}
+.main{flex:1;min-width:0}
+.tab-bar{background:var(--bg);border-bottom:.5px solid var(--border);display:flex;padding:0 32px;position:sticky;top:0;z-index:10;overflow-x:auto}
+.tab{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-.5px;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--text);border-bottom-color:var(--blue);font-weight:500}
+.content{max-width:960px;margin:0 auto;padding:34px}
+.section{display:none}
+.section.active{display:block}
+.lesson-eyebrow{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+h1{font-size:29px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.25}
+.lesson-meta{font-size:12px;color:var(--text3);margin-bottom:28px}
+h2{font-size:19px;font-weight:500;color:var(--text);margin:32px 0 11px}
+h3{font-size:15.5px;font-weight:500;color:var(--text);margin:22px 0 8px}
+p{font-size:14.7px;color:var(--text2);line-height:1.78;margin-bottom:14px}
+strong{color:var(--text);font-weight:500}
+ul,ol{padding-left:21px;margin-bottom:14px}
+li{font-size:14.5px;color:var(--text2);line-height:1.76;margin-bottom:4px}
+.scene-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:24px 0 12px;padding:6px 10px;background:var(--bg2);border-radius:var(--radius);display:inline-block}
+.dialogue{display:flex;flex-direction:column;gap:12px;margin:16px 0}
+.line{display:flex;gap:12px;align-items:flex-start}
+.line.right{flex-direction:row-reverse}
+.speaker-badge{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:2px}
+.sp-prof{background:var(--blue-bg);color:var(--blue-txt)}
+.sp-emma{background:var(--green-bg);color:var(--green)}
+.sp-oliver{background:var(--amber-bg);color:var(--amber-txt)}
+.sp-james{background:var(--purple-bg);color:var(--purple-txt)}
+.sp-sophia{background:var(--red-bg);color:var(--red)}
+.bubble{max-width:78%;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px}
+.line.right .bubble{background:var(--blue-bg);border-color:transparent}
+.speaker-name{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:3px}
+.bubble p{font-size:14px;color:var(--text);margin:0;line-height:1.62}
+.def-box{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin:17px 0}
+.def-box .def-label{font-size:11px;font-weight:500;color:var(--blue-txt);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.def-box.green{border-left-color:var(--green);background:var(--green-bg)}
+.def-box.green .def-label{color:var(--green)}
+.def-box.amber{border-left-color:var(--amber);background:var(--amber-bg)}
+.def-box.amber .def-label{color:var(--amber-txt)}
+.def-box.red{border-left-color:var(--red);background:var(--red-bg)}
+.def-box.red .def-label{color:var(--red)}
+.def-box.purple{border-left-color:var(--purple);background:var(--purple-bg)}
+.def-box.purple .def-label{color:var(--purple-txt)}
+.def-box p{font-size:13.7px;color:var(--text);margin:0;line-height:1.65}
+.math-block{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius);padding:15px 20px;margin:16px 0;text-align:center;font-size:15px;color:var(--text);overflow-x:auto;line-height:1.7}
+.tbl-wrap{overflow-x:auto;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead tr{background:var(--bg2)}
+th{padding:9px 12px;text-align:left;font-weight:500;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.05em}
+td{padding:9px 12px;color:var(--text2);border-bottom:.5px solid var(--border);line-height:1.55}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg2)}
+.takeaway{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin:25px 0}
+.takeaway .tk-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.takeaway ul{margin:0}
+.takeaway li{font-size:14px;color:var(--text)}
+.plot-grid{display:grid;grid-template-columns:1fr;gap:18px}
+.plot-box{border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;background:var(--bg)}
+.plot-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.plot-sub{font-size:12px;color:var(--text3);margin-bottom:14px}
+.chart-wrap{position:relative;width:100%;height:300px}
+.controls-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;align-items:center}
+.ctrl{display:flex;align-items:center;gap:8px}
+.ctrl label{font-size:12.5px;color:var(--text2);white-space:nowrap}
+.ctrl input[type=range]{width:145px;accent-color:var(--blue)}
+.ctrl input[type=number]{width:86px;padding:6px 8px;border:.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text)}
+.ctrl select{padding:6px 8px;border:.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text)}
+.ctrl-val{font-size:12.5px;font-weight:500;color:var(--text);min-width:42px}
+.stat-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.stat-card{flex:1;min-width:120px;background:var(--bg2);border-radius:var(--radius);padding:10px 14px;text-align:center}
+.stat-card .sc-label{font-size:11px;color:var(--text3);margin-bottom:4px}
+.stat-card .sc-val{font-size:20px;font-weight:500;color:var(--text)}
+.activity-card{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:10px 0}
+.activity-inner{padding:12px 16px}
+.choice-btn{padding:6px 12px;border:.5px solid var(--border);border-radius:var(--radius);background:none;font-size:12.5px;cursor:pointer;font-family:var(--sans);color:var(--text2);margin-right:6px;margin-top:6px}
+.choice-btn:hover{background:var(--bg2);color:var(--text)}
+.feedback-mini{display:none;margin-top:10px;padding:10px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5}
+.exercise{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:16px 0}
+.ex-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer}
+.ex-header:hover{background:var(--bg2)}
+.ex-qnum{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.ex-qtitle{font-size:14px;font-weight:500;color:var(--text);margin-top:2px}
+.ex-difficulty{font-size:11px;padding:2px 8px;border-radius:10px}
+.diff-easy{background:var(--green-bg);color:var(--green)}
+.diff-medium{background:var(--amber-bg);color:var(--amber-txt)}
+.diff-hard{background:var(--red-bg);color:var(--red)}
+.ex-toggle{font-size:18px;color:var(--text3)}
+.ex-body{display:none;padding:0 16px 16px;border-top:.5px solid var(--border)}
+.ex-body.open{display:block}
+.ex-question{font-size:14px;color:var(--text2);line-height:1.7;margin:12px 0}
+.answer-toggle{background:none;border:.5px solid var(--border);border-radius:var(--radius);padding:7px 14px;font-size:12.5px;cursor:pointer;color:var(--text2);font-family:var(--sans);margin-top:10px}
+.answer-box{display:none;margin-top:12px;background:var(--green-bg);border:.5px solid var(--green);border-radius:var(--radius);padding:12px 16px}
+.answer-box.open{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.answer-box .ans-label{font-size:11px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.answer-box p,.answer-box li{font-size:13.5px;color:var(--text);line-height:1.65}
+.quiz-q{font-size:14.5px;font-weight:500;color:var(--text);margin-bottom:14px;line-height:1.55}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.quiz-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:.5px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13.5px;color:var(--text2)}
+.quiz-opt:hover:not(.locked){border-color:var(--blue);background:var(--blue-bg);color:var(--text)}
+.quiz-opt.selected{border-color:var(--blue);background:var(--blue-bg);color:var(--text)}
+.quiz-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.quiz-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.quiz-opt .opt-key{width:22px;height:22px;border-radius:50%;border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.feedback{padding:10px 14px;border-radius:var(--radius);font-size:13.5px;line-height:1.6;margin-bottom:14px;display:none}
+.feedback.show{display:block}
+.feedback.ok{background:var(--green-bg);color:var(--green);border:.5px solid var(--green)}
+.feedback.no{background:var(--red-bg);color:var(--red);border:.5px solid var(--red)}
+.quiz-actions{display:flex;gap:10px}
+.btn-check{padding:8px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:var(--sans)}
+.btn-check:disabled{opacity:.4;cursor:default}
+.btn-next{padding:8px 18px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer;background:none;color:var(--text2);font-family:var(--sans);display:none}
+.btn-next.show{display:inline-block}
+.quiz-progress{font-size:11.5px;color:var(--text3);margin-bottom:20px}
+.quiz-complete{text-align:center;padding:32px 0}
+.quiz-complete .score-big{font-size:48px;font-weight:500;color:var(--text)}
+@media(max-width:850px){
+  body{display:block}.sidebar{width:100%;height:auto;position:relative;min-width:0}
+  .content{padding:24px 18px}.tab-bar{padding:0 12px}.bubble{max-width:88%}
+}
+</style>
+</head>
+
+<body>
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-course">Foundational Statistics</div>
+    <div class="brand-title">Statistics Foundation for University Students</div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="sidebar-progress" style="width:60%;"></div></div>
+
+  <div class="nav-section">Course modules</div>
+  <a class="nav-item" href="../module-1/index.html"><div class="nav-dot"></div>Module 1 · Introduction</a>
+  <a class="nav-item" href="../module-2/index.html"><div class="nav-dot"></div>Module 2 · Descriptive statistics</a>
+  <a class="nav-item active" href="../module-3/index.html"><div class="nav-dot"></div>Module 3 · Probability</a>
+  <a class="nav-item" href="../module-4/index.html"><div class="nav-dot"></div>Module 4 · Statistical inference</a>
+  <a class="nav-item" href="../module-5/index.html"><div class="nav-dot"></div>Module 5 · Regression</a>
+
+  <div class="nav-section">Module 3 lessons</div>
+  <a class="nav-item done" href="3-1-probability-basics-axioms.html"><div class="nav-dot"></div>3.1 Probability basics & axioms</a>
+  <a class="nav-item active" href="3-2-conditional-probability-bayes.html"><div class="nav-dot"></div>3.2 Conditional probability & Bayes</a>
+  <a class="nav-item done" href="3-3-random-variables-expectation.html"><div class="nav-dot"></div>3.3 Random variables & expectation</a>
+  <a class="nav-item done" href="3-4-discrete-distributions.html"><div class="nav-dot"></div>3.4 Discrete distributions</a>
+  <a class="nav-item done" href="3-5-normal-distribution-clt.html"><div class="nav-dot"></div>3.5 Normal distribution & CLT</a>
+</nav>
+
+<div class="main">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('lecture',this)">Lecture</button>
+    <button class="tab" onclick="showTab('notes',this)">Notes</button>
+    <button class="tab" onclick="showTab('interactive',this)">Interactive</button>
+    <button class="tab" onclick="showTab('exercises',this)">Exercises</button>
+    <button class="tab" onclick="showTab('quiz',this)">Quiz</button>
+  </div>
+
+  <div class="content">
+
+<section id="sec-lecture" class="section active">
+  <div class="lesson-eyebrow">Module 3 · Lesson 3.2</div>
+  <h1>Conditional probability and Bayes' theorem</h1>
+  <div class="lesson-meta">Mr. R · Prof Stat · ~38 min · After probability axioms</div>
+
+  <div class="scene-label">📍 Scene — probability classroom, second lecture</div>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-emma">EM</div>
+      <div class="bubble"><div class="speaker-name">Emma</div><p>Last time probability felt manageable: sample spaces, events, complements and overlaps. But now I see this notation \(P(A|B)\). Why does the vertical line make everything harder?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>The vertical line simply means “given”. \(P(A|B)\) is the probability of \(A\), given that \(B\) has already occurred.</p></div>
+    </div>
+    <div class="line">
+      <div class="speaker-badge sp-oliver">OL</div>
+      <div class="bubble"><div class="speaker-name">Oliver</div><p>So it is still probability, but with extra information?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. Conditional probability is probability after updating the information available to us.</p></div>
+    </div>
+  </div>
+
+  <h2>The idea of restricting the sample space</h2>
+  <p>Suppose a class has 100 students. Some study statistics, some receive a distinction, and some do both. If I ask, “What is the probability that a randomly selected student received a distinction?”, I look at all 100 students.</p>
+  <p>But if I ask, “What is the probability that a student received a distinction given that the student studies statistics?”, I no longer look at all 100 students. I restrict attention only to the students who study statistics.</p>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-james">JA</div>
+      <div class="bubble"><div class="speaker-name">James</div><p>So the denominator changes?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>That is the heart of conditional probability. The condition becomes the new reference group.</p></div>
+    </div>
+    <div class="line">
+      <div class="speaker-badge sp-sophia">SO</div>
+      <div class="bubble"><div class="speaker-name">Sophia</div><p>So \(P(A|B)\) asks: among the outcomes where \(B\) happened, how many also have \(A\)?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Perfect. That sentence is more important than the formula at first.</p></div>
+    </div>
+  </div>
+
+  <div class="math-block">
+    \[
+    P(A|B)=\frac{P(A\cap B)}{P(B)},\qquad P(B)>0
+    \]
+  </div>
+
+  <h2>Why \(P(A|B)\) is not the same as \(P(B|A)\)</h2>
+  <p>This is one of the most common mistakes in probability. \(P(A|B)\) and \(P(B|A)\) usually answer different questions because they use different denominators.</p>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-emma">EM</div>
+      <div class="bubble"><div class="speaker-name">Emma</div><p>Can you give a clear example?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Suppose 40 students study statistics, 25 receive a distinction, and 20 both study statistics and receive a distinction.</p></div>
+    </div>
+    <div class="line">
+      <div class="speaker-badge sp-oliver">OL</div>
+      <div class="bubble"><div class="speaker-name">Oliver</div><p>Then \(P(\text{distinction}|\text{statistics})\) uses 40 as the denominator?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes. It is \(20/40=0.50\). But \(P(\text{statistics}|\text{distinction})\) uses 25 as the denominator, so it is \(20/25=0.80\).</p></div>
+    </div>
+    <div class="line">
+      <div class="speaker-badge sp-james">JA</div>
+      <div class="bubble"><div class="speaker-name">James</div><p>Same overlap, different denominator.</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. Most conditional probability confusion is denominator confusion.</p></div>
+    </div>
+  </div>
+
+  <h2>Multiplication rule</h2>
+  <p>Conditional probability can be rearranged to give the multiplication rule. This rule helps calculate the probability that two events occur together.</p>
+
+  <div class="math-block">
+    \[
+    P(A\cap B)=P(A|B)P(B)
+    \]
+  </div>
+
+  <p>Equally:</p>
+
+  <div class="math-block">
+    \[
+    P(A\cap B)=P(B|A)P(A)
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-sophia">SO</div>
+      <div class="bubble"><div class="speaker-name">Sophia</div><p>So the same intersection can be reached from either direction?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes. That symmetry is what leads directly to Bayes' theorem.</p></div>
+    </div>
+  </div>
+
+  <h2>Independence</h2>
+  <p>Two events are independent if knowing that one has occurred does not change the probability of the other.</p>
+
+  <div class="math-block">
+    \[
+    P(A|B)=P(A)
+    \]
+  </div>
+
+  <p>If this is true, then:</p>
+
+  <div class="math-block">
+    \[
+    P(A\cap B)=P(A)P(B)
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-emma">EM</div>
+      <div class="bubble"><div class="speaker-name">Emma</div><p>Is independence the same as mutually exclusive?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>No. This is a serious misconception. Mutually exclusive means the events cannot occur together. Independent means one event does not change the probability of the other.</p></div>
+    </div>
+    <div class="line">
+      <div class="speaker-badge sp-oliver">OL</div>
+      <div class="bubble"><div class="speaker-name">Oliver</div><p>If two events are mutually exclusive and one happens, the other becomes impossible. So its probability changes.</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. Mutually exclusive events with positive probabilities are not independent.</p></div>
+    </div>
+  </div>
+
+  <h2>Bayes' theorem</h2>
+  <p>Bayes' theorem is a way to reverse conditional probabilities. It is especially important when we know \(P(B|A)\) but want \(P(A|B)\).</p>
+
+  <div class="math-block">
+    \[
+    P(A|B)=\frac{P(B|A)P(A)}{P(B)}
+    \]
+  </div>
+
+  <p>If \(A\) and \(A^c\) form two possible cases, then \(P(B)\) can be expanded as:</p>
+
+  <div class="math-block">
+    \[
+    P(B)=P(B|A)P(A)+P(B|A^c)P(A^c)
+    \]
+  </div>
+
+  <h2>Medical testing example</h2>
+  <p>Let \(D\) mean a person has a disease, and let \(+\) mean the test is positive. A test may have high sensitivity, but that does not mean a positive result guarantees disease.</p>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-james">JA</div>
+      <div class="bubble"><div class="speaker-name">James</div><p>If a test is 95% sensitive, does a positive result mean a 95% chance of disease?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>No. Sensitivity is \(P(+|D)\). The patient usually wants \(P(D|+)\). Those are different probabilities.</p></div>
+    </div>
+    <div class="line">
+      <div class="speaker-badge sp-sophia">SO</div>
+      <div class="bubble"><div class="speaker-name">Sophia</div><p>So we need Bayes' theorem to move from test accuracy to probability of disease after a result.</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. And the disease prevalence matters a lot.</p></div>
+    </div>
+  </div>
+
+  <p>Suppose:</p>
+  <ul>
+    <li>disease prevalence is 1%,</li>
+    <li>sensitivity is 95%,</li>
+    <li>specificity is 90%.</li>
+  </ul>
+
+  <p>Then the false positive rate is 10%. Bayes' theorem gives:</p>
+
+  <div class="math-block">
+    \[
+    P(D|+)=\frac{P(+|D)P(D)}{P(+|D)P(D)+P(+|D^c)P(D^c)}
+    \]
+  </div>
+
+  <p>The calculation is:</p>
+
+  <div class="math-block">
+    \[
+    P(D|+)=\frac{0.95(0.01)}{0.95(0.01)+0.10(0.99)}
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    P(D|+)=\frac{0.0095}{0.0095+0.099}=0.0876
+    \]
+  </div>
+
+  <p>So the probability of disease after a positive result is about 8.8%, not 95%.</p>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-emma">EM</div>
+      <div class="bubble"><div class="speaker-name">Emma</div><p>That feels surprising. The test sounds good, but the positive result is not as strong as expected.</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Because the disease is rare. There are many more non-diseased people than diseased people. Even a small false positive rate can produce many false positives.</p></div>
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <div class="tk-label">Key takeaways from this lecture</div>
+    <ul>
+      <li>Conditional probability means probability after information is given.</li>
+      <li>The condition becomes the new reference group or denominator.</li>
+      <li>\(P(A|B)\) and \(P(B|A)\) usually answer different questions.</li>
+      <li>The multiplication rule follows directly from conditional probability.</li>
+      <li>Independence means knowing one event does not change the probability of the other.</li>
+      <li>Bayes' theorem reverses conditional probabilities.</li>
+      <li>In diagnostic testing, sensitivity is not the same as positive predictive value.</li>
+      <li>Prevalence strongly affects the interpretation of test results.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-notes" class="section">
+  <div class="lesson-eyebrow">Detailed theoretical notes</div>
+  <h1>Conditional probability and Bayes' theorem</h1>
+
+  <h2>1. Why conditional probability is needed</h2>
+  <p>In real statistical reasoning, probabilities are rarely asked without context. We often want probabilities after receiving information: a test result, a symptom, a risk factor, a previous event, or a group membership.</p>
+  <p>Conditional probability formalises this idea. It tells us how to update the probability of an event when another event is known to have occurred.</p>
+
+  <div class="def-box">
+    <div class="def-label">Definition</div>
+    <p>Conditional probability is the probability of an event calculated under the condition that another event has already occurred.</p>
+  </div>
+
+  <h2>2. Definition of conditional probability</h2>
+  <p>Let \(A\) and \(B\) be events, with \(P(B)>0\). The conditional probability of \(A\) given \(B\) is:</p>
+
+  <div class="math-block">
+    \[
+    P(A|B)=\frac{P(A\cap B)}{P(B)}
+    \]
+  </div>
+
+  <p>The denominator is \(P(B)\) because once we know \(B\) has occurred, the relevant sample space is reduced to \(B\).</p>
+
+  <h2>3. Conditional probability using counts</h2>
+  <p>If all outcomes are equally weighted or if we are working with counts in a finite dataset, then:</p>
+
+  <div class="math-block">
+    \[
+    P(A|B)=\frac{\text{number of outcomes in both }A\text{ and }B}{\text{number of outcomes in }B}
+    \]
+  </div>
+
+  <p>In set notation:</p>
+
+  <div class="math-block">
+    \[
+    P(A|B)=\frac{|A\cap B|}{|B|}
+    \]
+  </div>
+
+  <p>This count form helps students remember the meaning: among the \(B\) cases, what proportion are also \(A\)?</p>
+
+  <h2>4. \(P(A|B)\) versus \(P(B|A)\)</h2>
+  <p>The expressions \(P(A|B)\) and \(P(B|A)\) usually have different denominators:</p>
+
+  <div class="math-block">
+    \[
+    P(A|B)=\frac{P(A\cap B)}{P(B)}
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    P(B|A)=\frac{P(A\cap B)}{P(A)}
+    \]
+  </div>
+
+  <p>They share the same numerator but usually have different denominators. Therefore, they are not generally equal.</p>
+
+  <div class="def-box amber">
+    <div class="def-label">Common mistake</div>
+    <p>The probability of disease given a positive test is not the same as the probability of a positive test given disease.</p>
+  </div>
+
+  <h2>5. Worked classroom example</h2>
+  <p>Suppose a class has 100 students:</p>
+
+  <ul>
+    <li>40 study statistics,</li>
+    <li>25 receive a distinction,</li>
+    <li>20 both study statistics and receive a distinction.</li>
+  </ul>
+
+  <p>Let \(S\) be the event “studies statistics” and \(D\) be the event “receives distinction”.</p>
+
+  <div class="math-block">
+    \[
+    P(D|S)=\frac{P(D\cap S)}{P(S)}=\frac{20/100}{40/100}=\frac{20}{40}=0.50
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    P(S|D)=\frac{P(S\cap D)}{P(D)}=\frac{20/100}{25/100}=\frac{20}{25}=0.80
+    \]
+  </div>
+
+  <p>These probabilities are different because the reference groups are different.</p>
+
+  <h2>6. Derivation of the multiplication rule</h2>
+  <p>Start with the definition:</p>
+
+  <div class="math-block">
+    \[
+    P(A|B)=\frac{P(A\cap B)}{P(B)}
+    \]
+  </div>
+
+  <p>Multiply both sides by \(P(B)\):</p>
+
+  <div class="math-block">
+    \[
+    P(A|B)P(B)=P(A\cap B)
+    \]
+  </div>
+
+  <p>Therefore:</p>
+
+  <div class="math-block">
+    \[
+    P(A\cap B)=P(A|B)P(B)
+    \]
+  </div>
+
+  <p>Similarly:</p>
+
+  <div class="math-block">
+    \[
+    P(A\cap B)=P(B|A)P(A)
+    \]
+  </div>
+
+  <div class="def-box green">
+    <div class="def-label">Multiplication rule</div>
+    <p>The probability that both \(A\) and \(B\) occur can be calculated as the probability of one event multiplied by the conditional probability of the other.</p>
+  </div>
+
+  <h2>7. Independence</h2>
+  <p>Events \(A\) and \(B\) are independent if knowing that \(B\) occurred does not change the probability of \(A\):</p>
+
+  <div class="math-block">
+    \[
+    P(A|B)=P(A)
+    \]
+  </div>
+
+  <p>Using the multiplication rule:</p>
+
+  <div class="math-block">
+    \[
+    P(A\cap B)=P(A|B)P(B)
+    \]
+  </div>
+
+  <p>If \(A\) and \(B\) are independent, then \(P(A|B)=P(A)\), so:</p>
+
+  <div class="math-block">
+    \[
+    P(A\cap B)=P(A)P(B)
+    \]
+  </div>
+
+  <h2>8. Mutually exclusive versus independent</h2>
+  <p>Mutually exclusive events cannot occur together. Independent events can occur together, but one does not change the probability of the other.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Concept</th><th>Meaning</th><th>Formula</th></tr></thead>
+      <tbody>
+        <tr><td>Mutually exclusive</td><td>The events cannot happen together</td><td>\(P(A\cap B)=0\)</td></tr>
+        <tr><td>Independent</td><td>Knowing one event does not change the other probability</td><td>\(P(A\cap B)=P(A)P(B)\)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>If \(P(A)>0\) and \(P(B)>0\), mutually exclusive events are not independent. If \(B\) occurs, \(A\) becomes impossible, so the probability of \(A\) changes.</p>
+
+  <h2>9. Derivation of Bayes' theorem</h2>
+  <p>From the multiplication rule:</p>
+
+  <div class="math-block">
+    \[
+    P(A\cap B)=P(A|B)P(B)
+    \]
+  </div>
+
+  <p>Also:</p>
+
+  <div class="math-block">
+    \[
+    P(A\cap B)=P(B|A)P(A)
+    \]
+  </div>
+
+  <p>Since both expressions equal \(P(A\cap B)\), set them equal:</p>
+
+  <div class="math-block">
+    \[
+    P(A|B)P(B)=P(B|A)P(A)
+    \]
+  </div>
+
+  <p>Divide both sides by \(P(B)\), assuming \(P(B)>0\):</p>
+
+  <div class="math-block">
+    \[
+    P(A|B)=\frac{P(B|A)P(A)}{P(B)}
+    \]
+  </div>
+
+  <p>This is Bayes' theorem.</p>
+
+  <h2>10. Law of total probability</h2>
+  <p>Often \(P(B)\) is not given directly. If \(A\) and \(A^c\) split the sample space into two non-overlapping parts, then \(B\) can happen through \(A\) or through \(A^c\).</p>
+
+  <div class="math-block">
+    \[
+    P(B)=P(B\cap A)+P(B\cap A^c)
+    \]
+  </div>
+
+  <p>Using the multiplication rule:</p>
+
+  <div class="math-block">
+    \[
+    P(B)=P(B|A)P(A)+P(B|A^c)P(A^c)
+    \]
+  </div>
+
+  <p>Substituting this into Bayes' theorem gives:</p>
+
+  <div class="math-block">
+    \[
+    P(A|B)=\frac{P(B|A)P(A)}
+    {P(B|A)P(A)+P(B|A^c)P(A^c)}
+    \]
+  </div>
+
+  <h2>11. Medical testing terminology</h2>
+  <p>Let \(D\) be the event that a person has disease and \(+\) be the event that the test is positive.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Term</th><th>Probability</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Prevalence</td><td>\(P(D)\)</td><td>Probability of disease before testing</td></tr>
+        <tr><td>Sensitivity</td><td>\(P(+|D)\)</td><td>Probability of a positive test among diseased people</td></tr>
+        <tr><td>Specificity</td><td>\(P(-|D^c)\)</td><td>Probability of a negative test among non-diseased people</td></tr>
+        <tr><td>False positive rate</td><td>\(P(+|D^c)\)</td><td>Probability of a positive test among non-diseased people</td></tr>
+        <tr><td>Positive predictive value</td><td>\(P(D|+)\)</td><td>Probability of disease after a positive test</td></tr>
+        <tr><td>Negative predictive value</td><td>\(P(D^c|-)\)</td><td>Probability of no disease after a negative test</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>12. Full diagnostic test derivation</h2>
+  <p>We want \(P(D|+)\). By Bayes' theorem:</p>
+
+  <div class="math-block">
+    \[
+    P(D|+)=\frac{P(+|D)P(D)}{P(+)}
+    \]
+  </div>
+
+  <p>Using the law of total probability:</p>
+
+  <div class="math-block">
+    \[
+    P(+)=P(+|D)P(D)+P(+|D^c)P(D^c)
+    \]
+  </div>
+
+  <p>Therefore:</p>
+
+  <div class="math-block">
+    \[
+    P(D|+)=
+    \frac{P(+|D)P(D)}
+    {P(+|D)P(D)+P(+|D^c)P(D^c)}
+    \]
+  </div>
+
+  <h2>13. Worked diagnostic test example</h2>
+  <p>Suppose:</p>
+  <ul>
+    <li>\(P(D)=0.01\),</li>
+    <li>\(P(+|D)=0.95\),</li>
+    <li>\(P(-|D^c)=0.90\), so \(P(+|D^c)=0.10\),</li>
+    <li>\(P(D^c)=0.99\).</li>
+  </ul>
+
+  <div class="math-block">
+    \[
+    P(D|+)=
+    \frac{0.95(0.01)}
+    {0.95(0.01)+0.10(0.99)}
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    P(D|+)=
+    \frac{0.0095}
+    {0.0095+0.099}
+    =
+    \frac{0.0095}{0.1085}
+    \approx 0.0876
+    \]
+  </div>
+
+  <p>The positive predictive value is approximately 8.76%.</p>
+
+  <h2>14. Natural frequency explanation</h2>
+  <p>Imagine 10,000 people:</p>
+  <ul>
+    <li>1% have disease, so 100 people have disease.</li>
+    <li>99% do not have disease, so 9,900 people do not have disease.</li>
+    <li>95% sensitivity gives 95 true positives.</li>
+    <li>10% false positive rate gives 990 false positives.</li>
+  </ul>
+
+  <p>Therefore, among all positive tests:</p>
+
+  <div class="math-block">
+    \[
+    P(D|+)=\frac{95}{95+990}=\frac{95}{1085}\approx 0.0876
+    \]
+  </div>
+
+  <p>The natural frequency method often makes Bayes' theorem easier to understand than percentages alone.</p>
+
+  <h2>15. Base-rate fallacy</h2>
+  <p>The base-rate fallacy occurs when the prior probability or prevalence is ignored. In diagnostic testing, even a good test can have a low positive predictive value when the disease is rare.</p>
+
+  <div class="def-box red">
+    <div class="def-label">Important warning</div>
+    <p>High sensitivity does not automatically imply high probability of disease after a positive test. Prevalence and false positive rate matter.</p>
+  </div>
+
+  <h2>16. Common mistakes</h2>
+  <ul>
+    <li><strong>Confusing \(P(A|B)\) and \(P(B|A)\):</strong> these usually have different denominators.</li>
+    <li><strong>Ignoring the condition:</strong> always identify the reference group after “given”.</li>
+    <li><strong>Assuming independence:</strong> independence must be justified, not assumed for convenience.</li>
+    <li><strong>Confusing mutually exclusive with independent:</strong> these are different concepts.</li>
+    <li><strong>Ignoring prevalence:</strong> diagnostic test interpretation depends heavily on baseline probability.</li>
+    <li><strong>Interpreting sensitivity as positive predictive value:</strong> \(P(+|D)\neq P(D|+)\).</li>
+  </ul>
+
+  <div class="takeaway">
+    <div class="tk-label">Notes summary</div>
+    <ul>
+      <li>Conditional probability restricts the sample space to the condition.</li>
+      <li>The denominator of \(P(A|B)\) is \(P(B)\).</li>
+      <li>The multiplication rule is derived directly from conditional probability.</li>
+      <li>Independence means conditioning does not change the probability.</li>
+      <li>Bayes' theorem is derived by equating two expressions for \(P(A\cap B)\).</li>
+      <li>The law of total probability often supplies the denominator in Bayes' theorem.</li>
+      <li>Medical test interpretation requires prevalence, sensitivity and specificity.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-interactive" class="section">
+  <div class="lesson-eyebrow">Interactive probability lab</div>
+  <h1>Conditional probability and Bayes' theorem</h1>
+
+  <div class="plot-grid">
+
+    <div class="plot-box">
+      <div class="plot-title">1. Conditional probability direction</div>
+      <div class="plot-sub">Compare \(P(A|B)\) and \(P(B|A)\). Same overlap, different denominator.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(P(A)\)</label><input id="condA" type="range" min="10" max="90" value="50" oninput="updateConditional()"><span id="condAVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(P(B)\)</label><input id="condB" type="range" min="10" max="90" value="40" oninput="updateConditional()"><span id="condBVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(P(A\cap B)\)</label><input id="condBoth" type="range" min="1" max="80" value="20" oninput="updateConditional()"><span id="condBothVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">P(A|B)</div><div id="pAgB" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">P(B|A)</div><div id="pBgA" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="condChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">2. Independence checker</div>
+      <div class="plot-sub">Compare \(P(A\cap B)\) with \(P(A)P(B)\). If equal, the events are independent.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(P(A)\)</label><input id="indA" type="range" min="5" max="95" value="50" oninput="updateIndependence()"><span id="indAVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(P(B)\)</label><input id="indB" type="range" min="5" max="95" value="40" oninput="updateIndependence()"><span id="indBVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Observed \(P(A\cap B)\)</label><input id="indBoth" type="range" min="0" max="90" value="20" oninput="updateIndependence()"><span id="indBothVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">P(A)P(B)</div><div id="indProduct" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Observed overlap</div><div id="indObserved" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Message</div><div id="indMessage" class="sc-val" style="font-size:15px"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="indChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">3. Bayes diagnostic-test simulator</div>
+      <div class="plot-sub">Change prevalence, sensitivity and false positive rate. Watch positive predictive value change.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Prevalence %</label><input id="prev" type="range" min="1" max="50" value="5" oninput="updateBayes()"><span id="prevVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Sensitivity %</label><input id="sens" type="range" min="50" max="99" value="90" oninput="updateBayes()"><span id="sensVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>False positive %</label><input id="fpr" type="range" min="1" max="40" value="10" oninput="updateBayes()"><span id="fprVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">PPV: P(D|+)</div><div id="ppvVal" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">NPV: P(Dᶜ|-)</div><div id="npvVal" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="bayesChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">4. Natural frequency table</div>
+      <div class="plot-sub">The same Bayes calculation shown as expected counts out of 10,000 people.</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Group</th><th>Expected count</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>True positives</td><td id="tpCount"></td><td>Disease and positive test</td></tr>
+            <tr><td>False positives</td><td id="fpCount"></td><td>No disease but positive test</td></tr>
+            <tr><td>False negatives</td><td id="fnCount"></td><td>Disease but negative test</td></tr>
+            <tr><td>True negatives</td><td id="tnCount"></td><td>No disease and negative test</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p id="freqText"></p>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">5. Base-rate fallacy visual</div>
+      <div class="plot-sub">Keep the same test accuracy but change prevalence. See why rare diseases can have low PPV.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Prevalence %</label><input id="basePrev" type="range" min="1" max="50" value="1" oninput="updateBaseRate()"><span id="basePrevVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">PPV with same test</div><div id="basePPV" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="baseChart"></canvas></div>
+    </div>
+
+  </div>
+
+  <h2>Interpretation activity</h2>
+  <p>Choose the best label for each statement. This trains careful conditional-probability language.</p>
+  <div id="activity-area"></div>
+</section>
+
+<section id="sec-exercises" class="section">
+  <div class="lesson-eyebrow">Practice exercises</div>
+  <h1>Conditional probability and Bayes' theorem</h1>
+  <p>Try each exercise before revealing the answer. The focus is on correct denominators, derivations and interpretation.</p>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 1</div><div class="ex-qtitle">Basic conditional probability</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">If \(P(A\cap B)=0.18\) and \(P(B)=0.30\), calculate \(P(A|B)\).</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>\(P(A|B)=P(A\cap B)/P(B)=0.18/0.30=0.60\).</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 2</div><div class="ex-qtitle">Reverse conditioning</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">Suppose \(P(A)=0.50\), \(P(B)=0.25\), and \(P(A\cap B)=0.20\). Calculate \(P(A|B)\) and \(P(B|A)\).</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>\(P(A|B)=0.20/0.25=0.80\). Also, \(P(B|A)=0.20/0.50=0.40\). They differ because the denominators differ.</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 3</div><div class="ex-qtitle">Multiplication rule</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">If \(P(B)=0.40\) and \(P(A|B)=0.75\), find \(P(A\cap B)\).</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>By the multiplication rule, \(P(A\cap B)=P(A|B)P(B)=0.75\times0.40=0.30\).</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 4</div><div class="ex-qtitle">Independence check</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">Let \(P(A)=0.60\), \(P(B)=0.50\), and \(P(A\cap B)=0.30\). Are \(A\) and \(B\) independent?</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>Check whether \(P(A\cap B)=P(A)P(B)\). Since \(0.60\times0.50=0.30\), the condition is satisfied. The events are independent.</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 5</div><div class="ex-qtitle">Bayes theorem calculation</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">A disease has prevalence 2%, sensitivity 90%, and false positive rate 5%. Calculate \(P(D|+)\).</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>\(P(D|+)=\frac{0.90(0.02)}{0.90(0.02)+0.05(0.98)}=\frac{0.018}{0.018+0.049}=\frac{0.018}{0.067}\approx0.269\). The probability of disease after a positive test is about 26.9%.</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 6</div><div class="ex-qtitle">Natural frequencies</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">Using the disease example from Exercise 5, explain the result using a hypothetical population of 10,000 people.</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>Out of 10,000 people, 2% have disease, so 200 have disease. Sensitivity 90% gives 180 true positives. The remaining 9,800 do not have disease. False positive rate 5% gives 490 false positives. Total positives are 180+490=670. Therefore \(P(D|+)=180/670\approx0.269\).</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 7</div><div class="ex-qtitle">Base-rate fallacy</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">A student says, “The test is 99% sensitive, so if I test positive, there is a 99% chance I have the disease.” Explain the mistake.</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>The student confuses \(P(+|D)\) with \(P(D|+)\). Sensitivity is the probability of a positive test among diseased people. The probability of disease after a positive test also depends on disease prevalence and the false positive rate.</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 8</div><div class="ex-qtitle">Deriving Bayes' theorem</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">Derive Bayes' theorem from the multiplication rule.</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>From the multiplication rule, \(P(A\cap B)=P(A|B)P(B)\) and \(P(A\cap B)=P(B|A)P(A)\). Equating them gives \(P(A|B)P(B)=P(B|A)P(A)\). Dividing by \(P(B)\) gives \(P(A|B)=\frac{P(B|A)P(A)}{P(B)}\).</p></div>
+    </div>
+  </div>
+
+</section>
+
+<section id="sec-quiz" class="section">
+  <div class="lesson-eyebrow">Topic quiz</div>
+  <h1>Conditional probability and Bayes' theorem</h1>
+  <div id="quiz-container"></div>
+</section>
+
+  </div>
+</div>
+
+<script>
+let charts = {};
+let quizIndex = 0;
+let selectedOption = null;
+let answered = false;
+let score = 0;
+
+const activities = [
+  {
+    text: "P(A|B) means the probability of A among the cases where B occurred.",
+    answer: "Correct interpretation",
+    explanation: "Correct. B becomes the new reference group."
+  },
+  {
+    text: "P(A|B) and P(B|A) are always equal because both involve A and B.",
+    answer: "Misinterpretation",
+    explanation: "They usually have different denominators, so they are not generally equal."
+  },
+  {
+    text: "If P(A|B)=P(A), knowing B does not change the probability of A.",
+    answer: "Independence",
+    explanation: "Correct. This is the conditional-probability definition of independence."
+  },
+  {
+    text: "A positive test result means disease probability equals test sensitivity.",
+    answer: "Base-rate fallacy",
+    explanation: "This confuses P(+|D) with P(D|+). Prevalence and false positives matter."
+  }
+];
+
+const quiz = [
+  {
+    q: "What does P(A|B) mean?",
+    opts: ["A and B", "A given B", "B given A", "A or B"],
+    correct: 1
+  },
+  {
+    q: "The denominator of P(A|B) is:",
+    opts: ["P(A)", "P(B)", "P(A∩B)", "P(A∪B)"],
+    correct: 1
+  },
+  {
+    q: "If P(A∩B)=0.12 and P(B)=0.30, then P(A|B) is:",
+    opts: ["0.04", "0.18", "0.40", "2.50"],
+    correct: 2
+  },
+  {
+    q: "Events A and B are independent if:",
+    opts: ["P(A|B)=P(A)", "P(A∩B)=0 always", "P(A)=P(B)", "P(A∪B)=1"],
+    correct: 0
+  },
+  {
+    q: "Bayes' theorem is useful for:",
+    opts: ["Reversing conditional probabilities", "Calculating medians", "Drawing histograms", "Removing outliers"],
+    correct: 0
+  },
+  {
+    q: "Sensitivity is:",
+    opts: ["P(D|+)", "P(+|D)", "P(D)", "P(-|D)"],
+    correct: 1
+  },
+  {
+    q: "Positive predictive value is:",
+    opts: ["P(+|D)", "P(D|+)", "P(-|Dᶜ)", "P(Dᶜ)"],
+    correct: 1
+  },
+  {
+    q: "The base-rate fallacy means ignoring:",
+    opts: ["Prevalence or prior probability", "The sample mean", "The graph title", "The standard deviation"],
+    correct: 0
+  }
+];
+
+function showTab(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'interactive') initInteractive();
+  if (name === 'quiz') initQuiz();
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+function makeChart(id, type, data, options = {}) {
+  if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart(document.getElementById(id), {
+    type,
+    data,
+    options: Object.assign({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } }
+    }, options)
+  });
+}
+
+function updateConditional() {
+  const pA = Number(document.getElementById('condA').value) / 100;
+  const pB = Number(document.getElementById('condB').value) / 100;
+  let pBoth = Number(document.getElementById('condBoth').value) / 100;
+  pBoth = Math.min(pBoth, pA, pB);
+
+  const pAgB = pBoth / pB;
+  const pBgA = pBoth / pA;
+
+  document.getElementById('condAVal').textContent = pA.toFixed(2);
+  document.getElementById('condBVal').textContent = pB.toFixed(2);
+  document.getElementById('condBothVal').textContent = pBoth.toFixed(2);
+  document.getElementById('pAgB').textContent = pAgB.toFixed(2);
+  document.getElementById('pBgA').textContent = pBgA.toFixed(2);
+
+  makeChart('condChart', 'bar', {
+    labels: ['P(A|B)', 'P(B|A)'],
+    datasets: [{
+      data: [pAgB, pBgA],
+      backgroundColor: ['rgba(55,138,221,0.35)', 'rgba(186,117,23,0.35)'],
+      borderColor: ['#378ADD', '#BA7517'],
+      borderWidth: 1
+    }]
+  }, { scales: { y: { beginAtZero: true, max: 1 } } });
+}
+
+function updateIndependence() {
+  const pA = Number(document.getElementById('indA').value) / 100;
+  const pB = Number(document.getElementById('indB').value) / 100;
+  let observed = Number(document.getElementById('indBoth').value) / 100;
+  observed = Math.min(observed, pA, pB);
+
+  const expected = pA * pB;
+  const diff = Math.abs(observed - expected);
+
+  document.getElementById('indAVal').textContent = pA.toFixed(2);
+  document.getElementById('indBVal').textContent = pB.toFixed(2);
+  document.getElementById('indBothVal').textContent = observed.toFixed(2);
+  document.getElementById('indProduct').textContent = expected.toFixed(2);
+  document.getElementById('indObserved').textContent = observed.toFixed(2);
+  document.getElementById('indMessage').textContent = diff < 0.02 ? "Approximately independent" : "Not independent";
+
+  makeChart('indChart', 'bar', {
+    labels: ['Observed P(A∩B)', 'P(A)P(B) if independent'],
+    datasets: [{
+      data: [observed, expected],
+      backgroundColor: ['rgba(83,74,183,0.35)', 'rgba(59,109,17,0.30)'],
+      borderColor: ['#534AB7', '#3B6D11'],
+      borderWidth: 1
+    }]
+  }, { scales: { y: { beginAtZero: true, max: 1 } } });
+}
+
+function updateBayes() {
+  const prevalence = Number(document.getElementById('prev').value) / 100;
+  const sensitivity = Number(document.getElementById('sens').value) / 100;
+  const fpr = Number(document.getElementById('fpr').value) / 100;
+
+  const diseased = prevalence;
+  const nonDiseased = 1 - prevalence;
+  const truePositive = sensitivity * diseased;
+  const falsePositive = fpr * nonDiseased;
+  const falseNegative = (1 - sensitivity) * diseased;
+  const trueNegative = (1 - fpr) * nonDiseased;
+
+  const ppv = truePositive / (truePositive + falsePositive);
+  const npv = trueNegative / (trueNegative + falseNegative);
+
+  document.getElementById('prevVal').textContent = (prevalence * 100).toFixed(0);
+  document.getElementById('sensVal').textContent = (sensitivity * 100).toFixed(0);
+  document.getElementById('fprVal').textContent = (fpr * 100).toFixed(0);
+  document.getElementById('ppvVal').textContent = (ppv * 100).toFixed(1) + "%";
+  document.getElementById('npvVal').textContent = (npv * 100).toFixed(1) + "%";
+
+  document.getElementById('tpCount').textContent = Math.round(truePositive * 10000);
+  document.getElementById('fpCount').textContent = Math.round(falsePositive * 10000);
+  document.getElementById('fnCount').textContent = Math.round(falseNegative * 10000);
+  document.getElementById('tnCount').textContent = Math.round(trueNegative * 10000);
+  document.getElementById('freqText').textContent =
+    "Among positive tests, the estimated disease probability is " + (ppv * 100).toFixed(1) + "%.";
+
+  makeChart('bayesChart', 'bar', {
+    labels: ['True +', 'False +', 'False -', 'True -'],
+    datasets: [{
+      data: [truePositive * 10000, falsePositive * 10000, falseNegative * 10000, trueNegative * 10000],
+      backgroundColor: [
+        'rgba(59,109,17,0.35)',
+        'rgba(186,117,23,0.35)',
+        'rgba(163,45,45,0.25)',
+        'rgba(55,138,221,0.25)'
+      ],
+      borderColor: ['#3B6D11', '#BA7517', '#A32D2D', '#378ADD'],
+      borderWidth: 1
+    }]
+  }, { scales: { y: { beginAtZero: true } } });
+}
+
+function updateBaseRate() {
+  const prevalence = Number(document.getElementById('basePrev').value) / 100;
+  const sensitivity = 0.95;
+  const fpr = 0.10;
+
+  const tp = sensitivity * prevalence;
+  const fp = fpr * (1 - prevalence);
+  const ppv = tp / (tp + fp);
+
+  document.getElementById('basePrevVal').textContent = (prevalence * 100).toFixed(0);
+  document.getElementById('basePPV').textContent = (ppv * 100).toFixed(1) + "%";
+
+  makeChart('baseChart', 'bar', {
+    labels: ['True positives', 'False positives'],
+    datasets: [{
+      data: [tp * 10000, fp * 10000],
+      backgroundColor: ['rgba(59,109,17,0.35)', 'rgba(186,117,23,0.35)'],
+      borderColor: ['#3B6D11', '#BA7517'],
+      borderWidth: 1
+    }]
+  }, { scales: { y: { beginAtZero: true } } });
+}
+
+function initInteractive() {
+  updateConditional();
+  updateIndependence();
+  updateBayes();
+  updateBaseRate();
+  renderActivities();
+}
+
+function renderActivities() {
+  const area = document.getElementById('activity-area');
+  if (area.children.length) return;
+
+  const options = ["Correct interpretation", "Misinterpretation", "Independence", "Base-rate fallacy"];
+  activities.forEach((a, i) => {
+    const div = document.createElement('div');
+    div.className = 'activity-card';
+    div.innerHTML = `
+      <div class="activity-inner">
+        <div style="font-size:13.5px;color:var(--text);line-height:1.6;margin-bottom:8px;">${a.text}</div>
+        ${options.map(o => `<button class="choice-btn" onclick="checkActivity(${i}, '${o}', this)">${o}</button>`).join('')}
+        <div id="activity-${i}" class="feedback-mini"></div>
+      </div>
+    `;
+    area.appendChild(div);
+  });
+}
+
+function checkActivity(i, choice, btn) {
+  const item = activities[i];
+  const fb = document.getElementById('activity-' + i);
+  const correct = choice === item.answer;
+
+  fb.style.display = 'block';
+  fb.style.background = correct ? 'var(--green-bg)' : 'var(--red-bg)';
+  fb.style.color = correct ? 'var(--green)' : 'var(--red)';
+  fb.style.border = correct ? '.5px solid var(--green)' : '.5px solid var(--red)';
+  fb.innerHTML = `<strong>${correct ? '✓ Correct.' : '✗ Not quite.'}</strong> ${item.explanation}`;
+
+  btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
+}
+
+function toggleEx(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.ex-toggle');
+  const open = body.classList.toggle('open');
+  toggle.textContent = open ? '−' : '+';
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+function toggleAns(btn) {
+  const box = btn.nextElementSibling;
+  const open = box.classList.toggle('open');
+  btn.textContent = open ? 'Hide answer' : 'Show answer';
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+function initQuiz() {
+  quizIndex = 0;
+  selectedOption = null;
+  answered = false;
+  score = 0;
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+
+  if (quizIndex >= quiz.length) {
+    container.innerHTML = `
+      <div class="quiz-complete">
+        <div class="score-big">${score}/${quiz.length}</div>
+        <p>${score >= 7 ? 'Excellent — strong conditional probability understanding.' : score >= 5 ? 'Good work. Review the missed ideas.' : 'Review the notes and try the quiz again.'}</p>
+        <button class="btn-check" onclick="initQuiz()">Retry quiz</button>
+      </div>
+    `;
+    return;
+  }
+
+  const q = quiz[quizIndex];
+  container.innerHTML = `
+    <div class="quiz-progress">Question ${quizIndex + 1} of ${quiz.length}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">
+      ${q.opts.map((o, i) => `
+        <div class="quiz-opt" id="qo${i}" onclick="selectOption(${i})">
+          <div class="opt-key">${['A','B','C','D'][i]}</div>${o}
+        </div>
+      `).join('')}
+    </div>
+    <div id="quizFeedback" class="feedback"></div>
+    <div class="quiz-actions">
+      <button id="checkBtn" class="btn-check" onclick="checkQuiz()" disabled>Check answer</button>
+      <button id="nextBtn" class="btn-next" onclick="nextQuiz()">${quizIndex < quiz.length - 1 ? 'Next question →' : 'See result'}</button>
+    </div>
+  `;
+
+  selectedOption = null;
+  answered = false;
+}
+
+function selectOption(i) {
+  if (answered) return;
+  document.querySelectorAll('.quiz-opt').forEach(o => o.classList.remove('selected'));
+  document.getElementById('qo' + i).classList.add('selected');
+  selectedOption = i;
+  document.getElementById('checkBtn').disabled = false;
+}
+
+function checkQuiz() {
+  if (selectedOption === null || answered) return;
+  answered = true;
+
+  const q = quiz[quizIndex];
+  const correct = selectedOption === q.correct;
+  if (correct) score++;
+
+  document.querySelectorAll('.quiz-opt').forEach((el, i) => {
+    el.classList.add('locked');
+    if (i === q.correct) el.classList.add('correct');
+    if (i === selectedOption && i !== q.correct) el.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('quizFeedback');
+  fb.className = 'feedback show ' + (correct ? 'ok' : 'no');
+  fb.textContent = correct ? 'Correct.' : 'Not quite. Review the definitions, denominators and Bayes formula in the notes.';
+
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function nextQuiz() {
+  quizIndex++;
+  renderQuiz();
+}
+</script>
+
+<!-- My Academic Tutor platform footer with logo -->
+<footer class="mat-platform-footer">
+  <div class="mat-footer-brand">
+    <img class="mat-footer-logo" src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <p><strong>Statistics Foundation for University Students</strong></p>
+  </div>
+  <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+  <p>© 2026 My Academic Tutor. All rights reserved.</p>
+</footer>
+<style>
+.mat-platform-footer{
+  max-width:960px;
+  margin:34px auto 0;
+  padding:22px 34px;
+  border-top:1px solid var(--border, #ded9cf);
+  color:var(--text2, #5f5f5a);
+  font-size:13px;
+  line-height:1.65;
+}
+.mat-platform-footer strong{color:var(--text, #171717);}
+.mat-footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.mat-footer-logo{width:36px;height:36px;object-fit:contain;border-radius:9px;background:#fff;border:1px solid var(--border, #ded9cf);padding:4px;}
+@media(max-width:850px){.mat-platform-footer{padding:20px 18px;}}
+</style>
+
+</body>
+</html>

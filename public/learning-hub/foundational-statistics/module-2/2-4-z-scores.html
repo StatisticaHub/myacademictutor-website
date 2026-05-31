@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2.4 Standardisation & Z-scores — Foundational Statistics</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:#ffffff; --bg2:#f6f5f0; --bg3:#f0ede6; --border:#e0ddd6;
+    --text:#1a1a18; --text2:#5a5a56; --text3:#8a8a84;
+    --blue:#378ADD; --blue-bg:#E6F1FB; --blue-txt:#0C447C;
+    --green:#3B6D11; --green-bg:#EAF3DE;
+    --amber:#BA7517; --amber-bg:#FAEEDA; --amber-txt:#633806;
+    --red:#A32D2D; --red-bg:#FCEBEB;
+    --purple:#534AB7; --purple-bg:#EEEDFE; --purple-txt:#3C3489;
+    --radius:8px; --radius-lg:12px; --mono:'Courier New', monospace; --sans:system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#1c1c1a; --bg2:#252523; --bg3:#2e2e2b; --border:#3a3a36;
+      --text:#e8e6df; --text2:#a8a69f; --text3:#6a6a64;
+      --blue-bg:#0c1f35; --blue-txt:#85B7EB; --green-bg:#0f2005;
+      --amber-bg:#2a1800; --amber-txt:#FAC775; --red-bg:#2a0a0a;
+      --purple-bg:#1a1740; --purple-txt:#AFA9EC;
+    }
+  }
+  html { font-family:var(--sans); font-size:16px; color:var(--text); background:var(--bg3); scroll-behavior:smooth; }
+  body { display:flex; min-height:100vh; }
+
+  .sidebar { width:260px; min-width:260px; background:var(--bg); border-right:0.5px solid var(--border); display:flex; flex-direction:column; position:sticky; top:0; height:100vh; overflow-y:auto; }
+  .sidebar-brand { padding:16px; border-bottom:0.5px solid var(--border); }
+  .brand-course { font-size:11px; font-weight:500; color:var(--blue); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:4px; }
+  .brand-title { font-size:13px; font-weight:500; color:var(--text); line-height:1.4; }
+  .progress-wrap { height:3px; background:var(--border); }
+  .progress-bar { height:3px; background:var(--blue); width:36%; }
+  .nav-section { font-size:10px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:0.07em; padding:12px 16px 4px; }
+  .nav-item { display:flex; align-items:center; gap:8px; padding:7px 16px; font-size:12.5px; color:var(--text2); cursor:pointer; border-left:2px solid transparent; text-decoration:none; transition:background 0.12s; }
+  .nav-item:hover { background:var(--bg2); color:var(--text); }
+  .nav-item.active { color:var(--text); border-left-color:var(--blue); background:var(--bg2); font-weight:500; }
+  .nav-dot { width:6px; height:6px; border-radius:50%; background:var(--border); flex-shrink:0; }
+  .nav-item.active .nav-dot { background:var(--blue); }
+
+  .main { flex:1; min-width:0; }
+  .tab-bar { background:var(--bg); border-bottom:0.5px solid var(--border); display:flex; padding:0 32px; position:sticky; top:0; z-index:10; overflow-x:auto; }
+  .tab { padding:12px 16px; font-size:13px; color:var(--text2); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-0.5px; background:none; border-top:none; border-left:none; border-right:none; font-family:var(--sans); white-space:nowrap; }
+  .tab:hover { color:var(--text); }
+  .tab.active { color:var(--text); border-bottom-color:var(--blue); font-weight:500; }
+  .content { max-width:820px; margin:0 auto; padding:32px; }
+  .section { display:none; }
+  .section.active { display:block; }
+
+  .lesson-eyebrow { font-size:11px; font-weight:500; color:var(--blue); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:6px; }
+  h1 { font-size:26px; font-weight:500; color:var(--text); margin-bottom:6px; line-height:1.3; }
+  .lesson-meta { font-size:12px; color:var(--text3); margin-bottom:28px; }
+  h2 { font-size:18px; font-weight:500; color:var(--text); margin:28px 0 10px; }
+  h3 { font-size:15px; font-weight:500; color:var(--text); margin:20px 0 8px; }
+  p { font-size:14.5px; color:var(--text2); line-height:1.75; margin-bottom:14px; }
+  strong { color:var(--text); font-weight:500; }
+  ul, ol { padding-left:20px; margin-bottom:14px; }
+  li { font-size:14.5px; color:var(--text2); line-height:1.75; margin-bottom:4px; }
+
+  .def-box { border-left:3px solid var(--blue); background:var(--blue-bg); border-radius:0 var(--radius) var(--radius) 0; padding:12px 16px; margin:16px 0; }
+  .def-box .def-label { font-size:11px; font-weight:500; color:var(--blue-txt); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px; }
+  .def-box.green { border-left-color:var(--green); background:var(--green-bg); }
+  .def-box.green .def-label { color:var(--green); }
+  .def-box.amber { border-left-color:var(--amber); background:var(--amber-bg); }
+  .def-box.amber .def-label { color:var(--amber-txt); }
+  .def-box.red { border-left-color:var(--red); background:var(--red-bg); }
+  .def-box.red .def-label { color:var(--red); }
+  .def-box.purple { border-left-color:var(--purple); background:var(--purple-bg); }
+  .def-box.purple .def-label { color:var(--purple-txt); }
+  .def-box p { font-size:13.5px; color:var(--text); margin:0; line-height:1.6; }
+  .math-block { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius); padding:14px 20px; margin:16px 0; text-align:center; font-family:var(--mono); font-size:15px; color:var(--text); overflow-x:auto; }
+
+  .scene-label { font-size:11px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:0.07em; margin:24px 0 12px; padding:6px 10px; background:var(--bg2); border-radius:var(--radius); display:inline-block; }
+  .dialogue { display:flex; flex-direction:column; gap:12px; margin:16px 0; }
+  .line { display:flex; gap:12px; align-items:flex-start; }
+  .line.right { flex-direction:row-reverse; }
+  .speaker-badge { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:500; flex-shrink:0; margin-top:2px; }
+  .sp-prof { background:var(--blue-bg); color:var(--blue-txt); }
+  .sp-emma { background:var(--green-bg); color:var(--green); }
+  .sp-oliver { background:var(--amber-bg); color:var(--amber-txt); }
+  .sp-james { background:var(--purple-bg); color:var(--purple-txt); }
+  .sp-sophia { background:var(--red-bg); color:var(--red); }
+  .bubble { max-width:76%; background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:10px 14px; }
+  .line.right .bubble { background:var(--blue-bg); border-color:transparent; }
+  .speaker-name { font-size:11px; font-weight:500; color:var(--text3); margin-bottom:3px; }
+  .bubble p { font-size:14px; color:var(--text); margin:0; line-height:1.6; }
+
+  .takeaway { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:16px 20px; margin:24px 0; }
+  .takeaway .tk-label { font-size:11px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:8px; }
+  .takeaway ul { margin:0; }
+  .takeaway li { font-size:14px; color:var(--text); }
+
+  .tbl-wrap { overflow-x:auto; margin:16px 0; }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  thead tr { background:var(--bg2); }
+  th { padding:9px 12px; text-align:left; font-weight:500; font-size:12px; color:var(--text); border-bottom:0.5px solid var(--border); text-transform:uppercase; letter-spacing:0.05em; }
+  td { padding:9px 12px; color:var(--text2); border-bottom:0.5px solid var(--border); line-height:1.5; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:var(--bg2); }
+
+  .deriv-box { border:0.5px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; margin:20px 0; }
+  .deriv-header { display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background:var(--bg2); border-bottom:0.5px solid var(--border); gap:12px; }
+  .deriv-title { font-size:13px; font-weight:500; color:var(--text); }
+  .reveal-btn { background:none; border:0.5px solid var(--border); border-radius:var(--radius); padding:5px 12px; font-size:12px; cursor:pointer; color:var(--text2); font-family:var(--sans); }
+  .step-row { display:flex; gap:14px; padding:12px 16px; border-bottom:0.5px solid var(--border); animation:fadeIn 0.25s ease; }
+  .step-row:last-child { border-bottom:none; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+  .step-num { width:24px; height:24px; border-radius:50%; background:var(--blue-bg); color:var(--blue-txt); font-size:11px; font-weight:500; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+  .step-content .step-eq { font-family:var(--mono); font-size:14px; color:var(--text); margin-bottom:4px; }
+  .step-content .step-note { font-size:12.5px; color:var(--text3); line-height:1.5; }
+
+  .plot-box { border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:16px; margin:16px 0; background:var(--bg); }
+  .plot-title { font-size:13px; font-weight:500; color:var(--text); margin-bottom:4px; }
+  .plot-sub { font-size:12px; color:var(--text3); margin-bottom:14px; }
+  .chart-wrap { position:relative; width:100%; height:260px; }
+  .controls-row { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:16px; align-items:center; }
+  .ctrl { display:flex; align-items:center; gap:8px; }
+  .ctrl label { font-size:12.5px; color:var(--text2); white-space:nowrap; }
+  .ctrl input[type=range] { width:130px; accent-color:var(--blue); }
+  .ctrl input[type=number] { width:84px; padding:6px 8px; border:0.5px solid var(--border); border-radius:var(--radius); background:var(--bg); color:var(--text); }
+  .ctrl-val { font-size:12.5px; font-weight:500; color:var(--text); min-width:36px; }
+  .stat-row { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+  .stat-card { flex:1; min-width:120px; background:var(--bg2); border-radius:var(--radius); padding:10px 14px; text-align:center; }
+  .stat-card .sc-label { font-size:11px; color:var(--text3); margin-bottom:4px; }
+  .stat-card .sc-val { font-size:20px; font-weight:500; color:var(--text); }
+
+  .activity-card { border:0.5px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; margin:10px 0; }
+  .activity-inner { padding:12px 16px; }
+  .choice-btn { padding:6px 12px; border:0.5px solid var(--border); border-radius:var(--radius); background:none; font-size:12.5px; cursor:pointer; font-family:var(--sans); color:var(--text2); margin-right:6px; margin-top:6px; }
+  .choice-btn:hover { background:var(--bg2); color:var(--text); }
+  .feedback-mini { display:none; margin-top:10px; padding:10px 12px; border-radius:var(--radius); font-size:13px; line-height:1.5; }
+
+  .exercise { border:0.5px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; margin:16px 0; }
+  .ex-header { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; cursor:pointer; }
+  .ex-header:hover { background:var(--bg2); }
+  .ex-qnum { font-size:11px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:0.06em; }
+  .ex-qtitle { font-size:14px; font-weight:500; color:var(--text); margin-top:2px; }
+  .ex-difficulty { font-size:11px; padding:2px 8px; border-radius:10px; }
+  .diff-easy { background:var(--green-bg); color:var(--green); }
+  .diff-medium { background:var(--amber-bg); color:var(--amber-txt); }
+  .diff-hard { background:var(--red-bg); color:var(--red); }
+  .ex-toggle { font-size:18px; color:var(--text3); }
+  .ex-body { display:none; padding:0 16px 16px; border-top:0.5px solid var(--border); }
+  .ex-body.open { display:block; }
+  .ex-question { font-size:14px; color:var(--text2); line-height:1.7; margin:12px 0; }
+  .answer-toggle { background:none; border:0.5px solid var(--border); border-radius:var(--radius); padding:7px 14px; font-size:12.5px; cursor:pointer; color:var(--text2); font-family:var(--sans); margin-top:10px; }
+  .answer-box { display:none; margin-top:12px; background:var(--green-bg); border:0.5px solid var(--green); border-radius:var(--radius); padding:12px 16px; }
+  .answer-box.open { display:block; animation:fadeIn 0.2s ease; }
+  .answer-box .ans-label { font-size:11px; font-weight:500; color:var(--green); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; }
+  .answer-box p, .answer-box li { font-size:13.5px; color:var(--text); line-height:1.65; }
+
+  .quiz-q { font-size:14.5px; font-weight:500; color:var(--text); margin-bottom:14px; line-height:1.55; }
+  .quiz-opts { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+  .quiz-opt { display:flex; align-items:center; gap:10px; padding:11px 14px; border:0.5px solid var(--border); border-radius:var(--radius); cursor:pointer; font-size:13.5px; color:var(--text2); }
+  .quiz-opt:hover:not(.locked) { border-color:var(--blue); background:var(--blue-bg); color:var(--text); }
+  .quiz-opt.selected { border-color:var(--blue); background:var(--blue-bg); color:var(--text); }
+  .quiz-opt.correct { border-color:var(--green); background:var(--green-bg); color:var(--green); }
+  .quiz-opt.wrong { border-color:var(--red); background:var(--red-bg); color:var(--red); }
+  .quiz-opt .opt-key { width:22px; height:22px; border-radius:50%; border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:500; flex-shrink:0; }
+  .feedback { padding:10px 14px; border-radius:var(--radius); font-size:13.5px; line-height:1.6; margin-bottom:14px; display:none; }
+  .feedback.show { display:block; }
+  .feedback.ok { background:var(--green-bg); color:var(--green); border:0.5px solid var(--green); }
+  .feedback.no { background:var(--red-bg); color:var(--red); border:0.5px solid var(--red); }
+  .quiz-actions { display:flex; gap:10px; }
+  .btn-check { padding:8px 18px; background:var(--blue); color:#fff; border:none; border-radius:var(--radius); font-size:13px; cursor:pointer; font-family:var(--sans); }
+  .btn-check:disabled { opacity:0.4; cursor:default; }
+  .btn-next { padding:8px 18px; border:0.5px solid var(--border); border-radius:var(--radius); font-size:13px; cursor:pointer; background:none; color:var(--text2); font-family:var(--sans); display:none; }
+  .btn-next.show { display:inline-block; }
+  .quiz-progress { font-size:11.5px; color:var(--text3); margin-bottom:20px; }
+  .quiz-complete { text-align:center; padding:32px 0; }
+  .quiz-complete .score-big { font-size:48px; font-weight:500; color:var(--text); }
+
+  @media (max-width:800px) {
+    body { display:block; }
+    .sidebar { width:100%; height:auto; position:relative; min-width:0; }
+    .content { padding:24px 18px; }
+    .tab-bar { padding:0 12px; }
+    .bubble { max-width:86%; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-course">Foundational Statistics</div>
+    <div class="brand-title">Statistics Foundation for University Students</div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="sidebar-progress" style="width:40%;"></div></div>
+
+  <div class="nav-section">Course modules</div>
+  <a class="nav-item" href="../module-1/index.html"><div class="nav-dot"></div>Module 1 · Introduction</a>
+  <a class="nav-item active" href="../module-2/index.html"><div class="nav-dot"></div>Module 2 · Descriptive statistics</a>
+  <a class="nav-item" href="../module-3/index.html"><div class="nav-dot"></div>Module 3 · Probability</a>
+  <a class="nav-item" href="../module-4/index.html"><div class="nav-dot"></div>Module 4 · Statistical inference</a>
+  <a class="nav-item" href="../module-5/index.html"><div class="nav-dot"></div>Module 5 · Regression</a>
+
+  <div class="nav-section">Module 2 lessons</div>
+  <a class="nav-item done" href="2-1-measures-of-centre.html"><div class="nav-dot"></div>2.1 Measures of centre</a>
+  <a class="nav-item done" href="2-2-measures-of-spread.html"><div class="nav-dot"></div>2.2 Measures of spread</a>
+  <a class="nav-item done" href="2-3-shape-skewness.html"><div class="nav-dot"></div>2.3 Shape & skewness</a>
+  <a class="nav-item active" href="2-4-z-scores.html"><div class="nav-dot"></div>2.4 Z-scores</a>
+  <a class="nav-item done" href="2-5-correlation.html"><div class="nav-dot"></div>2.5 Correlation</a>
+</nav>
+
+<div class="main">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('lecture',this)">Lecture</button>
+    <button class="tab" onclick="showTab('notes',this)">Notes</button>
+    <button class="tab" onclick="showTab('interactive',this)">Interactive</button>
+    <button class="tab" onclick="showTab('exercises',this)">Exercises</button>
+    <button class="tab" onclick="showTab('quiz',this)">Quiz</button>
+  </div>
+
+  <div class="content">
+
+    <section id="sec-lecture" class="section active">
+      <div class="lesson-eyebrow">Module 2 · Topic 4</div>
+      <h1>Standardisation and z-scores</h1>
+      <div class="lesson-meta">Mr. R · ~24 min · Builds on mean and standard deviation</div>
+
+      <div class="scene-label">📍 Scene — comparing two exam results from different classes</div>
+
+      <div class="dialogue">
+        <div class="line">
+          <div class="speaker-badge sp-emma">EM</div>
+          <div class="bubble">
+            <div class="speaker-name">Emma</div>
+            <p>I scored 78 in statistics and 82 in biology. So biology was definitely my better performance, right?</p>
+          </div>
+        </div>
+        <div class="line right">
+          <div class="speaker-badge sp-prof">MR</div>
+          <div class="bubble">
+            <div class="speaker-name">Mr. R</div>
+            <p>Not necessarily. A raw score only tells us the value itself. To judge performance, we also need to know the average and spread in each exam.</p>
+          </div>
+        </div>
+        <div class="line">
+          <div class="speaker-badge sp-oliver">OL</div>
+          <div class="bubble">
+            <div class="speaker-name">Oliver</div>
+            <p>So 78 could be excellent if everyone else scored around 55, but average if everyone scored around 80?</p>
+          </div>
+        </div>
+        <div class="line right">
+          <div class="speaker-badge sp-prof">MR</div>
+          <div class="bubble">
+            <div class="speaker-name">Mr. R</div>
+            <p>Exactly. That is the idea behind standardisation. We transform a raw value into a z-score, which tells us how many standard deviations the value is from the mean.</p>
+          </div>
+        </div>
+      </div>
+
+      <h2>The z-score formula</h2>
+      <p>A z-score measures a value’s position relative to the mean, using the standard deviation as the unit of measurement.</p>
+
+      <div class="math-block">z = (x − mean) / standard deviation</div>
+
+      <div class="def-box">
+        <div class="def-label">Definition — z-score</div>
+        <p>A z-score tells us how many standard deviations a value lies above or below the mean. Positive z-scores are above the mean; negative z-scores are below the mean.</p>
+      </div>
+
+      <div class="dialogue">
+        <div class="line">
+          <div class="speaker-badge sp-james">JA</div>
+          <div class="bubble">
+            <div class="speaker-name">James</div>
+            <p>If my z-score is 2, does that mean I am exactly two marks above the mean?</p>
+          </div>
+        </div>
+        <div class="line right">
+          <div class="speaker-badge sp-prof">MR</div>
+          <div class="bubble">
+            <div class="speaker-name">Mr. R</div>
+            <p>No. It means you are two standard deviations above the mean. If the standard deviation is 5 marks, that is 10 marks above the mean. If the standard deviation is 12 marks, that is 24 marks above the mean.</p>
+          </div>
+        </div>
+      </div>
+
+      <h2>Why standardisation is useful</h2>
+      <p>Standardisation allows us to compare values that were originally measured on different scales. This is especially useful when variables have different units, different averages, or different variability.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Question</th><th>Raw value problem</th><th>Z-score solution</th></tr></thead>
+          <tbody>
+            <tr><td>Which exam performance was stronger?</td><td>Exams may have different difficulty and spread.</td><td>Compare each score relative to its own exam distribution.</td></tr>
+            <tr><td>Is a blood pressure value unusually high?</td><td>Raw value lacks context.</td><td>Compare it with the population mean and SD.</td></tr>
+            <tr><td>Which patient measurement is more unusual?</td><td>Units differ across variables.</td><td>Put measurements on the same standard scale.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Interpretation</h2>
+      <p>A z-score of 0 means the value is exactly at the mean. A z-score of +1 means one standard deviation above the mean. A z-score of −1 means one standard deviation below the mean.</p>
+
+      <div class="dialogue">
+        <div class="line">
+          <div class="speaker-badge sp-sophia">SO</div>
+          <div class="bubble">
+            <div class="speaker-name">Sophia</div>
+            <p>Can z-scores help detect outliers?</p>
+          </div>
+        </div>
+        <div class="line right">
+          <div class="speaker-badge sp-prof">MR</div>
+          <div class="bubble">
+            <div class="speaker-name">Mr. R</div>
+            <p>They can flag unusual values. In many roughly symmetric datasets, values with z-scores beyond about ±2 are unusual, and beyond about ±3 are very unusual. But for skewed data, z-scores must be interpreted carefully.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="def-box amber">
+        <div class="def-label">Important caution</div>
+        <p>Z-scores rely on the mean and standard deviation. If the data are strongly skewed or contain severe outliers, the mean and SD may themselves be distorted.</p>
+      </div>
+
+      <div class="takeaway">
+        <div class="tk-label">Key takeaways from this lecture</div>
+        <ul>
+          <li>A z-score converts a raw value into a standardised value.</li>
+          <li>It tells us how many standard deviations a value lies from the mean.</li>
+          <li>Z-scores allow comparison across different units and scales.</li>
+          <li>Large absolute z-scores may indicate unusual values, but context and shape matter.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="sec-notes" class="section">
+      <div class="lesson-eyebrow">Detailed notes</div>
+      <h1>Standardisation and z-scores</h1>
+
+      <h2>1. Why raw values are not always enough</h2>
+      <p>A raw data value tells us what was observed, but it does not tell us whether that value is typical, high, low, or unusual. To interpret a value properly, we need to compare it with the distribution from which it came.</p>
+
+      <p>For example, a test score of 75 may be excellent in a very difficult exam with mean 50 and standard deviation 10. But it may be ordinary in an easy exam with mean 73 and standard deviation 8. The raw score alone is incomplete.</p>
+
+      <div class="def-box">
+        <div class="def-label">Core idea</div>
+        <p>Standardisation gives a raw value context by measuring its distance from the mean in standard deviation units.</p>
+      </div>
+
+      <h2>2. The z-score</h2>
+      <p>The most common standardised score is the <strong>z-score</strong>. For a population mean \( \mu \) and population standard deviation \( \sigma \), the population z-score is:</p>
+
+      <div class="math-block">z = (x − μ) / σ</div>
+
+      <p>For sample data, where we usually use the sample mean \( \bar{x} \) and sample standard deviation \( s \), the sample z-score is:</p>
+
+      <div class="math-block">z = (x − x̄) / s</div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Quantity</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>x</td><td>The raw value being standardised</td></tr>
+            <tr><td>μ or x̄</td><td>The mean of the population or sample</td></tr>
+            <tr><td>σ or s</td><td>The standard deviation of the population or sample</td></tr>
+            <tr><td>z</td><td>The number of standard deviations from the mean</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>3. Interpretation of z-scores</h2>
+      <p>The sign of the z-score tells us direction. The magnitude tells us distance.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Z-score</th><th>Interpretation</th></tr></thead>
+          <tbody>
+            <tr><td>z = 0</td><td>The value is exactly equal to the mean.</td></tr>
+            <tr><td>z = +1</td><td>The value is one standard deviation above the mean.</td></tr>
+            <tr><td>z = −1</td><td>The value is one standard deviation below the mean.</td></tr>
+            <tr><td>z = +2.5</td><td>The value is 2.5 standard deviations above the mean.</td></tr>
+            <tr><td>z = −3</td><td>The value is three standard deviations below the mean.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="def-box green">
+        <div class="def-label">Descriptive wording</div>
+        <p>A z-score should be described in words: “This value is 1.8 standard deviations above the mean,” not simply “z = 1.8.”</p>
+      </div>
+
+      <h2>4. Step-by-step calculation</h2>
+      <p>Suppose the mean systolic blood pressure in a group is 120 mmHg and the standard deviation is 15 mmHg. A patient has systolic blood pressure 150 mmHg.</p>
+
+      <div class="math-block">z = (150 − 120) / 15 = 30 / 15 = 2</div>
+
+      <p>The patient’s value is two standard deviations above the mean. In a roughly symmetric distribution, this would usually be considered relatively high.</p>
+
+      <h2>5. Derivation: why standardised values have mean 0 and standard deviation 1</h2>
+      <p>Standardisation transforms values using:</p>
+
+      <div class="math-block">Z = (X − μ) / σ</div>
+
+      <p>This transformation creates a new variable whose centre is 0 and whose spread is 1.</p>
+
+      <div class="deriv-box">
+        <div class="deriv-header">
+          <span class="deriv-title">Proof idea: E[Z] = 0 and SD(Z) = 1</span>
+          <button class="reveal-btn" onclick="revealStep('deriv1')" id="reveal1-btn">Reveal next steps ↓</button>
+        </div>
+        <div id="deriv1-steps">
+          <div class="step-row">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-eq">Z = (X − μ) / σ</div>
+              <div class="step-note">Start with a variable X with mean μ and standard deviation σ.</div>
+            </div>
+          </div>
+        </div>
+        <div id="deriv1-hidden" style="display:none">
+          <div class="step-row">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-eq">E[Z] = E[(X − μ)/σ] = (E[X] − μ)/σ</div>
+              <div class="step-note">Use linearity of expectation and take constants outside.</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-eq">E[Z] = (μ − μ)/σ = 0</div>
+              <div class="step-note">The standardised variable has mean 0.</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <div class="step-eq">Var(Z) = Var((X − μ)/σ) = Var(X)/σ²</div>
+              <div class="step-note">Subtracting a constant does not change variance; dividing by σ divides variance by σ².</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-num">5</div>
+            <div class="step-content">
+              <div class="step-eq">Var(Z) = σ²/σ² = 1, so SD(Z) = 1</div>
+              <div class="step-note">The standardised variable has standard deviation 1.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2>6. Comparing values from different distributions</h2>
+      <p>One of the most useful applications of z-scores is comparison across distributions. Raw values may be measured in different units or have different spreads. Z-scores place them on a common scale.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Raw value</th><th>Mean</th><th>SD</th><th>Z-score</th></tr></thead>
+          <tbody>
+            <tr><td>Statistics exam</td><td>78</td><td>60</td><td>9</td><td>(78 − 60)/9 = 2.00</td></tr>
+            <tr><td>Biology exam</td><td>82</td><td>76</td><td>12</td><td>(82 − 76)/12 = 0.50</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Although 82 is a higher raw score than 78, the statistics score is stronger relative to its distribution. A z-score of 2.00 means the score is two standard deviations above the statistics mean, while 0.50 means only half a standard deviation above the biology mean.</p>
+
+      <h2>7. Z-scores and unusual observations</h2>
+      <p>Z-scores can be used as a descriptive rule for identifying unusual values, especially when the distribution is approximately symmetric and mound-shaped.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>|z| value</th><th>Descriptive interpretation</th></tr></thead>
+          <tbody>
+            <tr><td>|z| &lt; 1</td><td>Fairly close to the mean</td></tr>
+            <tr><td>1 ≤ |z| &lt; 2</td><td>Somewhat away from the mean, but not very unusual</td></tr>
+            <tr><td>2 ≤ |z| &lt; 3</td><td>Unusual or relatively extreme</td></tr>
+            <tr><td>|z| ≥ 3</td><td>Very unusual; should usually be checked carefully</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="def-box amber">
+        <div class="def-label">Caution</div>
+        <p>The ±2 and ±3 rules are descriptive guides, not universal laws. They work best for roughly symmetric distributions. For skewed distributions, large z-scores may be common on the long-tail side.</p>
+      </div>
+
+      <h2>8. Z-scores and the normal distribution</h2>
+      <p>When the original variable is normally distributed, z-scores connect directly to the standard normal distribution. A standard normal variable has mean 0 and standard deviation 1.</p>
+
+      <div class="math-block">If X ~ Normal(μ, σ²), then Z = (X − μ)/σ ~ Normal(0, 1)</div>
+
+      <p>This idea becomes very important in probability and inference. For now, the descriptive interpretation is enough: z-scores tell us location on a common standard scale.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Normal-rule interval</th><th>Approximate percentage</th></tr></thead>
+          <tbody>
+            <tr><td>Between z = −1 and z = +1</td><td>About 68%</td></tr>
+            <tr><td>Between z = −2 and z = +2</td><td>About 95%</td></tr>
+            <tr><td>Between z = −3 and z = +3</td><td>About 99.7%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>9. Standardisation vs normalisation</h2>
+      <p>Students often confuse standardisation with normalisation. In statistics, <strong>standardisation</strong> usually means transforming values into z-scores. The transformed variable has mean 0 and standard deviation 1.</p>
+
+      <p><strong>Normalisation</strong> is a broader term and can mean different transformations, such as scaling values between 0 and 1. Normalisation does not necessarily produce mean 0 or standard deviation 1.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Transformation</th><th>Formula</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>Standardisation</td><td>z = (x − mean)/SD</td><td>Mean 0, SD 1</td></tr>
+            <tr><td>Min-max scaling</td><td>(x − min)/(max − min)</td><td>Values between 0 and 1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>10. Common mistakes</h2>
+      <ul>
+        <li><strong>Interpreting z as raw units:</strong> z = 2 does not mean 2 units above the mean; it means 2 standard deviations above the mean.</li>
+        <li><strong>Ignoring the sign:</strong> z = −1.5 means below the mean, not just “1.5 away.”</li>
+        <li><strong>Using z-scores blindly for skewed data:</strong> mean and SD can be distorted by skewness and outliers.</li>
+        <li><strong>Comparing raw values across different scales:</strong> raw marks, weights or biological measurements may not be comparable unless standardised.</li>
+        <li><strong>Assuming z-score means normality:</strong> calculating z-scores does not make the data normally distributed; it only changes the scale.</li>
+      </ul>
+
+      <div class="takeaway">
+        <div class="tk-label">Summary</div>
+        <ul>
+          <li>A z-score is a standardised value.</li>
+          <li>It measures distance from the mean in standard deviation units.</li>
+          <li>Standardised values have mean 0 and standard deviation 1.</li>
+          <li>Z-scores help compare values from different distributions.</li>
+          <li>Z-scores are most straightforward when the original distribution is roughly symmetric.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="sec-interactive" class="section">
+      <div class="lesson-eyebrow">Interactive elements</div>
+      <h1>Explore z-scores</h1>
+
+      <h2>1. Z-score calculator</h2>
+      <p>Change the raw value, mean and standard deviation. Watch how the z-score changes.</p>
+
+      <div class="plot-box">
+        <div class="plot-title">Raw value to z-score</div>
+        <div class="plot-sub">The marker shows where x lies relative to the mean.</div>
+        <div class="controls-row">
+          <div class="ctrl"><label>x</label><input id="calc-x" type="number" value="130" oninput="updateZCalc()"></div>
+          <div class="ctrl"><label>mean</label><input id="calc-mean" type="number" value="100" oninput="updateZCalc()"></div>
+          <div class="ctrl"><label>SD</label><input id="calc-sd" type="number" value="15" min="1" oninput="updateZCalc()"></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-card"><div class="sc-label">z-score</div><div class="sc-val" id="calc-z">—</div></div>
+          <div class="stat-card"><div class="sc-label">Interpretation</div><div class="sc-val" id="calc-int" style="font-size:14px;line-height:1.4;">—</div></div>
+        </div>
+        <div class="chart-wrap"><canvas id="zCalcChart"></canvas></div>
+      </div>
+
+      <h2>2. Compare two exam scores</h2>
+      <p>The higher raw score is not always the stronger relative performance. Compare two subjects using z-scores.</p>
+
+      <div class="plot-box">
+        <div class="plot-title">Relative performance comparison</div>
+        <div class="plot-sub">Subject A and Subject B can have different means and standard deviations.</div>
+        <div class="controls-row">
+          <div class="ctrl"><label>A score</label><input id="a-score" type="number" value="78" oninput="updateCompare()"></div>
+          <div class="ctrl"><label>A mean</label><input id="a-mean" type="number" value="60" oninput="updateCompare()"></div>
+          <div class="ctrl"><label>A SD</label><input id="a-sd" type="number" value="9" min="1" oninput="updateCompare()"></div>
+        </div>
+        <div class="controls-row">
+          <div class="ctrl"><label>B score</label><input id="b-score" type="number" value="82" oninput="updateCompare()"></div>
+          <div class="ctrl"><label>B mean</label><input id="b-mean" type="number" value="76" oninput="updateCompare()"></div>
+          <div class="ctrl"><label>B SD</label><input id="b-sd" type="number" value="12" min="1" oninput="updateCompare()"></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-card"><div class="sc-label">A z-score</div><div class="sc-val" id="a-z">—</div></div>
+          <div class="stat-card"><div class="sc-label">B z-score</div><div class="sc-val" id="b-z">—</div></div>
+          <div class="stat-card"><div class="sc-label">Stronger relative performance</div><div class="sc-val" id="winner" style="font-size:15px;">—</div></div>
+        </div>
+        <div class="chart-wrap"><canvas id="compareChart"></canvas></div>
+      </div>
+
+      <h2>3. Interpret the z-score</h2>
+      <p>Choose the correct interpretation for each z-score statement.</p>
+      <div id="z-activity"></div>
+    </section>
+
+    <section id="sec-exercises" class="section">
+      <div class="lesson-eyebrow">Practice exercises</div>
+      <h1>Standardisation and z-scores</h1>
+      <p>Five detailed exercises. Try each before revealing the answer.</p>
+
+      <div class="exercise">
+        <div class="ex-header" onclick="toggleEx(this)">
+          <div><div class="ex-qnum">Exercise 1</div><div class="ex-qtitle">Basic z-score calculation</div></div>
+          <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div>
+        </div>
+        <div class="ex-body">
+          <p class="ex-question">A class has mean exam score 64 and standard deviation 8. A student scores 80.</p>
+          <ol type="a">
+            <li>Calculate the z-score.</li>
+            <li>Interpret it in words.</li>
+          </ol>
+          <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+          <div class="answer-box">
+            <div class="ans-label">Answer</div>
+            <ol type="a">
+              <li>z = (80 − 64)/8 = 16/8 = 2.</li>
+              <li>The student scored 2 standard deviations above the class mean. This is a relatively high score compared with the class distribution.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="exercise">
+        <div class="ex-header" onclick="toggleEx(this)">
+          <div><div class="ex-qnum">Exercise 2</div><div class="ex-qtitle">Negative z-score</div></div>
+          <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div>
+        </div>
+        <div class="ex-body">
+          <p class="ex-question">The mean resting heart rate in a sample is 72 bpm with standard deviation 10 bpm. A participant has resting heart rate 57 bpm.</p>
+          <ol type="a">
+            <li>Calculate the z-score.</li>
+            <li>What does the negative sign mean?</li>
+          </ol>
+          <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+          <div class="answer-box">
+            <div class="ans-label">Answer</div>
+            <ol type="a">
+              <li>z = (57 − 72)/10 = −15/10 = −1.5.</li>
+              <li>The negative sign means the participant’s heart rate is below the sample mean. Specifically, it is 1.5 standard deviations below the mean.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="exercise">
+        <div class="ex-header" onclick="toggleEx(this)">
+          <div><div class="ex-qnum">Exercise 3</div><div class="ex-qtitle">Comparing two performances</div></div>
+          <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div>
+        </div>
+        <div class="ex-body">
+          <p class="ex-question">A student scores 70 in Course A and 76 in Course B. Course A has mean 58 and SD 6. Course B has mean 70 and SD 4.</p>
+          <ol type="a">
+            <li>Calculate the z-score for each course.</li>
+            <li>In which course was the student’s relative performance stronger?</li>
+            <li>Why might the raw scores be misleading?</li>
+          </ol>
+          <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+          <div class="answer-box">
+            <div class="ans-label">Answer</div>
+            <ol type="a">
+              <li>Course A: z = (70 − 58)/6 = 2. Course B: z = (76 − 70)/4 = 1.5.</li>
+              <li>The relative performance was stronger in Course A because z = 2 is larger than z = 1.5.</li>
+              <li>The raw score is higher in Course B, but Course B also has a higher mean. Z-scores compare each score relative to its own distribution.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="exercise">
+        <div class="ex-header" onclick="toggleEx(this)">
+          <div><div class="ex-qnum">Exercise 4</div><div class="ex-qtitle">Reverse z-score calculation</div></div>
+          <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div>
+        </div>
+        <div class="ex-body">
+          <p class="ex-question">A measurement has mean μ = 100 and standard deviation σ = 12. An observation has z-score 1.75. Find the raw value x.</p>
+          <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+          <div class="answer-box">
+            <div class="ans-label">Answer</div>
+            <p>Start with z = (x − μ)/σ. Rearranging gives x = μ + zσ. Therefore x = 100 + 1.75(12) = 100 + 21 = 121. The raw value is 121.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="exercise">
+        <div class="ex-header" onclick="toggleEx(this)">
+          <div><div class="ex-qnum">Exercise 5</div><div class="ex-qtitle">Proof and interpretation</div></div>
+          <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div>
+        </div>
+        <div class="ex-body">
+          <p class="ex-question">Let X have mean μ and variance σ². Define Z = (X − μ)/σ.</p>
+          <ol type="a">
+            <li>Show that E[Z] = 0.</li>
+            <li>Show that Var(Z) = 1.</li>
+            <li>Does this transformation make any distribution normal? Explain.</li>
+          </ol>
+          <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+          <div class="answer-box">
+            <div class="ans-label">Answer</div>
+            <ol type="a">
+              <li>E[Z] = E[(X − μ)/σ] = (E[X] − μ)/σ = (μ − μ)/σ = 0.</li>
+              <li>Var(Z) = Var((X − μ)/σ) = Var(X)/σ² = σ²/σ² = 1.</li>
+              <li>No. Standardisation changes the centre and scale, but it does not change the fundamental shape into normality. A skewed distribution remains skewed after standardisation, although its mean becomes 0 and SD becomes 1.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-quiz" class="section">
+      <div class="lesson-eyebrow">Topic quiz</div>
+      <h1>Standardisation and z-scores</h1>
+      <div id="quiz-container"></div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+function showTab(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'interactive') initInteractive();
+  if (name === 'quiz') initQuiz();
+}
+
+let d1Revealed = false;
+function revealStep(id) {
+  if (!d1Revealed) {
+    document.getElementById(id + '-hidden').style.display = 'block';
+    document.getElementById('reveal1-btn').textContent = 'All steps shown ✓';
+    document.getElementById('reveal1-btn').disabled = true;
+    d1Revealed = true;
+  }
+}
+
+function toggleEx(header) {
+  const body = header.nextElementSibling;
+  const tog = header.querySelector('.ex-toggle');
+  const open = body.classList.toggle('open');
+  tog.textContent = open ? '−' : '+';
+}
+function toggleAns(btn) {
+  const box = btn.nextElementSibling;
+  const open = box.classList.toggle('open');
+  btn.textContent = open ? 'Hide answer' : 'Show answer';
+}
+
+let zCalcChart = null;
+let compareChart = null;
+let interactiveInited = false;
+
+function normalPdf(x, mean, sd) {
+  return (1/(sd*Math.sqrt(2*Math.PI))) * Math.exp(-0.5*((x-mean)/sd)**2);
+}
+
+function updateZCalc() {
+  let x = parseFloat(document.getElementById('calc-x').value);
+  let m = parseFloat(document.getElementById('calc-mean').value);
+  let s = Math.max(0.0001, parseFloat(document.getElementById('calc-sd').value));
+  const z = (x - m) / s;
+  document.getElementById('calc-z').textContent = z.toFixed(2);
+  const dir = z > 0 ? 'above' : z < 0 ? 'below' : 'at';
+  document.getElementById('calc-int').textContent = z === 0 ? 'At the mean' : `${Math.abs(z).toFixed(2)} SD ${dir} mean`;
+
+  const xs = [], ys = [];
+  for (let i=-4; i<=4; i+=0.1) {
+    const raw = m + i*s;
+    xs.push(raw.toFixed(1));
+    ys.push(normalPdf(raw,m,s));
+  }
+  const pointIndex = xs.reduce((best, val, idx) => Math.abs(parseFloat(val)-x) < Math.abs(parseFloat(xs[best])-x) ? idx : best, 0);
+  const pointData = xs.map((val, idx) => idx === pointIndex ? ys[idx] : null);
+
+  if (zCalcChart) zCalcChart.destroy();
+  zCalcChart = new Chart(document.getElementById('zCalcChart'), {
+    type:'line',
+    data:{ labels:xs, datasets:[
+      { label:'Distribution', data:ys, borderColor:'#378ADD', backgroundColor:'transparent', pointRadius:0, tension:0.25, borderWidth:1.5 },
+      { label:'x', data:pointData, borderColor:'#A32D2D', backgroundColor:'#A32D2D', pointRadius:6, showLine:false }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} },
+      scales:{ x:{ title:{display:true,text:'Raw value'}, ticks:{maxTicksLimit:8} }, y:{ display:false } } }
+  });
+}
+
+function updateCompare() {
+  const aScore = parseFloat(document.getElementById('a-score').value);
+  const aMean = parseFloat(document.getElementById('a-mean').value);
+  const aSd = Math.max(0.0001, parseFloat(document.getElementById('a-sd').value));
+  const bScore = parseFloat(document.getElementById('b-score').value);
+  const bMean = parseFloat(document.getElementById('b-mean').value);
+  const bSd = Math.max(0.0001, parseFloat(document.getElementById('b-sd').value));
+  const az = (aScore-aMean)/aSd;
+  const bz = (bScore-bMean)/bSd;
+  document.getElementById('a-z').textContent = az.toFixed(2);
+  document.getElementById('b-z').textContent = bz.toFixed(2);
+  document.getElementById('winner').textContent = az > bz ? 'Subject A' : bz > az ? 'Subject B' : 'Tie';
+
+  if (compareChart) compareChart.destroy();
+  compareChart = new Chart(document.getElementById('compareChart'), {
+    type:'bar',
+    data:{ labels:['Subject A z-score','Subject B z-score'], datasets:[{ label:'z-score', data:[az,bz], backgroundColor:['#378ADD55','#3B6D1155'], borderColor:['#378ADD','#3B6D11'], borderWidth:1 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} },
+      scales:{ y:{ title:{display:true,text:'z-score'}, suggestedMin:Math.min(-3,az,bz), suggestedMax:Math.max(3,az,bz) } } }
+  });
+}
+
+const activities = [
+  { text:'z = 0', answer:'At the mean', explanation:'A z-score of 0 means the value equals the mean.' },
+  { text:'z = −2.4', answer:'2.4 SD below mean', explanation:'The negative sign means below the mean; the magnitude 2.4 gives the number of standard deviations.' },
+  { text:'z = +1.3', answer:'1.3 SD above mean', explanation:'Positive z-scores are above the mean.' },
+  { text:'z = 3.2 in a roughly symmetric dataset', answer:'Very unusual high value', explanation:'A z-score above 3 is usually very unusual in a roughly symmetric distribution.' }
+];
+
+function initActivity() {
+  const area = document.getElementById('z-activity');
+  if (area.children.length) return;
+  activities.forEach((a,i) => {
+    const div = document.createElement('div');
+    div.className = 'activity-card';
+    div.innerHTML = `
+      <div class="activity-inner">
+        <div style="font-size:13.5px;color:var(--text);line-height:1.6;margin-bottom:8px;">${a.text}</div>
+        <button class="choice-btn" onclick="activityAns(${i},'At the mean',this)">At the mean</button>
+        <button class="choice-btn" onclick="activityAns(${i},'1.3 SD above mean',this)">1.3 SD above mean</button>
+        <button class="choice-btn" onclick="activityAns(${i},'2.4 SD below mean',this)">2.4 SD below mean</button>
+        <button class="choice-btn" onclick="activityAns(${i},'Very unusual high value',this)">Very unusual high value</button>
+        <div id="act-${i}" class="feedback-mini"></div>
+      </div>`;
+    area.appendChild(div);
+  });
+}
+
+function activityAns(idx, choice, btn) {
+  const a = activities[idx];
+  const fb = document.getElementById('act-' + idx);
+  const correct = choice === a.answer;
+  fb.style.display = 'block';
+  fb.style.background = correct ? 'var(--green-bg)' : 'var(--red-bg)';
+  fb.style.color = correct ? 'var(--green)' : 'var(--red)';
+  fb.style.border = correct ? '0.5px solid var(--green)' : '0.5px solid var(--red)';
+  fb.innerHTML = `<strong>${correct ? '✓ Correct.' : '✗ Not quite.'}</strong> ${a.explanation}`;
+  btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
+}
+
+function initInteractive() {
+  if (interactiveInited) return;
+  interactiveInited = true;
+  initActivity();
+  updateZCalc();
+  updateCompare();
+}
+
+const quizData = [
+  { q:'What does a z-score measure?', opts:['The raw value itself','The number of standard deviations from the mean','The percentage of values below x','The sample size'], correct:1, ok:'Correct. A z-score measures distance from the mean in standard deviation units.', no:'A z-score tells us how many standard deviations a value is above or below the mean.' },
+  { q:'If x = 90, mean = 75 and SD = 5, what is z?', opts:['1','2','3','15'], correct:2, ok:'Correct. z = (90 − 75)/5 = 3.', no:'Use z = (x − mean)/SD = (90 − 75)/5 = 3.' },
+  { q:'What does z = −1.6 mean?', opts:['1.6 units below the mean','1.6 standard deviations below the mean','1.6 standard deviations above the mean','The value is impossible'], correct:1, ok:'Correct. Negative means below the mean; 1.6 is the number of standard deviations.', no:'The negative sign means below the mean, and z is measured in standard deviation units.' },
+  { q:'After standardisation, what are the mean and standard deviation of the transformed variable?', opts:['Mean 1, SD 0','Mean 0, SD 1','Mean 0, SD 0','Mean 1, SD 1'], correct:1, ok:'Correct. Standardisation produces a variable with mean 0 and standard deviation 1.', no:'The purpose of z-score standardisation is to create mean 0 and SD 1.' },
+  { q:'Does calculating z-scores make a skewed distribution normal?', opts:['Yes, always','Only if n is large','No, it changes centre and scale but not the basic shape','Only for categorical variables'], correct:2, ok:'Correct. Standardisation changes location and scale; it does not turn skewed data into normal data.', no:'Z-scores standardise the scale but do not change the fundamental shape into normality.' }
+];
+
+let qIdx = 0, chosen = null, isAnswered = false, score = 0;
+
+function initQuiz() {
+  qIdx = 0; chosen = null; isAnswered = false; score = 0;
+  renderQ();
+}
+
+function renderQ() {
+  if (qIdx >= quizData.length) {
+    document.getElementById('quiz-container').innerHTML = `
+      <div class="quiz-complete">
+        <div class="score-big">${score}/${quizData.length}</div>
+        <p style="margin-top:8px">${score === quizData.length ? 'Excellent — strong understanding of z-scores.' : score >= 3 ? 'Good work. Review any missed ideas.' : 'Review the formula and interpretations, then retry.'}</p>
+        <button class="btn-check" style="margin-top:20px" onclick="initQuiz()">Retry quiz</button>
+      </div>`;
+    return;
+  }
+  const q = quizData[qIdx];
+  document.getElementById('quiz-container').innerHTML = `
+    <div class="quiz-progress">Question ${qIdx + 1} of ${quizData.length}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts" id="qopts">
+      ${q.opts.map((o,i)=>`<div class="quiz-opt" id="qo${i}" onclick="selectOpt(${i})"><div class="opt-key">${['A','B','C','D'][i]}</div>${o}</div>`).join('')}
+    </div>
+    <div class="feedback" id="qfb"></div>
+    <div class="quiz-actions">
+      <button class="btn-check" id="qbtn-check" onclick="checkQ()" disabled>Check answer</button>
+      <button class="btn-next" id="qbtn-next" onclick="nextQ()">${qIdx < quizData.length - 1 ? 'Next question →' : 'See result'}</button>
+    </div>`;
+  chosen = null; isAnswered = false;
+}
+
+function selectOpt(i) {
+  if (isAnswered) return;
+  document.querySelectorAll('.quiz-opt').forEach(el => el.classList.remove('selected'));
+  document.getElementById('qo' + i).classList.add('selected');
+  chosen = i;
+  document.getElementById('qbtn-check').disabled = false;
+}
+
+function checkQ() {
+  if (chosen === null || isAnswered) return;
+  isAnswered = true;
+  const q = quizData[qIdx];
+  const fb = document.getElementById('qfb');
+  document.querySelectorAll('.quiz-opt').forEach((el,i) => {
+    el.classList.add('locked');
+    if (i === q.correct) el.classList.add('correct');
+    if (i === chosen && i !== q.correct) el.classList.add('wrong');
+  });
+  const correct = chosen === q.correct;
+  if (correct) score++;
+  fb.className = 'feedback show ' + (correct ? 'ok' : 'no');
+  fb.textContent = correct ? q.ok : q.no;
+  document.getElementById('qbtn-check').disabled = true;
+  document.getElementById('qbtn-next').classList.add('show');
+}
+
+function nextQ() {
+  qIdx++;
+  renderQ();
+}
+</script>
+<!-- My Academic Tutor platform footer with logo -->
+<footer class="mat-platform-footer">
+  <div class="mat-footer-brand">
+    <img class="mat-footer-logo" src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <div>
+      <p><strong>Statistics Foundation for University Students</strong></p>
+      <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+<style id="mat-platform-footer-style">
+.mat-platform-footer{max-width:960px;margin:34px auto 0;padding:22px 34px;border-top:1px solid var(--border,#ded9cf);color:var(--text2,#5f5f5a);font-size:13px;line-height:1.65;}
+.mat-platform-footer p{margin:0 0 4px 0;}
+.mat-platform-footer strong{color:var(--text,#171717);}
+.mat-footer-brand{display:flex;align-items:center;gap:12px;}
+.mat-footer-logo{width:42px;height:42px;object-fit:contain;border-radius:10px;background:#fff;border:1px solid var(--border,#ded9cf);padding:5px;flex:0 0 auto;}
+@media(max-width:850px){.mat-platform-footer{padding:20px 18px;}.mat-footer-brand{align-items:flex-start;}}
+</style>
+
+</body>
+</html>

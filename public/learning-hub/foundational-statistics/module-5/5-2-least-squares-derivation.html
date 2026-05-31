@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5.2 Least Squares Derivation — Foundational Statistics</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--bg2:#f6f5f0;--bg3:#f0ede6;--border:#e0ddd6;--text:#1a1a18;--text2:#5a5a56;--text3:#8a8a84;--blue:#378ADD;--blue-bg:#E6F1FB;--blue-txt:#0C447C;--green:#3B6D11;--green-bg:#EAF3DE;--amber:#BA7517;--amber-bg:#FAEEDA;--amber-txt:#633806;--red:#A32D2D;--red-bg:#FCEBEB;--purple:#534AB7;--purple-bg:#EEEDFE;--purple-txt:#3C3489;--radius:8px;--radius-lg:12px;--sans:system-ui,-apple-system,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--border:#3a3a36;--text:#e8e6df;--text2:#a8a69f;--text3:#6a6a64;--blue-bg:#0c1f35;--blue-txt:#85B7EB;--green-bg:#0f2005;--amber-bg:#2a1800;--amber-txt:#FAC775;--red-bg:#2a0a0a;--purple-bg:#1a1740;--purple-txt:#AFA9EC}}
+html{font-family:var(--sans);font-size:16px;color:var(--text);background:var(--bg3);scroll-behavior:smooth}
+body{display:flex;min-height:100vh}.sidebar{width:278px;min-width:278px;background:var(--bg);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-brand{padding:16px;border-bottom:.5px solid var(--border)}.brand-course{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}.brand-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}.progress-wrap{height:3px;background:var(--border)}.progress-bar{height:3px;background:var(--blue);width:88%}
+.nav-section{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:12px 16px 4px}.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12.5px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;text-decoration:none;transition:background .12s}.nav-item:hover{background:var(--bg2);color:var(--text)}.nav-item.active{color:var(--text);border-left-color:var(--blue);background:var(--bg2);font-weight:500}.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0}.nav-item.active .nav-dot{background:var(--blue)}
+.main{flex:1;min-width:0}.tab-bar{background:var(--bg);border-bottom:.5px solid var(--border);display:flex;padding:0 32px;position:sticky;top:0;z-index:10;overflow-x:auto}.tab{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-.5px;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);white-space:nowrap}.tab:hover{color:var(--text)}.tab.active{color:var(--text);border-bottom-color:var(--blue);font-weight:500}
+.content{max-width:960px;margin:0 auto;padding:34px}.section{display:none}.section.active{display:block}.lesson-eyebrow{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}h1{font-size:29px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.25}.lesson-meta{font-size:12px;color:var(--text3);margin-bottom:28px}
+h2{font-size:19px;font-weight:500;color:var(--text);margin:32px 0 11px}h3{font-size:15.5px;font-weight:500;color:var(--text);margin:22px 0 8px}p{font-size:14.7px;color:var(--text2);line-height:1.78;margin-bottom:14px}strong{color:var(--text);font-weight:500}ul,ol{padding-left:21px;margin-bottom:14px}li{font-size:14.5px;color:var(--text2);line-height:1.76;margin-bottom:4px}
+.scene-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:24px 0 12px;padding:6px 10px;background:var(--bg2);border-radius:var(--radius);display:inline-block}.dialogue{display:flex;flex-direction:column;gap:12px;margin:16px 0}.line{display:flex;gap:12px;align-items:flex-start}.line.right{flex-direction:row-reverse}.speaker-badge{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:2px}.sp-prof{background:var(--blue-bg);color:var(--blue-txt)}.sp-emma{background:var(--green-bg);color:var(--green)}.sp-oliver{background:var(--amber-bg);color:var(--amber-txt)}.sp-james{background:var(--purple-bg);color:var(--purple-txt)}.sp-sophia{background:var(--red-bg);color:var(--red)}.bubble{max-width:78%;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px}.line.right .bubble{background:var(--blue-bg);border-color:transparent}.speaker-name{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:3px}.bubble p{font-size:14px;color:var(--text);margin:0;line-height:1.62}
+.def-box{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin:17px 0}.def-box .def-label{font-size:11px;font-weight:500;color:var(--blue-txt);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}.def-box.green{border-left-color:var(--green);background:var(--green-bg)}.def-box.green .def-label{color:var(--green)}.def-box.amber{border-left-color:var(--amber);background:var(--amber-bg)}.def-box.amber .def-label{color:var(--amber-txt)}.def-box.red{border-left-color:var(--red);background:var(--red-bg)}.def-box.red .def-label{color:var(--red)}.def-box.purple{border-left-color:var(--purple);background:var(--purple-bg)}.def-box.purple .def-label{color:var(--purple-txt)}.def-box p{font-size:13.7px;color:var(--text);margin:0;line-height:1.65}
+.math-block{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius);padding:15px 20px;margin:16px 0;text-align:center;font-size:15px;color:var(--text);overflow-x:auto;line-height:1.7}
+.tbl-wrap{overflow-x:auto;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:13.5px}thead tr{background:var(--bg2)}th{padding:9px 12px;text-align:left;font-weight:500;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.05em}td{padding:9px 12px;color:var(--text2);border-bottom:.5px solid var(--border);line-height:1.55}tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg2)}
+.takeaway{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin:25px 0}.takeaway .tk-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}.takeaway ul{margin:0}.takeaway li{font-size:14px;color:var(--text)}
+.plot-grid{display:grid;grid-template-columns:1fr;gap:18px}.plot-box{border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;background:var(--bg)}.plot-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}.plot-sub{font-size:12px;color:var(--text3);margin-bottom:14px}.chart-wrap{position:relative;width:100%;height:320px}
+.controls-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;align-items:center}.ctrl{display:flex;align-items:center;gap:8px}.ctrl label{font-size:12.5px;color:var(--text2);white-space:nowrap}.ctrl input[type=range]{width:145px;accent-color:var(--blue)}.ctrl select{padding:6px 8px;border:.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text)}.ctrl-val{font-size:12.5px;font-weight:500;color:var(--text);min-width:42px}.stat-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}.stat-card{flex:1;min-width:120px;background:var(--bg2);border-radius:var(--radius);padding:10px 14px;text-align:center}.stat-card .sc-label{font-size:11px;color:var(--text3);margin-bottom:4px}.stat-card .sc-val{font-size:20px;font-weight:500;color:var(--text)}
+.activity-card{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:10px 0}.activity-inner{padding:12px 16px}.choice-btn{padding:6px 12px;border:.5px solid var(--border);border-radius:var(--radius);background:none;font-size:12.5px;cursor:pointer;font-family:var(--sans);color:var(--text2);margin-right:6px;margin-top:6px}.choice-btn:hover{background:var(--bg2);color:var(--text)}.feedback-mini{display:none;margin-top:10px;padding:10px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5}
+.exercise{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:16px 0}.ex-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer}.ex-header:hover{background:var(--bg2)}.ex-qnum{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}.ex-qtitle{font-size:14px;font-weight:500;color:var(--text);margin-top:2px}.ex-difficulty{font-size:11px;padding:2px 8px;border-radius:10px}.diff-easy{background:var(--green-bg);color:var(--green)}.diff-medium{background:var(--amber-bg);color:var(--amber-txt)}.diff-hard{background:var(--red-bg);color:var(--red)}.ex-toggle{font-size:18px;color:var(--text3)}.ex-body{display:none;padding:0 16px 16px;border-top:.5px solid var(--border)}.ex-body.open{display:block}.ex-question{font-size:14px;color:var(--text2);line-height:1.7;margin:12px 0}.answer-toggle{background:none;border:.5px solid var(--border);border-radius:var(--radius);padding:7px 14px;font-size:12.5px;cursor:pointer;color:var(--text2);font-family:var(--sans);margin-top:10px}.answer-box{display:none;margin-top:12px;background:var(--green-bg);border:.5px solid var(--green);border-radius:var(--radius);padding:12px 16px}.answer-box.open{display:block;animation:fadeIn .2s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}.answer-box .ans-label{font-size:11px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}.answer-box p,.answer-box li{font-size:13.5px;color:var(--text);line-height:1.65}
+.quiz-q{font-size:14.5px;font-weight:500;color:var(--text);margin-bottom:14px;line-height:1.55}.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}.quiz-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:.5px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13.5px;color:var(--text2)}.quiz-opt:hover:not(.locked){border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.selected{border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}.quiz-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}.quiz-opt .opt-key{width:22px;height:22px;border-radius:50%;border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}.feedback{padding:10px 14px;border-radius:var(--radius);font-size:13.5px;line-height:1.6;margin-bottom:14px;display:none}.feedback.show{display:block}.feedback.ok{background:var(--green-bg);color:var(--green);border:.5px solid var(--green)}.feedback.no{background:var(--red-bg);color:var(--red);border:.5px solid var(--red)}.quiz-actions{display:flex;gap:10px}.btn-check{padding:8px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:var(--sans)}.btn-check:disabled{opacity:.4;cursor:default}.btn-next{padding:8px 18px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer;background:none;color:var(--text2);font-family:var(--sans);display:none}.btn-next.show{display:inline-block}.quiz-progress{font-size:11.5px;color:var(--text3);margin-bottom:20px}.quiz-complete{text-align:center;padding:32px 0}.quiz-complete .score-big{font-size:48px;font-weight:500;color:var(--text)}
+@media(max-width:850px){body{display:block}.sidebar{width:100%;height:auto;position:relative;min-width:0}.content{padding:24px 18px}.tab-bar{padding:0 12px}.bubble{max-width:88%}}
+</style>
+
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-course">Foundational Statistics</div>
+    <div class="brand-title">Statistics Foundation for University Students</div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="sidebar-progress" style="width:100%;"></div></div>
+
+  <div class="nav-section">Course modules</div>
+  <a class="nav-item" href="../module-1/index.html"><div class="nav-dot"></div>Module 1 · Introduction</a>
+  <a class="nav-item" href="../module-2/index.html"><div class="nav-dot"></div>Module 2 · Descriptive statistics</a>
+  <a class="nav-item" href="../module-3/index.html"><div class="nav-dot"></div>Module 3 · Probability</a>
+  <a class="nav-item" href="../module-4/index.html"><div class="nav-dot"></div>Module 4 · Statistical inference</a>
+  <a class="nav-item active" href="../module-5/index.html"><div class="nav-dot"></div>Module 5 · Regression</a>
+
+  <div class="nav-section">Module 5 lessons</div>
+  <a class="nav-item done" href="5-1-simple-linear-regression.html"><div class="nav-dot"></div>5.1 Simple linear regression</a>
+  <a class="nav-item active" href="5-2-least-squares-derivation.html"><div class="nav-dot"></div>5.2 Least squares derivation</a>
+  <a class="nav-item done" href="5-3-multiple-regression-confounding.html"><div class="nav-dot"></div>5.3 Multiple regression & confounding</a>
+  <a class="nav-item done" href="5-4-model-assessment-diagnostics.html"><div class="nav-dot"></div>5.4 Model assessment & diagnostics</a>
+  <a class="nav-item done" href="5-5-logistic-regression-intro.html"><div class="nav-dot"></div>5.5 Logistic regression intro</a>
+</nav>
+
+<div class="main">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('lecture',this)">Lecture</button>
+    <button class="tab" onclick="showTab('notes',this)">Notes</button>
+    <button class="tab" onclick="showTab('interactive',this)">Interactive</button>
+    <button class="tab" onclick="showTab('exercises',this)">Exercises</button>
+    <button class="tab" onclick="showTab('quiz',this)">Quiz</button>
+  </div>
+
+<div class="content">
+
+<section id="sec-lecture" class="section active">
+  <div class="lesson-eyebrow">Module 5 · Lesson 5.2</div>
+  <h1>Least squares derivation</h1>
+  <div class="lesson-meta">Mr. R · Prof Stat · ~60 min · Deriving the regression line</div>
+
+  <div class="scene-label">📍 Scene — regression classroom, the line is no longer magic</div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>In the last lesson, you said least squares chooses the regression line by minimising squared residuals. But how does it actually choose the intercept and slope?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Today we derive that. The regression line is not guessed. It comes from minimising a mathematical function.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>So we will use calculus?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes, but carefully. The idea is simple: choose \(b_0\) and \(b_1\) so the squared vertical distances from the data points to the line are as small as possible.</p></div></div>
+  </div>
+
+  <h2>The fitted line</h2>
+  <p>For a sample of \(n\) observations \((x_i,y_i)\), the fitted simple linear regression line is:</p>
+
+  <div class="math-block">
+    \[
+    \hat{y}_i=b_0+b_1x_i
+    \]
+  </div>
+
+  <p>The residual for observation \(i\) is:</p>
+
+  <div class="math-block">
+    \[
+    e_i=y_i-\hat{y}_i=y_i-b_0-b_1x_i
+    \]
+  </div>
+
+  <h2>The least squares criterion</h2>
+  <p>Least squares chooses \(b_0\) and \(b_1\) to minimise the sum of squared residuals:</p>
+
+  <div class="math-block">
+    \[
+    S(b_0,b_1)=\sum_{i=1}^{n}(y_i-b_0-b_1x_i)^2
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>Why squared residuals instead of absolute residuals?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Squaring makes the function smooth and differentiable, gives a clean formula, and penalises large residuals strongly. Absolute deviations are useful too, but lead to a different method.</p></div></div>
+  </div>
+
+  <h2>First derivative with respect to the intercept</h2>
+  <p>To find the minimum, take partial derivatives and set them equal to zero. First differentiate with respect to \(b_0\):</p>
+
+  <div class="math-block">
+    \[
+    \frac{\partial S}{\partial b_0}
+    =
+    -2\sum_{i=1}^{n}(y_i-b_0-b_1x_i)
+    \]
+  </div>
+
+  <p>Setting this equal to zero gives:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}(y_i-b_0-b_1x_i)=0
+    \]
+  </div>
+
+  <p>This says the residuals from the fitted least-squares line sum to zero.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>So one consequence of least squares is that positive and negative residuals balance out?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly, provided the model includes an intercept.</p></div></div>
+  </div>
+
+  <h2>The line passes through the sample means</h2>
+  <p>Expanding the first normal equation:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}y_i-nb_0-b_1\sum_{i=1}^{n}x_i=0
+    \]
+  </div>
+
+  <p>Divide by \(n\):</p>
+
+  <div class="math-block">
+    \[
+    \bar{y}-b_0-b_1\bar{x}=0
+    \]
+  </div>
+
+  <p>Therefore:</p>
+
+  <div class="math-block">
+    \[
+    b_0=\bar{y}-b_1\bar{x}
+    \]
+  </div>
+
+  <p>This means the fitted least-squares line always passes through \((\bar{x},\bar{y})\).</p>
+
+  <h2>First derivative with respect to the slope</h2>
+  <p>Now differentiate the sum of squared residuals with respect to \(b_1\):</p>
+
+  <div class="math-block">
+    \[
+    \frac{\partial S}{\partial b_1}
+    =
+    -2\sum_{i=1}^{n}x_i(y_i-b_0-b_1x_i)
+    \]
+  </div>
+
+  <p>Setting this equal to zero gives:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}x_i(y_i-b_0-b_1x_i)=0
+    \]
+  </div>
+
+  <p>This is the second normal equation.</p>
+
+  <h2>The slope formula</h2>
+  <p>Substitute \(b_0=\bar{y}-b_1\bar{x}\) into the second normal equation. After simplification, the least-squares slope is:</p>
+
+  <div class="math-block">
+    \[
+    b_1=
+    \frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}
+    {\sum_{i=1}^{n}(x_i-\bar{x})^2}
+    \]
+  </div>
+
+  <p>The numerator measures how \(x\) and \(y\) vary together. The denominator measures how much \(x\) varies.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>So the slope is like covariance divided by variance?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. Informally, slope is “co-movement of \(X\) and \(Y\)” divided by “movement in \(X\)”.</p></div></div>
+  </div>
+
+  <h2>Using covariance and variance language</h2>
+  <p>The formula can also be written conceptually as:</p>
+
+  <div class="math-block">
+    \[
+    b_1=\frac{\text{sample covariance of }X\text{ and }Y}{\text{sample variance of }X}
+    \]
+  </div>
+
+  <p>Because the same divisor cancels from numerator and denominator, the slope can be written using sums of deviations.</p>
+
+  <h2>The intercept formula</h2>
+  <p>Once \(b_1\) is found, the intercept follows immediately:</p>
+
+  <div class="math-block">
+    \[
+    b_0=\bar{y}-b_1\bar{x}
+    \]
+  </div>
+
+  <p>This formula forces the fitted line through the centre of the data cloud, \((\bar{x},\bar{y})\).</p>
+
+  <h2>What the derivation teaches</h2>
+  <p>The derivation is not just algebra. It tells us how least squares behaves: residuals sum to zero, the line passes through the sample means, the slope depends on co-variation, and extreme \(x\)-values can strongly influence the line.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>Why do extreme \(x\)-values matter more?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Because the slope formula uses \(x_i-\bar{x}\). Points far from the mean of \(X\) have more leverage over the fitted slope.</p></div></div>
+  </div>
+
+  <div class="takeaway">
+    <div class="tk-label">Key takeaways from this lecture</div>
+    <ul>
+      <li>Least squares minimises \(S(b_0,b_1)=\sum(y_i-b_0-b_1x_i)^2\).</li>
+      <li>The derivative with respect to \(b_0\) implies residuals sum to zero.</li>
+      <li>The fitted line passes through \((\bar{x},\bar{y})\).</li>
+      <li>The least-squares slope is \(b_1=\sum(x_i-\bar{x})(y_i-\bar{y})/\sum(x_i-\bar{x})^2\).</li>
+      <li>The intercept is \(b_0=\bar{y}-b_1\bar{x}\).</li>
+      <li>The slope is covariance-like variation divided by variance-like variation in \(X\).</li>
+      <li>Extreme \(X\)-values can have high leverage.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-notes" class="section">
+  <div class="lesson-eyebrow">Detailed theoretical notes</div>
+  <h1>Least squares derivation</h1>
+
+  <h2>1. Starting point</h2>
+  <p>Given paired data \((x_1,y_1),\ldots,(x_n,y_n)\), the fitted line is:</p>
+
+  <div class="math-block">
+    \[
+    \hat{y}_i=b_0+b_1x_i
+    \]
+  </div>
+
+  <p>The residual is:</p>
+
+  <div class="math-block">
+    \[
+    e_i=y_i-\hat{y}_i=y_i-b_0-b_1x_i
+    \]
+  </div>
+
+  <h2>2. Least squares objective function</h2>
+  <p>The least squares estimates minimise:</p>
+
+  <div class="math-block">
+    \[
+    S(b_0,b_1)=\sum_{i=1}^{n}e_i^2
+    =
+    \sum_{i=1}^{n}(y_i-b_0-b_1x_i)^2
+    \]
+  </div>
+
+  <p>The goal is to find the values of \(b_0\) and \(b_1\) where this function is as small as possible.</p>
+
+  <h2>3. First normal equation</h2>
+  <p>Differentiate \(S(b_0,b_1)\) with respect to \(b_0\):</p>
+
+  <div class="math-block">
+    \[
+    \frac{\partial S}{\partial b_0}
+    =
+    \sum_{i=1}^{n}2(y_i-b_0-b_1x_i)(-1)
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \frac{\partial S}{\partial b_0}
+    =
+    -2\sum_{i=1}^{n}(y_i-b_0-b_1x_i)
+    \]
+  </div>
+
+  <p>At the minimum, set the derivative equal to zero:</p>
+
+  <div class="math-block">
+    \[
+    -2\sum_{i=1}^{n}(y_i-b_0-b_1x_i)=0
+    \]
+  </div>
+
+  <p>Therefore:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}(y_i-b_0-b_1x_i)=0
+    \]
+  </div>
+
+  <p>This is equivalent to:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}e_i=0
+    \]
+  </div>
+
+  <h2>4. Intercept formula from the first normal equation</h2>
+  <p>Expand the first normal equation:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}y_i-\sum_{i=1}^{n}b_0-b_1\sum_{i=1}^{n}x_i=0
+    \]
+  </div>
+
+  <p>Since \(b_0\) is constant:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}y_i-nb_0-b_1\sum_{i=1}^{n}x_i=0
+    \]
+  </div>
+
+  <p>Divide by \(n\):</p>
+
+  <div class="math-block">
+    \[
+    \bar{y}-b_0-b_1\bar{x}=0
+    \]
+  </div>
+
+  <p>Thus:</p>
+
+  <div class="math-block">
+    \[
+    b_0=\bar{y}-b_1\bar{x}
+    \]
+  </div>
+
+  <h2>5. Second normal equation</h2>
+  <p>Differentiate \(S(b_0,b_1)\) with respect to \(b_1\):</p>
+
+  <div class="math-block">
+    \[
+    \frac{\partial S}{\partial b_1}
+    =
+    \sum_{i=1}^{n}2(y_i-b_0-b_1x_i)(-x_i)
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \frac{\partial S}{\partial b_1}
+    =
+    -2\sum_{i=1}^{n}x_i(y_i-b_0-b_1x_i)
+    \]
+  </div>
+
+  <p>Set this equal to zero:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}x_i(y_i-b_0-b_1x_i)=0
+    \]
+  </div>
+
+  <p>This is equivalent to:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}x_ie_i=0
+    \]
+  </div>
+
+  <p>So in least squares with an intercept, the residuals are also orthogonal to the predictor \(x\) in the sense that their weighted sum by \(x_i\) is zero.</p>
+
+  <h2>6. Deriving the slope</h2>
+  <p>Substitute \(b_0=\bar{y}-b_1\bar{x}\) into the second normal equation:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}x_i
+    \left[y_i-(\bar{y}-b_1\bar{x})-b_1x_i\right]=0
+    \]
+  </div>
+
+  <p>Simplify inside the brackets:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}x_i
+    \left[(y_i-\bar{y})-b_1(x_i-\bar{x})\right]=0
+    \]
+  </div>
+
+  <p>Expand the sum:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}x_i(y_i-\bar{y})
+    -
+    b_1\sum_{i=1}^{n}x_i(x_i-\bar{x})=0
+    \]
+  </div>
+
+  <p>Rearrange:</p>
+
+  <div class="math-block">
+    \[
+    b_1=
+    \frac{\sum_{i=1}^{n}x_i(y_i-\bar{y})}
+    {\sum_{i=1}^{n}x_i(x_i-\bar{x})}
+    \]
+  </div>
+
+  <p>Using the identities:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}x_i(y_i-\bar{y})
+    =
+    \sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}x_i(x_i-\bar{x})
+    =
+    \sum_{i=1}^{n}(x_i-\bar{x})^2
+    \]
+  </div>
+
+  <p>we obtain the standard least-squares slope formula:</p>
+
+  <div class="math-block">
+    \[
+    b_1=
+    \frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}
+    {\sum_{i=1}^{n}(x_i-\bar{x})^2}
+    \]
+  </div>
+
+  <h2>7. Intercept after the slope</h2>
+  <p>Once \(b_1\) is calculated, the intercept is:</p>
+
+  <div class="math-block">
+    \[
+    b_0=\bar{y}-b_1\bar{x}
+    \]
+  </div>
+
+  <p>This ensures:</p>
+
+  <div class="math-block">
+    \[
+    \bar{y}=b_0+b_1\bar{x}
+    \]
+  </div>
+
+  <p>So the fitted line passes through the point \((\bar{x},\bar{y})\).</p>
+
+  <h2>8. Alternative notation</h2>
+  <p>Define:</p>
+
+  <div class="math-block">
+    \[
+    S_{xx}=\sum_{i=1}^{n}(x_i-\bar{x})^2
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    S_{xy}=\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})
+    \]
+  </div>
+
+  <p>Then:</p>
+
+  <div class="math-block">
+    \[
+    b_1=\frac{S_{xy}}{S_{xx}}
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    b_0=\bar{y}-b_1\bar{x}
+    \]
+  </div>
+
+  <h2>9. Relationship with correlation</h2>
+  <p>The sample correlation is:</p>
+
+  <div class="math-block">
+    \[
+    r=
+    \frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}
+    {\sqrt{\sum_{i=1}^{n}(x_i-\bar{x})^2}
+    \sqrt{\sum_{i=1}^{n}(y_i-\bar{y})^2}}
+    \]
+  </div>
+
+  <p>The regression slope can be written as:</p>
+
+  <div class="math-block">
+    \[
+    b_1=r\frac{s_y}{s_x}
+    \]
+  </div>
+
+  <p>This shows that slope is related to correlation, but it also depends on the units and spreads of \(X\) and \(Y\).</p>
+
+  <h2>10. Why \(S_{xx}\) must be positive</h2>
+  <p>The denominator \(S_{xx}\) must be greater than zero. If all \(x_i\) values are identical, then there is no variation in \(X\), and a slope cannot be estimated.</p>
+
+  <div class="math-block">
+    \[
+    S_{xx}=0
+    \quad\Rightarrow\quad
+    \text{the regression slope is undefined}
+    \]
+  </div>
+
+  <h2>11. Properties of least-squares residuals</h2>
+  <p>For simple linear regression with an intercept, the least-squares residuals satisfy:</p>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}e_i=0
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}x_ie_i=0
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \sum_{i=1}^{n}\hat{y}_ie_i=0
+    \]
+  </div>
+
+  <p>These properties are consequences of the normal equations.</p>
+
+  <h2>12. Common mistakes</h2>
+  <ul>
+    <li><strong>Forgetting the denominator:</strong> the slope is not just the covariance-like numerator; it must be divided by variation in \(X\).</li>
+    <li><strong>Thinking the fitted line passes through all points:</strong> it passes through \((\bar{x},\bar{y})\), not through every observation.</li>
+    <li><strong>Ignoring the role of \(X\)-variation:</strong> if \(X\) barely varies, slope estimation becomes unstable.</li>
+    <li><strong>Confusing residuals with true errors:</strong> residuals are observed deviations from the fitted line.</li>
+    <li><strong>Assuming least squares is robust to outliers:</strong> squared residuals can make outliers highly influential.</li>
+  </ul>
+
+  <div class="takeaway">
+    <div class="tk-label">Notes summary</div>
+    <ul>
+      <li>Least squares minimises the sum of squared residuals.</li>
+      <li>Differentiating with respect to \(b_0\) and \(b_1\) gives the normal equations.</li>
+      <li>The slope is \(b_1=S_{xy}/S_{xx}\).</li>
+      <li>The intercept is \(b_0=\bar{y}-b_1\bar{x}\).</li>
+      <li>The fitted line passes through \((\bar{x},\bar{y})\).</li>
+      <li>Residuals sum to zero when the model includes an intercept.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-interactive" class="section">
+  <div class="lesson-eyebrow">Interactive regression lab</div>
+  <h1>Least squares derivation</h1>
+
+  <div class="plot-grid">
+    <div class="plot-box">
+      <div class="plot-title">1. Least squares line from data</div>
+      <div class="plot-sub">The fitted line is calculated using \(b_1=S_{xy}/S_{xx}\) and \(b_0=\bar{y}-b_1\bar{x}\).</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Noise level</label><input id="noise" type="range" min="0" max="30" value="10" oninput="updateFit()"><span id="noiseVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">b0</div><div id="b0Out" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">b1</div><div id="b1Out" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">SSE</div><div id="fitSSEOut" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="fitChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">2. SSE as a function of slope</div>
+      <div class="plot-sub">The least-squares slope is where the SSE curve is smallest.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Trial slope</label><input id="trialSlope" type="range" min="-10" max="70" value="25" oninput="updateSSECurve()"><span id="trialSlopeVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Trial SSE</div><div id="trialSSEOut" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Best slope</div><div id="bestSlopeOut" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="sseCurveChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">3. Deviation products</div>
+      <div class="plot-sub">The numerator \(S_{xy}\) is built from products \((x_i-\bar{x})(y_i-\bar{y})\).</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Selected point</label><input id="pointIndex" type="range" min="0" max="9" value="4" oninput="updateDeviations()"><span id="pointIndexVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">x deviation</div><div id="xDevOut" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">y deviation</div><div id="yDevOut" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">product</div><div id="prodOut" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="devChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">4. Outlier and leverage</div>
+      <div class="plot-sub">A point far from \(\bar{x}\) can strongly change the slope.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Outlier x</label><input id="outX" type="range" min="10" max="30" value="20" oninput="updateOutlier()"><span id="outXVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Outlier y</label><input id="outY" type="range" min="0" max="100" value="80" oninput="updateOutlier()"><span id="outYVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Slope without outlier</div><div id="slopeNoOut" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Slope with outlier</div><div id="slopeWithOut" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="outlierChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">5. Derivation checker</div>
+      <div class="plot-sub">Choose the correct interpretation of each least-squares statement.</div>
+      <div id="activity-area"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-exercises" class="section">
+  <div class="lesson-eyebrow">Practice exercises</div>
+  <h1>Least squares derivation</h1>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 1</div><div class="ex-qtitle">Write the objective function</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Write the least-squares objective function for simple linear regression.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(S(b_0,b_1)=\sum_{i=1}^{n}(y_i-b_0-b_1x_i)^2\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 2</div><div class="ex-qtitle">Residual sum property</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">For a least-squares regression with an intercept, what is \(\sum e_i\)?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\sum_{i=1}^{n}e_i=0\). Positive and negative residuals balance exactly when the model includes an intercept.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 3</div><div class="ex-qtitle">Slope from Sxx and Sxy</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If \(S_{xy}=40\) and \(S_{xx}=10\), calculate \(b_1\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(b_1=S_{xy}/S_{xx}=40/10=4\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 4</div><div class="ex-qtitle">Intercept calculation</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If \(\bar{x}=5\), \(\bar{y}=20\), and \(b_1=3\), calculate \(b_0\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(b_0=\bar{y}-b_1\bar{x}=20-3(5)=5\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 5</div><div class="ex-qtitle">Line through sample means</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Show that the line \(\hat{y}=5+3x\) passes through \((\bar{x},\bar{y})=(5,20)\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>At \(x=5\), \(\hat{y}=5+3(5)=20\). Therefore the fitted line passes through \((5,20)\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 6</div><div class="ex-qtitle">Compute Sxx</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">For \(x=(1,2,3)\), compute \(S_{xx}\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\bar{x}=2\). Therefore \(S_{xx}=(1-2)^2+(2-2)^2+(3-2)^2=1+0+1=2\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 7</div><div class="ex-qtitle">Undefined slope</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Why can the slope not be estimated if all \(x_i\) values are identical?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>If all \(x_i\) values are identical, then \(S_{xx}=\sum(x_i-\bar{x})^2=0\). The slope formula has \(S_{xx}\) in the denominator, so the slope is undefined.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 8</div><div class="ex-qtitle">Outlier influence</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Explain why a point far from \(\bar{x}\) can strongly influence the least-squares slope.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The slope formula uses \((x_i-\bar{x})(y_i-\bar{y})\) and \((x_i-\bar{x})^2\). A large \(x_i-\bar{x}\) gives the point high leverage, so it can strongly affect the fitted slope.</p></div></div></div>
+
+</section>
+
+<section id="sec-quiz" class="section">
+  <div class="lesson-eyebrow">Topic quiz</div>
+  <h1>Least squares derivation</h1>
+  <div id="quiz-container"></div>
+</section>
+
+</div>
+</div>
+
+<script>
+let charts = {};
+let quizIndex = 0;
+let selectedOption = null;
+let answered = false;
+let score = 0;
+
+let currentX = [1,2,3,4,5,6,7,8,9,10];
+let baseY = [10,14,19,21,25,31,33,37,42,45];
+
+const activities = [
+  {text:"Least squares chooses the line with the smallest sum of squared residuals.",answer:"Correct criterion",explanation:"Correct. This is the core least-squares objective."},
+  {text:"With an intercept, least-squares residuals sum to zero.",answer:"Residual property",explanation:"Correct. This follows from the first normal equation."},
+  {text:"The fitted least-squares line passes through all observed points.",answer:"Misinterpretation",explanation:"Not correct. It passes through the sample means, not necessarily every point."},
+  {text:"A point far from the mean of X can strongly affect the slope.",answer:"Leverage idea",explanation:"Correct. Such points have high leverage."}
+];
+
+const quiz = [
+  {q:"Least squares minimises:",opts:["Sum of squared residuals","Sum of x values","Mean of x only","The maximum residual only"],correct:0},
+  {q:"The residual is:",opts:["y_i - yhat_i","x_i - y_i","b0 + b1","Sxx/Sxy"],correct:0},
+  {q:"The first normal equation implies:",opts:["Sum of residuals is zero","All residuals are zero","Slope is always zero","x has no variation"],correct:0},
+  {q:"The least-squares slope is:",opts:["Sxy/Sxx","Sxx/Sxy","xbar/ybar","b0/b1"],correct:0},
+  {q:"The intercept is:",opts:["ybar - b1 xbar","xbar - b1 ybar","Sxy/Sxx","sum residuals"],correct:0},
+  {q:"The fitted line passes through:",opts:["(xbar, ybar)","Every data point","Only the origin","The largest x value"],correct:0},
+  {q:"If Sxx = 0, then:",opts:["The slope is undefined","The slope is 1","The intercept is impossible always","All y values are zero"],correct:0},
+  {q:"High leverage often comes from:",opts:["An x value far from xbar","A p-value below 0.05 only","A missing y unit","A perfectly average x value"],correct:0}
+];
+
+function showTab(name, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='interactive') initInteractive();
+  if(name==='quiz') initQuiz();
+  if(window.MathJax) MathJax.typesetPromise();
+}
+
+function makeChart(id,type,data,options={}){
+  if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(document.getElementById(id),{type,data,options:Object.assign({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}},options)});
+}
+
+function mean(arr){return arr.reduce((s,x)=>s+x,0)/arr.length;}
+function fitLS(x,y){
+  const xb=mean(x), yb=mean(y);
+  let sxx=0, sxy=0;
+  for(let i=0;i<x.length;i++){sxx+=(x[i]-xb)*(x[i]-xb);sxy+=(x[i]-xb)*(y[i]-yb);}
+  const b1=sxy/sxx;
+  const b0=yb-b1*xb;
+  return {b0,b1,xb,yb,sxx,sxy};
+}
+function sse(x,y,b0,b1){return x.reduce((s,xx,i)=>s+Math.pow(y[i]-(b0+b1*xx),2),0);}
+
+function noisyY(){
+  const n=Number(document.getElementById('noise').value);
+  return baseY.map((y,i)=>y + n*Math.sin(i*1.7)/5);
+}
+
+function updateFit(){
+  const noise=Number(document.getElementById('noise').value);
+  document.getElementById('noiseVal').textContent=noise;
+  const y=noisyY(), x=currentX;
+  const fit=fitLS(x,y);
+  const line=[{x:0,y:fit.b0},{x:11,y:fit.b0+fit.b1*11}];
+  const scatter=x.map((xx,i)=>({x:xx,y:y[i]}));
+  document.getElementById('b0Out').textContent=fit.b0.toFixed(2);
+  document.getElementById('b1Out').textContent=fit.b1.toFixed(2);
+  document.getElementById('fitSSEOut').textContent=sse(x,y,fit.b0,fit.b1).toFixed(1);
+  makeChart('fitChart','scatter',{datasets:[
+    {label:'Data',data:scatter,backgroundColor:'#378ADD',borderColor:'#378ADD'},
+    {label:'Least-squares line',data:line,type:'line',borderColor:'#A32D2D',backgroundColor:'transparent',pointRadius:0,borderWidth:2},
+    {label:'Mean point',data:[{x:fit.xb,y:fit.yb}],backgroundColor:'#3B6D11',borderColor:'#3B6D11',pointRadius:7}
+  ]},{plugins:{legend:{display:true}},scales:{x:{type:'linear',min:0,max:11},y:{min:0,max:60}}});
+  updateSSECurve();
+  updateDeviations();
+}
+
+function updateSSECurve(){
+  const trial=Number(document.getElementById('trialSlope').value)/10;
+  document.getElementById('trialSlopeVal').textContent=trial.toFixed(1);
+  const y=noisyY(), x=currentX, fit=fitLS(x,y);
+  const labels=[], vals=[];
+  for(let raw=-10;raw<=70;raw+=2){
+    const sl=raw/10;
+    const b0=fit.yb-sl*fit.xb;
+    labels.push(sl.toFixed(1));
+    vals.push(sse(x,y,b0,sl));
+  }
+  const trialB0=fit.yb-trial*fit.xb;
+  document.getElementById('trialSSEOut').textContent=sse(x,y,trialB0,trial).toFixed(1);
+  document.getElementById('bestSlopeOut').textContent=fit.b1.toFixed(2);
+  makeChart('sseCurveChart','line',{labels,datasets:[{data:vals,borderColor:'#BA7517',backgroundColor:'transparent',pointRadius:0,borderWidth:2,tension:.25}]},{scales:{y:{beginAtZero:true}}});
+}
+
+function updateDeviations(){
+  const idx=Number(document.getElementById('pointIndex').value);
+  const y=noisyY(), x=currentX;
+  const xb=mean(x), yb=mean(y);
+  const xd=x[idx]-xb, yd=y[idx]-yb, prod=xd*yd;
+  document.getElementById('pointIndexVal').textContent=idx+1;
+  document.getElementById('xDevOut').textContent=xd.toFixed(2);
+  document.getElementById('yDevOut').textContent=yd.toFixed(2);
+  document.getElementById('prodOut').textContent=prod.toFixed(2);
+  const scatter=x.map((xx,i)=>({x:xx,y:y[i]}));
+  makeChart('devChart','scatter',{datasets:[
+    {label:'Data',data:scatter,backgroundColor:'#378ADD',borderColor:'#378ADD'},
+    {label:'Selected point',data:[{x:x[idx],y:y[idx]}],backgroundColor:'#A32D2D',borderColor:'#A32D2D',pointRadius:7},
+    {label:'Mean point',data:[{x:xb,y:yb}],backgroundColor:'#3B6D11',borderColor:'#3B6D11',pointRadius:7}
+  ]},{plugins:{legend:{display:true}},scales:{x:{type:'linear',min:0,max:11},y:{min:0,max:60}}});
+}
+
+function updateOutlier(){
+  const ox=Number(document.getElementById('outX').value);
+  const oy=Number(document.getElementById('outY').value);
+  document.getElementById('outXVal').textContent=ox;
+  document.getElementById('outYVal').textContent=oy;
+  const x=currentX.slice(), y=baseY.slice();
+  const fit1=fitLS(x,y);
+  x.push(ox); y.push(oy);
+  const fit2=fitLS(x,y);
+  document.getElementById('slopeNoOut').textContent=fit1.b1.toFixed(2);
+  document.getElementById('slopeWithOut').textContent=fit2.b1.toFixed(2);
+  const scatter=x.map((xx,i)=>({x:xx,y:y[i]}));
+  const line1=[{x:0,y:fit1.b0},{x:30,y:fit1.b0+fit1.b1*30}];
+  const line2=[{x:0,y:fit2.b0},{x:30,y:fit2.b0+fit2.b1*30}];
+  makeChart('outlierChart','scatter',{datasets:[
+    {label:'Data with outlier',data:scatter,backgroundColor:'#378ADD',borderColor:'#378ADD'},
+    {label:'Without outlier line',data:line1,type:'line',borderColor:'#3B6D11',backgroundColor:'transparent',pointRadius:0,borderWidth:2},
+    {label:'With outlier line',data:line2,type:'line',borderColor:'#A32D2D',backgroundColor:'transparent',pointRadius:0,borderWidth:2}
+  ]},{plugins:{legend:{display:true}},scales:{x:{type:'linear',min:0,max:30},y:{min:0,max:100}}});
+}
+
+function initInteractive(){updateFit();updateOutlier();renderActivities();}
+
+function renderActivities(){
+  const area=document.getElementById('activity-area');
+  if(area.children.length) return;
+  const options=["Correct criterion","Residual property","Misinterpretation","Leverage idea"];
+  activities.forEach((a,i)=>{
+    const div=document.createElement('div');
+    div.className='activity-card';
+    div.innerHTML=`<div class="activity-inner"><div style="font-size:13.5px;color:var(--text);line-height:1.6;margin-bottom:8px;">${a.text}</div>${options.map(o=>`<button class="choice-btn" onclick="checkActivity(${i}, '${o}', this)">${o}</button>`).join('')}<div id="activity-${i}" class="feedback-mini"></div></div>`;
+    area.appendChild(div);
+  });
+}
+
+function checkActivity(i,choice,btn){
+  const item=activities[i], fb=document.getElementById('activity-'+i), correct=choice===item.answer;
+  fb.style.display='block';fb.style.background=correct?'var(--green-bg)':'var(--red-bg)';fb.style.color=correct?'var(--green)':'var(--red)';fb.style.border=correct?'.5px solid var(--green)':'.5px solid var(--red)';
+  fb.innerHTML=`<strong>${correct?'✓ Correct.':'✗ Not quite.'}</strong> ${item.explanation}`;
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.disabled=true);
+}
+
+function toggleEx(header){const body=header.nextElementSibling,toggle=header.querySelector('.ex-toggle'),open=body.classList.toggle('open');toggle.textContent=open?'−':'+';if(window.MathJax)MathJax.typesetPromise();}
+function toggleAns(btn){const box=btn.nextElementSibling,open=box.classList.toggle('open');btn.textContent=open?'Hide answer':'Show answer';if(window.MathJax)MathJax.typesetPromise();}
+
+function initQuiz(){quizIndex=0;selectedOption=null;answered=false;score=0;renderQuiz();}
+function renderQuiz(){
+  const container=document.getElementById('quiz-container');
+  if(quizIndex>=quiz.length){
+    container.innerHTML=`<div class="quiz-complete"><div class="score-big">${score}/${quiz.length}</div><p>${score>=7?'Excellent — strong understanding of least squares.':score>=5?'Good work. Review the derivation carefully.':'Review the notes and try the quiz again.'}</p><button class="btn-check" onclick="initQuiz()">Retry quiz</button></div>`;
+    return;
+  }
+  const q=quiz[quizIndex];
+  container.innerHTML=`<div class="quiz-progress">Question ${quizIndex+1} of ${quiz.length}</div><div class="quiz-q">${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<div class="quiz-opt" id="qo${i}" onclick="selectOption(${i})"><div class="opt-key">${['A','B','C','D'][i]}</div>${o}</div>`).join('')}</div><div id="quizFeedback" class="feedback"></div><div class="quiz-actions"><button id="checkBtn" class="btn-check" onclick="checkQuiz()" disabled>Check answer</button><button id="nextBtn" class="btn-next" onclick="nextQuiz()">${quizIndex<quiz.length-1?'Next question →':'See result'}</button></div>`;
+  selectedOption=null;answered=false;
+}
+function selectOption(i){if(answered)return;document.querySelectorAll('.quiz-opt').forEach(o=>o.classList.remove('selected'));document.getElementById('qo'+i).classList.add('selected');selectedOption=i;document.getElementById('checkBtn').disabled=false;}
+function checkQuiz(){
+  if(selectedOption===null||answered)return;answered=true;
+  const q=quiz[quizIndex],correct=selectedOption===q.correct;if(correct)score++;
+  document.querySelectorAll('.quiz-opt').forEach((el,i)=>{el.classList.add('locked');if(i===q.correct)el.classList.add('correct');if(i===selectedOption&&i!==q.correct)el.classList.add('wrong');});
+  const fb=document.getElementById('quizFeedback');fb.className='feedback show '+(correct?'ok':'no');fb.textContent=correct?'Correct.':'Not quite. Review the least-squares derivation notes.';
+  document.getElementById('checkBtn').disabled=true;document.getElementById('nextBtn').classList.add('show');
+}
+function nextQuiz(){quizIndex++;renderQuiz();}
+</script>
+<!-- My Academic Tutor platform footer with logo -->
+<footer class="mat-platform-footer">
+  <div class="mat-footer-brand">
+    <img class="mat-footer-logo" src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <p><strong>Statistics Foundation for University Students</strong></p>
+  </div>
+  <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+  <p>© 2026 My Academic Tutor. All rights reserved.</p>
+</footer>
+<style>
+.mat-platform-footer{
+  max-width:960px;
+  margin:34px auto 0;
+  padding:22px 34px;
+  border-top:1px solid var(--border, #ded9cf);
+  color:var(--text2, #5f5f5a);
+  font-size:13px;
+  line-height:1.65;
+}
+.mat-platform-footer strong{color:var(--text, #171717);}
+.mat-footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.mat-footer-logo{width:36px;height:36px;object-fit:contain;border-radius:9px;background:#fff;border:1px solid var(--border, #ded9cf);padding:4px;}
+@media(max-width:850px){.mat-platform-footer{padding:20px 18px;}}
+</style>
+
+</body>
+</html>

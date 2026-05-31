@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.3 Random Variables and Expectation — Foundational Statistics</title>
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(', '\\)']],
+    displayMath: [['\\[', '\\]']],
+    processEscapes: true
+  },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f6f5f0;--bg3:#f0ede6;--border:#e0ddd6;
+  --text:#1a1a18;--text2:#5a5a56;--text3:#8a8a84;
+  --blue:#378ADD;--blue-bg:#E6F1FB;--blue-txt:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;
+  --amber:#BA7517;--amber-bg:#FAEEDA;--amber-txt:#633806;
+  --red:#A32D2D;--red-bg:#FCEBEB;
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-txt:#3C3489;
+  --radius:8px;--radius-lg:12px;--mono:'Courier New',monospace;--sans:system-ui,-apple-system,sans-serif
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--border:#3a3a36;
+    --text:#e8e6df;--text2:#a8a69f;--text3:#6a6a64;
+    --blue-bg:#0c1f35;--blue-txt:#85B7EB;--green-bg:#0f2005;
+    --amber-bg:#2a1800;--amber-txt:#FAC775;--red-bg:#2a0a0a;
+    --purple-bg:#1a1740;--purple-txt:#AFA9EC
+  }
+}
+html{font-family:var(--sans);font-size:16px;color:var(--text);background:var(--bg3);scroll-behavior:smooth}
+body{display:flex;min-height:100vh}
+.sidebar{width:278px;min-width:278px;background:var(--bg);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-brand{padding:16px;border-bottom:.5px solid var(--border)}
+.brand-course{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.brand-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}
+.progress-wrap{height:3px;background:var(--border)}
+.progress-bar{height:3px;background:var(--blue);width:52%}
+.nav-section{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:12px 16px 4px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12.5px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;text-decoration:none;transition:background .12s}
+.nav-item:hover{background:var(--bg2);color:var(--text)}
+.nav-item.active{color:var(--text);border-left-color:var(--blue);background:var(--bg2);font-weight:500}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0}
+.nav-item.active .nav-dot{background:var(--blue)}
+.main{flex:1;min-width:0}
+.tab-bar{background:var(--bg);border-bottom:.5px solid var(--border);display:flex;padding:0 32px;position:sticky;top:0;z-index:10;overflow-x:auto}
+.tab{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-.5px;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--text);border-bottom-color:var(--blue);font-weight:500}
+.content{max-width:960px;margin:0 auto;padding:34px}
+.section{display:none}
+.section.active{display:block}
+.lesson-eyebrow{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+h1{font-size:29px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.25}
+.lesson-meta{font-size:12px;color:var(--text3);margin-bottom:28px}
+h2{font-size:19px;font-weight:500;color:var(--text);margin:32px 0 11px}
+h3{font-size:15.5px;font-weight:500;color:var(--text);margin:22px 0 8px}
+p{font-size:14.7px;color:var(--text2);line-height:1.78;margin-bottom:14px}
+strong{color:var(--text);font-weight:500}
+ul,ol{padding-left:21px;margin-bottom:14px}
+li{font-size:14.5px;color:var(--text2);line-height:1.76;margin-bottom:4px}
+.scene-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:24px 0 12px;padding:6px 10px;background:var(--bg2);border-radius:var(--radius);display:inline-block}
+.dialogue{display:flex;flex-direction:column;gap:12px;margin:16px 0}
+.line{display:flex;gap:12px;align-items:flex-start}
+.line.right{flex-direction:row-reverse}
+.speaker-badge{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:2px}
+.sp-prof{background:var(--blue-bg);color:var(--blue-txt)}
+.sp-emma{background:var(--green-bg);color:var(--green)}
+.sp-oliver{background:var(--amber-bg);color:var(--amber-txt)}
+.sp-james{background:var(--purple-bg);color:var(--purple-txt)}
+.sp-sophia{background:var(--red-bg);color:var(--red)}
+.bubble{max-width:78%;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px}
+.line.right .bubble{background:var(--blue-bg);border-color:transparent}
+.speaker-name{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:3px}
+.bubble p{font-size:14px;color:var(--text);margin:0;line-height:1.62}
+.def-box{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin:17px 0}
+.def-box .def-label{font-size:11px;font-weight:500;color:var(--blue-txt);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.def-box.green{border-left-color:var(--green);background:var(--green-bg)}
+.def-box.green .def-label{color:var(--green)}
+.def-box.amber{border-left-color:var(--amber);background:var(--amber-bg)}
+.def-box.amber .def-label{color:var(--amber-txt)}
+.def-box.red{border-left-color:var(--red);background:var(--red-bg)}
+.def-box.red .def-label{color:var(--red)}
+.def-box.purple{border-left-color:var(--purple);background:var(--purple-bg)}
+.def-box.purple .def-label{color:var(--purple-txt)}
+.def-box p{font-size:13.7px;color:var(--text);margin:0;line-height:1.65}
+.math-block{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius);padding:15px 20px;margin:16px 0;text-align:center;font-size:15px;color:var(--text);overflow-x:auto;line-height:1.7}
+.tbl-wrap{overflow-x:auto;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead tr{background:var(--bg2)}
+th{padding:9px 12px;text-align:left;font-weight:500;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.05em}
+td{padding:9px 12px;color:var(--text2);border-bottom:.5px solid var(--border);line-height:1.55}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg2)}
+.takeaway{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin:25px 0}
+.takeaway .tk-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.takeaway ul{margin:0}
+.takeaway li{font-size:14px;color:var(--text)}
+.plot-grid{display:grid;grid-template-columns:1fr;gap:18px}
+.plot-box{border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;background:var(--bg)}
+.plot-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.plot-sub{font-size:12px;color:var(--text3);margin-bottom:14px}
+.chart-wrap{position:relative;width:100%;height:300px}
+.controls-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;align-items:center}
+.ctrl{display:flex;align-items:center;gap:8px}
+.ctrl label{font-size:12.5px;color:var(--text2);white-space:nowrap}
+.ctrl input[type=range]{width:145px;accent-color:var(--blue)}
+.ctrl input[type=number]{width:86px;padding:6px 8px;border:.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text)}
+.ctrl select{padding:6px 8px;border:.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text)}
+.ctrl-val{font-size:12.5px;font-weight:500;color:var(--text);min-width:42px}
+.stat-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.stat-card{flex:1;min-width:120px;background:var(--bg2);border-radius:var(--radius);padding:10px 14px;text-align:center}
+.stat-card .sc-label{font-size:11px;color:var(--text3);margin-bottom:4px}
+.stat-card .sc-val{font-size:20px;font-weight:500;color:var(--text)}
+.activity-card{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:10px 0}
+.activity-inner{padding:12px 16px}
+.choice-btn{padding:6px 12px;border:.5px solid var(--border);border-radius:var(--radius);background:none;font-size:12.5px;cursor:pointer;font-family:var(--sans);color:var(--text2);margin-right:6px;margin-top:6px}
+.choice-btn:hover{background:var(--bg2);color:var(--text)}
+.feedback-mini{display:none;margin-top:10px;padding:10px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5}
+.exercise{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:16px 0}
+.ex-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer}
+.ex-header:hover{background:var(--bg2)}
+.ex-qnum{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.ex-qtitle{font-size:14px;font-weight:500;color:var(--text);margin-top:2px}
+.ex-difficulty{font-size:11px;padding:2px 8px;border-radius:10px}
+.diff-easy{background:var(--green-bg);color:var(--green)}
+.diff-medium{background:var(--amber-bg);color:var(--amber-txt)}
+.diff-hard{background:var(--red-bg);color:var(--red)}
+.ex-toggle{font-size:18px;color:var(--text3)}
+.ex-body{display:none;padding:0 16px 16px;border-top:.5px solid var(--border)}
+.ex-body.open{display:block}
+.ex-question{font-size:14px;color:var(--text2);line-height:1.7;margin:12px 0}
+.answer-toggle{background:none;border:.5px solid var(--border);border-radius:var(--radius);padding:7px 14px;font-size:12.5px;cursor:pointer;color:var(--text2);font-family:var(--sans);margin-top:10px}
+.answer-box{display:none;margin-top:12px;background:var(--green-bg);border:.5px solid var(--green);border-radius:var(--radius);padding:12px 16px}
+.answer-box.open{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.answer-box .ans-label{font-size:11px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.answer-box p,.answer-box li{font-size:13.5px;color:var(--text);line-height:1.65}
+.quiz-q{font-size:14.5px;font-weight:500;color:var(--text);margin-bottom:14px;line-height:1.55}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.quiz-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:.5px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13.5px;color:var(--text2)}
+.quiz-opt:hover:not(.locked){border-color:var(--blue);background:var(--blue-bg);color:var(--text)}
+.quiz-opt.selected{border-color:var(--blue);background:var(--blue-bg);color:var(--text)}
+.quiz-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.quiz-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.quiz-opt .opt-key{width:22px;height:22px;border-radius:50%;border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.feedback{padding:10px 14px;border-radius:var(--radius);font-size:13.5px;line-height:1.6;margin-bottom:14px;display:none}
+.feedback.show{display:block}
+.feedback.ok{background:var(--green-bg);color:var(--green);border:.5px solid var(--green)}
+.feedback.no{background:var(--red-bg);color:var(--red);border:.5px solid var(--red)}
+.quiz-actions{display:flex;gap:10px}
+.btn-check{padding:8px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:var(--sans)}
+.btn-check:disabled{opacity:.4;cursor:default}
+.btn-next{padding:8px 18px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer;background:none;color:var(--text2);font-family:var(--sans);display:none}
+.btn-next.show{display:inline-block}
+.quiz-progress{font-size:11.5px;color:var(--text3);margin-bottom:20px}
+.quiz-complete{text-align:center;padding:32px 0}
+.quiz-complete .score-big{font-size:48px;font-weight:500;color:var(--text)}
+@media(max-width:850px){
+  body{display:block}.sidebar{width:100%;height:auto;position:relative;min-width:0}
+  .content{padding:24px 18px}.tab-bar{padding:0 12px}.bubble{max-width:88%}
+}
+</style>
+</head>
+
+<body>
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-course">Foundational Statistics</div>
+    <div class="brand-title">Statistics Foundation for University Students</div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="sidebar-progress" style="width:60%;"></div></div>
+
+  <div class="nav-section">Course modules</div>
+  <a class="nav-item" href="../module-1/index.html"><div class="nav-dot"></div>Module 1 · Introduction</a>
+  <a class="nav-item" href="../module-2/index.html"><div class="nav-dot"></div>Module 2 · Descriptive statistics</a>
+  <a class="nav-item active" href="../module-3/index.html"><div class="nav-dot"></div>Module 3 · Probability</a>
+  <a class="nav-item" href="../module-4/index.html"><div class="nav-dot"></div>Module 4 · Statistical inference</a>
+  <a class="nav-item" href="../module-5/index.html"><div class="nav-dot"></div>Module 5 · Regression</a>
+
+  <div class="nav-section">Module 3 lessons</div>
+  <a class="nav-item done" href="3-1-probability-basics-axioms.html"><div class="nav-dot"></div>3.1 Probability basics & axioms</a>
+  <a class="nav-item done" href="3-2-conditional-probability-bayes.html"><div class="nav-dot"></div>3.2 Conditional probability & Bayes</a>
+  <a class="nav-item active" href="3-3-random-variables-expectation.html"><div class="nav-dot"></div>3.3 Random variables & expectation</a>
+  <a class="nav-item done" href="3-4-discrete-distributions.html"><div class="nav-dot"></div>3.4 Discrete distributions</a>
+  <a class="nav-item done" href="3-5-normal-distribution-clt.html"><div class="nav-dot"></div>3.5 Normal distribution & CLT</a>
+</nav>
+
+<div class="main">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('lecture',this)">Lecture</button>
+    <button class="tab" onclick="showTab('notes',this)">Notes</button>
+    <button class="tab" onclick="showTab('interactive',this)">Interactive</button>
+    <button class="tab" onclick="showTab('exercises',this)">Exercises</button>
+    <button class="tab" onclick="showTab('quiz',this)">Quiz</button>
+  </div>
+
+  <div class="content">
+
+<section id="sec-lecture" class="section active">
+  <div class="lesson-eyebrow">Module 3 · Lesson 3.3</div>
+  <h1>Random variables and expectation</h1>
+  <div class="lesson-meta">Mr. R · Prof Stat · ~40 min · After conditional probability</div>
+
+  <div class="scene-label">📍 Scene — probability classroom, moving from events to numerical variables</div>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-emma">EM</div>
+      <div class="bubble"><div class="speaker-name">Emma</div><p>So far, probability has been about events like \(A\), \(B\), disease, positive tests, and overlaps. But statistics usually works with numbers. Where do numbers enter probability?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Excellent question. Numbers enter through random variables. A random variable converts uncertain outcomes into numerical values.</p></div>
+    </div>
+    <div class="line">
+      <div class="speaker-badge sp-oliver">OL</div>
+      <div class="bubble"><div class="speaker-name">Oliver</div><p>So a random variable is not just a variable in a spreadsheet?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Not exactly. A spreadsheet variable is observed data. A random variable is a mathematical object before observation. It describes a numerical quantity whose value is uncertain.</p></div>
+    </div>
+  </div>
+
+  <h2>Why random variables are needed</h2>
+  <p>In probability, the original outcome may not be numerical. For example, when three coins are tossed, the outcome might be \(HHT\), \(THT\), or \(TTT\). But a statistician may care about the number of heads.</p>
+  <p>So we define a random variable \(X\) as the number of heads. Then \(X(HHT)=2\), \(X(THT)=1\), and \(X(TTT)=0\).</p>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-james">JA</div>
+      <div class="bubble"><div class="speaker-name">James</div><p>So the random variable takes the messy outcome and turns it into a number we can analyse?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. A random variable is a function from outcomes to numbers.</p></div>
+    </div>
+    <div class="line">
+      <div class="speaker-badge sp-sophia">SO</div>
+      <div class="bubble"><div class="speaker-name">Sophia</div><p>Then before we toss the coins, \(X\) is uncertain. After we toss them, \(X\) has an observed value?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Perfect. That is the difference between a random variable and its realised value.</p></div>
+    </div>
+  </div>
+
+  <h2>Discrete and continuous random variables</h2>
+  <p>Some random variables count things. Others measure quantities on a continuum. This gives us the distinction between discrete and continuous random variables.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Type</th><th>Meaning</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td>Discrete</td><td>Countable possible values</td><td>Number of heads, number of patients responding, number of hospital admissions</td></tr>
+        <tr><td>Continuous</td><td>Values on a continuum</td><td>Height, blood pressure, survival time, concentration</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-emma">EM</div>
+      <div class="bubble"><div class="speaker-name">Emma</div><p>If a variable is continuous, can it take infinitely many possible values?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes. In theory, a continuous variable can take any value in an interval. That is why continuous probability is handled differently later using densities and areas.</p></div>
+    </div>
+  </div>
+
+  <h2>Probability distribution</h2>
+  <p>A random variable is not fully described by listing possible values. We also need the probability attached to those values. This is called the probability distribution.</p>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-oliver">OL</div>
+      <div class="bubble"><div class="speaker-name">Oliver</div><p>For a fair die, the random variable \(X\) could be the number showing on the die, and each value 1 to 6 has probability \(1/6\)?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Correct. That table of values and probabilities is the distribution of \(X\).</p></div>
+    </div>
+  </div>
+
+  <h2>Expectation</h2>
+  <p>The expected value of a random variable is its probability-weighted average. It is the theoretical mean of the distribution.</p>
+
+  <div class="math-block">
+    \[
+    E(X)=\sum_x x\,P(X=x)
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-james">JA</div>
+      <div class="bubble"><div class="speaker-name">James</div><p>Is expected value the same as the value I expect to see next?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Not necessarily. Expected value is a long-run average, not a guaranteed next outcome.</p></div>
+    </div>
+    <div class="line">
+      <div class="speaker-badge sp-sophia">SO</div>
+      <div class="bubble"><div class="speaker-name">Sophia</div><p>Like a fair die has expected value 3.5, but it can never actually show 3.5.</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. That example is one of the best ways to understand expectation.</p></div>
+    </div>
+  </div>
+
+  <h2>Variance</h2>
+  <p>Expectation tells us the theoretical centre. Variance tells us the theoretical spread. It measures the expected squared distance from the mean.</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(X)=E\left[(X-\mu)^2\right],\qquad \mu=E(X)
+    \]
+  </div>
+
+  <p>A useful computational formula is:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(X)=E(X^2)-[E(X)]^2
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-emma">EM</div>
+      <div class="bubble"><div class="speaker-name">Emma</div><p>Why do we square the distance from the mean?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Squaring makes all distances non-negative and gives larger weight to values far from the mean. It is the theoretical version of variance from descriptive statistics.</p></div>
+    </div>
+  </div>
+
+  <h2>Linearity of expectation</h2>
+  <p>One of the most important rules in probability is that expectation is linear.</p>
+
+  <div class="math-block">
+    \[
+    E(aX+b)=aE(X)+b
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    E(X+Y)=E(X)+E(Y)
+    \]
+  </div>
+
+  <p>The second result is especially powerful because it does not require \(X\) and \(Y\) to be independent.</p>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-oliver">OL</div>
+      <div class="bubble"><div class="speaker-name">Oliver</div><p>So even if two variables are related, the expectation of their sum is still the sum of their expectations?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes. Independence is not needed for linearity of expectation. That makes it extremely useful.</p></div>
+    </div>
+  </div>
+
+  <h2>Indicator variables</h2>
+  <p>An indicator variable equals 1 if an event occurs and 0 otherwise. If \(I_A\) is the indicator of event \(A\), then:</p>
+
+  <div class="math-block">
+    \[
+    I_A=
+    \begin{cases}
+    1, & \text{if } A \text{ occurs},\\
+    0, & \text{if } A \text{ does not occur}.
+    \end{cases}
+    \]
+  </div>
+
+  <p>Its expectation is:</p>
+
+  <div class="math-block">
+    \[
+    E(I_A)=P(A)
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line">
+      <div class="speaker-badge sp-james">JA</div>
+      <div class="bubble"><div class="speaker-name">James</div><p>That is neat. A probability can be written as an expected value?</p></div>
+    </div>
+    <div class="line right">
+      <div class="speaker-badge sp-prof">MR</div>
+      <div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes, and that idea becomes very powerful later in statistical modelling.</p></div>
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <div class="tk-label">Key takeaways from this lecture</div>
+    <ul>
+      <li>A random variable maps uncertain outcomes to numerical values.</li>
+      <li>Discrete random variables have countable possible values.</li>
+      <li>Continuous random variables can take values on a continuum.</li>
+      <li>A probability distribution assigns probabilities to possible values.</li>
+      <li>Expectation is a probability-weighted long-run average.</li>
+      <li>Variance measures theoretical spread around the expectation.</li>
+      <li>Linearity of expectation does not require independence.</li>
+      <li>Indicator variables connect probabilities directly to expected values.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-notes" class="section">
+  <div class="lesson-eyebrow">Detailed theoretical notes</div>
+  <h1>Random variables and expectation</h1>
+
+  <h2>1. Why random variables are introduced</h2>
+  <p>Probability begins with outcomes and events. However, statistical analysis usually requires numerical quantities: counts, measurements, scores, means, proportions, and test statistics. Random variables provide the bridge between uncertain outcomes and numerical analysis.</p>
+
+  <div class="def-box">
+    <div class="def-label">Definition</div>
+    <p>A random variable is a rule or function that assigns a numerical value to each outcome of a random experiment.</p>
+  </div>
+
+  <h2>2. Random variable as a function</h2>
+  <p>Let \(S\) be a sample space. A random variable \(X\) is a function from \(S\) to the real numbers:</p>
+
+  <div class="math-block">
+    \[
+    X:S\to \mathbb{R}
+    \]
+  </div>
+
+  <p>This means that for every outcome \(s\in S\), the random variable assigns a number \(X(s)\).</p>
+
+  <h3>Example: three coin tosses</h3>
+  <p>Suppose three coins are tossed. The sample space is:</p>
+
+  <div class="math-block">
+    \[
+    S=\{HHH,HHT,HTH,THH,HTT,THT,TTH,TTT\}
+    \]
+  </div>
+
+  <p>Define \(X\) as the number of heads. Then:</p>
+
+  <div class="math-block">
+    \[
+    X(HHH)=3,\quad X(HHT)=2,\quad X(TTT)=0
+    \]
+  </div>
+
+  <p>The random variable \(X\) can take values \(0,1,2,3\).</p>
+
+  <h2>3. Random variable versus observed value</h2>
+  <p>Before the experiment is performed, \(X\) is uncertain. After the experiment is performed, we observe a realised value, often written as \(x\).</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Concept</th><th>Meaning</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Random variable \(X\)</td><td>Uncertain numerical quantity before observation</td><td>Number of heads before tossing coins</td></tr>
+        <tr><td>Realised value \(x\)</td><td>Observed numerical value after the experiment</td><td>The value \(x=2\) after observing HHT</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>4. Discrete and continuous random variables</h2>
+  <p>A random variable is <strong>discrete</strong> if it has countable possible values. A random variable is <strong>continuous</strong> if it can take values across intervals.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Type</th><th>Possible values</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td>Discrete</td><td>Finite or countably infinite</td><td>Number of patients responding, number of errors, number of heads</td></tr>
+        <tr><td>Continuous</td><td>Uncountably many values in intervals</td><td>Height, weight, blood pressure, survival time</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>5. Probability mass function for discrete random variables</h2>
+  <p>For a discrete random variable \(X\), the probability mass function gives the probability that \(X\) takes each possible value.</p>
+
+  <div class="math-block">
+    \[
+    p(x)=P(X=x)
+    \]
+  </div>
+
+  <p>A valid probability mass function must satisfy two conditions:</p>
+
+  <div class="math-block">
+    \[
+    p(x)\geq 0 \quad \text{for all }x
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \sum_x p(x)=1
+    \]
+  </div>
+
+  <h2>6. Expectation of a discrete random variable</h2>
+  <p>The expected value of a discrete random variable is the probability-weighted average of its possible values.</p>
+
+  <div class="math-block">
+    \[
+    E(X)=\sum_x x\,P(X=x)
+    \]
+  </div>
+
+  <p>The summation is taken over all possible values of \(X\).</p>
+
+  <div class="def-box green">
+    <div class="def-label">Interpretation</div>
+    <p>The expected value is the long-run average value of the random variable over many repetitions of the random experiment.</p>
+  </div>
+
+  <h2>7. Worked example: fair die</h2>
+  <p>Let \(X\) be the number shown on a fair die. Then \(X\in\{1,2,3,4,5,6\}\) and each value has probability \(1/6\).</p>
+
+  <div class="math-block">
+    \[
+    E(X)=1\left(\frac{1}{6}\right)+2\left(\frac{1}{6}\right)+3\left(\frac{1}{6}\right)+4\left(\frac{1}{6}\right)+5\left(\frac{1}{6}\right)+6\left(\frac{1}{6}\right)
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    E(X)=\frac{1+2+3+4+5+6}{6}=\frac{21}{6}=3.5
+    \]
+  </div>
+
+  <p>The expected value is \(3.5\), although no single die roll can equal 3.5. This shows that expectation is a long-run average, not necessarily a possible outcome.</p>
+
+  <h2>8. Expectation of a transformed random variable</h2>
+  <p>If \(g(X)\) is a function of \(X\), then:</p>
+
+  <div class="math-block">
+    \[
+    E[g(X)]=\sum_x g(x)P(X=x)
+    \]
+  </div>
+
+  <p>For example:</p>
+
+  <div class="math-block">
+    \[
+    E(X^2)=\sum_x x^2P(X=x)
+    \]
+  </div>
+
+  <h2>9. Variance</h2>
+  <p>Let \(\mu=E(X)\). The variance of \(X\) is the expected squared distance of \(X\) from its mean:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(X)=E\left[(X-\mu)^2\right]
+    \]
+  </div>
+
+  <p>Expanding the square gives a useful computational formula.</p>
+
+  <h2>10. Derivation of the variance shortcut</h2>
+  <p>Start from the definition:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(X)=E\left[(X-\mu)^2\right]
+    \]
+  </div>
+
+  <p>Expand the squared term:</p>
+
+  <div class="math-block">
+    \[
+    (X-\mu)^2=X^2-2\mu X+\mu^2
+    \]
+  </div>
+
+  <p>Take expectation on both sides:</p>
+
+  <div class="math-block">
+    \[
+    E\left[(X-\mu)^2\right]=E(X^2)-2\mu E(X)+E(\mu^2)
+    \]
+  </div>
+
+  <p>Since \(\mu\) is a constant, \(E(\mu^2)=\mu^2\), and since \(E(X)=\mu\):</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(X)=E(X^2)-2\mu^2+\mu^2
+    \]
+  </div>
+
+  <p>Therefore:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(X)=E(X^2)-\mu^2
+    \]
+  </div>
+
+  <p>Since \(\mu=E(X)\), this is:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(X)=E(X^2)-[E(X)]^2
+    \]
+  </div>
+
+  <h2>11. Standard deviation</h2>
+  <p>The standard deviation of a random variable is the square root of its variance:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{SD}(X)=\sqrt{\operatorname{Var}(X)}
+    \]
+  </div>
+
+  <p>Variance is measured in squared units, while standard deviation returns to the original units.</p>
+
+  <h2>12. Linearity of expectation</h2>
+  <p>For constants \(a\) and \(b\):</p>
+
+  <div class="math-block">
+    \[
+    E(aX+b)=aE(X)+b
+    \]
+  </div>
+
+  <h3>Derivation</h3>
+  <div class="math-block">
+    \[
+    E(aX+b)=\sum_x (ax+b)P(X=x)
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    E(aX+b)=a\sum_x xP(X=x)+b\sum_x P(X=x)
+    \]
+  </div>
+
+  <p>Since \(\sum_x P(X=x)=1\), we obtain:</p>
+
+  <div class="math-block">
+    \[
+    E(aX+b)=aE(X)+b
+    \]
+  </div>
+
+  <h2>13. Expectation of a sum</h2>
+  <p>For two random variables \(X\) and \(Y\):</p>
+
+  <div class="math-block">
+    \[
+    E(X+Y)=E(X)+E(Y)
+    \]
+  </div>
+
+  <p>This result does not require independence. It holds generally whenever the expectations exist.</p>
+
+  <h2>14. Variance under scaling and shifting</h2>
+  <p>If \(a\) and \(b\) are constants, then:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(aX+b)=a^2\operatorname{Var}(X)
+    \]
+  </div>
+
+  <p>Adding a constant shifts the random variable but does not change its spread. Multiplying by \(a\) scales the spread by \(a^2\) in variance.</p>
+
+  <h2>15. Bernoulli random variable</h2>
+  <p>A Bernoulli random variable takes value 1 with probability \(p\), and 0 with probability \(1-p\).</p>
+
+  <div class="math-block">
+    \[
+    X\sim \operatorname{Bernoulli}(p)
+    \]
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>x</th><th>P(X=x)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>\(p\)</td></tr>
+        <tr><td>0</td><td>\(1-p\)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Expectation of Bernoulli</h3>
+  <div class="math-block">
+    \[
+    E(X)=1(p)+0(1-p)=p
+    \]
+  </div>
+
+  <h3>Variance of Bernoulli</h3>
+  <p>First calculate \(E(X^2)\). Since \(X\) is either 0 or 1, \(X^2=X\). Therefore:</p>
+
+  <div class="math-block">
+    \[
+    E(X^2)=E(X)=p
+    \]
+  </div>
+
+  <p>Using the variance shortcut:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(X)=E(X^2)-[E(X)]^2=p-p^2=p(1-p)
+    \]
+  </div>
+
+  <h2>16. Indicator variables</h2>
+  <p>An indicator variable for event \(A\), written \(I_A\), is defined by:</p>
+
+  <div class="math-block">
+    \[
+    I_A=
+    \begin{cases}
+    1, & \text{if } A \text{ occurs},\\
+    0, & \text{if } A \text{ does not occur}.
+    \end{cases}
+    \]
+  </div>
+
+  <p>Since \(I_A\) is Bernoulli with success probability \(P(A)\):</p>
+
+  <div class="math-block">
+    \[
+    E(I_A)=P(A)
+    \]
+  </div>
+
+  <p>This result is important because it connects probability to expectation.</p>
+
+  <h2>17. Common mistakes</h2>
+  <ul>
+    <li><strong>Thinking a random variable is random after observation:</strong> after observation, it has a realised value.</li>
+    <li><strong>Thinking expected value must be observable:</strong> a die has expected value 3.5, but cannot show 3.5.</li>
+    <li><strong>Forgetting probabilities in expectation:</strong> expectation is weighted by probabilities.</li>
+    <li><strong>Confusing variance and standard deviation:</strong> standard deviation is the square root of variance.</li>
+    <li><strong>Assuming \(E(XY)=E(X)E(Y)\) always:</strong> this generally requires independence, unlike \(E(X+Y)=E(X)+E(Y)\).</li>
+  </ul>
+
+  <div class="takeaway">
+    <div class="tk-label">Notes summary</div>
+    <ul>
+      <li>A random variable maps outcomes to numbers.</li>
+      <li>A probability mass function assigns probabilities to discrete values.</li>
+      <li>Expectation is a probability-weighted theoretical mean.</li>
+      <li>Variance is expected squared deviation from the mean.</li>
+      <li>The shortcut \(\operatorname{Var}(X)=E(X^2)-[E(X)]^2\) follows by expanding \((X-\mu)^2\).</li>
+      <li>Linearity of expectation is valid without independence.</li>
+      <li>Bernoulli and indicator variables are fundamental building blocks.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-interactive" class="section">
+  <div class="lesson-eyebrow">Interactive probability lab</div>
+  <h1>Random variables and expectation</h1>
+
+  <div class="plot-grid">
+
+    <div class="plot-box">
+      <div class="plot-title">1. Discrete distribution builder</div>
+      <div class="plot-sub">Set probabilities for \(X=0,1,2\). The remaining probability is assigned automatically to \(X=2\).</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(P(X=0)\)</label><input id="p0" type="range" min="0" max="95" value="20" oninput="updateDiscrete()"><span id="p0Val" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(P(X=1)\)</label><input id="p1" type="range" min="0" max="95" value="50" oninput="updateDiscrete()"><span id="p1Val" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">P(X=2)</div><div id="p2Val" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">E(X)</div><div id="exVal" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Var(X)</div><div id="varVal" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="distChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">2. Expected value as balance point</div>
+      <div class="plot-sub">The blue bar shows probability mass. The expected value is the balancing point of the distribution.</div>
+      <p id="balanceText"></p>
+      <div class="chart-wrap"><canvas id="balanceChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">3. Bernoulli mean and variance</div>
+      <div class="plot-sub">For \(X\sim\operatorname{Bernoulli}(p)\), \(E(X)=p\) and \(\operatorname{Var}(X)=p(1-p)\).</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(p\)</label><input id="bernP" type="range" min="1" max="99" value="60" oninput="updateBernoulli()"><span id="bernPVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">E(X)</div><div id="bernMean" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Var(X)</div><div id="bernVar" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="bernChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">4. Linear transformation</div>
+      <div class="plot-sub">Explore \(Y=aX+b\). The mean changes as \(E(Y)=aE(X)+b\); variance changes as \(\operatorname{Var}(Y)=a^2\operatorname{Var}(X)\).</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(a\)</label><input id="aVal" type="range" min="-5" max="5" value="2" oninput="updateTransform()"><span id="aText" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(b\)</label><input id="bVal" type="range" min="-10" max="10" value="3" oninput="updateTransform()"><span id="bText" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">E(Y)</div><div id="eyVal" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Var(Y)</div><div id="varyVal" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="transformChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">5. Long-run average simulation</div>
+      <div class="plot-sub">Roll a fair die many times. The running average tends toward \(E(X)=3.5\).</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Rolls</label><input id="rollN" type="range" min="10" max="1000" step="10" value="100" oninput="updateSimulation()"><span id="rollNVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Running average</div><div id="runAvg" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Theoretical E(X)</div><div class="sc-val">3.50</div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="simChart"></canvas></div>
+    </div>
+
+  </div>
+
+  <h2>Interpretation activity</h2>
+  <p>Choose the best label for each statement. This trains careful random-variable language.</p>
+  <div id="activity-area"></div>
+</section>
+
+<section id="sec-exercises" class="section">
+  <div class="lesson-eyebrow">Practice exercises</div>
+  <h1>Random variables and expectation</h1>
+  <p>Try each exercise before revealing the answer. The focus is on definitions, expectation, variance and interpretation.</p>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 1</div><div class="ex-qtitle">Define a random variable</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">Two coins are tossed. Define \(X\) as the number of heads. List the possible values of \(X\).</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>The sample outcomes are \(HH,HT,TH,TT\). The possible values of \(X\) are \(0,1,2\).</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 2</div><div class="ex-qtitle">Check a probability mass function</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">A random variable has probabilities \(0.2\), \(0.5\), and \(0.3\) for three possible values. Is this a valid probability distribution?</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>Yes. All probabilities are non-negative and they sum to \(0.2+0.5+0.3=1\).</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 3</div><div class="ex-qtitle">Expected value</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">Let \(X\) take values 0, 1 and 2 with probabilities 0.2, 0.5 and 0.3. Calculate \(E(X)\).</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>\(E(X)=0(0.2)+1(0.5)+2(0.3)=0+0.5+0.6=1.1\).</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 4</div><div class="ex-qtitle">Variance shortcut</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">For the same \(X\), calculate \(\operatorname{Var}(X)\).</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>First, \(E(X^2)=0^2(0.2)+1^2(0.5)+2^2(0.3)=0+0.5+1.2=1.7\). Since \(E(X)=1.1\), \(\operatorname{Var}(X)=E(X^2)-[E(X)]^2=1.7-1.21=0.49\).</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 5</div><div class="ex-qtitle">Bernoulli expectation and variance</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">If \(X\sim\operatorname{Bernoulli}(0.7)\), find \(E(X)\) and \(\operatorname{Var}(X)\).</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>For Bernoulli \(p\), \(E(X)=p\) and \(\operatorname{Var}(X)=p(1-p)\). Therefore, \(E(X)=0.7\) and \(\operatorname{Var}(X)=0.7(0.3)=0.21\).</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 6</div><div class="ex-qtitle">Linear transformation</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">Suppose \(E(X)=4\) and \(\operatorname{Var}(X)=9\). Let \(Y=3X-2\). Find \(E(Y)\) and \(\operatorname{Var}(Y)\).</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>\(E(Y)=E(3X-2)=3E(X)-2=3(4)-2=10\). Also, \(\operatorname{Var}(Y)=\operatorname{Var}(3X-2)=3^2\operatorname{Var}(X)=9(9)=81\).</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 7</div><div class="ex-qtitle">Indicator variable</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">Let \(I_A\) be the indicator variable for event \(A\). If \(P(A)=0.35\), find \(E(I_A)\) and explain why.</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>The indicator \(I_A\) equals 1 if \(A\) occurs and 0 otherwise. Therefore, \(E(I_A)=1P(A)+0P(A^c)=P(A)=0.35\).</p></div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="ex-header" onclick="toggleEx(this)">
+      <div><div class="ex-qnum">Exercise 8</div><div class="ex-qtitle">Interpret expectation</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-question">Explain why the expected value of a die roll is \(3.5\), even though 3.5 is not a possible die outcome.</p>
+      <button class="answer-toggle" onclick="toggleAns(this)">Show answer</button>
+      <div class="answer-box"><div class="ans-label">Answer</div><p>The expected value is a long-run average, not a guaranteed or necessarily observable value. Across many rolls of a fair die, the average outcome tends toward \(3.5\), although no individual roll can equal \(3.5\).</p></div>
+    </div>
+  </div>
+
+</section>
+
+<section id="sec-quiz" class="section">
+  <div class="lesson-eyebrow">Topic quiz</div>
+  <h1>Random variables and expectation</h1>
+  <div id="quiz-container"></div>
+</section>
+
+  </div>
+</div>
+
+<script>
+let charts = {};
+let quizIndex = 0;
+let selectedOption = null;
+let answered = false;
+let score = 0;
+
+let currentDistribution = { p0: 0.2, p1: 0.5, p2: 0.3, ex: 1.1, variance: 0.49 };
+
+const activities = [
+  {
+    text: "A random variable assigns a number to each outcome of a random experiment.",
+    answer: "Correct definition",
+    explanation: "Correct. A random variable is a function from outcomes to numerical values."
+  },
+  {
+    text: "The expected value must always be one of the possible observed values.",
+    answer: "Misinterpretation",
+    explanation: "Not true. A fair die has expected value 3.5, but cannot show 3.5."
+  },
+  {
+    text: "Variance can be calculated using E(X²)-[E(X)]².",
+    answer: "Correct formula",
+    explanation: "Correct. This shortcut follows by expanding the squared deviation from the mean."
+  },
+  {
+    text: "E(X+Y)=E(X)+E(Y) only when X and Y are independent.",
+    answer: "Misinterpretation",
+    explanation: "Linearity of expectation does not require independence."
+  }
+];
+
+const quiz = [
+  {
+    q: "A random variable is:",
+    opts: ["A probability only", "A function assigning numerical values to outcomes", "Always continuous", "Always observed before an experiment"],
+    correct: 1
+  },
+  {
+    q: "For a discrete random variable, the probability mass function is:",
+    opts: ["p(x)=P(X=x)", "p(x)=x only", "p(x)=E(X)", "p(x)=Var(X)"],
+    correct: 0
+  },
+  {
+    q: "The probabilities in a probability mass function must sum to:",
+    opts: ["0", "0.5", "1", "The mean"],
+    correct: 2
+  },
+  {
+    q: "The expected value of a discrete random variable is:",
+    opts: ["The largest value", "The probability-weighted average", "Always the median", "Always an observed value"],
+    correct: 1
+  },
+  {
+    q: "For a fair die, E(X) equals:",
+    opts: ["3", "3.5", "4", "6"],
+    correct: 1
+  },
+  {
+    q: "The variance shortcut is:",
+    opts: ["E(X)-E(X²)", "E(X²)-[E(X)]²", "E(X)+P(X)", "P(X=1) only"],
+    correct: 1
+  },
+  {
+    q: "For Bernoulli(p), E(X) is:",
+    opts: ["p", "1-p", "p²", "p(1-p)"],
+    correct: 0
+  },
+  {
+    q: "Linearity of expectation means:",
+    opts: ["E(X+Y)=E(X)+E(Y)", "E(XY)=E(X)E(Y) always", "Var(X)=E(X)", "All variables are independent"],
+    correct: 0
+  }
+];
+
+function showTab(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'interactive') initInteractive();
+  if (name === 'quiz') initQuiz();
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+function makeChart(id, type, data, options = {}) {
+  if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart(document.getElementById(id), {
+    type,
+    data,
+    options: Object.assign({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } }
+    }, options)
+  });
+}
+
+function updateDiscrete() {
+  let p0 = Number(document.getElementById('p0').value) / 100;
+  let p1 = Number(document.getElementById('p1').value) / 100;
+  if (p0 + p1 > 1) {
+    p1 = 1 - p0;
+    document.getElementById('p1').value = Math.round(p1 * 100);
+  }
+  const p2 = 1 - p0 - p1;
+
+  const ex = 0 * p0 + 1 * p1 + 2 * p2;
+  const ex2 = 0 * p0 + 1 * p1 + 4 * p2;
+  const variance = ex2 - ex * ex;
+
+  currentDistribution = { p0, p1, p2, ex, variance };
+
+  document.getElementById('p0Val').textContent = p0.toFixed(2);
+  document.getElementById('p1Val').textContent = p1.toFixed(2);
+  document.getElementById('p2Val').textContent = p2.toFixed(2);
+  document.getElementById('exVal').textContent = ex.toFixed(2);
+  document.getElementById('varVal').textContent = variance.toFixed(2);
+
+  makeChart('distChart', 'bar', {
+    labels: ['X=0', 'X=1', 'X=2'],
+    datasets: [{
+      data: [p0, p1, p2],
+      backgroundColor: ['rgba(55,138,221,0.35)', 'rgba(59,109,17,0.30)', 'rgba(186,117,23,0.30)'],
+      borderColor: ['#378ADD', '#3B6D11', '#BA7517'],
+      borderWidth: 1
+    }]
+  }, { scales: { y: { beginAtZero: true, max: 1 } } });
+
+  updateBalance();
+  updateTransform();
+}
+
+function updateBalance() {
+  const d = currentDistribution;
+  document.getElementById('balanceText').textContent =
+    "Expected value = " + d.ex.toFixed(2) + ". Think of this as the balance point of the probability distribution.";
+
+  makeChart('balanceChart', 'bar', {
+    labels: ['0', '1', '2', 'E(X)'],
+    datasets: [{
+      data: [d.p0, d.p1, d.p2, 0.05],
+      backgroundColor: ['rgba(55,138,221,0.35)', 'rgba(55,138,221,0.35)', 'rgba(55,138,221,0.35)', 'rgba(163,45,45,0.55)'],
+      borderColor: ['#378ADD', '#378ADD', '#378ADD', '#A32D2D'],
+      borderWidth: 1
+    }]
+  }, { scales: { y: { beginAtZero: true, max: 1 } } });
+}
+
+function updateBernoulli() {
+  const p = Number(document.getElementById('bernP').value) / 100;
+  const variance = p * (1 - p);
+
+  document.getElementById('bernPVal').textContent = p.toFixed(2);
+  document.getElementById('bernMean').textContent = p.toFixed(2);
+  document.getElementById('bernVar').textContent = variance.toFixed(2);
+
+  makeChart('bernChart', 'bar', {
+    labels: ['Failure (0)', 'Success (1)'],
+    datasets: [{
+      data: [1 - p, p],
+      backgroundColor: ['rgba(186,117,23,0.25)', 'rgba(55,138,221,0.35)'],
+      borderColor: ['#BA7517', '#378ADD'],
+      borderWidth: 1
+    }]
+  }, { scales: { y: { beginAtZero: true, max: 1 } } });
+}
+
+function updateTransform() {
+  const a = Number(document.getElementById('aVal').value);
+  const b = Number(document.getElementById('bVal').value);
+  const d = currentDistribution;
+
+  const ey = a * d.ex + b;
+  const vary = a * a * d.variance;
+  const y0 = a * 0 + b;
+  const y1 = a * 1 + b;
+  const y2 = a * 2 + b;
+
+  document.getElementById('aText').textContent = a;
+  document.getElementById('bText').textContent = b;
+  document.getElementById('eyVal').textContent = ey.toFixed(2);
+  document.getElementById('varyVal').textContent = vary.toFixed(2);
+
+  makeChart('transformChart', 'bar', {
+    labels: ['Y when X=0', 'Y when X=1', 'Y when X=2', 'E(Y)'],
+    datasets: [{
+      data: [y0, y1, y2, ey],
+      backgroundColor: ['rgba(55,138,221,0.25)', 'rgba(55,138,221,0.25)', 'rgba(55,138,221,0.25)', 'rgba(163,45,45,0.45)'],
+      borderColor: ['#378ADD', '#378ADD', '#378ADD', '#A32D2D'],
+      borderWidth: 1
+    }]
+  });
+}
+
+function updateSimulation() {
+  const n = Number(document.getElementById('rollN').value);
+  let sum = 0;
+  const labels = [];
+  const averages = [];
+  const step = Math.max(1, Math.floor(n / 120));
+
+  for (let i = 1; i <= n; i++) {
+    const roll = 1 + Math.floor(Math.random() * 6);
+    sum += roll;
+    if (i % step === 0 || i === n) {
+      labels.push(i);
+      averages.push(sum / i);
+    }
+  }
+
+  document.getElementById('rollNVal').textContent = n;
+  document.getElementById('runAvg').textContent = (sum / n).toFixed(2);
+
+  makeChart('simChart', 'line', {
+    labels,
+    datasets: [{
+      data: averages,
+      borderColor: '#378ADD',
+      backgroundColor: 'transparent',
+      pointRadius: 0,
+      borderWidth: 1.8,
+      tension: 0.2
+    }]
+  }, { scales: { y: { min: 1, max: 6 } } });
+}
+
+function initInteractive() {
+  updateDiscrete();
+  updateBernoulli();
+  updateSimulation();
+  renderActivities();
+}
+
+function renderActivities() {
+  const area = document.getElementById('activity-area');
+  if (area.children.length) return;
+
+  const options = ["Correct definition", "Correct formula", "Misinterpretation", "Transformation rule"];
+  activities.forEach((a, i) => {
+    const div = document.createElement('div');
+    div.className = 'activity-card';
+    div.innerHTML = `
+      <div class="activity-inner">
+        <div style="font-size:13.5px;color:var(--text);line-height:1.6;margin-bottom:8px;">${a.text}</div>
+        ${options.map(o => `<button class="choice-btn" onclick="checkActivity(${i}, '${o}', this)">${o}</button>`).join('')}
+        <div id="activity-${i}" class="feedback-mini"></div>
+      </div>
+    `;
+    area.appendChild(div);
+  });
+}
+
+function checkActivity(i, choice, btn) {
+  const item = activities[i];
+  const fb = document.getElementById('activity-' + i);
+  const correct = choice === item.answer;
+
+  fb.style.display = 'block';
+  fb.style.background = correct ? 'var(--green-bg)' : 'var(--red-bg)';
+  fb.style.color = correct ? 'var(--green)' : 'var(--red)';
+  fb.style.border = correct ? '.5px solid var(--green)' : '.5px solid var(--red)';
+  fb.innerHTML = `<strong>${correct ? '✓ Correct.' : '✗ Not quite.'}</strong> ${item.explanation}`;
+
+  btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
+}
+
+function toggleEx(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.ex-toggle');
+  const open = body.classList.toggle('open');
+  toggle.textContent = open ? '−' : '+';
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+function toggleAns(btn) {
+  const box = btn.nextElementSibling;
+  const open = box.classList.toggle('open');
+  btn.textContent = open ? 'Hide answer' : 'Show answer';
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+function initQuiz() {
+  quizIndex = 0;
+  selectedOption = null;
+  answered = false;
+  score = 0;
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+
+  if (quizIndex >= quiz.length) {
+    container.innerHTML = `
+      <div class="quiz-complete">
+        <div class="score-big">${score}/${quiz.length}</div>
+        <p>${score >= 7 ? 'Excellent — strong understanding of random variables.' : score >= 5 ? 'Good work. Review the missed ideas.' : 'Review the notes and try the quiz again.'}</p>
+        <button class="btn-check" onclick="initQuiz()">Retry quiz</button>
+      </div>
+    `;
+    return;
+  }
+
+  const q = quiz[quizIndex];
+  container.innerHTML = `
+    <div class="quiz-progress">Question ${quizIndex + 1} of ${quiz.length}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">
+      ${q.opts.map((o, i) => `
+        <div class="quiz-opt" id="qo${i}" onclick="selectOption(${i})">
+          <div class="opt-key">${['A','B','C','D'][i]}</div>${o}
+        </div>
+      `).join('')}
+    </div>
+    <div id="quizFeedback" class="feedback"></div>
+    <div class="quiz-actions">
+      <button id="checkBtn" class="btn-check" onclick="checkQuiz()" disabled>Check answer</button>
+      <button id="nextBtn" class="btn-next" onclick="nextQuiz()">${quizIndex < quiz.length - 1 ? 'Next question →' : 'See result'}</button>
+    </div>
+  `;
+
+  selectedOption = null;
+  answered = false;
+}
+
+function selectOption(i) {
+  if (answered) return;
+  document.querySelectorAll('.quiz-opt').forEach(o => o.classList.remove('selected'));
+  document.getElementById('qo' + i).classList.add('selected');
+  selectedOption = i;
+  document.getElementById('checkBtn').disabled = false;
+}
+
+function checkQuiz() {
+  if (selectedOption === null || answered) return;
+  answered = true;
+
+  const q = quiz[quizIndex];
+  const correct = selectedOption === q.correct;
+  if (correct) score++;
+
+  document.querySelectorAll('.quiz-opt').forEach((el, i) => {
+    el.classList.add('locked');
+    if (i === q.correct) el.classList.add('correct');
+    if (i === selectedOption && i !== q.correct) el.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('quizFeedback');
+  fb.className = 'feedback show ' + (correct ? 'ok' : 'no');
+  fb.textContent = correct ? 'Correct.' : 'Not quite. Review the definitions, expectation and variance formulas in the notes.';
+
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function nextQuiz() {
+  quizIndex++;
+  renderQuiz();
+}
+</script>
+
+<!-- My Academic Tutor platform footer with logo -->
+<footer class="mat-platform-footer">
+  <div class="mat-footer-brand">
+    <img class="mat-footer-logo" src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <p><strong>Statistics Foundation for University Students</strong></p>
+  </div>
+  <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+  <p>© 2026 My Academic Tutor. All rights reserved.</p>
+</footer>
+<style>
+.mat-platform-footer{
+  max-width:960px;
+  margin:34px auto 0;
+  padding:22px 34px;
+  border-top:1px solid var(--border, #ded9cf);
+  color:var(--text2, #5f5f5a);
+  font-size:13px;
+  line-height:1.65;
+}
+.mat-platform-footer strong{color:var(--text, #171717);}
+.mat-footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.mat-footer-logo{width:36px;height:36px;object-fit:contain;border-radius:9px;background:#fff;border:1px solid var(--border, #ded9cf);padding:4px;}
+@media(max-width:850px){.mat-platform-footer{padding:20px 18px;}}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.5 Sampling Methods — Foundational Statistics</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+<style>
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg:#ffffff; --bg2:#f6f5f0; --bg3:#f0ede6; --border:#e0ddd6; --text:#1a1a18; --text2:#5a5a56; --text3:#8a8a84; --blue:#378ADD; --blue-bg:#E6F1FB; --blue-txt:#0C447C; --green:#3B6D11; --green-bg:#EAF3DE; --amber:#BA7517; --amber-bg:#FAEEDA; --amber-txt:#633806; --red:#A32D2D; --red-bg:#FCEBEB; --purple:#534AB7; --purple-bg:#EEEDFE; --purple-txt:#3C3489; --radius:8px; --radius-lg:12px; --mono:'Courier New', monospace; --sans:system-ui,-apple-system,sans-serif; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#1c1c1a; --bg2:#252523; --bg3:#2e2e2b; --border:#3a3a36; --text:#e8e6df; --text2:#a8a69f; --text3:#6a6a64; --blue-bg:#0c1f35; --blue-txt:#85B7EB; --green-bg:#0f2005; --amber-bg:#2a1800; --amber-txt:#FAC775; --red-bg:#2a0a0a; --purple-bg:#1a1740; --purple-txt:#AFA9EC; } }
+  html { font-family:var(--sans); font-size:16px; color:var(--text); background:var(--bg3); scroll-behavior:smooth; }
+  body { display:flex; min-height:100vh; }
+  .sidebar { width:260px; min-width:260px; background:var(--bg); border-right:0.5px solid var(--border); display:flex; flex-direction:column; position:sticky; top:0; height:100vh; overflow-y:auto; }
+  .sidebar-brand { padding:16px; border-bottom:0.5px solid var(--border); }
+  .brand-course { font-size:11px; font-weight:500; color:var(--blue); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:4px; }
+  .brand-title { font-size:13px; font-weight:500; color:var(--text); line-height:1.4; }
+  .progress-wrap { height:3px; background:var(--border); }
+  .progress-bar { height:3px; background:var(--blue); width:28%; }
+  .nav-section { font-size:10px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:0.07em; padding:12px 16px 4px; }
+  .nav-item { display:flex; align-items:center; gap:8px; padding:7px 16px; font-size:12.5px; color:var(--text2); cursor:pointer; border-left:2px solid transparent; text-decoration:none; transition:background 0.12s; }
+  .nav-item:hover { background:var(--bg2); color:var(--text); }
+  .nav-item.active { color:var(--text); border-left-color:var(--blue); background:var(--bg2); font-weight:500; }
+  .nav-item.done .nav-dot { background:var(--green); }
+  .nav-dot { width:6px; height:6px; border-radius:50%; background:var(--border); flex-shrink:0; }
+  .nav-item.active .nav-dot { background:var(--blue); }
+  .main { flex:1; min-width:0; }
+  .tab-bar { background:var(--bg); border-bottom:0.5px solid var(--border); display:flex; padding:0 32px; position:sticky; top:0; z-index:10; overflow-x:auto; }
+  .tab { padding:12px 16px; font-size:13px; color:var(--text2); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-0.5px; background:none; border-top:none; border-left:none; border-right:none; font-family:var(--sans); transition:color 0.12s; white-space:nowrap; }
+  .tab:hover { color:var(--text); }
+  .tab.active { color:var(--text); border-bottom-color:var(--blue); font-weight:500; }
+  .content { max-width:820px; margin:0 auto; padding:32px; }
+  .section { display:none; }
+  .section.active { display:block; }
+  .lesson-eyebrow { font-size:11px; font-weight:500; color:var(--blue); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:6px; }
+  h1 { font-size:26px; font-weight:500; color:var(--text); margin-bottom:6px; line-height:1.3; }
+  .lesson-meta { font-size:12px; color:var(--text3); margin-bottom:28px; }
+  h2 { font-size:18px; font-weight:500; color:var(--text); margin:30px 0 10px; }
+  h3 { font-size:15px; font-weight:500; color:var(--text); margin:20px 0 8px; }
+  p { font-size:14.5px; color:var(--text2); line-height:1.75; margin-bottom:14px; }
+  strong { color:var(--text); font-weight:500; }
+  ul, ol { padding-left:20px; margin-bottom:14px; }
+  li { font-size:14.5px; color:var(--text2); line-height:1.75; margin-bottom:4px; }
+  .def-box { border-left:3px solid var(--blue); background:var(--blue-bg); border-radius:0 var(--radius) var(--radius) 0; padding:12px 16px; margin:16px 0; }
+  .def-box .def-label { font-size:11px; font-weight:500; color:var(--blue-txt); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px; }
+  .def-box.green { border-left-color:var(--green); background:var(--green-bg); }
+  .def-box.green .def-label { color:var(--green); }
+  .def-box.amber { border-left-color:var(--amber); background:var(--amber-bg); }
+  .def-box.amber .def-label { color:var(--amber-txt); }
+  .def-box.red { border-left-color:var(--red); background:var(--red-bg); }
+  .def-box.red .def-label { color:var(--red); }
+  .def-box.purple { border-left-color:var(--purple); background:var(--purple-bg); }
+  .def-box.purple .def-label { color:var(--purple-txt); }
+  .def-box p { font-size:13.5px; color:var(--text); margin:0; line-height:1.6; }
+  .math-block { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius); padding:14px 20px; margin:16px 0; text-align:center; font-family:var(--mono); font-size:15px; color:var(--text); overflow-x:auto; }
+  .scene-label { font-size:11px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:0.07em; margin:24px 0 12px; padding:6px 10px; background:var(--bg2); border-radius:var(--radius); display:inline-block; }
+  .dialogue { display:flex; flex-direction:column; gap:12px; margin:16px 0; }
+  .line { display:flex; gap:12px; align-items:flex-start; }
+  .line.right { flex-direction:row-reverse; }
+  .speaker-badge { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:500; flex-shrink:0; margin-top:2px; }
+  .sp-prof{background:var(--blue-bg);color:var(--blue-txt)} .sp-emma{background:var(--green-bg);color:var(--green)} .sp-oliver{background:var(--amber-bg);color:var(--amber-txt)} .sp-james{background:var(--purple-bg);color:var(--purple-txt)} .sp-sophia{background:var(--red-bg);color:var(--red)}
+  .bubble { max-width:76%; background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:10px 14px; }
+  .line.right .bubble { background:var(--blue-bg); border-color:transparent; }
+  .speaker-name { font-size:11px; font-weight:500; color:var(--text3); margin-bottom:3px; }
+  .bubble p { font-size:14px; color:var(--text); margin:0; line-height:1.6; }
+  .takeaway { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:16px 20px; margin:24px 0; }
+  .takeaway .tk-label { font-size:11px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:8px; }
+  .takeaway ul { margin:0; }
+  .takeaway li { font-size:14px; color:var(--text); }
+  .tbl-wrap { overflow-x:auto; margin:16px 0; }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  thead tr { background:var(--bg2); }
+  th { padding:9px 12px; text-align:left; font-weight:500; font-size:12px; color:var(--text); border-bottom:0.5px solid var(--border); text-transform:uppercase; letter-spacing:0.05em; }
+  td { padding:9px 12px; color:var(--text2); border-bottom:0.5px solid var(--border); line-height:1.5; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:var(--bg2); }
+  .deriv-box { border:0.5px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; margin:20px 0; }
+  .deriv-header { display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background:var(--bg2); border-bottom:0.5px solid var(--border); gap:12px; }
+  .deriv-title { font-size:13px; font-weight:500; color:var(--text); }
+  .reveal-btn { background:none; border:0.5px solid var(--border); border-radius:var(--radius); padding:5px 12px; font-size:12px; cursor:pointer; color:var(--text2); font-family:var(--sans); }
+  .reveal-btn:hover { background:var(--bg3); }
+  .step-row { display:flex; gap:14px; padding:12px 16px; border-bottom:0.5px solid var(--border); animation:fadeIn 0.25s ease; }
+  .step-row:last-child { border-bottom:none; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+  .step-num { width:24px; height:24px; border-radius:50%; background:var(--blue-bg); color:var(--blue-txt); font-size:11px; font-weight:500; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+  .step-content .step-eq { font-family:var(--mono); font-size:14px; color:var(--text); margin-bottom:4px; }
+  .step-content .step-note { font-size:12.5px; color:var(--text3); line-height:1.5; }
+  .controls-row { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:16px; align-items:center; }
+  .ctrl { display:flex; align-items:center; gap:8px; }
+  .ctrl label { font-size:12.5px; color:var(--text2); white-space:nowrap; }
+  .ctrl input[type=range] { width:130px; accent-color:var(--blue); }
+  .ctrl-val { font-size:12.5px; font-weight:500; color:var(--text); min-width:35px; }
+  .stat-row { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+  .stat-card { flex:1; min-width:110px; background:var(--bg2); border-radius:var(--radius); padding:10px 14px; text-align:center; }
+  .stat-card .sc-label { font-size:11px; color:var(--text3); margin-bottom:4px; }
+  .stat-card .sc-val { font-size:20px; font-weight:500; color:var(--text); }
+  .chart-wrap { position:relative; width:100%; height:250px; }
+  .plot-box { border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:16px; margin:16px 0; }
+  .plot-title { font-size:13px; font-weight:500; color:var(--text); margin-bottom:4px; }
+  .plot-sub { font-size:12px; color:var(--text3); margin-bottom:14px; }
+  .choice-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin:16px 0; }
+  .choice-card { border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:12px 14px; cursor:pointer; background:var(--bg); }
+  .choice-card:hover { background:var(--bg2); }
+  .choice-card .choice-title { font-size:13.5px; font-weight:500; color:var(--text); margin-bottom:4px; }
+  .choice-card .choice-sub { font-size:12.5px; color:var(--text3); line-height:1.5; }
+  .exercise { border:0.5px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; margin:16px 0; }
+  .ex-header { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; cursor:pointer; }
+  .ex-header:hover { background:var(--bg2); }
+  .ex-qnum { font-size:11px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:0.06em; }
+  .ex-qtitle { font-size:14px; font-weight:500; color:var(--text); margin-top:2px; }
+  .ex-difficulty { font-size:11px; padding:2px 8px; border-radius:10px; }
+  .diff-easy{background:var(--green-bg);color:var(--green)} .diff-medium{background:var(--amber-bg);color:var(--amber-txt)} .diff-hard{background:var(--red-bg);color:var(--red)}
+  .ex-toggle { font-size:18px; color:var(--text3); transition:transform 0.2s; }
+  .ex-body { display:none; padding:0 16px 16px; border-top:0.5px solid var(--border); }
+  .ex-body.open { display:block; }
+  .ex-question { font-size:14px; color:var(--text2); line-height:1.7; margin:12px 0; }
+  .answer-toggle { background:none; border:0.5px solid var(--border); border-radius:var(--radius); padding:7px 14px; font-size:12.5px; cursor:pointer; color:var(--text2); font-family:var(--sans); margin-top:10px; }
+  .answer-toggle:hover { background:var(--bg2); }
+  .answer-box { display:none; margin-top:12px; background:var(--green-bg); border:0.5px solid var(--green); border-radius:var(--radius); padding:12px 16px; }
+  .answer-box.open { display:block; animation:fadeIn 0.2s ease; }
+  .answer-box .ans-label { font-size:11px; font-weight:500; color:var(--green); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; }
+  .answer-box p, .answer-box li { font-size:13.5px; color:var(--text); line-height:1.65; }
+  .quiz-q { font-size:14.5px; font-weight:500; color:var(--text); margin-bottom:14px; line-height:1.55; }
+  .quiz-opts { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+  .quiz-opt { display:flex; align-items:center; gap:10px; padding:11px 14px; border:0.5px solid var(--border); border-radius:var(--radius); cursor:pointer; font-size:13.5px; color:var(--text2); transition:all 0.12s; }
+  .quiz-opt:hover:not(.locked) { border-color:var(--blue); background:var(--blue-bg); color:var(--text); }
+  .quiz-opt.selected { border-color:var(--blue); background:var(--blue-bg); color:var(--text); }
+  .quiz-opt.correct { border-color:var(--green); background:var(--green-bg); color:var(--green); }
+  .quiz-opt.wrong { border-color:var(--red); background:var(--red-bg); color:var(--red); }
+  .quiz-opt .opt-key { width:22px; height:22px; border-radius:50%; border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:500; flex-shrink:0; }
+  .feedback { padding:10px 14px; border-radius:var(--radius); font-size:13.5px; line-height:1.6; margin-bottom:14px; display:none; }
+  .feedback.show { display:block; }
+  .feedback.ok { background:var(--green-bg); color:var(--green); border:0.5px solid var(--green); }
+  .feedback.no { background:var(--red-bg); color:var(--red); border:0.5px solid var(--red); }
+  .quiz-actions { display:flex; gap:10px; }
+  .btn-check { padding:8px 18px; background:var(--blue); color:#fff; border:none; border-radius:var(--radius); font-size:13px; cursor:pointer; font-family:var(--sans); }
+  .btn-check:disabled { opacity:0.4; cursor:default; }
+  .btn-next { padding:8px 18px; border:0.5px solid var(--border); border-radius:var(--radius); font-size:13px; cursor:pointer; background:none; color:var(--text2); font-family:var(--sans); display:none; }
+  .btn-next.show { display:inline-block; }
+  .quiz-progress { font-size:11.5px; color:var(--text3); margin-bottom:20px; }
+  .quiz-complete { text-align:center; padding:32px 0; }
+  .quiz-complete .score-big { font-size:48px; font-weight:500; color:var(--text); }
+  @media (max-width:760px) { body { display:block; } .sidebar { position:relative; width:100%; height:auto; min-width:0; } .content { padding:24px 18px; } .bubble { max-width:84%; } }
+
+
+  @media (max-width:850px) {
+    html, body { width:100%; max-width:100%; overflow-x:hidden; }
+    body { display:block; min-height:auto; }
+    .sidebar { position:relative; width:100%; min-width:0; max-width:100%; height:auto; max-height:none; border-right:none; border-bottom:0.5px solid var(--border); overflow:visible; }
+    .main { display:block; width:100%; max-width:100%; min-width:0; overflow:visible; }
+    .tab-bar { position:sticky; top:0; z-index:20; padding:0 12px; width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .tab { flex:0 0 auto; padding:13px 16px; font-size:15px; }
+    .content { width:100%; max-width:100%; margin:0; padding:26px 18px 38px; overflow-x:hidden; }
+    h1 { font-size:32px; line-height:1.15; word-break:normal; overflow-wrap:normal; }
+    h2 { font-size:22px; }
+    p, li { font-size:16px; }
+    .lesson-meta { font-size:14px; line-height:1.55; }
+    .scene-label { max-width:100%; white-space:normal; line-height:1.5; }
+    .bubble { max-width:calc(100% - 48px); min-width:0; padding:14px 16px; }
+    .bubble p { font-size:16px; line-height:1.65; overflow-wrap:break-word; }
+    .speaker-badge { width:38px; height:38px; min-width:38px; }
+    .math-block { width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:14px 12px; }
+    .plot-box,.exercise,.takeaway,.def-box { width:100%; max-width:100%; }
+    .chart-wrap { height:280px; }
+    .tbl-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    table { min-width:560px; }
+  }
+
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-course">Foundational Statistics</div>
+    <div class="brand-title">Statistics Foundation for University Students</div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="sidebar-progress" style="width:20%;"></div></div>
+
+  <div class="nav-section">Course modules</div>
+  <a class="nav-item active" href="../module-1/index.html"><div class="nav-dot"></div>Module 1 · Introduction</a>
+  <a class="nav-item" href="../module-2/index.html"><div class="nav-dot"></div>Module 2 · Descriptive statistics</a>
+  <a class="nav-item" href="../module-3/index.html"><div class="nav-dot"></div>Module 3 · Probability</a>
+  <a class="nav-item" href="../module-4/index.html"><div class="nav-dot"></div>Module 4 · Statistical inference</a>
+  <a class="nav-item" href="../module-5/index.html"><div class="nav-dot"></div>Module 5 · Regression</a>
+
+  <div class="nav-section">Module 1 lessons</div>
+  <a class="nav-item done" href="1-1-what-is-statistics.html"><div class="nav-dot"></div>1.1 What is statistics?</a>
+  <a class="nav-item done" href="1-2-populations-samples-variables.html"><div class="nav-dot"></div>1.2 Populations & samples</a>
+  <a class="nav-item done" href="1-3-types-of-data.html"><div class="nav-dot"></div>1.3 Types of data</a>
+  <a class="nav-item done" href="1-4-tables-graphs.html"><div class="nav-dot"></div>1.4 Tables & graphs</a>
+  <a class="nav-item active" href="1-5-sampling-methods.html"><div class="nav-dot"></div>1.5 Sampling methods</a>
+</nav>
+
+<div class="main">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('lecture',this)">Lecture</button>
+    <button class="tab" onclick="showTab('notes',this)">Notes</button>
+    <button class="tab" onclick="showTab('interactive',this)">Interactive</button>
+    <button class="tab" onclick="showTab('exercises',this)">Exercises</button>
+    <button class="tab" onclick="showTab('quiz',this)">Quiz</button>
+  </div>
+
+  <div class="content">
+
+<section id="sec-lecture" class="section active">
+  <div class="lesson-eyebrow">Module 1 · Topic 5</div>
+  <h1>Sampling methods</h1>
+  <div class="lesson-meta">Mr. R · Emma, Oliver, James, Sophia · ~32 min · Introduction to study design</div>
+
+  <div class="scene-label">📍 Scene — the class must decide how to choose people for a survey</div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>We know what a population and sample are. But how do we actually choose the sample?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>That is the central question of sampling. A sample should give useful evidence about the population, and the method used to select it matters enormously.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>Can we just ask the first people we meet?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>That is convenient, but it may be biased. The easiest people to reach may not represent the population well.</p></div></div>
+  </div>
+
+  <div class="def-box amber"><div class="def-label">Big idea</div><p>Sampling is not only about sample size. A smaller well-designed sample can be more informative than a large biased sample.</p></div>
+
+  <h2>Why sampling matters</h2>
+  <p>We usually sample because it is impossible, expensive or unnecessary to measure every unit in a population. But the sample must be selected carefully. Otherwise, the data may systematically misrepresent the population.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>If the sample is large enough, will that automatically solve the problem?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>No. A large biased sample is still biased. Increasing sample size reduces random sampling variation, but it does not automatically remove systematic selection bias.</p></div></div>
+  </div>
+
+  <h2>Probability sampling</h2>
+  <p>In probability sampling, units are selected using a random mechanism, and the chance of selection is known or at least controlled by design. This supports formal statistical inference.</p>
+
+  <div class="tbl-wrap"><table><thead><tr><th>Method</th><th>Main idea</th><th>Example</th></tr></thead><tbody>
+    <tr><td>Simple random sampling</td><td>Every unit has equal chance of selection</td><td>Randomly select 100 student IDs from a register</td></tr>
+    <tr><td>Systematic sampling</td><td>Select every kth unit after a random start</td><td>Choose every 10th patient record</td></tr>
+    <tr><td>Stratified sampling</td><td>Sample separately within important subgroups</td><td>Sample students from each year group</td></tr>
+    <tr><td>Cluster sampling</td><td>Randomly choose groups, then observe units inside them</td><td>Select several schools, then survey students inside them</td></tr>
+  </tbody></table></div>
+
+  <h2>Non-probability sampling</h2>
+  <p>In non-probability sampling, selection is not based on a fully random mechanism. These methods may be practical, but they often make generalisation more difficult.</p>
+
+  <div class="tbl-wrap"><table><thead><tr><th>Method</th><th>Main idea</th><th>Risk</th></tr></thead><tbody>
+    <tr><td>Convenience sampling</td><td>Choose units that are easiest to access</td><td>Sample may be unrepresentative</td></tr>
+    <tr><td>Voluntary response</td><td>People choose to participate</td><td>Strong opinions may be over-represented</td></tr>
+    <tr><td>Quota sampling</td><td>Fill pre-set numbers from groups without random selection</td><td>Within-quota selection may still be biased</td></tr>
+    <tr><td>Snowball sampling</td><td>Participants recruit other participants</td><td>Networks may distort representation</td></tr>
+  </tbody></table></div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>Is non-probability sampling always useless?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>No. It can be useful in exploratory research, hard-to-reach populations or early-stage studies. But we must be careful about how far we generalise.</p></div></div>
+  </div>
+
+  <h2>Sampling bias and non-response</h2>
+  <p>Sampling bias occurs when the sampling method systematically favours certain units. Non-response bias occurs when selected units do not participate, and non-responders differ from responders in important ways.</p>
+
+  <div class="def-box red"><div class="def-label">Warning</div><p>Random selection is helpful, but poor response rates, missing data and measurement problems can still damage representativeness.</p></div>
+
+  <div class="takeaway"><div class="tk-label">Key takeaways from this lecture</div><ul>
+    <li>Sampling methods determine how well a sample can represent a population.</li>
+    <li>Probability sampling uses random selection and supports stronger inference.</li>
+    <li>Simple random, systematic, stratified and cluster sampling are common probability methods.</li>
+    <li>Convenience and voluntary response samples can be seriously biased.</li>
+    <li>Larger samples reduce random variation but do not automatically remove bias.</li>
+    <li>Non-response can make even a carefully selected sample unrepresentative.</li>
+  </ul></div>
+</section>
+
+<section id="sec-notes" class="section">
+  <div class="lesson-eyebrow">Detailed notes</div>
+  <h1>Sampling methods</h1>
+
+  <h2>1. Purpose of sampling</h2>
+  <p>Sampling is the process of selecting a subset of units from a population. The goal is to obtain data that can inform us about the population while saving time, cost and effort.</p>
+
+  <div class="def-box"><div class="def-label">Definition — sampling</div><p>Sampling is the method by which units are selected from a population for observation or measurement.</p></div>
+
+  <h2>2. Sampling frame</h2>
+  <p>A sampling frame is the actual list or mechanism from which the sample is drawn. It should match the target population as closely as possible.</p>
+
+  <div class="math-block">Target population → sampling frame → selected sample</div>
+
+  <p>If the sampling frame misses important members of the population, coverage bias can occur.</p>
+
+  <div class="def-box red"><div class="def-label">Coverage bias</div><p>Coverage bias occurs when some parts of the target population are absent, under-represented or over-represented in the sampling frame.</p></div>
+
+  <h2>3. Simple random sampling</h2>
+  <p>In simple random sampling, every unit has an equal chance of being selected, and every sample of the same size has an equal chance of selection.</p>
+
+  <div class="math-block">P(unit selected) = n / N</div>
+
+  <p>where \(N\) is the population size and \(n\) is the sample size.</p>
+
+  <div class="def-box green"><div class="def-label">Strength</div><p>Simple random sampling is conceptually clean and supports many standard inference methods.</p></div>
+
+  <div class="def-box amber"><div class="def-label">Limitation</div><p>It requires a complete sampling frame and may under-represent small subgroups by chance.</p></div>
+
+  <h2>4. Systematic sampling</h2>
+  <p>In systematic sampling, we order the sampling frame, choose a random starting point, and then select every \(k\)th unit.</p>
+
+  <div class="math-block">k = N / n</div>
+
+  <p>For example, if there are 1,000 records and we want 100, we may choose every 10th record after a random start.</p>
+
+  <div class="def-box red"><div class="def-label">Caution</div><p>Systematic sampling can be biased if the list has a hidden pattern that aligns with the sampling interval.</p></div>
+
+  <h2>5. Stratified sampling</h2>
+  <p>In stratified sampling, the population is divided into subgroups called strata, and random samples are taken from each stratum.</p>
+
+  <div class="math-block">Population = Stratum 1 ∪ Stratum 2 ∪ ⋯ ∪ Stratum K</div>
+
+  <p>Stratification is useful when important subgroups must be represented, such as year groups, regions, age bands or treatment centres.</p>
+
+  <h3>Proportional allocation</h3>
+  <p>In proportional stratified sampling, the sample size in each stratum is proportional to the stratum size in the population.</p>
+
+  <div class="math-block">n_h = n × (N_h / N)</div>
+
+  <p>where \(N_h\) is the size of stratum \(h\), \(N\) is the population size and \(n\) is the total sample size.</p>
+
+  <h2>6. Cluster sampling</h2>
+  <p>In cluster sampling, the population is divided into naturally occurring groups called clusters. Some clusters are selected at random, and units within selected clusters are measured.</p>
+
+  <p>Cluster sampling can reduce cost when units are geographically or organisationally grouped, but individuals within the same cluster may be similar, which reduces statistical efficiency.</p>
+
+  <h2>7. Convenience sampling</h2>
+  <p>Convenience sampling selects units that are easiest to reach. It is quick but often biased.</p>
+
+  <div class="def-box red"><div class="def-label">Example</div><p>Surveying only people leaving a gym to estimate exercise habits in the whole city will likely overestimate exercise levels.</p></div>
+
+  <h2>8. Voluntary response sampling</h2>
+  <p>In voluntary response sampling, individuals choose whether to participate. People with strong opinions may be more likely to respond, creating bias.</p>
+
+  <h2>9. Quota and snowball sampling</h2>
+  <p>Quota sampling fills required numbers from subgroups, but selection within each subgroup may not be random. Snowball sampling uses participants to recruit others and is sometimes used for hard-to-reach populations.</p>
+
+  <h2>10. Bias versus sampling variation</h2>
+  <p>Sampling variation is random fluctuation from sample to sample. Bias is systematic error caused by the design or process.</p>
+
+  <div class="tbl-wrap"><table><thead><tr><th>Concept</th><th>Meaning</th><th>Reduced by</th></tr></thead><tbody>
+    <tr><td>Sampling variation</td><td>Random differences between samples</td><td>Larger sample size and efficient design</td></tr>
+    <tr><td>Bias</td><td>Systematic departure from the truth</td><td>Better design, better frame, improved response</td></tr>
+  </tbody></table></div>
+
+  <h2>11. Non-response bias</h2>
+  <p>Non-response bias occurs when selected people do not respond and their outcomes differ from those who do respond.</p>
+
+  <div class="math-block">Response rate = number responding / number selected</div>
+
+  <p>A high response rate is desirable, but response quality and differences between responders and non-responders also matter.</p>
+
+  <h2>12. Common mistakes</h2>
+  <ul>
+    <li>Thinking that a large sample is automatically representative.</li>
+    <li>Ignoring how the sample was selected.</li>
+    <li>Confusing random sampling with random assignment.</li>
+    <li>Assuming voluntary response surveys represent everyone.</li>
+    <li>Ignoring non-response and missing data.</li>
+    <li>Generalising beyond the sampling frame.</li>
+  </ul>
+</section>
+
+<section id="sec-interactive" class="section">
+  <div class="lesson-eyebrow">Interactive elements</div>
+  <h1>Exploring sampling methods</h1>
+
+  <h2>1. Stratified allocation calculator</h2>
+  <p>Change the total sample size and see how proportional stratified sampling allocates units across strata.</p>
+  <div class="plot-box">
+    <div class="plot-title">Proportional stratified sampling</div>
+    <div class="plot-sub">Stratum sizes are fixed: Year 1 = 400, Year 2 = 300, Year 3 = 200, Year 4 = 100.</div>
+    <div class="controls-row">
+      <div class="ctrl"><label>Total sample size</label><input type="range" id="sample-size" min="20" max="300" value="100" oninput="updateStrataDemo()"><span class="ctrl-val" id="sample-label">100</span></div>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr><th>Stratum</th><th>Population size</th><th>Sample allocation</th></tr></thead><tbody id="strata-table"></tbody></table></div>
+    <div class="chart-wrap"><canvas id="strataChart" role="img" aria-label="Bar chart of stratified sample allocation"></canvas></div>
+  </div>
+
+  <h2>2. Choose the sampling method</h2>
+  <p>Click the best method description for each situation.</p>
+  <div id="choice-area" class="choice-grid"></div>
+</section>
+
+<section id="sec-exercises" class="section">
+  <div class="lesson-eyebrow">Practice exercises</div>
+  <h1>Sampling methods</h1>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 1</div><div class="ex-qtitle">Simple random sampling</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A university randomly selects 200 student ID numbers from a complete student register. What sampling method is this?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>This is simple random sampling because students are selected randomly from a complete list.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 2</div><div class="ex-qtitle">Systematic sampling</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A researcher selects every 20th patient record after a random starting point. What sampling method is this?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>This is systematic sampling.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 3</div><div class="ex-qtitle">Stratified sampling</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A study randomly samples students separately from each year group. What sampling method is used, and why might it be useful?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>This is stratified sampling. It is useful because each year group is guaranteed representation in the sample.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 4</div><div class="ex-qtitle">Convenience bias</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A researcher surveys only students sitting in the library at 11 pm. Explain the likely bias.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The sample may over-represent students who study late, live near the library or have particular study habits. It may not represent all students.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 5</div><div class="ex-qtitle">Bias versus sample size</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Why does increasing sample size not automatically remove bias?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>Larger samples reduce random sampling variation, but if the selection process systematically excludes or over-represents certain groups, the estimate remains biased.</p></div></div></div>
+</section>
+
+<section id="sec-quiz" class="section">
+  <div class="lesson-eyebrow">Topic quiz</div>
+  <h1>Sampling methods</h1>
+  <div id="quiz-container"></div>
+</section>
+
+  </div>
+</div>
+
+<script>
+function showTab(name, btn) { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); document.getElementById('sec-' + name).classList.add('active'); btn.classList.add('active'); if (name === 'interactive') initInteractive(); if (name === 'quiz') initQuiz(); }
+function toggleEx(header){ const body=header.nextElementSibling; const tog=header.querySelector('.ex-toggle'); const open=body.classList.toggle('open'); tog.textContent=open?'−':'+'; }
+function toggleAns(btn){ const box=btn.nextElementSibling; const open=box.classList.toggle('open'); btn.textContent=open?'Hide answer':'Show answer'; }
+
+let strataChart=null, interactiveInited=false;
+
+function updateStrataDemo(){
+  const n=parseInt(document.getElementById('sample-size').value);
+  document.getElementById('sample-label').textContent=n;
+  const strata=[['Year 1',400],['Year 2',300],['Year 3',200],['Year 4',100]];
+  const N=strata.reduce((s,x)=>s+x[1],0);
+  const alloc=strata.map(x=>[x[0],x[1],Math.round(n*x[1]/N)]);
+  document.getElementById('strata-table').innerHTML=alloc.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td><td>${x[2]}</td></tr>`).join('');
+  if(strataChart) strataChart.destroy();
+  strataChart=new Chart(document.getElementById('strataChart'),{type:'bar',data:{labels:alloc.map(x=>x[0]),datasets:[{label:'Sample allocation',data:alloc.map(x=>x[2])}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{font:{size:11}}},x:{ticks:{font:{size:11}}}}}});
+}
+
+const choices=[
+  {title:'Simple random sampling',sub:'Randomly choose 100 IDs from a complete list.',ok:true,why:'Correct. Every listed unit has a random chance of selection.'},
+  {title:'Systematic sampling',sub:'Choose every 10th record after a random start.',ok:true,why:'Correct. This is systematic selection using an interval.'},
+  {title:'Stratified sampling',sub:'Randomly sample separately from each year group.',ok:true,why:'Correct. The population is divided into strata first.'},
+  {title:'Cluster sampling',sub:'Randomly choose schools, then survey students inside them.',ok:true,why:'Correct. Schools act as clusters.'},
+  {title:'Convenience sampling',sub:'Survey whoever is easiest to reach and generalise confidently.',ok:false,why:'Careful. Convenience samples may be useful, but confident generalisation is risky.'}
+];
+
+function initInteractive(){
+  if(interactiveInited) return; interactiveInited=true; updateStrataDemo();
+  const area=document.getElementById('choice-area');
+  choices.forEach((c,i)=>{ const div=document.createElement('div'); div.className='choice-card'; div.onclick=()=>chooseCard(div,c); div.innerHTML=`<div class="choice-title">${c.title}</div><div class="choice-sub">${c.sub}</div><div id="ch-${i}" style="display:none;margin-top:10px;font-size:12.5px;line-height:1.5;"></div>`; area.appendChild(div); });
+}
+
+function chooseCard(div,c){ const fb=div.querySelector('[id^="ch-"]'); fb.style.display='block'; fb.style.color=c.ok?'var(--green)':'var(--red)'; fb.innerHTML=`<strong>${c.ok?'Good choice.':'Careful.'}</strong> ${c.why}`; }
+
+const quizData=[
+  {q:'A complete list from which a sample is drawn is called:',opts:['Sampling frame','Histogram','Median','Residual'],correct:0,ok:'Correct. The sampling frame is the list or mechanism used to select units.',no:'The list used to draw the sample is the sampling frame.'},
+  {q:'Selecting every kth unit after a random start is:',opts:['Systematic sampling','Voluntary response','Snowball sampling','Mode sampling'],correct:0,ok:'Correct. This is systematic sampling.',no:'Every kth unit after a random start describes systematic sampling.'},
+  {q:'Sampling separately within subgroups is:',opts:['Stratified sampling','Convenience sampling','A pie chart','Non-response'],correct:0,ok:'Correct. Stratified sampling samples within strata.',no:'Sampling within subgroups is stratified sampling.'},
+  {q:'Randomly selecting schools and surveying students inside selected schools is:',opts:['Cluster sampling','Simple random sampling only','Quota sampling only','A histogram'],correct:0,ok:'Correct. The schools are clusters.',no:'Selecting whole groups such as schools is cluster sampling.'},
+  {q:'Why can a large convenience sample still be misleading?',opts:['Because bias may remain','Because large samples cannot have means','Because all convenience samples are random','Because no one is measured'],correct:0,ok:'Correct. Large size does not automatically remove systematic bias.',no:'A large biased sample can still be misleading because bias remains.'}
+];
+
+let qIdx=0,chosen=null,isAnswered=false,score=0;
+function initQuiz(){qIdx=0;chosen=null;isAnswered=false;score=0;renderQ()}
+function renderQ(){
+ if(qIdx>=quizData.length){document.getElementById('quiz-container').innerHTML=`<div class="quiz-complete"><div class="score-big">${score}/${quizData.length}</div><p style="margin-top:8px">${score===quizData.length?'Excellent — strong understanding of sampling methods.':score>=3?'Good work. Review the missed explanations.':'Review probability sampling, bias and sampling frames.'}</p><button class="btn-check" style="margin-top:20px" onclick="initQuiz()">Retry quiz</button></div>`;return;}
+ const q=quizData[qIdx];
+ document.getElementById('quiz-container').innerHTML=`<div class="quiz-progress">Question ${qIdx+1} of ${quizData.length}</div><div class="quiz-q">${q.q}</div><div class="quiz-opts" id="qopts">${q.opts.map((o,i)=>`<div class="quiz-opt" id="qo${i}" onclick="selectOpt(${i})"><div class="opt-key">${['A','B','C','D'][i]}</div>${o}</div>`).join('')}</div><div class="feedback" id="qfb"></div><div class="quiz-actions"><button class="btn-check" id="qbtn-check" onclick="checkQ()" disabled>Check answer</button><button class="btn-next" id="qbtn-next" onclick="nextQ()">${qIdx<quizData.length-1?'Next question →':'See result'}</button></div>`;
+ chosen=null; isAnswered=false;
+}
+function selectOpt(i){ if(isAnswered) return; document.querySelectorAll('.quiz-opt').forEach(el=>el.classList.remove('selected')); document.getElementById('qo'+i).classList.add('selected'); chosen=i; document.getElementById('qbtn-check').disabled=false; }
+function checkQ(){ if(chosen===null||isAnswered) return; isAnswered=true; const q=quizData[qIdx]; const fb=document.getElementById('qfb'); document.querySelectorAll('.quiz-opt').forEach((el,i)=>{el.classList.add('locked'); if(i===q.correct) el.classList.add('correct'); if(i===chosen&&i!==q.correct) el.classList.add('wrong');}); const ok=chosen===q.correct; if(ok)score++; fb.className='feedback show '+(ok?'ok':'no'); fb.innerHTML=`<strong>${ok?'Correct.':'Not quite.'}</strong> ${ok?q.ok:q.no}`; document.getElementById('qbtn-check').disabled=true; document.getElementById('qbtn-next').classList.add('show'); }
+function nextQ(){qIdx++;renderQ()}
+</script>
+
+<!-- My Academic Tutor platform footer with logo -->
+<footer class="mat-platform-footer">
+  <div class="mat-footer-brand">
+    <img class="mat-footer-logo" src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <div>
+      <p><strong>Statistics Foundation for University Students</strong></p>
+      <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+<style id="mat-platform-footer-style">
+.mat-platform-footer{
+  max-width:960px;
+  margin:34px auto 0;
+  padding:22px 34px;
+  border-top:1px solid var(--border, #ded9cf);
+  color:var(--text2, #5f5f5a);
+  font-size:13px;
+  line-height:1.65;
+}
+.mat-platform-footer p{margin:0 0 4px 0;}
+.mat-platform-footer strong{color:var(--text, #171717);}
+.mat-footer-brand{display:flex;align-items:center;gap:12px;}
+.mat-footer-logo{
+  width:42px;
+  height:42px;
+  object-fit:contain;
+  border-radius:10px;
+  background:#fff;
+  border:1px solid var(--border, #ded9cf);
+  padding:5px;
+  flex:0 0 auto;
+}
+@media(max-width:850px){
+  .mat-platform-footer{padding:20px 18px;}
+  .mat-footer-brand{align-items:flex-start;}
+}
+</style>
+
+</body>
+</html>

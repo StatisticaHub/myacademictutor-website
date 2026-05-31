@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4.2 Confidence Intervals — Foundational Statistics</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--bg2:#f6f5f0;--bg3:#f0ede6;--border:#e0ddd6;--text:#1a1a18;--text2:#5a5a56;--text3:#8a8a84;--blue:#378ADD;--blue-bg:#E6F1FB;--blue-txt:#0C447C;--green:#3B6D11;--green-bg:#EAF3DE;--amber:#BA7517;--amber-bg:#FAEEDA;--amber-txt:#633806;--red:#A32D2D;--red-bg:#FCEBEB;--purple:#534AB7;--purple-bg:#EEEDFE;--purple-txt:#3C3489;--radius:8px;--radius-lg:12px;--sans:system-ui,-apple-system,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--border:#3a3a36;--text:#e8e6df;--text2:#a8a69f;--text3:#6a6a64;--blue-bg:#0c1f35;--blue-txt:#85B7EB;--green-bg:#0f2005;--amber-bg:#2a1800;--amber-txt:#FAC775;--red-bg:#2a0a0a;--purple-bg:#1a1740;--purple-txt:#AFA9EC}}
+html{font-family:var(--sans);font-size:16px;color:var(--text);background:var(--bg3);scroll-behavior:smooth}
+body{display:flex;min-height:100vh}.sidebar{width:278px;min-width:278px;background:var(--bg);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-brand{padding:16px;border-bottom:.5px solid var(--border)}.brand-course{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}.brand-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}.progress-wrap{height:3px;background:var(--border)}.progress-bar{height:3px;background:var(--blue);width:68%}
+.nav-section{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:12px 16px 4px}.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12.5px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;text-decoration:none;transition:background .12s}.nav-item:hover{background:var(--bg2);color:var(--text)}.nav-item.active{color:var(--text);border-left-color:var(--blue);background:var(--bg2);font-weight:500}.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0}.nav-item.active .nav-dot{background:var(--blue)}
+.main{flex:1;min-width:0}.tab-bar{background:var(--bg);border-bottom:.5px solid var(--border);display:flex;padding:0 32px;position:sticky;top:0;z-index:10;overflow-x:auto}.tab{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-.5px;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);white-space:nowrap}.tab:hover{color:var(--text)}.tab.active{color:var(--text);border-bottom-color:var(--blue);font-weight:500}
+.content{max-width:960px;margin:0 auto;padding:34px}.section{display:none}.section.active{display:block}.lesson-eyebrow{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}h1{font-size:29px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.25}.lesson-meta{font-size:12px;color:var(--text3);margin-bottom:28px}
+h2{font-size:19px;font-weight:500;color:var(--text);margin:32px 0 11px}h3{font-size:15.5px;font-weight:500;color:var(--text);margin:22px 0 8px}p{font-size:14.7px;color:var(--text2);line-height:1.78;margin-bottom:14px}strong{color:var(--text);font-weight:500}ul,ol{padding-left:21px;margin-bottom:14px}li{font-size:14.5px;color:var(--text2);line-height:1.76;margin-bottom:4px}
+.scene-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:24px 0 12px;padding:6px 10px;background:var(--bg2);border-radius:var(--radius);display:inline-block}.dialogue{display:flex;flex-direction:column;gap:12px;margin:16px 0}.line{display:flex;gap:12px;align-items:flex-start}.line.right{flex-direction:row-reverse}.speaker-badge{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:2px}.sp-prof{background:var(--blue-bg);color:var(--blue-txt)}.sp-emma{background:var(--green-bg);color:var(--green)}.sp-oliver{background:var(--amber-bg);color:var(--amber-txt)}.sp-james{background:var(--purple-bg);color:var(--purple-txt)}.sp-sophia{background:var(--red-bg);color:var(--red)}.bubble{max-width:78%;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px}.line.right .bubble{background:var(--blue-bg);border-color:transparent}.speaker-name{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:3px}.bubble p{font-size:14px;color:var(--text);margin:0;line-height:1.62}
+.def-box{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin:17px 0}.def-box .def-label{font-size:11px;font-weight:500;color:var(--blue-txt);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}.def-box.green{border-left-color:var(--green);background:var(--green-bg)}.def-box.green .def-label{color:var(--green)}.def-box.amber{border-left-color:var(--amber);background:var(--amber-bg)}.def-box.amber .def-label{color:var(--amber-txt)}.def-box.red{border-left-color:var(--red);background:var(--red-bg)}.def-box.red .def-label{color:var(--red)}.def-box p{font-size:13.7px;color:var(--text);margin:0;line-height:1.65}
+.math-block{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius);padding:15px 20px;margin:16px 0;text-align:center;font-size:15px;color:var(--text);overflow-x:auto;line-height:1.7}
+.tbl-wrap{overflow-x:auto;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:13.5px}thead tr{background:var(--bg2)}th{padding:9px 12px;text-align:left;font-weight:500;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.05em}td{padding:9px 12px;color:var(--text2);border-bottom:.5px solid var(--border);line-height:1.55}tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg2)}
+.takeaway{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin:25px 0}.takeaway .tk-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}.takeaway ul{margin:0}.takeaway li{font-size:14px;color:var(--text)}
+.plot-grid{display:grid;grid-template-columns:1fr;gap:18px}.plot-box{border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;background:var(--bg)}.plot-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}.plot-sub{font-size:12px;color:var(--text3);margin-bottom:14px}.chart-wrap{position:relative;width:100%;height:300px}
+.controls-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;align-items:center}.ctrl{display:flex;align-items:center;gap:8px}.ctrl label{font-size:12.5px;color:var(--text2);white-space:nowrap}.ctrl input[type=range]{width:145px;accent-color:var(--blue)}.ctrl select{padding:6px 8px;border:.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text)}.ctrl-val{font-size:12.5px;font-weight:500;color:var(--text);min-width:42px}.stat-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}.stat-card{flex:1;min-width:120px;background:var(--bg2);border-radius:var(--radius);padding:10px 14px;text-align:center}.stat-card .sc-label{font-size:11px;color:var(--text3);margin-bottom:4px}.stat-card .sc-val{font-size:20px;font-weight:500;color:var(--text)}
+.activity-card{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:10px 0}.activity-inner{padding:12px 16px}.choice-btn{padding:6px 12px;border:.5px solid var(--border);border-radius:var(--radius);background:none;font-size:12.5px;cursor:pointer;font-family:var(--sans);color:var(--text2);margin-right:6px;margin-top:6px}.choice-btn:hover{background:var(--bg2);color:var(--text)}.feedback-mini{display:none;margin-top:10px;padding:10px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5}
+.exercise{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:16px 0}.ex-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer}.ex-header:hover{background:var(--bg2)}.ex-qnum{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}.ex-qtitle{font-size:14px;font-weight:500;color:var(--text);margin-top:2px}.ex-difficulty{font-size:11px;padding:2px 8px;border-radius:10px}.diff-easy{background:var(--green-bg);color:var(--green)}.diff-medium{background:var(--amber-bg);color:var(--amber-txt)}.diff-hard{background:var(--red-bg);color:var(--red)}.ex-toggle{font-size:18px;color:var(--text3)}.ex-body{display:none;padding:0 16px 16px;border-top:.5px solid var(--border)}.ex-body.open{display:block}.ex-question{font-size:14px;color:var(--text2);line-height:1.7;margin:12px 0}.answer-toggle{background:none;border:.5px solid var(--border);border-radius:var(--radius);padding:7px 14px;font-size:12.5px;cursor:pointer;color:var(--text2);font-family:var(--sans);margin-top:10px}.answer-box{display:none;margin-top:12px;background:var(--green-bg);border:.5px solid var(--green);border-radius:var(--radius);padding:12px 16px}.answer-box.open{display:block;animation:fadeIn .2s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}.answer-box .ans-label{font-size:11px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}.answer-box p,.answer-box li{font-size:13.5px;color:var(--text);line-height:1.65}
+.quiz-q{font-size:14.5px;font-weight:500;color:var(--text);margin-bottom:14px;line-height:1.55}.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}.quiz-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:.5px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13.5px;color:var(--text2)}.quiz-opt:hover:not(.locked){border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.selected{border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}.quiz-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}.quiz-opt .opt-key{width:22px;height:22px;border-radius:50%;border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}.feedback{padding:10px 14px;border-radius:var(--radius);font-size:13.5px;line-height:1.6;margin-bottom:14px;display:none}.feedback.show{display:block}.feedback.ok{background:var(--green-bg);color:var(--green);border:.5px solid var(--green)}.feedback.no{background:var(--red-bg);color:var(--red);border:.5px solid var(--red)}.quiz-actions{display:flex;gap:10px}.btn-check{padding:8px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:var(--sans)}.btn-check:disabled{opacity:.4;cursor:default}.btn-next{padding:8px 18px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer;background:none;color:var(--text2);font-family:var(--sans);display:none}.btn-next.show{display:inline-block}.quiz-progress{font-size:11.5px;color:var(--text3);margin-bottom:20px}.quiz-complete{text-align:center;padding:32px 0}.quiz-complete .score-big{font-size:48px;font-weight:500;color:var(--text)}
+@media(max-width:850px){body{display:block}.sidebar{width:100%;height:auto;position:relative;min-width:0}.content{padding:24px 18px}.tab-bar{padding:0 12px}.bubble{max-width:88%}}
+</style>
+
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-course">Foundational Statistics</div>
+    <div class="brand-title">Statistics Foundation for University Students</div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="sidebar-progress" style="width:80%;"></div></div>
+
+  <div class="nav-section">Course modules</div>
+  <a class="nav-item" href="../module-1/index.html"><div class="nav-dot"></div>Module 1 · Introduction</a>
+  <a class="nav-item" href="../module-2/index.html"><div class="nav-dot"></div>Module 2 · Descriptive statistics</a>
+  <a class="nav-item" href="../module-3/index.html"><div class="nav-dot"></div>Module 3 · Probability</a>
+  <a class="nav-item active" href="../module-4/index.html"><div class="nav-dot"></div>Module 4 · Statistical inference</a>
+  <a class="nav-item" href="../module-5/index.html"><div class="nav-dot"></div>Module 5 · Regression</a>
+
+  <div class="nav-section">Module 4 lessons</div>
+  <a class="nav-item done" href="4-1-sampling-distributions-standard-error.html"><div class="nav-dot"></div>4.1 Sampling distributions & SE</a>
+  <a class="nav-item active" href="4-2-confidence-intervals.html"><div class="nav-dot"></div>4.2 Confidence intervals</a>
+  <a class="nav-item done" href="4-3-hypothesis-testing-framework.html"><div class="nav-dot"></div>4.3 Hypothesis testing framework</a>
+  <a class="nav-item done" href="4-4-t-tests-z-tests-proportions.html"><div class="nav-dot"></div>4.4 t-tests, z-tests & proportions</a>
+  <a class="nav-item done" href="4-5-chi-square-non-parametric-tests.html"><div class="nav-dot"></div>4.5 Chi-square & non-parametric tests</a>
+</nav>
+
+<div class="main">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('lecture',this)">Lecture</button>
+    <button class="tab" onclick="showTab('notes',this)">Notes</button>
+    <button class="tab" onclick="showTab('interactive',this)">Interactive</button>
+    <button class="tab" onclick="showTab('exercises',this)">Exercises</button>
+    <button class="tab" onclick="showTab('quiz',this)">Quiz</button>
+  </div>
+
+<div class="content">
+
+<section id="sec-lecture" class="section active">
+  <div class="lesson-eyebrow">Module 4 · Lesson 4.2</div>
+  <h1>Confidence intervals</h1>
+  <div class="lesson-meta">Mr. R · Prof Stat · ~48 min · After sampling distributions and standard error</div>
+
+  <div class="scene-label">📍 Scene — inference classroom, one estimate on the board</div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>Last lesson we learned that a sample estimate varies from sample to sample. So if I report only one number, like a sample mean, I am hiding uncertainty?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. A point estimate is useful, but incomplete. A confidence interval adds a range of plausible values for the population parameter.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>So a confidence interval is like saying, “The estimate is this, but allow for sampling uncertainty”?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>That is a very good first interpretation. It is an estimate plus a margin of error.</p></div></div>
+  </div>
+
+  <h2>From point estimate to interval estimate</h2>
+  <p>Suppose a sample of 100 patients has mean systolic blood pressure \(\bar{x}=128\) mmHg. If the estimated standard error is 2 mmHg, then a rough 95% confidence interval is:</p>
+
+  <div class="math-block">
+    \[
+    128 \pm 1.96(2)
+    \]
+  </div>
+
+  <p>That gives:</p>
+
+  <div class="math-block">
+    \[
+    128 \pm 3.92=(124.08,\;131.92)
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>Why multiply the standard error by 1.96?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Because for a standard normal distribution, about 95% of the area lies between \(-1.96\) and \(1.96\). That number is the critical value for a two-sided 95% confidence interval.</p></div></div>
+  </div>
+
+  <h2>The general structure</h2>
+  <p>Most confidence intervals follow the same structure:</p>
+
+  <div class="math-block">
+    \[
+    \text{estimate}\;\pm\;\text{critical value}\times\text{standard error}
+    \]
+  </div>
+
+  <p>The estimate gives the centre of the interval. The standard error measures sampling uncertainty. The critical value controls the confidence level.</p>
+
+  <h2>What 95% confidence really means</h2>
+  <p>The most important part of this lesson is interpretation. A 95% confidence interval does not mean there is a 95% probability that the fixed population parameter lies inside this one computed interval. In the frequentist framework, the parameter is fixed and the interval is random before the sample is observed.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>That sounds subtle. If we already calculated the interval, the parameter is either inside it or not?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Correct. The 95% refers to the long-run success rate of the method. If we repeated the sampling process many times and built intervals the same way, about 95% of those intervals would contain the true parameter.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>So confidence is about the procedure, not about magical probability attached to this one interval?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. In practice we often speak informally, but mathematically the long-run interpretation is the correct one.</p></div></div>
+  </div>
+
+  <h2>Width of a confidence interval</h2>
+  <p>The width of a confidence interval depends mainly on three things: the variability in the data, the sample size, and the confidence level.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Change</th><th>Effect on interval width</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td>Larger standard deviation</td><td>Wider interval</td><td>More variability in individual observations</td></tr>
+        <tr><td>Larger sample size</td><td>Narrower interval</td><td>Smaller standard error</td></tr>
+        <tr><td>Higher confidence level</td><td>Wider interval</td><td>Larger critical value</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>So a 99% confidence interval is wider than a 95% interval?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes. To be more confident in the long-run sense, the method must cast a wider net.</p></div></div>
+  </div>
+
+  <h2>Confidence interval for a mean</h2>
+  <p>If the population standard deviation \(\sigma\) is known and the sampling distribution is approximately normal, a confidence interval for \(\mu\) is:</p>
+
+  <div class="math-block">
+    \[
+    \bar{x}\pm z_{\alpha/2}\frac{\sigma}{\sqrt{n}}
+    \]
+  </div>
+
+  <p>If \(\sigma\) is unknown, we use the sample standard deviation \(s\), and usually a \(t\)-critical value:</p>
+
+  <div class="math-block">
+    \[
+    \bar{x}\pm t_{\alpha/2,n-1}\frac{s}{\sqrt{n}}
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>So the \(t\)-interval is more realistic because we usually do not know \(\sigma\)?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. In real data analysis, \(\sigma\) is usually unknown, so the \(t\)-interval is common for means.</p></div></div>
+  </div>
+
+  <h2>Confidence interval for a proportion</h2>
+  <p>For a sample proportion \(\hat{p}\), a simple large-sample confidence interval is:</p>
+
+  <div class="math-block">
+    \[
+    \hat{p}\pm z_{\alpha/2}\sqrt{\frac{\hat{p}(1-\hat{p})}{n}}
+    \]
+  </div>
+
+  <p>This is based on the approximate normal sampling distribution of \(\hat{p}\). The approximation works better when the sample size is large and the proportion is not too close to 0 or 1.</p>
+
+  <h2>Confidence interval is not proof</h2>
+  <p>A confidence interval gives a range of values compatible with the data and method. It does not prove all values in the interval are equally likely. It does not prove values outside are impossible. It also does not repair biased sampling or poor measurement.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>So if the study design is biased, a narrow confidence interval can still be misleading?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes. Confidence intervals quantify random sampling uncertainty under assumptions. They do not automatically quantify every possible source of error.</p></div></div>
+  </div>
+
+  <div class="takeaway">
+    <div class="tk-label">Key takeaways from this lecture</div>
+    <ul>
+      <li>A confidence interval is an estimate plus a margin of error.</li>
+      <li>Most intervals have the form estimate ± critical value × standard error.</li>
+      <li>A 95% confidence level refers to long-run coverage of the procedure.</li>
+      <li>Higher confidence gives wider intervals.</li>
+      <li>Larger sample size gives narrower intervals through smaller standard error.</li>
+      <li>Mean intervals use \(z\) or \(t\) critical values depending on whether \(\sigma\) is known.</li>
+      <li>Confidence intervals quantify sampling uncertainty, not all possible errors.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-notes" class="section">
+  <div class="lesson-eyebrow">Detailed theoretical notes</div>
+  <h1>Confidence intervals</h1>
+
+  <h2>1. Point estimation and interval estimation</h2>
+  <p>A point estimate gives a single number for an unknown parameter. An interval estimate gives a range of plausible values, acknowledging sampling uncertainty.</p>
+
+  <div class="def-box">
+    <div class="def-label">Confidence interval</div>
+    <p>A confidence interval is a random interval constructed from sample data using a method designed to cover the true parameter with a specified long-run frequency.</p>
+  </div>
+
+  <h2>2. General confidence interval structure</h2>
+  <p>Many confidence intervals have the form:</p>
+
+  <div class="math-block">
+    \[
+    \text{estimate}\pm \text{critical value}\times \text{standard error}
+    \]
+  </div>
+
+  <p>The margin of error is:</p>
+
+  <div class="math-block">
+    \[
+    \text{margin of error}
+    =
+    \text{critical value}\times \text{standard error}
+    \]
+  </div>
+
+  <h2>3. Confidence level and significance level</h2>
+  <p>If the confidence level is \(1-\alpha\), then \(\alpha\) is the total tail probability left outside the central interval.</p>
+
+  <div class="math-block">
+    \[
+    \text{confidence level}=1-\alpha
+    \]
+  </div>
+
+  <p>For a 95% confidence interval:</p>
+
+  <div class="math-block">
+    \[
+    1-\alpha=0.95
+    \quad\Rightarrow\quad
+    \alpha=0.05
+    \]
+  </div>
+
+  <p>For a two-sided interval, the error probability is split across two tails:</p>
+
+  <div class="math-block">
+    \[
+    \frac{\alpha}{2}=0.025
+    \]
+  </div>
+
+  <h2>4. Why the 95% z-critical value is 1.96</h2>
+  <p>Let \(Z\sim N(0,1)\). For a two-sided 95% confidence interval, we need the central 95% of the standard normal distribution:</p>
+
+  <div class="math-block">
+    \[
+    P(-z_{\alpha/2}\leq Z\leq z_{\alpha/2})=1-\alpha
+    \]
+  </div>
+
+  <p>For \(\alpha=0.05\):</p>
+
+  <div class="math-block">
+    \[
+    P(-1.96\leq Z\leq 1.96)\approx 0.95
+    \]
+  </div>
+
+  <h2>5. Confidence interval for a mean when \(\sigma\) is known</h2>
+  <p>Suppose \(X_1,\ldots,X_n\) are independent observations from a population with mean \(\mu\) and known standard deviation \(\sigma\). From the sampling distribution:</p>
+
+  <div class="math-block">
+    \[
+    \bar{X}\approx N\left(\mu,\frac{\sigma^2}{n}\right)
+    \]
+  </div>
+
+  <p>Standardising:</p>
+
+  <div class="math-block">
+    \[
+    Z=\frac{\bar{X}-\mu}{\sigma/\sqrt{n}}\approx N(0,1)
+    \]
+  </div>
+
+  <p>For a \(100(1-\alpha)\%\) interval:</p>
+
+  <div class="math-block">
+    \[
+    P\left(-z_{\alpha/2}\leq
+    \frac{\bar{X}-\mu}{\sigma/\sqrt{n}}
+    \leq z_{\alpha/2}\right)\approx 1-\alpha
+    \]
+  </div>
+
+  <p>Solving this inequality for \(\mu\) gives:</p>
+
+  <div class="math-block">
+    \[
+    \bar{X}-z_{\alpha/2}\frac{\sigma}{\sqrt{n}}
+    \leq \mu \leq
+    \bar{X}+z_{\alpha/2}\frac{\sigma}{\sqrt{n}}
+    \]
+  </div>
+
+  <p>Therefore, the confidence interval is:</p>
+
+  <div class="math-block">
+    \[
+    \bar{x}\pm z_{\alpha/2}\frac{\sigma}{\sqrt{n}}
+    \]
+  </div>
+
+  <h2>6. Confidence interval for a mean when \(\sigma\) is unknown</h2>
+  <p>In practice, \(\sigma\) is usually unknown. We estimate it using the sample standard deviation \(s\). This adds extra uncertainty, especially for small samples. The normal critical value is replaced by a \(t\)-critical value:</p>
+
+  <div class="math-block">
+    \[
+    \bar{x}\pm t_{\alpha/2,n-1}\frac{s}{\sqrt{n}}
+    \]
+  </div>
+
+  <p>The degrees of freedom are:</p>
+
+  <div class="math-block">
+    \[
+    \nu=n-1
+    \]
+  </div>
+
+  <p>As \(n\) increases, the \(t\)-distribution becomes very close to the standard normal distribution.</p>
+
+  <h2>7. Confidence interval for a proportion</h2>
+  <p>Let \(X\sim \operatorname{Binomial}(n,p)\). The sample proportion is:</p>
+
+  <div class="math-block">
+    \[
+    \hat{p}=\frac{X}{n}
+    \]
+  </div>
+
+  <p>For large samples:</p>
+
+  <div class="math-block">
+    \[
+    \hat{p}\approx N\left(p,\frac{p(1-p)}{n}\right)
+    \]
+  </div>
+
+  <p>Since \(p\) is unknown, we estimate the standard error using \(\hat{p}\):</p>
+
+  <div class="math-block">
+    \[
+    \widehat{\operatorname{SE}}(\hat{p})
+    =
+    \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}
+    \]
+  </div>
+
+  <p>The large-sample confidence interval is:</p>
+
+  <div class="math-block">
+    \[
+    \hat{p}\pm z_{\alpha/2}
+    \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}
+    \]
+  </div>
+
+  <h2>8. Width of a confidence interval</h2>
+  <p>For a mean with known \(\sigma\), the full width is:</p>
+
+  <div class="math-block">
+    \[
+    \text{width}
+    =
+    2z_{\alpha/2}\frac{\sigma}{\sqrt{n}}
+    \]
+  </div>
+
+  <p>This shows the interval becomes wider when \(z_{\alpha/2}\) or \(\sigma\) increases, and narrower when \(n\) increases.</p>
+
+  <h2>9. Interpretation of a confidence interval</h2>
+  <p>The correct frequentist interpretation is:</p>
+
+  <div class="def-box green">
+    <div class="def-label">Correct interpretation</div>
+    <p>If we repeated the same sampling procedure many times and constructed confidence intervals in the same way, approximately \(100(1-\alpha)\%\) of those intervals would contain the true parameter.</p>
+  </div>
+
+  <p>After a particular interval has been computed, the true parameter is either inside the interval or not. The confidence level describes the method, not a probability attached to this one fixed interval.</p>
+
+  <h2>10. Common mistakes</h2>
+  <ul>
+    <li><strong>Wrong:</strong> There is a 95% probability that the parameter lies in this interval.</li>
+    <li><strong>Better:</strong> The method used has 95% long-run coverage under the assumptions.</li>
+    <li><strong>Wrong:</strong> Values inside the interval are equally likely.</li>
+    <li><strong>Better:</strong> The interval gives a range of values compatible with the data and method.</li>
+    <li><strong>Wrong:</strong> A narrow interval means the study is unbiased.</li>
+    <li><strong>Better:</strong> A narrow interval means high precision, not necessarily validity.</li>
+    <li><strong>Wrong:</strong> A 99% interval is narrower than a 95% interval.</li>
+    <li><strong>Better:</strong> A 99% interval is wider because it uses a larger critical value.</li>
+  </ul>
+
+  <div class="takeaway">
+    <div class="tk-label">Notes summary</div>
+    <ul>
+      <li>Confidence intervals extend point estimates by adding uncertainty.</li>
+      <li>The margin of error is critical value times standard error.</li>
+      <li>The 95% z-critical value is approximately 1.96.</li>
+      <li>For means, use \(z\) when \(\sigma\) is known and \(t\) when \(\sigma\) is estimated.</li>
+      <li>For proportions, use \(\hat{p}\pm z_{\alpha/2}\sqrt{\hat{p}(1-\hat{p})/n}\) as a large-sample interval.</li>
+      <li>Confidence level refers to long-run coverage of the procedure.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-interactive" class="section">
+  <div class="lesson-eyebrow">Interactive inference lab</div>
+  <h1>Confidence intervals</h1>
+
+  <div class="plot-grid">
+    <div class="plot-box">
+      <div class="plot-title">1. Confidence interval for a mean</div>
+      <div class="plot-sub">Change estimate, standard error and confidence level.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Estimate</label><input id="est" type="range" min="50" max="150" value="100" oninput="updateMeanCI()"><span id="estVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>SE</label><input id="se" type="range" min="1" max="20" value="5" oninput="updateMeanCI()"><span id="seVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Level</label><select id="level" onchange="updateMeanCI()"><option value="1.645">90%</option><option value="1.96" selected>95%</option><option value="2.576">99%</option></select></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Lower</div><div id="meanLower" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Upper</div><div id="meanUpper" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Margin</div><div id="meanME" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="meanCIChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">2. Confidence interval width</div>
+      <div class="plot-sub">See how sample size and confidence level affect interval width.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(\sigma\)</label><input id="widthSigma" type="range" min="5" max="80" value="20" oninput="updateWidth()"><span id="widthSigmaVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Level</label><select id="widthLevel" onchange="updateWidth()"><option value="1.645">90%</option><option value="1.96" selected>95%</option><option value="2.576">99%</option></select></div>
+      </div>
+      <div class="chart-wrap"><canvas id="widthChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">3. Long-run coverage simulator</div>
+      <div class="plot-sub">Generate many confidence intervals. Green intervals contain the true mean; red intervals miss it.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Confidence level</label><select id="coverLevel" onchange="updateCoverage()"><option value="1.645">90%</option><option value="1.96" selected>95%</option><option value="2.576">99%</option></select></div>
+        <div class="ctrl"><label>Sample size</label><input id="coverN" type="range" min="5" max="200" value="30" oninput="updateCoverage()"><span id="coverNVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Intervals covering true mean</div><div id="coverRate" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="coverageChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">4. Proportion interval explorer</div>
+      <div class="plot-sub">Use the large-sample interval for a sample proportion.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(\hat{p}\)</label><input id="phat" type="range" min="1" max="99" value="40" oninput="updatePropCI()"><span id="phatVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(n\)</label><input id="propN" type="range" min="30" max="1000" value="200" oninput="updatePropCI()"><span id="propNVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Lower</div><div id="propLower" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Upper</div><div id="propUpper" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">SE</div><div id="propSE" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="propCIChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">5. Precision versus confidence</div>
+      <div class="plot-sub">Choose the statement that best describes each interval situation.</div>
+      <div id="activity-area"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-exercises" class="section">
+  <div class="lesson-eyebrow">Practice exercises</div>
+  <h1>Confidence intervals</h1>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 1</div><div class="ex-qtitle">Basic margin of error</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">An estimate is 42 and its standard error is 3. Calculate an approximate 95% confidence interval using 1.96.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>Margin of error \(=1.96(3)=5.88\). The interval is \(42\pm5.88=(36.12,47.88)\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 2</div><div class="ex-qtitle">Mean interval with known sigma</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Suppose \(\bar{x}=100\), \(\sigma=20\), and \(n=100\). Construct a 95% confidence interval for \(\mu\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\operatorname{SE}=20/\sqrt{100}=2\). The margin is \(1.96(2)=3.92\). The interval is \((96.08,103.92)\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 3</div><div class="ex-qtitle">Mean interval with unknown sigma</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A sample has \(\bar{x}=15\), \(s=4\), \(n=25\). Using \(t=2.064\), construct a 95% confidence interval.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\operatorname{SE}=4/\sqrt{25}=0.8\). Margin \(=2.064(0.8)=1.6512\). The interval is approximately \((13.35,16.65)\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 4</div><div class="ex-qtitle">Proportion interval</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">In a sample of 400 students, 120 report sleeping less than 6 hours. Construct an approximate 95% confidence interval for the population proportion.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\hat{p}=120/400=0.30\). \(\operatorname{SE}=\sqrt{0.30(0.70)/400}=\sqrt{0.000525}\approx0.0229\). Margin \(=1.96(0.0229)\approx0.0449\). Interval: \((0.255,0.345)\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 5</div><div class="ex-qtitle">Effect of confidence level</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">For the same data, which interval is wider: 90%, 95%, or 99%? Explain.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The 99% interval is widest because it uses the largest critical value. Higher confidence requires a wider interval to achieve higher long-run coverage.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 6</div><div class="ex-qtitle">Interpretation</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A report says, “There is a 95% probability that the true mean is between 10.2 and 13.8.” Rephrase this more carefully.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>A more careful statement is: using a method with 95% long-run coverage, we obtained the interval 10.2 to 13.8. The interval gives plausible values for the population mean under the assumptions.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 7</div><div class="ex-qtitle">Interval width and sample size</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If all else is fixed, what happens to the width of a confidence interval for a mean when sample size is multiplied by 4?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The standard error is divided by \(\sqrt{4}=2\). Since the width is proportional to the standard error, the interval width is halved.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 8</div><div class="ex-qtitle">Bias and confidence intervals</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Explain why a narrow confidence interval from a biased sample may be misleading.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The narrow interval indicates high precision under the sampling model, but if the sample is biased, the interval may be centred around the wrong target. Precision does not guarantee validity.</p></div></div></div>
+
+</section>
+
+<section id="sec-quiz" class="section">
+  <div class="lesson-eyebrow">Topic quiz</div>
+  <h1>Confidence intervals</h1>
+  <div id="quiz-container"></div>
+</section>
+
+</div>
+</div>
+
+<script>
+let charts = {};
+let quizIndex = 0;
+let selectedOption = null;
+let answered = false;
+let score = 0;
+
+const activities = [
+  {text:"A 99% confidence interval is usually wider than a 95% interval from the same data.",answer:"Correct interpretation",explanation:"Correct. Higher confidence uses a larger critical value."},
+  {text:"A confidence interval gives all values inside the interval equal probability.",answer:"Misinterpretation",explanation:"Not correct. A standard frequentist CI does not assign probabilities to parameter values."},
+  {text:"A narrow interval always means the study is unbiased.",answer:"Misinterpretation",explanation:"No. Narrowness reflects precision, not automatically validity."},
+  {text:"The margin of error is critical value times standard error.",answer:"Correct formula",explanation:"Correct. This is the usual confidence interval structure."}
+];
+
+const quiz = [
+  {q:"Most confidence intervals have the form:",opts:["estimate ± critical value × standard error","mean × median","p-value ± range","standard deviation only"],correct:0},
+  {q:"For a 95% two-sided z interval, the critical value is approximately:",opts:["1.00","1.64","1.96","2.58"],correct:2},
+  {q:"Increasing sample size usually makes a confidence interval:",opts:["Narrower","Wider","Always biased","Meaningless"],correct:0},
+  {q:"Increasing confidence level from 95% to 99% usually makes the interval:",opts:["Wider","Narrower","Unchanged","Negative"],correct:0},
+  {q:"When sigma is unknown for a mean, a common interval uses:",opts:["t critical value and s/sqrt(n)","only p-value","only the range","lambda"],correct:0},
+  {q:"The confidence level refers to:",opts:["Long-run coverage of the procedure","Probability every value inside is true","The sample size","The histogram height"],correct:0},
+  {q:"A confidence interval for a proportion uses estimated SE:",opts:["sqrt(phat(1-phat)/n)","s*n","sigma squared","xbar/n"],correct:0},
+  {q:"A narrow confidence interval from biased data can be:",opts:["Precise but misleading","Always valid","Always 99% confident","Impossible"],correct:0}
+];
+
+function showTab(name, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='interactive') initInteractive();
+  if(name==='quiz') initQuiz();
+  if(window.MathJax) MathJax.typesetPromise();
+}
+
+function makeChart(id,type,data,options={}){
+  if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(document.getElementById(id),{type,data,options:Object.assign({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}},options)});
+}
+
+function updateMeanCI(){
+  const est=Number(document.getElementById('est').value);
+  const se=Number(document.getElementById('se').value);
+  const z=Number(document.getElementById('level').value);
+  const margin=z*se, lower=est-margin, upper=est+margin;
+  document.getElementById('estVal').textContent=est;
+  document.getElementById('seVal').textContent=se;
+  document.getElementById('meanLower').textContent=lower.toFixed(2);
+  document.getElementById('meanUpper').textContent=upper.toFixed(2);
+  document.getElementById('meanME').textContent=margin.toFixed(2);
+  makeChart('meanCIChart','bar',{labels:['lower','estimate','upper'],datasets:[{data:[lower,est,upper],backgroundColor:['rgba(55,138,221,0.25)','rgba(59,109,17,0.35)','rgba(55,138,221,0.25)'],borderColor:['#378ADD','#3B6D11','#378ADD'],borderWidth:1}]});
+}
+
+function updateWidth(){
+  const sigma=Number(document.getElementById('widthSigma').value);
+  const z=Number(document.getElementById('widthLevel').value);
+  document.getElementById('widthSigmaVal').textContent=sigma;
+  const labels=[], vals=[];
+  for(let n=5;n<=500;n+=5){labels.push(n);vals.push(2*z*sigma/Math.sqrt(n));}
+  makeChart('widthChart','line',{labels,datasets:[{data:vals,borderColor:'#BA7517',backgroundColor:'transparent',pointRadius:0,borderWidth:2,tension:.25}]},{scales:{y:{beginAtZero:true}}});
+}
+
+function randn(){
+  let u=0,v=0;
+  while(u===0) u=Math.random();
+  while(v===0) v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+
+function updateCoverage(){
+  const z=Number(document.getElementById('coverLevel').value);
+  const n=Number(document.getElementById('coverN').value);
+  const mu=100, sigma=20, se=sigma/Math.sqrt(n);
+  document.getElementById('coverNVal').textContent=n;
+  const labels=[], centers=[], colors=[];
+  let cover=0;
+  for(let i=0;i<60;i++){
+    const xbar=mu + se*randn();
+    const lower=xbar-z*se, upper=xbar+z*se;
+    const ok=lower<=mu && mu<=upper;
+    if(ok) cover++;
+    labels.push(i+1);
+    centers.push(upper-lower);
+    colors.push(ok?'rgba(59,109,17,0.45)':'rgba(163,45,45,0.45)');
+  }
+  document.getElementById('coverRate').textContent=cover + "/60";
+  makeChart('coverageChart','bar',{labels,datasets:[{data:centers,backgroundColor:colors,borderColor:colors,borderWidth:1}]},{scales:{y:{beginAtZero:true}}});
+}
+
+function updatePropCI(){
+  const phat=Number(document.getElementById('phat').value)/100;
+  const n=Number(document.getElementById('propN').value);
+  const se=Math.sqrt(phat*(1-phat)/n);
+  const margin=1.96*se;
+  const lower=Math.max(0,phat-margin), upper=Math.min(1,phat+margin);
+  document.getElementById('phatVal').textContent=phat.toFixed(2);
+  document.getElementById('propNVal').textContent=n;
+  document.getElementById('propLower').textContent=lower.toFixed(3);
+  document.getElementById('propUpper').textContent=upper.toFixed(3);
+  document.getElementById('propSE').textContent=se.toFixed(3);
+  makeChart('propCIChart','bar',{labels:['lower','phat','upper'],datasets:[{data:[lower,phat,upper],backgroundColor:['rgba(55,138,221,0.25)','rgba(59,109,17,0.35)','rgba(55,138,221,0.25)'],borderColor:['#378ADD','#3B6D11','#378ADD'],borderWidth:1}]},{scales:{y:{beginAtZero:true,max:1}}});
+}
+
+function initInteractive(){updateMeanCI();updateWidth();updateCoverage();updatePropCI();renderActivities();}
+
+function renderActivities(){
+  const area=document.getElementById('activity-area');
+  if(area.children.length) return;
+  const options=["Correct interpretation","Correct formula","Misinterpretation","Design problem"];
+  activities.forEach((a,i)=>{
+    const div=document.createElement('div');
+    div.className='activity-card';
+    div.innerHTML=`<div class="activity-inner"><div style="font-size:13.5px;color:var(--text);line-height:1.6;margin-bottom:8px;">${a.text}</div>${options.map(o=>`<button class="choice-btn" onclick="checkActivity(${i}, '${o}', this)">${o}</button>`).join('')}<div id="activity-${i}" class="feedback-mini"></div></div>`;
+    area.appendChild(div);
+  });
+}
+
+function checkActivity(i,choice,btn){
+  const item=activities[i], fb=document.getElementById('activity-'+i), correct=choice===item.answer;
+  fb.style.display='block';fb.style.background=correct?'var(--green-bg)':'var(--red-bg)';fb.style.color=correct?'var(--green)':'var(--red)';fb.style.border=correct?'.5px solid var(--green)':'.5px solid var(--red)';
+  fb.innerHTML=`<strong>${correct?'✓ Correct.':'✗ Not quite.'}</strong> ${item.explanation}`;
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.disabled=true);
+}
+
+function toggleEx(header){const body=header.nextElementSibling,toggle=header.querySelector('.ex-toggle'),open=body.classList.toggle('open');toggle.textContent=open?'−':'+';if(window.MathJax)MathJax.typesetPromise();}
+function toggleAns(btn){const box=btn.nextElementSibling,open=box.classList.toggle('open');btn.textContent=open?'Hide answer':'Show answer';if(window.MathJax)MathJax.typesetPromise();}
+
+function initQuiz(){quizIndex=0;selectedOption=null;answered=false;score=0;renderQuiz();}
+function renderQuiz(){
+  const container=document.getElementById('quiz-container');
+  if(quizIndex>=quiz.length){
+    container.innerHTML=`<div class="quiz-complete"><div class="score-big">${score}/${quiz.length}</div><p>${score>=7?'Excellent — strong understanding of confidence intervals.':score>=5?'Good work. Review the missed ideas.':'Review the notes and try the quiz again.'}</p><button class="btn-check" onclick="initQuiz()">Retry quiz</button></div>`;
+    return;
+  }
+  const q=quiz[quizIndex];
+  container.innerHTML=`<div class="quiz-progress">Question ${quizIndex+1} of ${quiz.length}</div><div class="quiz-q">${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<div class="quiz-opt" id="qo${i}" onclick="selectOption(${i})"><div class="opt-key">${['A','B','C','D'][i]}</div>${o}</div>`).join('')}</div><div id="quizFeedback" class="feedback"></div><div class="quiz-actions"><button id="checkBtn" class="btn-check" onclick="checkQuiz()" disabled>Check answer</button><button id="nextBtn" class="btn-next" onclick="nextQuiz()">${quizIndex<quiz.length-1?'Next question →':'See result'}</button></div>`;
+  selectedOption=null;answered=false;
+}
+function selectOption(i){if(answered)return;document.querySelectorAll('.quiz-opt').forEach(o=>o.classList.remove('selected'));document.getElementById('qo'+i).classList.add('selected');selectedOption=i;document.getElementById('checkBtn').disabled=false;}
+function checkQuiz(){
+  if(selectedOption===null||answered)return;answered=true;
+  const q=quiz[quizIndex],correct=selectedOption===q.correct;if(correct)score++;
+  document.querySelectorAll('.quiz-opt').forEach((el,i)=>{el.classList.add('locked');if(i===q.correct)el.classList.add('correct');if(i===selectedOption&&i!==q.correct)el.classList.add('wrong');});
+  const fb=document.getElementById('quizFeedback');fb.className='feedback show '+(correct?'ok':'no');fb.textContent=correct?'Correct.':'Not quite. Review the confidence interval notes.';
+  document.getElementById('checkBtn').disabled=true;document.getElementById('nextBtn').classList.add('show');
+}
+function nextQuiz(){quizIndex++;renderQuiz();}
+</script>
+<!-- My Academic Tutor platform footer with logo -->
+<footer class="mat-platform-footer">
+  <div class="mat-footer-brand">
+    <img class="mat-footer-logo" src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <p><strong>Statistics Foundation for University Students</strong></p>
+  </div>
+  <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+  <p>© 2026 My Academic Tutor. All rights reserved.</p>
+</footer>
+<style>
+.mat-platform-footer{
+  max-width:960px;
+  margin:34px auto 0;
+  padding:22px 34px;
+  border-top:1px solid var(--border, #ded9cf);
+  color:var(--text2, #5f5f5a);
+  font-size:13px;
+  line-height:1.65;
+}
+.mat-platform-footer strong{color:var(--text, #171717);}
+.mat-footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.mat-footer-logo{width:36px;height:36px;object-fit:contain;border-radius:9px;background:#fff;border:1px solid var(--border, #ded9cf);padding:4px;}
+@media(max-width:850px){.mat-platform-footer{padding:20px 18px;}}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5.4 Model Assessment and Diagnostics — Foundational Statistics</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--bg2:#f6f5f0;--bg3:#f0ede6;--border:#e0ddd6;--text:#1a1a18;--text2:#5a5a56;--text3:#8a8a84;--blue:#378ADD;--blue-bg:#E6F1FB;--blue-txt:#0C447C;--green:#3B6D11;--green-bg:#EAF3DE;--amber:#BA7517;--amber-bg:#FAEEDA;--amber-txt:#633806;--red:#A32D2D;--red-bg:#FCEBEB;--purple:#534AB7;--purple-bg:#EEEDFE;--purple-txt:#3C3489;--radius:8px;--radius-lg:12px;--sans:system-ui,-apple-system,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--border:#3a3a36;--text:#e8e6df;--text2:#a8a69f;--text3:#6a6a64;--blue-bg:#0c1f35;--blue-txt:#85B7EB;--green-bg:#0f2005;--amber-bg:#2a1800;--amber-txt:#FAC775;--red-bg:#2a0a0a;--purple-bg:#1a1740;--purple-txt:#AFA9EC}}
+html{font-family:var(--sans);font-size:16px;color:var(--text);background:var(--bg3);scroll-behavior:smooth}
+body{display:flex;min-height:100vh}.sidebar{width:278px;min-width:278px;background:var(--bg);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-brand{padding:16px;border-bottom:.5px solid var(--border)}.brand-course{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}.brand-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}.progress-wrap{height:3px;background:var(--border)}.progress-bar{height:3px;background:var(--blue);width:96%}
+.nav-section{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:12px 16px 4px}.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12.5px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;text-decoration:none;transition:background .12s}.nav-item:hover{background:var(--bg2);color:var(--text)}.nav-item.active{color:var(--text);border-left-color:var(--blue);background:var(--bg2);font-weight:500}.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0}.nav-item.active .nav-dot{background:var(--blue)}
+.main{flex:1;min-width:0}.tab-bar{background:var(--bg);border-bottom:.5px solid var(--border);display:flex;padding:0 32px;position:sticky;top:0;z-index:10;overflow-x:auto}.tab{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-.5px;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);white-space:nowrap}.tab:hover{color:var(--text)}.tab.active{color:var(--text);border-bottom-color:var(--blue);font-weight:500}
+.content{max-width:960px;margin:0 auto;padding:34px}.section{display:none}.section.active{display:block}.lesson-eyebrow{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}h1{font-size:29px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.25}.lesson-meta{font-size:12px;color:var(--text3);margin-bottom:28px}
+h2{font-size:19px;font-weight:500;color:var(--text);margin:32px 0 11px}h3{font-size:15.5px;font-weight:500;color:var(--text);margin:22px 0 8px}p{font-size:14.7px;color:var(--text2);line-height:1.78;margin-bottom:14px}strong{color:var(--text);font-weight:500}ul,ol{padding-left:21px;margin-bottom:14px}li{font-size:14.5px;color:var(--text2);line-height:1.76;margin-bottom:4px}
+.scene-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:24px 0 12px;padding:6px 10px;background:var(--bg2);border-radius:var(--radius);display:inline-block}.dialogue{display:flex;flex-direction:column;gap:12px;margin:16px 0}.line{display:flex;gap:12px;align-items:flex-start}.line.right{flex-direction:row-reverse}.speaker-badge{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:2px}.sp-prof{background:var(--blue-bg);color:var(--blue-txt)}.sp-emma{background:var(--green-bg);color:var(--green)}.sp-oliver{background:var(--amber-bg);color:var(--amber-txt)}.sp-james{background:var(--purple-bg);color:var(--purple-txt)}.sp-sophia{background:var(--red-bg);color:var(--red)}.bubble{max-width:78%;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px}.line.right .bubble{background:var(--blue-bg);border-color:transparent}.speaker-name{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:3px}.bubble p{font-size:14px;color:var(--text);margin:0;line-height:1.62}
+.def-box{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin:17px 0}.def-box .def-label{font-size:11px;font-weight:500;color:var(--blue-txt);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}.def-box.green{border-left-color:var(--green);background:var(--green-bg)}.def-box.green .def-label{color:var(--green)}.def-box.amber{border-left-color:var(--amber);background:var(--amber-bg)}.def-box.amber .def-label{color:var(--amber-txt)}.def-box.red{border-left-color:var(--red);background:var(--red-bg)}.def-box.red .def-label{color:var(--red)}.def-box.purple{border-left-color:var(--purple);background:var(--purple-bg)}.def-box.purple .def-label{color:var(--purple-txt)}.def-box p{font-size:13.7px;color:var(--text);margin:0;line-height:1.65}
+.math-block{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius);padding:15px 20px;margin:16px 0;text-align:center;font-size:15px;color:var(--text);overflow-x:auto;line-height:1.7}
+.tbl-wrap{overflow-x:auto;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:13.5px}thead tr{background:var(--bg2)}th{padding:9px 12px;text-align:left;font-weight:500;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.05em}td{padding:9px 12px;color:var(--text2);border-bottom:.5px solid var(--border);line-height:1.55}tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg2)}
+.takeaway{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin:25px 0}.takeaway .tk-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}.takeaway ul{margin:0}.takeaway li{font-size:14px;color:var(--text)}
+.plot-grid{display:grid;grid-template-columns:1fr;gap:18px}.plot-box{border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;background:var(--bg)}.plot-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}.plot-sub{font-size:12px;color:var(--text3);margin-bottom:14px}.chart-wrap{position:relative;width:100%;height:320px}
+.controls-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;align-items:center}.ctrl{display:flex;align-items:center;gap:8px}.ctrl label{font-size:12.5px;color:var(--text2);white-space:nowrap}.ctrl input[type=range]{width:145px;accent-color:var(--blue)}.ctrl select{padding:6px 8px;border:.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text)}.ctrl-val{font-size:12.5px;font-weight:500;color:var(--text);min-width:42px}.stat-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}.stat-card{flex:1;min-width:120px;background:var(--bg2);border-radius:var(--radius);padding:10px 14px;text-align:center}.stat-card .sc-label{font-size:11px;color:var(--text3);margin-bottom:4px}.stat-card .sc-val{font-size:20px;font-weight:500;color:var(--text)}
+.activity-card{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:10px 0}.activity-inner{padding:12px 16px}.choice-btn{padding:6px 12px;border:.5px solid var(--border);border-radius:var(--radius);background:none;font-size:12.5px;cursor:pointer;font-family:var(--sans);color:var(--text2);margin-right:6px;margin-top:6px}.choice-btn:hover{background:var(--bg2);color:var(--text)}.feedback-mini{display:none;margin-top:10px;padding:10px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5}
+.exercise{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:16px 0}.ex-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer}.ex-header:hover{background:var(--bg2)}.ex-qnum{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}.ex-qtitle{font-size:14px;font-weight:500;color:var(--text);margin-top:2px}.ex-difficulty{font-size:11px;padding:2px 8px;border-radius:10px}.diff-easy{background:var(--green-bg);color:var(--green)}.diff-medium{background:var(--amber-bg);color:var(--amber-txt)}.diff-hard{background:var(--red-bg);color:var(--red)}.ex-toggle{font-size:18px;color:var(--text3)}.ex-body{display:none;padding:0 16px 16px;border-top:.5px solid var(--border)}.ex-body.open{display:block}.ex-question{font-size:14px;color:var(--text2);line-height:1.7;margin:12px 0}.answer-toggle{background:none;border:.5px solid var(--border);border-radius:var(--radius);padding:7px 14px;font-size:12.5px;cursor:pointer;color:var(--text2);font-family:var(--sans);margin-top:10px}.answer-box{display:none;margin-top:12px;background:var(--green-bg);border:.5px solid var(--green);border-radius:var(--radius);padding:12px 16px}.answer-box.open{display:block;animation:fadeIn .2s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}.answer-box .ans-label{font-size:11px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}.answer-box p,.answer-box li{font-size:13.5px;color:var(--text);line-height:1.65}
+.quiz-q{font-size:14.5px;font-weight:500;color:var(--text);margin-bottom:14px;line-height:1.55}.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}.quiz-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:.5px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13.5px;color:var(--text2)}.quiz-opt:hover:not(.locked){border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.selected{border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}.quiz-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}.quiz-opt .opt-key{width:22px;height:22px;border-radius:50%;border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}.feedback{padding:10px 14px;border-radius:var(--radius);font-size:13.5px;line-height:1.6;margin-bottom:14px;display:none}.feedback.show{display:block}.feedback.ok{background:var(--green-bg);color:var(--green);border:.5px solid var(--green)}.feedback.no{background:var(--red-bg);color:var(--red);border:.5px solid var(--red)}.quiz-actions{display:flex;gap:10px}.btn-check{padding:8px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:var(--sans)}.btn-check:disabled{opacity:.4;cursor:default}.btn-next{padding:8px 18px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer;background:none;color:var(--text2);font-family:var(--sans);display:none}.btn-next.show{display:inline-block}.quiz-progress{font-size:11.5px;color:var(--text3);margin-bottom:20px}.quiz-complete{text-align:center;padding:32px 0}.quiz-complete .score-big{font-size:48px;font-weight:500;color:var(--text)}
+@media(max-width:850px){body{display:block}.sidebar{width:100%;height:auto;position:relative;min-width:0}.content{padding:24px 18px}.tab-bar{padding:0 12px}.bubble{max-width:88%}}
+</style>
+
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-course">Foundational Statistics</div>
+    <div class="brand-title">Statistics Foundation for University Students</div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="sidebar-progress" style="width:100%;"></div></div>
+
+  <div class="nav-section">Course modules</div>
+  <a class="nav-item" href="../module-1/index.html"><div class="nav-dot"></div>Module 1 · Introduction</a>
+  <a class="nav-item" href="../module-2/index.html"><div class="nav-dot"></div>Module 2 · Descriptive statistics</a>
+  <a class="nav-item" href="../module-3/index.html"><div class="nav-dot"></div>Module 3 · Probability</a>
+  <a class="nav-item" href="../module-4/index.html"><div class="nav-dot"></div>Module 4 · Statistical inference</a>
+  <a class="nav-item active" href="../module-5/index.html"><div class="nav-dot"></div>Module 5 · Regression</a>
+
+  <div class="nav-section">Module 5 lessons</div>
+  <a class="nav-item done" href="5-1-simple-linear-regression.html"><div class="nav-dot"></div>5.1 Simple linear regression</a>
+  <a class="nav-item done" href="5-2-least-squares-derivation.html"><div class="nav-dot"></div>5.2 Least squares derivation</a>
+  <a class="nav-item done" href="5-3-multiple-regression-confounding.html"><div class="nav-dot"></div>5.3 Multiple regression & confounding</a>
+  <a class="nav-item active" href="5-4-model-assessment-diagnostics.html"><div class="nav-dot"></div>5.4 Model assessment & diagnostics</a>
+  <a class="nav-item done" href="5-5-logistic-regression-intro.html"><div class="nav-dot"></div>5.5 Logistic regression intro</a>
+</nav>
+
+<div class="main">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('lecture',this)">Lecture</button>
+    <button class="tab" onclick="showTab('notes',this)">Notes</button>
+    <button class="tab" onclick="showTab('interactive',this)">Interactive</button>
+    <button class="tab" onclick="showTab('exercises',this)">Exercises</button>
+    <button class="tab" onclick="showTab('quiz',this)">Quiz</button>
+  </div>
+
+<div class="content">
+
+<section id="sec-lecture" class="section active">
+  <div class="lesson-eyebrow">Module 5 · Lesson 5.4</div>
+  <h1>Model assessment and diagnostics</h1>
+  <div class="lesson-meta">Mr. R · Prof Stat · ~60 min · Checking whether a regression model is trustworthy</div>
+
+  <div class="scene-label">📍 Scene — regression classroom, after fitting the model</div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>We can fit a regression model now. But how do we know whether the model is good?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Good question. Fitting a model is only the beginning. We must assess fit, check assumptions, examine residuals, and look for influential observations.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>So a small p-value for a slope does not mean the model is automatically appropriate?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. A coefficient can be statistically significant inside a model that is badly specified.</p></div></div>
+  </div>
+
+  <h2>What model assessment asks</h2>
+  <p>Model assessment asks several different questions. Does the model explain variation in the outcome? Are the assumptions plausible? Are residuals patterned? Are some observations overly influential? Is the model useful for the intended purpose?</p>
+
+  <div class="def-box">
+    <div class="def-label">Core idea</div>
+    <p>A regression model should be judged by fit, assumptions, diagnostics, interpretability, and relevance to the research question.</p>
+  </div>
+
+  <h2>Residuals as the main diagnostic tool</h2>
+  <p>The residual for observation \(i\) is:</p>
+
+  <div class="math-block">
+    \[
+    e_i=y_i-\hat{y}_i
+    \]
+  </div>
+
+  <p>Residuals show what the model failed to explain. If the model is reasonable, residuals should look like random scatter around zero rather than a systematic pattern.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>So residual plots are not just decorative?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>No. They are often the first place where model problems become visible.</p></div></div>
+  </div>
+
+  <h2>Linearity</h2>
+  <p>The linear regression model assumes that the conditional mean of \(Y\) is linear in the predictors. If the true relationship is curved, a straight-line model can be misleading.</p>
+
+  <div class="math-block">
+    \[
+    E(Y\mid X=x)=\beta_0+\beta_1x
+    \]
+  </div>
+
+  <p>If the residuals show a curved pattern against fitted values or a predictor, the linearity assumption may be questionable.</p>
+
+  <h2>Constant variance</h2>
+  <p>Constant variance means the residual spread is roughly similar across fitted values. If residuals fan out as fitted values increase, the model may have heteroscedasticity.</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(\varepsilon_i\mid X_i)=\sigma^2
+    \]
+  </div>
+
+  <p>When variance is not constant, standard errors, confidence intervals, and p-values may be affected.</p>
+
+  <h2>Normality of errors</h2>
+  <p>Normality of errors is mainly important for small-sample inference. It is usually checked using residual histograms or normal Q-Q plots.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>Does the outcome \(Y\) itself have to be normally distributed?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Not exactly. The usual regression assumption is about the errors or residuals around the modelled mean, not necessarily the marginal distribution of \(Y\).</p></div></div>
+  </div>
+
+  <h2>Residual standard error</h2>
+  <p>The residual standard error estimates the typical size of residuals. For simple regression, it is:</p>
+
+  <div class="math-block">
+    \[
+    s_e=\sqrt{\frac{\operatorname{SSE}}{n-2}}
+    \]
+  </div>
+
+  <p>For multiple regression with \(p\) predictors, the denominator becomes \(n-p-1\):</p>
+
+  <div class="math-block">
+    \[
+    s_e=\sqrt{\frac{\operatorname{SSE}}{n-p-1}}
+    \]
+  </div>
+
+  <h2>\(R^2\)</h2>
+  <p>\(R^2\) measures the proportion of total variation in \(Y\) explained by the model.</p>
+
+  <div class="math-block">
+    \[
+    R^2=1-\frac{\operatorname{SSE}}{\operatorname{SST}}
+    \]
+  </div>
+
+  <p>where:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{SST}=\sum_{i=1}^{n}(y_i-\bar{y})^2
+    \]
+  </div>
+
+  <p>and:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{SSE}=\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>If \(R^2\) is high, is the model always good?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>No. A high \(R^2\) can still come with bias, non-linearity, overfitting, poor causal interpretation, or influential observations.</p></div></div>
+  </div>
+
+  <h2>Adjusted \(R^2\)</h2>
+  <p>Adding predictors usually cannot decrease ordinary \(R^2\), even if the predictors are not useful. Adjusted \(R^2\) penalises unnecessary predictors.</p>
+
+  <div class="math-block">
+    \[
+    R^2_{\text{adj}}
+    =
+    1-
+    \left(\frac{\operatorname{SSE}/(n-p-1)}
+    {\operatorname{SST}/(n-1)}\right)
+    \]
+  </div>
+
+  <h2>Outliers, leverage and influence</h2>
+  <p>An outlier has an unusual \(Y\)-value. A high-leverage point has an unusual \(X\)-value or unusual predictor combination. An influential point strongly changes the fitted model if removed.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Term</th><th>Meaning</th><th>Why it matters</th></tr></thead>
+      <tbody>
+        <tr><td>Outlier</td><td>Unusual outcome value</td><td>May signal error, rare case, or poor fit</td></tr>
+        <tr><td>Leverage</td><td>Unusual predictor value</td><td>Can pull the regression line</td></tr>
+        <tr><td>Influence</td><td>Strong effect on model estimates</td><td>Can change conclusions</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Diagnostics are not automatic deletion rules</h2>
+  <p>Finding an unusual observation does not mean deleting it. We first ask whether it is a data error, a meaningful rare case, a measurement issue, or evidence that the model is inadequate.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>So we should not just remove points because they make the model look worse?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. Removing observations requires a defensible reason. Diagnostics guide investigation; they are not automatic commands.</p></div></div>
+  </div>
+
+  <div class="takeaway">
+    <div class="tk-label">Key takeaways from this lecture</div>
+    <ul>
+      <li>Model assessment examines fit, assumptions, residuals and influential observations.</li>
+      <li>Residuals should ideally show no systematic pattern.</li>
+      <li>Curved residual patterns suggest non-linearity.</li>
+      <li>Fan-shaped residual plots suggest non-constant variance.</li>
+      <li>\(R^2\) measures explained variation but does not prove model validity.</li>
+      <li>Adjusted \(R^2\) penalises unnecessary predictors.</li>
+      <li>Outliers, leverage and influence are related but different ideas.</li>
+      <li>Diagnostics require statistical and scientific judgement.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-notes" class="section">
+  <div class="lesson-eyebrow">Detailed theoretical notes</div>
+  <h1>Model assessment and diagnostics</h1>
+
+  <h2>1. Why diagnostics matter</h2>
+  <p>A fitted regression model is a mathematical summary of data. It may be useful, misleading, over-simplified, unstable, or inappropriate for the research question. Diagnostics help us evaluate whether the model is behaving reasonably.</p>
+
+  <h2>2. Residuals</h2>
+  <p>The fitted value is:</p>
+
+  <div class="math-block">
+    \[
+    \hat{y}_i=b_0+b_1x_i
+    \]
+  </div>
+
+  <p>or, in multiple regression:</p>
+
+  <div class="math-block">
+    \[
+    \hat{y}_i=b_0+b_1x_{1i}+b_2x_{2i}+\cdots+b_px_{pi}
+    \]
+  </div>
+
+  <p>The residual is:</p>
+
+  <div class="math-block">
+    \[
+    e_i=y_i-\hat{y}_i
+    \]
+  </div>
+
+  <p>Residual plots help detect model misspecification, non-linearity, unequal variance, outliers and influential observations.</p>
+
+  <h2>3. Sum of squares</h2>
+  <p>The total sum of squares measures total variation in the outcome:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{SST}=\sum_{i=1}^{n}(y_i-\bar{y})^2
+    \]
+  </div>
+
+  <p>The residual sum of squares measures unexplained variation after fitting the model:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{SSE}=\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+    \]
+  </div>
+
+  <p>The regression sum of squares measures explained variation:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{SSR}=\sum_{i=1}^{n}(\hat{y}_i-\bar{y})^2
+    \]
+  </div>
+
+  <p>For ordinary least squares with an intercept:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{SST}=\operatorname{SSR}+\operatorname{SSE}
+    \]
+  </div>
+
+  <h2>4. \(R^2\)</h2>
+  <p>The coefficient of determination is:</p>
+
+  <div class="math-block">
+    \[
+    R^2=\frac{\operatorname{SSR}}{\operatorname{SST}}
+    =
+    1-\frac{\operatorname{SSE}}{\operatorname{SST}}
+    \]
+  </div>
+
+  <p>It measures the proportion of variation in \(Y\) explained by the fitted model.</p>
+
+  <div class="def-box amber">
+    <div class="def-label">Interpretation warning</div>
+    <p>A high \(R^2\) does not prove causation, correct functional form, valid assumptions, or good out-of-sample prediction.</p>
+  </div>
+
+  <h2>5. Adjusted \(R^2\)</h2>
+  <p>Ordinary \(R^2\) tends to increase when predictors are added. Adjusted \(R^2\) accounts for the number of predictors:</p>
+
+  <div class="math-block">
+    \[
+    R^2_{\text{adj}}
+    =
+    1-
+    \left(
+    \frac{\operatorname{SSE}/(n-p-1)}
+    {\operatorname{SST}/(n-1)}
+    \right)
+    \]
+  </div>
+
+  <p>Here, \(p\) is the number of predictors excluding the intercept.</p>
+
+  <h2>6. Residual standard error</h2>
+  <p>The residual standard error estimates the standard deviation of the errors:</p>
+
+  <div class="math-block">
+    \[
+    s_e=\sqrt{\frac{\operatorname{SSE}}{n-p-1}}
+    \]
+  </div>
+
+  <p>It is measured in the units of \(Y\), which makes it easier to interpret than \(R^2\) in many applied settings.</p>
+
+  <h2>7. Linearity diagnostic</h2>
+  <p>The linearity assumption says:</p>
+
+  <div class="math-block">
+    \[
+    E(Y\mid X_1,\ldots,X_p)
+    =
+    \beta_0+\beta_1X_1+\cdots+\beta_pX_p
+    \]
+  </div>
+
+  <p>If residuals plotted against fitted values or predictors show curvature, the linear mean structure may be inadequate. Possible responses include transformations, polynomial terms, splines, interaction terms, or a different modelling strategy.</p>
+
+  <h2>8. Constant variance diagnostic</h2>
+  <p>Homoscedasticity means:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(\varepsilon_i\mid X_{1i},\ldots,X_{pi})=\sigma^2
+    \]
+  </div>
+
+  <p>Heteroscedasticity means the error variance changes with predictors or fitted values. A fan-shaped residual plot is a common visual sign.</p>
+
+  <h2>9. Normality diagnostic</h2>
+  <p>For small-sample inference, we often assume:</p>
+
+  <div class="math-block">
+    \[
+    \varepsilon_i\sim N(0,\sigma^2)
+    \]
+  </div>
+
+  <p>This can be assessed using a residual histogram or a normal Q-Q plot. Mild non-normality is often less serious in large samples than strong non-linearity, dependence, or severe heteroscedasticity.</p>
+
+  <h2>10. Outliers, leverage and influence</h2>
+  <p>A residual outlier is unusual in the \(Y\)-direction. Leverage is unusualness in the predictor space. Influence combines leverage and residual size.</p>
+
+  <p>A commonly used leverage quantity is the diagonal element \(h_{ii}\) of the hat matrix:</p>
+
+  <div class="math-block">
+    \[
+    \mathbf{H}=\mathbf{X}(\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \hat{\mathbf{Y}}=\mathbf{H}\mathbf{Y}
+    \]
+  </div>
+
+  <p>The value \(h_{ii}\) measures how much observation \(i\)'s fitted value depends on its own observed value.</p>
+
+  <h2>11. Cook's distance</h2>
+  <p>Cook's distance measures how much the fitted model changes when an observation is removed. A simplified conceptual description is:</p>
+
+  <div class="math-block">
+    \[
+    D_i
+    =
+    \text{overall change in fitted values when observation }i\text{ is removed}
+    \]
+  </div>
+
+  <p>Large Cook's distance suggests an observation may be influential. It should trigger investigation, not automatic deletion.</p>
+
+  <h2>12. Model assessment checklist</h2>
+  <ul>
+    <li>Does the fitted model answer the research question?</li>
+    <li>Are the outcome and predictors coded correctly?</li>
+    <li>Are residuals centred around zero?</li>
+    <li>Is there evidence of non-linearity?</li>
+    <li>Is residual variance roughly constant?</li>
+    <li>Are there strong outliers, high-leverage points or influential observations?</li>
+    <li>Is \(R^2\) interpreted appropriately?</li>
+    <li>Are conclusions robust to reasonable modelling choices?</li>
+  </ul>
+
+  <h2>13. Common mistakes</h2>
+  <ul>
+    <li><strong>Relying only on \(R^2\):</strong> fit is not the same as validity.</li>
+    <li><strong>Ignoring residual plots:</strong> important model failures can be visual.</li>
+    <li><strong>Assuming normality of \(Y\) is required:</strong> regression assumptions concern errors conditional on predictors.</li>
+    <li><strong>Deleting outliers automatically:</strong> unusual observations require investigation.</li>
+    <li><strong>Using diagnostics mechanically:</strong> judgement and subject-matter knowledge are essential.</li>
+    <li><strong>Forgetting the modelling goal:</strong> prediction, explanation and causal interpretation require different assessment priorities.</li>
+  </ul>
+
+  <div class="takeaway">
+    <div class="tk-label">Notes summary</div>
+    <ul>
+      <li>Diagnostics check whether a model is reasonable for the intended purpose.</li>
+      <li>\(R^2=1-\operatorname{SSE}/\operatorname{SST}\).</li>
+      <li>Adjusted \(R^2\) accounts for the number of predictors.</li>
+      <li>Residual standard error estimates typical unexplained error in units of \(Y\).</li>
+      <li>Residual plots help assess linearity and constant variance.</li>
+      <li>Outliers, leverage and influence are different concepts.</li>
+      <li>Diagnostics guide investigation; they do not replace judgement.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-interactive" class="section">
+  <div class="lesson-eyebrow">Interactive regression lab</div>
+  <h1>Model assessment and diagnostics</h1>
+
+  <div class="plot-grid">
+    <div class="plot-box">
+      <div class="plot-title">1. \(R^2\), SSE and SST</div>
+      <div class="plot-sub">Change unexplained variation. Watch \(R^2=1-\operatorname{SSE}/\operatorname{SST}\).</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>SSE</label><input id="sseSlider" type="range" min="5" max="95" value="35" oninput="updateR2()"><span id="sseVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>SST</label><input id="sstSlider" type="range" min="100" max="300" value="180" oninput="updateR2()"><span id="sstVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">R²</div><div id="r2Out" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Explained variation</div><div id="ssrOut" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="r2Chart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">2. Residual pattern simulator</div>
+      <div class="plot-sub">Choose a residual pattern and interpret the diagnostic message.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Pattern</label><select id="residPattern" onchange="updateResidualPattern()"><option value="random">Random scatter</option><option value="curve">Curved pattern</option><option value="fan">Fan shape</option></select></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Diagnostic message</div><div id="patternText" class="sc-val" style="font-size:14px"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="residPatternChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">3. Residual standard error</div>
+      <div class="plot-sub">See how residual standard error depends on SSE and model degrees of freedom.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>SSE</label><input id="rseSSE" type="range" min="50" max="1000" value="300" oninput="updateRSE()"><span id="rseSSEVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>n</label><input id="rseN" type="range" min="10" max="200" value="50" oninput="updateRSE()"><span id="rseNVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>p</label><input id="rseP" type="range" min="1" max="10" value="3" oninput="updateRSE()"><span id="rsePVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">df</div><div id="rseDf" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">RSE</div><div id="rseOut" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="rseChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">4. Outlier, leverage and influence</div>
+      <div class="plot-sub">Move a point in \(X\) and \(Y\). See whether it is more like an outlier, leverage point or influential point.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Point X</label><input id="diagX" type="range" min="0" max="25" value="20" oninput="updateInfluence()"><span id="diagXVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Point Y</label><input id="diagY" type="range" min="0" max="100" value="80" oninput="updateInfluence()"><span id="diagYVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Diagnostic label</div><div id="inflLabel" class="sc-val" style="font-size:14px"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="inflChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">5. Diagnostic interpretation checker</div>
+      <div class="plot-sub">Choose the best label for each diagnostic statement.</div>
+      <div id="activity-area"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-exercises" class="section">
+  <div class="lesson-eyebrow">Practice exercises</div>
+  <h1>Model assessment and diagnostics</h1>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 1</div><div class="ex-qtitle">Calculate a residual</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If \(y_i=28\) and \(\hat{y}_i=24\), calculate the residual.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(e_i=y_i-\hat{y}_i=28-24=4\). The observation is 4 units above the fitted value.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 2</div><div class="ex-qtitle">Calculate \(R^2\)</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If \(\operatorname{SSE}=40\) and \(\operatorname{SST}=100\), calculate \(R^2\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(R^2=1-\operatorname{SSE}/\operatorname{SST}=1-40/100=0.60\). The model explains 60% of the total variation in \(Y\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 3</div><div class="ex-qtitle">Residual standard error</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A multiple regression model has \(\operatorname{SSE}=180\), \(n=30\), and \(p=2\) predictors. Calculate the residual standard error.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The degrees of freedom are \(n-p-1=30-2-1=27\). Therefore \(s_e=\sqrt{180/27}\approx\sqrt{6.667}\approx2.58\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 4</div><div class="ex-qtitle">Interpret residual pattern</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A residual plot shows a clear U-shaped pattern. What assumption might be questionable?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>A U-shaped residual pattern suggests non-linearity. The model's linear mean structure may be inadequate.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 5</div><div class="ex-qtitle">Heteroscedasticity</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A residual plot fans out as fitted values increase. What does this suggest?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>It suggests non-constant variance, also called heteroscedasticity. Standard errors and inference may be affected.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 6</div><div class="ex-qtitle">Adjusted \(R^2\)</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Why might adjusted \(R^2\) decrease after adding a new predictor, even though ordinary \(R^2\) does not?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>Adjusted \(R^2\) penalises model complexity. If the new predictor does not improve fit enough to justify the extra parameter, adjusted \(R^2\) can decrease.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 7</div><div class="ex-qtitle">Outlier versus leverage</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Explain the difference between an outlier and a high-leverage point.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>An outlier is unusual in the outcome direction, often having a large residual. A high-leverage point is unusual in predictor space. A point can be one, both, or neither.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 8</div><div class="ex-qtitle">Why not delete automatically?</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Why should influential observations not be deleted automatically?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>They may be valid rare observations, important subgroups, or signs of model misspecification. Deletion requires a defensible reason, such as verified data error, not merely inconvenience.</p></div></div></div>
+
+</section>
+
+<section id="sec-quiz" class="section">
+  <div class="lesson-eyebrow">Topic quiz</div>
+  <h1>Model assessment and diagnostics</h1>
+  <div id="quiz-container"></div>
+</section>
+
+</div>
+</div>
+
+<script>
+let charts = {};
+let quizIndex = 0;
+let selectedOption = null;
+let answered = false;
+let score = 0;
+
+const activities = [
+  {text:"A residual plot shows a U-shaped pattern.",answer:"Non-linearity",explanation:"Correct. Curvature suggests the linear mean structure may be wrong."},
+  {text:"Residual spread increases as fitted values increase.",answer:"Heteroscedasticity",explanation:"Correct. This suggests non-constant variance."},
+  {text:"A point has an unusual predictor value.",answer:"High leverage",explanation:"Correct. Leverage is unusualness in predictor space."},
+  {text:"A high R² proves the model is causal.",answer:"Misinterpretation",explanation:"Correct label. R² does not prove causation."}
+];
+
+const quiz = [
+  {q:"A residual is:",opts:["y_i - yhat_i","x_i - y_i","SST - SSR","R squared"],correct:0},
+  {q:"R² is:",opts:["1 - SSE/SST","SSE/SST only","SST/SSE","n-p-1"],correct:0},
+  {q:"A curved residual plot suggests:",opts:["Non-linearity","Perfect fit","No residuals","Only high sample size"],correct:0},
+  {q:"A fan-shaped residual plot suggests:",opts:["Non-constant variance","No model problem","Perfect normality","Only causality"],correct:0},
+  {q:"Residual standard error is measured in:",opts:["Units of Y","Units of X squared only","Percent always","No units"],correct:0},
+  {q:"Adjusted R² differs from R² because it:",opts:["Penalises unnecessary predictors","Always increases","Ignores sample size","Deletes outliers"],correct:0},
+  {q:"Leverage refers to:",opts:["Unusual predictor values","Only unusual outcome values","A p-value","Mean of residuals"],correct:0},
+  {q:"Influential observations should:",opts:["Be investigated, not automatically deleted","Always be deleted","Always be kept without checking","Make diagnostics unnecessary"],correct:0}
+];
+
+function showTab(name, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='interactive') initInteractive();
+  if(name==='quiz') initQuiz();
+  if(window.MathJax) MathJax.typesetPromise();
+}
+
+function makeChart(id,type,data,options={}){
+  if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(document.getElementById(id),{type,data,options:Object.assign({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}},options)});
+}
+
+function updateR2(){
+  const sse=Number(document.getElementById('sseSlider').value);
+  const sst=Number(document.getElementById('sstSlider').value);
+  const safeSSE=Math.min(sse,sst-1);
+  const ssr=sst-safeSSE;
+  const r2=1-safeSSE/sst;
+  document.getElementById('sseVal').textContent=safeSSE;
+  document.getElementById('sstVal').textContent=sst;
+  document.getElementById('r2Out').textContent=r2.toFixed(3);
+  document.getElementById('ssrOut').textContent=ssr.toFixed(1);
+  makeChart('r2Chart','bar',{labels:['Explained SSR','Unexplained SSE'],datasets:[{data:[ssr,safeSSE],backgroundColor:['rgba(59,109,17,0.35)','rgba(163,45,45,0.35)'],borderColor:['#3B6D11','#A32D2D'],borderWidth:1}]},{scales:{y:{beginAtZero:true}}});
+}
+
+function updateResidualPattern(){
+  const pattern=document.getElementById('residPattern').value;
+  const data=[];
+  for(let i=0;i<60;i++){
+    const x=i/3;
+    let r=0;
+    if(pattern==='random') r=4*Math.sin(i*1.9);
+    if(pattern==='curve') r=0.08*Math.pow(x-10,2)-4+2*Math.sin(i);
+    if(pattern==='fan') r=(0.2+x/10)*4*Math.sin(i*1.7);
+    data.push({x:x,y:r});
+  }
+  let msg='Random residual scatter: more reassuring.';
+  if(pattern==='curve') msg='Curvature: possible non-linearity.';
+  if(pattern==='fan') msg='Fan shape: possible heteroscedasticity.';
+  document.getElementById('patternText').textContent=msg;
+  makeChart('residPatternChart','scatter',{datasets:[{data:data,backgroundColor:'#378ADD',borderColor:'#378ADD'}]},{scales:{x:{type:'linear',title:{display:true,text:'Fitted value'}},y:{title:{display:true,text:'Residual'}}}});
+}
+
+function updateRSE(){
+  const sse=Number(document.getElementById('rseSSE').value);
+  const n=Number(document.getElementById('rseN').value);
+  const p=Number(document.getElementById('rseP').value);
+  const df=Math.max(1,n-p-1);
+  const rse=Math.sqrt(sse/df);
+  document.getElementById('rseSSEVal').textContent=sse;
+  document.getElementById('rseNVal').textContent=n;
+  document.getElementById('rsePVal').textContent=p;
+  document.getElementById('rseDf').textContent=df;
+  document.getElementById('rseOut').textContent=rse.toFixed(2);
+  const labels=[], vals=[];
+  for(let pp=1;pp<=Math.min(20,n-2);pp++){let d=n-pp-1;labels.push(pp);vals.push(Math.sqrt(sse/d));}
+  makeChart('rseChart','line',{labels,datasets:[{data:vals,borderColor:'#BA7517',backgroundColor:'transparent',pointRadius:0,borderWidth:2,tension:.2}]},{scales:{y:{beginAtZero:true}}});
+}
+
+function fitLine(x,y){
+  const n=x.length, xb=x.reduce((a,b)=>a+b,0)/n, yb=y.reduce((a,b)=>a+b,0)/n;
+  let sxx=0,sxy=0;
+  for(let i=0;i<n;i++){sxx+=(x[i]-xb)*(x[i]-xb);sxy+=(x[i]-xb)*(y[i]-yb);}
+  const b1=sxy/sxx,b0=yb-b1*xb;
+  return {b0,b1};
+}
+function updateInfluence(){
+  const px=Number(document.getElementById('diagX').value);
+  const py=Number(document.getElementById('diagY').value);
+  document.getElementById('diagXVal').textContent=px;
+  document.getElementById('diagYVal').textContent=py;
+  const x=[1,2,3,4,5,6,7,8,9,10], y=[8,11,13,18,20,24,26,29,33,35];
+  const fit1=fitLine(x,y);
+  const x2=x.concat([px]), y2=y.concat([py]);
+  const fit2=fitLine(x2,y2);
+  const highLev=px>14 || px<0;
+  const expected=fit1.b0+fit1.b1*px;
+  const out=Math.abs(py-expected)>20;
+  const label=highLev && out ? 'Influential candidate' : highLev ? 'High leverage' : out ? 'Outlier in Y' : 'Less concerning';
+  document.getElementById('inflLabel').textContent=label;
+  const scatter=x2.map((xx,i)=>({x:xx,y:y2[i]}));
+  const line1=[{x:0,y:fit1.b0},{x:25,y:fit1.b0+fit1.b1*25}];
+  const line2=[{x:0,y:fit2.b0},{x:25,y:fit2.b0+fit2.b1*25}];
+  makeChart('inflChart','scatter',{datasets:[
+    {label:'Data',data:scatter,backgroundColor:'#378ADD',borderColor:'#378ADD'},
+    {label:'Line without point',data:line1,type:'line',borderColor:'#3B6D11',backgroundColor:'transparent',pointRadius:0,borderWidth:2},
+    {label:'Line with point',data:line2,type:'line',borderColor:'#A32D2D',backgroundColor:'transparent',pointRadius:0,borderWidth:2}
+  ]},{plugins:{legend:{display:true}},scales:{x:{type:'linear',min:0,max:25},y:{min:0,max:100}}});
+}
+
+function initInteractive(){updateR2();updateResidualPattern();updateRSE();updateInfluence();renderActivities();}
+
+function renderActivities(){
+  const area=document.getElementById('activity-area');
+  if(area.children.length) return;
+  const options=["Non-linearity","Heteroscedasticity","High leverage","Misinterpretation"];
+  activities.forEach((a,i)=>{
+    const div=document.createElement('div');
+    div.className='activity-card';
+    div.innerHTML=`<div class="activity-inner"><div style="font-size:13.5px;color:var(--text);line-height:1.6;margin-bottom:8px;">${a.text}</div>${options.map(o=>`<button class="choice-btn" onclick="checkActivity(${i}, '${o}', this)">${o}</button>`).join('')}<div id="activity-${i}" class="feedback-mini"></div></div>`;
+    area.appendChild(div);
+  });
+}
+
+function checkActivity(i,choice,btn){
+  const item=activities[i], fb=document.getElementById('activity-'+i), correct=choice===item.answer;
+  fb.style.display='block';fb.style.background=correct?'var(--green-bg)':'var(--red-bg)';fb.style.color=correct?'var(--green)':'var(--red)';fb.style.border=correct?'.5px solid var(--green)':'.5px solid var(--red)';
+  fb.innerHTML=`<strong>${correct?'✓ Correct.':'✗ Not quite.'}</strong> ${item.explanation}`;
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.disabled=true);
+}
+
+function toggleEx(header){const body=header.nextElementSibling,toggle=header.querySelector('.ex-toggle'),open=body.classList.toggle('open');toggle.textContent=open?'−':'+';if(window.MathJax)MathJax.typesetPromise();}
+function toggleAns(btn){const box=btn.nextElementSibling,open=box.classList.toggle('open');btn.textContent=open?'Hide answer':'Show answer';if(window.MathJax)MathJax.typesetPromise();}
+
+function initQuiz(){quizIndex=0;selectedOption=null;answered=false;score=0;renderQuiz();}
+function renderQuiz(){
+  const container=document.getElementById('quiz-container');
+  if(quizIndex>=quiz.length){
+    container.innerHTML=`<div class="quiz-complete"><div class="score-big">${score}/${quiz.length}</div><p>${score>=7?'Excellent — strong understanding of model diagnostics.':score>=5?'Good work. Review residual diagnostics carefully.':'Review the notes and try the quiz again.'}</p><button class="btn-check" onclick="initQuiz()">Retry quiz</button></div>`;
+    return;
+  }
+  const q=quiz[quizIndex];
+  container.innerHTML=`<div class="quiz-progress">Question ${quizIndex+1} of ${quiz.length}</div><div class="quiz-q">${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<div class="quiz-opt" id="qo${i}" onclick="selectOption(${i})"><div class="opt-key">${['A','B','C','D'][i]}</div>${o}</div>`).join('')}</div><div id="quizFeedback" class="feedback"></div><div class="quiz-actions"><button id="checkBtn" class="btn-check" onclick="checkQuiz()" disabled>Check answer</button><button id="nextBtn" class="btn-next" onclick="nextQuiz()">${quizIndex<quiz.length-1?'Next question →':'See result'}</button></div>`;
+  selectedOption=null;answered=false;
+}
+function selectOption(i){if(answered)return;document.querySelectorAll('.quiz-opt').forEach(o=>o.classList.remove('selected'));document.getElementById('qo'+i).classList.add('selected');selectedOption=i;document.getElementById('checkBtn').disabled=false;}
+function checkQuiz(){
+  if(selectedOption===null||answered)return;answered=true;
+  const q=quiz[quizIndex],correct=selectedOption===q.correct;if(correct)score++;
+  document.querySelectorAll('.quiz-opt').forEach((el,i)=>{el.classList.add('locked');if(i===q.correct)el.classList.add('correct');if(i===selectedOption&&i!==q.correct)el.classList.add('wrong');});
+  const fb=document.getElementById('quizFeedback');fb.className='feedback show '+(correct?'ok':'no');fb.textContent=correct?'Correct.':'Not quite. Review the model diagnostics notes.';
+  document.getElementById('checkBtn').disabled=true;document.getElementById('nextBtn').classList.add('show');
+}
+function nextQuiz(){quizIndex++;renderQuiz();}
+</script>
+<!-- My Academic Tutor platform footer with logo -->
+<footer class="mat-platform-footer">
+  <div class="mat-footer-brand">
+    <img class="mat-footer-logo" src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <p><strong>Statistics Foundation for University Students</strong></p>
+  </div>
+  <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+  <p>© 2026 My Academic Tutor. All rights reserved.</p>
+</footer>
+<style>
+.mat-platform-footer{
+  max-width:960px;
+  margin:34px auto 0;
+  padding:22px 34px;
+  border-top:1px solid var(--border, #ded9cf);
+  color:var(--text2, #5f5f5a);
+  font-size:13px;
+  line-height:1.65;
+}
+.mat-platform-footer strong{color:var(--text, #171717);}
+.mat-footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.mat-footer-logo{width:36px;height:36px;object-fit:contain;border-radius:9px;background:#fff;border:1px solid var(--border, #ded9cf);padding:4px;}
+@media(max-width:850px){.mat-platform-footer{padding:20px 18px;}}
+</style>
+
+</body>
+</html>

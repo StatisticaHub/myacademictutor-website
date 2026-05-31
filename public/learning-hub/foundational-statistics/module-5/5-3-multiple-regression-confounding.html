@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5.3 Multiple Regression and Confounding — Foundational Statistics</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--bg2:#f6f5f0;--bg3:#f0ede6;--border:#e0ddd6;--text:#1a1a18;--text2:#5a5a56;--text3:#8a8a84;--blue:#378ADD;--blue-bg:#E6F1FB;--blue-txt:#0C447C;--green:#3B6D11;--green-bg:#EAF3DE;--amber:#BA7517;--amber-bg:#FAEEDA;--amber-txt:#633806;--red:#A32D2D;--red-bg:#FCEBEB;--purple:#534AB7;--purple-bg:#EEEDFE;--purple-txt:#3C3489;--radius:8px;--radius-lg:12px;--sans:system-ui,-apple-system,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--border:#3a3a36;--text:#e8e6df;--text2:#a8a69f;--text3:#6a6a64;--blue-bg:#0c1f35;--blue-txt:#85B7EB;--green-bg:#0f2005;--amber-bg:#2a1800;--amber-txt:#FAC775;--red-bg:#2a0a0a;--purple-bg:#1a1740;--purple-txt:#AFA9EC}}
+html{font-family:var(--sans);font-size:16px;color:var(--text);background:var(--bg3);scroll-behavior:smooth}
+body{display:flex;min-height:100vh}.sidebar{width:278px;min-width:278px;background:var(--bg);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-brand{padding:16px;border-bottom:.5px solid var(--border)}.brand-course{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}.brand-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}.progress-wrap{height:3px;background:var(--border)}.progress-bar{height:3px;background:var(--blue);width:92%}
+.nav-section{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:12px 16px 4px}.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12.5px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;text-decoration:none;transition:background .12s}.nav-item:hover{background:var(--bg2);color:var(--text)}.nav-item.active{color:var(--text);border-left-color:var(--blue);background:var(--bg2);font-weight:500}.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0}.nav-item.active .nav-dot{background:var(--blue)}
+.main{flex:1;min-width:0}.tab-bar{background:var(--bg);border-bottom:.5px solid var(--border);display:flex;padding:0 32px;position:sticky;top:0;z-index:10;overflow-x:auto}.tab{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-.5px;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);white-space:nowrap}.tab:hover{color:var(--text)}.tab.active{color:var(--text);border-bottom-color:var(--blue);font-weight:500}
+.content{max-width:960px;margin:0 auto;padding:34px}.section{display:none}.section.active{display:block}.lesson-eyebrow{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}h1{font-size:29px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.25}.lesson-meta{font-size:12px;color:var(--text3);margin-bottom:28px}
+h2{font-size:19px;font-weight:500;color:var(--text);margin:32px 0 11px}h3{font-size:15.5px;font-weight:500;color:var(--text);margin:22px 0 8px}p{font-size:14.7px;color:var(--text2);line-height:1.78;margin-bottom:14px}strong{color:var(--text);font-weight:500}ul,ol{padding-left:21px;margin-bottom:14px}li{font-size:14.5px;color:var(--text2);line-height:1.76;margin-bottom:4px}
+.scene-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:24px 0 12px;padding:6px 10px;background:var(--bg2);border-radius:var(--radius);display:inline-block}.dialogue{display:flex;flex-direction:column;gap:12px;margin:16px 0}.line{display:flex;gap:12px;align-items:flex-start}.line.right{flex-direction:row-reverse}.speaker-badge{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:2px}.sp-prof{background:var(--blue-bg);color:var(--blue-txt)}.sp-emma{background:var(--green-bg);color:var(--green)}.sp-oliver{background:var(--amber-bg);color:var(--amber-txt)}.sp-james{background:var(--purple-bg);color:var(--purple-txt)}.sp-sophia{background:var(--red-bg);color:var(--red)}.bubble{max-width:78%;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px}.line.right .bubble{background:var(--blue-bg);border-color:transparent}.speaker-name{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:3px}.bubble p{font-size:14px;color:var(--text);margin:0;line-height:1.62}
+.def-box{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin:17px 0}.def-box .def-label{font-size:11px;font-weight:500;color:var(--blue-txt);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}.def-box.green{border-left-color:var(--green);background:var(--green-bg)}.def-box.green .def-label{color:var(--green)}.def-box.amber{border-left-color:var(--amber);background:var(--amber-bg)}.def-box.amber .def-label{color:var(--amber-txt)}.def-box.red{border-left-color:var(--red);background:var(--red-bg)}.def-box.red .def-label{color:var(--red)}.def-box.purple{border-left-color:var(--purple);background:var(--purple-bg)}.def-box.purple .def-label{color:var(--purple-txt)}.def-box p{font-size:13.7px;color:var(--text);margin:0;line-height:1.65}
+.math-block{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius);padding:15px 20px;margin:16px 0;text-align:center;font-size:15px;color:var(--text);overflow-x:auto;line-height:1.7}
+.tbl-wrap{overflow-x:auto;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:13.5px}thead tr{background:var(--bg2)}th{padding:9px 12px;text-align:left;font-weight:500;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.05em}td{padding:9px 12px;color:var(--text2);border-bottom:.5px solid var(--border);line-height:1.55}tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg2)}
+.takeaway{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin:25px 0}.takeaway .tk-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}.takeaway ul{margin:0}.takeaway li{font-size:14px;color:var(--text)}
+.plot-grid{display:grid;grid-template-columns:1fr;gap:18px}.plot-box{border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;background:var(--bg)}.plot-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}.plot-sub{font-size:12px;color:var(--text3);margin-bottom:14px}.chart-wrap{position:relative;width:100%;height:320px}
+.controls-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;align-items:center}.ctrl{display:flex;align-items:center;gap:8px}.ctrl label{font-size:12.5px;color:var(--text2);white-space:nowrap}.ctrl input[type=range]{width:145px;accent-color:var(--blue)}.ctrl select{padding:6px 8px;border:.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text)}.ctrl-val{font-size:12.5px;font-weight:500;color:var(--text);min-width:42px}.stat-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}.stat-card{flex:1;min-width:120px;background:var(--bg2);border-radius:var(--radius);padding:10px 14px;text-align:center}.stat-card .sc-label{font-size:11px;color:var(--text3);margin-bottom:4px}.stat-card .sc-val{font-size:20px;font-weight:500;color:var(--text)}
+.activity-card{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:10px 0}.activity-inner{padding:12px 16px}.choice-btn{padding:6px 12px;border:.5px solid var(--border);border-radius:var(--radius);background:none;font-size:12.5px;cursor:pointer;font-family:var(--sans);color:var(--text2);margin-right:6px;margin-top:6px}.choice-btn:hover{background:var(--bg2);color:var(--text)}.feedback-mini{display:none;margin-top:10px;padding:10px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5}
+.exercise{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:16px 0}.ex-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer}.ex-header:hover{background:var(--bg2)}.ex-qnum{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}.ex-qtitle{font-size:14px;font-weight:500;color:var(--text);margin-top:2px}.ex-difficulty{font-size:11px;padding:2px 8px;border-radius:10px}.diff-easy{background:var(--green-bg);color:var(--green)}.diff-medium{background:var(--amber-bg);color:var(--amber-txt)}.diff-hard{background:var(--red-bg);color:var(--red)}.ex-toggle{font-size:18px;color:var(--text3)}.ex-body{display:none;padding:0 16px 16px;border-top:.5px solid var(--border)}.ex-body.open{display:block}.ex-question{font-size:14px;color:var(--text2);line-height:1.7;margin:12px 0}.answer-toggle{background:none;border:.5px solid var(--border);border-radius:var(--radius);padding:7px 14px;font-size:12.5px;cursor:pointer;color:var(--text2);font-family:var(--sans);margin-top:10px}.answer-box{display:none;margin-top:12px;background:var(--green-bg);border:.5px solid var(--green);border-radius:var(--radius);padding:12px 16px}.answer-box.open{display:block;animation:fadeIn .2s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}.answer-box .ans-label{font-size:11px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}.answer-box p,.answer-box li{font-size:13.5px;color:var(--text);line-height:1.65}
+.quiz-q{font-size:14.5px;font-weight:500;color:var(--text);margin-bottom:14px;line-height:1.55}.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}.quiz-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:.5px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13.5px;color:var(--text2)}.quiz-opt:hover:not(.locked){border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.selected{border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}.quiz-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}.quiz-opt .opt-key{width:22px;height:22px;border-radius:50%;border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}.feedback{padding:10px 14px;border-radius:var(--radius);font-size:13.5px;line-height:1.6;margin-bottom:14px;display:none}.feedback.show{display:block}.feedback.ok{background:var(--green-bg);color:var(--green);border:.5px solid var(--green)}.feedback.no{background:var(--red-bg);color:var(--red);border:.5px solid var(--red)}.quiz-actions{display:flex;gap:10px}.btn-check{padding:8px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:var(--sans)}.btn-check:disabled{opacity:.4;cursor:default}.btn-next{padding:8px 18px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer;background:none;color:var(--text2);font-family:var(--sans);display:none}.btn-next.show{display:inline-block}.quiz-progress{font-size:11.5px;color:var(--text3);margin-bottom:20px}.quiz-complete{text-align:center;padding:32px 0}.quiz-complete .score-big{font-size:48px;font-weight:500;color:var(--text)}
+@media(max-width:850px){body{display:block}.sidebar{width:100%;height:auto;position:relative;min-width:0}.content{padding:24px 18px}.tab-bar{padding:0 12px}.bubble{max-width:88%}}
+</style>
+
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-course">Foundational Statistics</div>
+    <div class="brand-title">Statistics Foundation for University Students</div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="sidebar-progress" style="width:100%;"></div></div>
+
+  <div class="nav-section">Course modules</div>
+  <a class="nav-item" href="../module-1/index.html"><div class="nav-dot"></div>Module 1 · Introduction</a>
+  <a class="nav-item" href="../module-2/index.html"><div class="nav-dot"></div>Module 2 · Descriptive statistics</a>
+  <a class="nav-item" href="../module-3/index.html"><div class="nav-dot"></div>Module 3 · Probability</a>
+  <a class="nav-item" href="../module-4/index.html"><div class="nav-dot"></div>Module 4 · Statistical inference</a>
+  <a class="nav-item active" href="../module-5/index.html"><div class="nav-dot"></div>Module 5 · Regression</a>
+
+  <div class="nav-section">Module 5 lessons</div>
+  <a class="nav-item done" href="5-1-simple-linear-regression.html"><div class="nav-dot"></div>5.1 Simple linear regression</a>
+  <a class="nav-item done" href="5-2-least-squares-derivation.html"><div class="nav-dot"></div>5.2 Least squares derivation</a>
+  <a class="nav-item active" href="5-3-multiple-regression-confounding.html"><div class="nav-dot"></div>5.3 Multiple regression & confounding</a>
+  <a class="nav-item done" href="5-4-model-assessment-diagnostics.html"><div class="nav-dot"></div>5.4 Model assessment & diagnostics</a>
+  <a class="nav-item done" href="5-5-logistic-regression-intro.html"><div class="nav-dot"></div>5.5 Logistic regression intro</a>
+</nav>
+
+<div class="main">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('lecture',this)">Lecture</button>
+    <button class="tab" onclick="showTab('notes',this)">Notes</button>
+    <button class="tab" onclick="showTab('interactive',this)">Interactive</button>
+    <button class="tab" onclick="showTab('exercises',this)">Exercises</button>
+    <button class="tab" onclick="showTab('quiz',this)">Quiz</button>
+  </div>
+
+<div class="content">
+
+<section id="sec-lecture" class="section active">
+  <div class="lesson-eyebrow">Module 5 · Lesson 5.3</div>
+  <h1>Multiple regression and confounding</h1>
+  <div class="lesson-meta">Mr. R · Prof Stat · ~60 min · Adjusted models and careful interpretation</div>
+
+  <div class="scene-label">📍 Scene — regression classroom, one predictor is no longer enough</div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>Simple regression used one predictor. But real outcomes usually depend on many things. Is that why we need multiple regression?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. Multiple regression lets us model the mean of an outcome using more than one explanatory variable. It also helps us compare adjusted and unadjusted relationships.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>Adjusted means “after accounting for other variables”, right?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes, but that phrase must be used carefully. Adjustment changes the interpretation of a coefficient.</p></div></div>
+  </div>
+
+  <h2>The multiple regression model</h2>
+  <p>With \(p\) predictors, the population model is:</p>
+
+  <div class="math-block">
+    \[
+    Y_i=\beta_0+\beta_1X_{1i}+\beta_2X_{2i}+\cdots+\beta_pX_{pi}+\varepsilon_i
+    \]
+  </div>
+
+  <p>The conditional mean model is:</p>
+
+  <div class="math-block">
+    \[
+    E(Y_i\mid X_{1i},X_{2i},\ldots,X_{pi})
+    =
+    \beta_0+\beta_1X_{1i}+\beta_2X_{2i}+\cdots+\beta_pX_{pi}
+    \]
+  </div>
+
+  <p>Each coefficient describes an adjusted association: the expected change in the mean of \(Y\) for a one-unit increase in that predictor, while holding the other predictors fixed.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>What does “holding other predictors fixed” mean in practice?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>It means comparing observations that have the same values of the other variables in the model, at least conceptually. For example, comparing two people of the same age and sex but different exposure values.</p></div></div>
+  </div>
+
+  <h2>Unadjusted versus adjusted coefficients</h2>
+  <p>An unadjusted coefficient comes from a model with only the predictor of interest. An adjusted coefficient comes from a model that also includes other variables.</p>
+
+  <div class="math-block">
+    \[
+    \text{Unadjusted model:}\qquad Y_i=\alpha_0+\alpha_1X_i+u_i
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \text{Adjusted model:}\qquad Y_i=\beta_0+\beta_1X_i+\beta_2Z_i+\varepsilon_i
+    \]
+  </div>
+
+  <p>The coefficient \(\alpha_1\) and the coefficient \(\beta_1\) can differ because the adjusted model compares observations at the same value of \(Z\), whereas the unadjusted model does not.</p>
+
+  <h2>Confounding</h2>
+  <p>Confounding occurs when the association between an exposure \(X\) and an outcome \(Y\) is mixed with the effect of another variable \(Z\). A confounder is typically related to both the exposure and the outcome, and is not simply a consequence of the exposure.</p>
+
+  <div class="def-box amber">
+    <div class="def-label">Confounder</div>
+    <p>A confounder is a variable associated with the exposure and the outcome that can distort the exposure-outcome association if not appropriately controlled.</p>
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>Can you give a simple example?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Suppose coffee drinking is associated with heart disease, but smoking is more common among coffee drinkers and also affects heart disease risk. Smoking may confound the coffee-heart disease association.</p></div></div>
+  </div>
+
+  <h2>Omitted-variable bias</h2>
+  <p>If an important confounder is omitted from the model, the coefficient of the exposure may be biased. In a simple two-predictor situation, if the true model is:</p>
+
+  <div class="math-block">
+    \[
+    Y=\beta_0+\beta_1X+\beta_2Z+\varepsilon
+    \]
+  </div>
+
+  <p>but we fit a model omitting \(Z\), the estimated coefficient of \(X\) can absorb some of the effect of \(Z\), especially when \(X\) and \(Z\) are associated.</p>
+
+  <div class="math-block">
+    \[
+    \text{Omitted-variable bias depends on the association between }X\text{ and }Z
+    \text{ and on the effect of }Z\text{ on }Y.
+    \]
+  </div>
+
+  <h2>Adjustment is not automatic truth</h2>
+  <p>Adding variables to a regression model does not automatically make it causal or correct. Adjustment helps only when the variables are appropriate to control for. Adjusting for mediators, colliders, or badly measured variables can create problems.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>So more variables is not always better?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. A model with more variables can be less interpretable, less stable, or even more biased if the wrong variables are adjusted for.</p></div></div>
+  </div>
+
+  <h2>Multicollinearity</h2>
+  <p>Multicollinearity occurs when predictors are strongly correlated with each other. It does not necessarily make predictions impossible, but it can make individual coefficients unstable and difficult to interpret.</p>
+
+  <div class="math-block">
+    \[
+    X_1\approx a+bX_2
+    \]
+  </div>
+
+  <p>If two predictors contain almost the same information, the model struggles to separate their individual contributions.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>So the model may still predict well but the coefficient estimates become unreliable?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes. Prediction and coefficient interpretation are different goals.</p></div></div>
+  </div>
+
+  <h2>Categorical predictors</h2>
+  <p>Multiple regression can include categorical predictors by using indicator variables. For a binary group variable, define:</p>
+
+  <div class="math-block">
+    \[
+    G_i=
+    \begin{cases}
+    1,& \text{if observation }i\text{ is in the group}\\
+    0,& \text{otherwise}
+    \end{cases}
+    \]
+  </div>
+
+  <p>The coefficient of \(G_i\) represents the adjusted mean difference between the group coded 1 and the reference group coded 0, holding other predictors fixed.</p>
+
+  <h2>Model building is scientific, not mechanical</h2>
+  <p>Multiple regression is not just about adding every available variable. Variable choice should be guided by the research question, study design, causal reasoning, prior knowledge, measurement quality and sample size.</p>
+
+  <div class="takeaway">
+    <div class="tk-label">Key takeaways from this lecture</div>
+    <ul>
+      <li>Multiple regression models the mean of \(Y\) using several predictors.</li>
+      <li>An adjusted coefficient is interpreted while holding other model predictors fixed.</li>
+      <li>Confounding can distort an exposure-outcome association.</li>
+      <li>Omitting an important confounder can bias the coefficient of interest.</li>
+      <li>Adjustment is useful only when the adjusted variables are appropriate.</li>
+      <li>Multicollinearity makes individual coefficients unstable.</li>
+      <li>Categorical predictors can be represented using indicator variables.</li>
+      <li>Regression modelling requires scientific judgement, not only algebra.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-notes" class="section">
+  <div class="lesson-eyebrow">Detailed theoretical notes</div>
+  <h1>Multiple regression and confounding</h1>
+
+  <h2>1. From simple to multiple regression</h2>
+  <p>Simple linear regression uses one predictor. Multiple regression extends the same idea to several predictors. The goal is still to model the conditional mean of the outcome, but now the conditioning set includes more variables.</p>
+
+  <div class="math-block">
+    \[
+    E(Y\mid X_1,X_2,\ldots,X_p)
+    =
+    \beta_0+\beta_1X_1+\beta_2X_2+\cdots+\beta_pX_p
+    \]
+  </div>
+
+  <h2>2. Population model</h2>
+  <p>For observation \(i\), the multiple linear regression model is:</p>
+
+  <div class="math-block">
+    \[
+    Y_i=\beta_0+\beta_1X_{1i}+\beta_2X_{2i}+\cdots+\beta_pX_{pi}+\varepsilon_i
+    \]
+  </div>
+
+  <p>The fitted version is:</p>
+
+  <div class="math-block">
+    \[
+    \hat{y}_i=b_0+b_1x_{1i}+b_2x_{2i}+\cdots+b_px_{pi}
+    \]
+  </div>
+
+  <p>The residual is:</p>
+
+  <div class="math-block">
+    \[
+    e_i=y_i-\hat{y}_i
+    \]
+  </div>
+
+  <h2>3. Interpreting an adjusted coefficient</h2>
+  <p>The coefficient \(\beta_j\) is interpreted as the expected change in the mean of \(Y\) for a one-unit increase in \(X_j\), holding the other predictors in the model fixed.</p>
+
+  <div class="math-block">
+    \[
+    \beta_j
+    =
+    \text{change in }E(Y\mid X_1,\ldots,X_p)
+    \text{ for a one-unit increase in }X_j,
+    \text{ with other predictors fixed}
+    \]
+  </div>
+
+  <p>This “holding fixed” interpretation is mathematical. Whether it corresponds to a meaningful real-world comparison depends on the data and design.</p>
+
+  <h2>4. Two-predictor example</h2>
+  <p>Suppose:</p>
+
+  <div class="math-block">
+    \[
+    Y_i=\beta_0+\beta_1X_i+\beta_2Z_i+\varepsilon_i
+    \]
+  </div>
+
+  <p>Then \(\beta_1\) compares observations with different values of \(X\) but the same value of \(Z\). Similarly, \(\beta_2\) compares observations with different values of \(Z\) but the same value of \(X\).</p>
+
+  <h2>5. Confounding concept</h2>
+  <p>A variable \(Z\) may confound the relationship between exposure \(X\) and outcome \(Y\) when:</p>
+  <ul>
+    <li>\(Z\) is associated with \(X\),</li>
+    <li>\(Z\) is associated with \(Y\),</li>
+    <li>\(Z\) is not merely a consequence of \(X\) on the causal pathway from \(X\) to \(Y\).</li>
+  </ul>
+
+  <div class="def-box amber">
+    <div class="def-label">Confounding</div>
+    <p>Confounding is mixing of effects. The observed association between \(X\) and \(Y\) partly reflects the influence of \(Z\).</p>
+  </div>
+
+  <h2>6. Omitted-variable bias formula intuition</h2>
+  <p>Suppose the true model is:</p>
+
+  <div class="math-block">
+    \[
+    Y=\beta_0+\beta_1X+\beta_2Z+\varepsilon
+    \]
+  </div>
+
+  <p>If we omit \(Z\) and fit:</p>
+
+  <div class="math-block">
+    \[
+    Y=\alpha_0+\alpha_1X+u
+    \]
+  </div>
+
+  <p>then the simple regression slope \(\alpha_1\) can differ from the true adjusted effect \(\beta_1\). In a linear setting, the bias has the structure:</p>
+
+  <div class="math-block">
+    \[
+    \alpha_1-\beta_1
+    =
+    \beta_2
+    \frac{\operatorname{Cov}(X,Z)}{\operatorname{Var}(X)}
+    \]
+  </div>
+
+  <p>This expression shows two requirements for omitted-variable bias: \(Z\) must affect \(Y\), and \(Z\) must be associated with \(X\).</p>
+
+  <div class="math-block">
+    \[
+    \beta_2=0
+    \quad\Rightarrow\quad
+    \text{no omitted-variable bias from }Z
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \operatorname{Cov}(X,Z)=0
+    \quad\Rightarrow\quad
+    \text{no omitted-variable bias from }Z
+    \]
+  </div>
+
+  <h2>7. Adjusted versus unadjusted interpretation</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Model</th><th>Coefficient of \(X\)</th><th>Interpretation</th></tr></thead>
+      <tbody>
+        <tr><td>\(Y=\alpha_0+\alpha_1X+u\)</td><td>\(\alpha_1\)</td><td>Unadjusted association between \(X\) and \(Y\)</td></tr>
+        <tr><td>\(Y=\beta_0+\beta_1X+\beta_2Z+\varepsilon\)</td><td>\(\beta_1\)</td><td>Association between \(X\) and \(Y\) adjusted for \(Z\)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>8. Overadjustment and bad adjustment</h2>
+  <p>Not every variable should be adjusted for. Problems can arise when we adjust for:</p>
+  <ul>
+    <li><strong>Mediators:</strong> variables on the causal pathway from exposure to outcome.</li>
+    <li><strong>Colliders:</strong> variables influenced by two other variables, which can create artificial associations when conditioned on.</li>
+    <li><strong>Post-outcome variables:</strong> variables measured after the outcome or affected by the outcome.</li>
+    <li><strong>Poorly measured variables:</strong> noisy adjustment variables can leave residual confounding.</li>
+  </ul>
+
+  <div class="def-box red">
+    <div class="def-label">Important warning</div>
+    <p>Adjustment is not a magic cure. Regression coefficients are only as meaningful as the design, measurements and modelling assumptions behind them.</p>
+  </div>
+
+  <h2>9. Multicollinearity</h2>
+  <p>Multicollinearity means predictors are strongly linearly related. For example:</p>
+
+  <div class="math-block">
+    \[
+    X_2\approx a+bX_1
+    \]
+  </div>
+
+  <p>When predictors are highly correlated, the model has difficulty separating their individual associations with \(Y\). This can lead to large standard errors and unstable coefficients.</p>
+
+  <p>A common diagnostic concept is the variance inflation factor:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{VIF}_j=\frac{1}{1-R_j^2}
+    \]
+  </div>
+
+  <p>Here, \(R_j^2\) is obtained by regressing \(X_j\) on the other predictors. If \(R_j^2\) is close to 1, then \(X_j\) is highly predictable from the other predictors, and the VIF becomes large.</p>
+
+  <h2>10. Categorical predictors and indicator variables</h2>
+  <p>A binary categorical predictor can be represented as an indicator variable:</p>
+
+  <div class="math-block">
+    \[
+    G_i=
+    \begin{cases}
+    1,& \text{group A}\\
+    0,& \text{reference group}
+    \end{cases}
+    \]
+  </div>
+
+  <p>In the model:</p>
+
+  <div class="math-block">
+    \[
+    Y_i=\beta_0+\beta_1G_i+\varepsilon_i
+    \]
+  </div>
+
+  <p>\(\beta_0\) is the mean for the reference group, and \(\beta_1\) is the mean difference between group A and the reference group.</p>
+
+  <p>With additional covariates:</p>
+
+  <div class="math-block">
+    \[
+    Y_i=\beta_0+\beta_1G_i+\beta_2X_i+\varepsilon_i
+    \]
+  </div>
+
+  <p>\(\beta_1\) becomes the adjusted mean difference between groups, holding \(X\) fixed.</p>
+
+  <h2>11. Matrix form</h2>
+  <p>Multiple regression is often written compactly in matrix form:</p>
+
+  <div class="math-block">
+    \[
+    \mathbf{Y}=\mathbf{X}\boldsymbol{\beta}+\boldsymbol{\varepsilon}
+    \]
+  </div>
+
+  <p>The least-squares estimator is:</p>
+
+  <div class="math-block">
+    \[
+    \hat{\boldsymbol{\beta}}
+    =
+    (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}\mathbf{Y}
+    \]
+  </div>
+
+  <p>This formula requires \(\mathbf{X}^{T}\mathbf{X}\) to be invertible. Severe multicollinearity can make this matrix nearly singular, causing unstable estimates.</p>
+
+  <h2>12. Common mistakes</h2>
+  <ul>
+    <li><strong>Interpreting adjusted coefficients as unadjusted effects:</strong> each coefficient is conditional on the other variables in the model.</li>
+    <li><strong>Thinking more variables always improve causal interpretation:</strong> wrong adjustment can increase bias.</li>
+    <li><strong>Ignoring confounding:</strong> omitted confounders can distort the coefficient of interest.</li>
+    <li><strong>Ignoring multicollinearity:</strong> strongly correlated predictors make individual coefficients unstable.</li>
+    <li><strong>Assuming regression proves causation:</strong> causal interpretation requires design and assumptions.</li>
+    <li><strong>Forgetting the reference category:</strong> categorical predictor coefficients depend on coding.</li>
+  </ul>
+
+  <div class="takeaway">
+    <div class="tk-label">Notes summary</div>
+    <ul>
+      <li>Multiple regression models \(E(Y\mid X_1,\ldots,X_p)\).</li>
+      <li>An adjusted coefficient is interpreted holding other predictors fixed.</li>
+      <li>Confounding occurs when another variable distorts an exposure-outcome association.</li>
+      <li>Omitted-variable bias depends on the effect of the omitted variable and its association with the included predictor.</li>
+      <li>Multicollinearity inflates uncertainty and destabilises coefficients.</li>
+      <li>Categorical variables enter regression through indicator variables.</li>
+      <li>Good modelling requires subject-matter reasoning.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-interactive" class="section">
+  <div class="lesson-eyebrow">Interactive regression lab</div>
+  <h1>Multiple regression and confounding</h1>
+
+  <div class="plot-grid">
+    <div class="plot-box">
+      <div class="plot-title">1. Adjusted versus unadjusted coefficient</div>
+      <div class="plot-sub">Change the relationship between exposure \(X\), confounder \(Z\), and outcome \(Y\). Watch the unadjusted and adjusted slopes differ.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Effect of X</label><input id="betaX" type="range" min="-20" max="40" value="10" oninput="updateConfounding()"><span id="betaXVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Effect of Z</label><input id="betaZ" type="range" min="-20" max="40" value="20" oninput="updateConfounding()"><span id="betaZVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>X-Z association</label><input id="rhoXZ" type="range" min="-90" max="90" value="60" oninput="updateConfounding()"><span id="rhoXZVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Unadjusted slope</div><div id="unadjSlope" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Adjusted slope</div><div id="adjSlope" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Bias direction</div><div id="biasDir" class="sc-val" style="font-size:14px"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="confChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">2. Omitted-variable bias calculator</div>
+      <div class="plot-sub">Bias equals \(\beta_2\operatorname{Cov}(X,Z)/\operatorname{Var}(X)\).</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(\beta_2\)</label><input id="ovbBeta2" type="range" min="-30" max="30" value="15" oninput="updateOVB()"><span id="ovbBeta2Val" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Cov(X,Z)</label><input id="ovbCov" type="range" min="-30" max="30" value="10" oninput="updateOVB()"><span id="ovbCovVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Var(X)</label><input id="ovbVar" type="range" min="1" max="50" value="20" oninput="updateOVB()"><span id="ovbVarVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Bias</div><div id="ovbOut" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="ovbChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">3. Multicollinearity and VIF</div>
+      <div class="plot-sub">As \(R_j^2\) approaches 1, the variance inflation factor increases sharply.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(R_j^2\)</label><input id="r2vif" type="range" min="0" max="98" value="75" oninput="updateVIF()"><span id="r2vifVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">VIF</div><div id="vifOut" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Interpretation</div><div id="vifText" class="sc-val" style="font-size:14px"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="vifChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">4. Indicator variable interpretation</div>
+      <div class="plot-sub">A binary group variable shifts the fitted mean relative to a reference group.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Reference mean</label><input id="refMean" type="range" min="0" max="100" value="50" oninput="updateIndicator()"><span id="refMeanVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Group coefficient</label><input id="groupCoef" type="range" min="-30" max="30" value="12" oninput="updateIndicator()"><span id="groupCoefVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Reference group</div><div id="refOut" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Group coded 1</div><div id="grpOut" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="indicatorChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">5. Interpretation checker</div>
+      <div class="plot-sub">Choose the best label for each multiple regression statement.</div>
+      <div id="activity-area"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-exercises" class="section">
+  <div class="lesson-eyebrow">Practice exercises</div>
+  <h1>Multiple regression and confounding</h1>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 1</div><div class="ex-qtitle">Write a multiple regression model</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Write a multiple regression model with outcome \(Y\) and predictors \(X_1\), \(X_2\), and \(X_3\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(Y_i=\beta_0+\beta_1X_{1i}+\beta_2X_{2i}+\beta_3X_{3i}+\varepsilon_i\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 2</div><div class="ex-qtitle">Interpret an adjusted slope</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">In a model predicting blood pressure from age and BMI, the coefficient for BMI is 1.8. Interpret it.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>Holding age fixed, a one-unit increase in BMI is associated with a 1.8-unit higher mean blood pressure, according to the model.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 3</div><div class="ex-qtitle">Identify confounding</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A variable is associated with both exposure and outcome, and is not caused by the exposure. What role might it play?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>It may be a confounder. If omitted, it can distort the estimated exposure-outcome association.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 4</div><div class="ex-qtitle">Omitted-variable bias calculation</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If \(\beta_2=4\), \(\operatorname{Cov}(X,Z)=6\), and \(\operatorname{Var}(X)=12\), calculate the omitted-variable bias.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>Bias \(=\beta_2\operatorname{Cov}(X,Z)/\operatorname{Var}(X)=4(6)/12=2\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 5</div><div class="ex-qtitle">When omitted-variable bias is zero</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Give two situations where omitting \(Z\) does not bias the coefficient of \(X\) in the simple omitted-variable formula.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The bias is zero if \(\beta_2=0\), meaning \(Z\) has no effect on \(Y\), or if \(\operatorname{Cov}(X,Z)=0\), meaning \(Z\) is not associated with \(X\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 6</div><div class="ex-qtitle">Interpret VIF</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If \(R_j^2=0.80\), calculate \(\operatorname{VIF}_j\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\operatorname{VIF}_j=1/(1-R_j^2)=1/(1-0.80)=1/0.20=5\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 7</div><div class="ex-qtitle">Indicator variable</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">In \(Y_i=\beta_0+\beta_1G_i+\varepsilon_i\), where \(G_i=1\) for treatment and \(0\) for control, what does \(\beta_1\) represent?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\beta_1\) is the mean difference between the treatment group and the control group. The control group is the reference category.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 8</div><div class="ex-qtitle">Why more variables is not always better</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Explain why simply adding every available variable to a regression model can be problematic.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>Adding inappropriate variables can cause overadjustment, collider bias, instability, multicollinearity and loss of interpretability. Variable choice should be guided by the research question and study design.</p></div></div></div>
+
+</section>
+
+<section id="sec-quiz" class="section">
+  <div class="lesson-eyebrow">Topic quiz</div>
+  <h1>Multiple regression and confounding</h1>
+  <div id="quiz-container"></div>
+</section>
+
+</div>
+</div>
+
+<script>
+let charts = {};
+let quizIndex = 0;
+let selectedOption = null;
+let answered = false;
+let score = 0;
+
+const activities = [
+  {text:"The coefficient of X is interpreted while holding other predictors fixed.",answer:"Adjusted interpretation",explanation:"Correct. This is the central interpretation in multiple regression."},
+  {text:"A variable associated with both exposure and outcome can distort an association.",answer:"Confounding",explanation:"Correct. This describes possible confounding."},
+  {text:"Adding every measured variable always improves causal interpretation.",answer:"Bad adjustment",explanation:"Not correct. Wrong adjustment can create bias or instability."},
+  {text:"Two predictors are almost linear combinations of each other.",answer:"Multicollinearity",explanation:"Correct. Individual coefficients may become unstable."}
+];
+
+const quiz = [
+  {q:"Multiple regression models:",opts:["The conditional mean of Y given several predictors","Only one categorical count","Only a histogram","The maximum value"],correct:0},
+  {q:"An adjusted coefficient is interpreted:",opts:["Holding other model predictors fixed","Ignoring all other variables","As automatically causal","Only as a p-value"],correct:0},
+  {q:"A confounder is usually associated with:",opts:["Both exposure and outcome","Only the sample size","Only the intercept","Neither exposure nor outcome"],correct:0},
+  {q:"Omitted-variable bias requires:",opts:["The omitted variable affects Y and is associated with X","Only a large sample size","Only a small p-value","No association between X and Z"],correct:0},
+  {q:"Multicollinearity mainly causes:",opts:["Unstable individual coefficients and large standard errors","Perfect causal proof","No residuals","A larger sample mean"],correct:0},
+  {q:"A binary categorical variable can enter regression as:",opts:["An indicator variable","Only a residual","A chi-square statistic","A p-value"],correct:0},
+  {q:"VIF is defined as:",opts:["1/(1-R_j^2)","R_j^2/(1+n)","Sxy/Sxx","p(1-p)/n"],correct:0},
+  {q:"Adding more variables is:",opts:["Not always better","Always causally correct","Always unbiased","Never allowed"],correct:0}
+];
+
+function showTab(name, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='interactive') initInteractive();
+  if(name==='quiz') initQuiz();
+  if(window.MathJax) MathJax.typesetPromise();
+}
+
+function makeChart(id,type,data,options={}){
+  if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(document.getElementById(id),{type,data,options:Object.assign({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}},options)});
+}
+
+function updateConfounding(){
+  const betaX=Number(document.getElementById('betaX').value)/10;
+  const betaZ=Number(document.getElementById('betaZ').value)/10;
+  const rho=Number(document.getElementById('rhoXZ').value)/100;
+  document.getElementById('betaXVal').textContent=betaX.toFixed(1);
+  document.getElementById('betaZVal').textContent=betaZ.toFixed(1);
+  document.getElementById('rhoXZVal').textContent=rho.toFixed(2);
+  const bias=betaZ*rho;
+  const unadj=betaX+bias;
+  document.getElementById('unadjSlope').textContent=unadj.toFixed(2);
+  document.getElementById('adjSlope').textContent=betaX.toFixed(2);
+  document.getElementById('biasDir').textContent=bias>0.05?'Upward':bias<-0.05?'Downward':'Near zero';
+  const labels=['Adjusted slope','Omitted-variable bias','Unadjusted slope'];
+  makeChart('confChart','bar',{labels,datasets:[{data:[betaX,bias,unadj],backgroundColor:['rgba(59,109,17,0.35)','rgba(186,117,23,0.35)','rgba(55,138,221,0.35)'],borderColor:['#3B6D11','#BA7517','#378ADD'],borderWidth:1}]});
+}
+
+function updateOVB(){
+  const b2=Number(document.getElementById('ovbBeta2').value)/10;
+  const cov=Number(document.getElementById('ovbCov').value)/10;
+  const vx=Number(document.getElementById('ovbVar').value)/10;
+  const bias=b2*cov/vx;
+  document.getElementById('ovbBeta2Val').textContent=b2.toFixed(1);
+  document.getElementById('ovbCovVal').textContent=cov.toFixed(1);
+  document.getElementById('ovbVarVal').textContent=vx.toFixed(1);
+  document.getElementById('ovbOut').textContent=bias.toFixed(2);
+  makeChart('ovbChart','bar',{labels:['beta2','Cov(X,Z)','Var(X)','Bias'],datasets:[{data:[b2,cov,vx,bias],backgroundColor:['rgba(83,74,183,0.35)','rgba(186,117,23,0.35)','rgba(55,138,221,0.35)','rgba(163,45,45,0.35)'],borderColor:['#534AB7','#BA7517','#378ADD','#A32D2D'],borderWidth:1}]});
+}
+
+function updateVIF(){
+  const r2=Number(document.getElementById('r2vif').value)/100;
+  const vif=1/(1-r2);
+  document.getElementById('r2vifVal').textContent=r2.toFixed(2);
+  document.getElementById('vifOut').textContent=vif.toFixed(2);
+  document.getElementById('vifText').textContent=vif<2?'Low':vif<5?'Moderate':'High';
+  const labels=[], vals=[];
+  for(let i=0;i<=98;i+=2){let rr=i/100;labels.push(rr.toFixed(2));vals.push(1/(1-rr));}
+  makeChart('vifChart','line',{labels,datasets:[{data:vals,borderColor:'#A32D2D',backgroundColor:'transparent',pointRadius:0,borderWidth:2,tension:.2}]},{scales:{y:{beginAtZero:true,max:50}}});
+}
+
+function updateIndicator(){
+  const ref=Number(document.getElementById('refMean').value);
+  const coef=Number(document.getElementById('groupCoef').value);
+  document.getElementById('refMeanVal').textContent=ref;
+  document.getElementById('groupCoefVal').textContent=coef;
+  document.getElementById('refOut').textContent=ref.toFixed(1);
+  document.getElementById('grpOut').textContent=(ref+coef).toFixed(1);
+  makeChart('indicatorChart','bar',{labels:['Reference group G=0','Group coded 1'],datasets:[{data:[ref,ref+coef],backgroundColor:['rgba(55,138,221,0.35)','rgba(59,109,17,0.35)'],borderColor:['#378ADD','#3B6D11'],borderWidth:1}]},{scales:{y:{beginAtZero:true}}});
+}
+
+function initInteractive(){updateConfounding();updateOVB();updateVIF();updateIndicator();renderActivities();}
+
+function renderActivities(){
+  const area=document.getElementById('activity-area');
+  if(area.children.length) return;
+  const options=["Adjusted interpretation","Confounding","Bad adjustment","Multicollinearity"];
+  activities.forEach((a,i)=>{
+    const div=document.createElement('div');
+    div.className='activity-card';
+    div.innerHTML=`<div class="activity-inner"><div style="font-size:13.5px;color:var(--text);line-height:1.6;margin-bottom:8px;">${a.text}</div>${options.map(o=>`<button class="choice-btn" onclick="checkActivity(${i}, '${o}', this)">${o}</button>`).join('')}<div id="activity-${i}" class="feedback-mini"></div></div>`;
+    area.appendChild(div);
+  });
+}
+
+function checkActivity(i,choice,btn){
+  const item=activities[i], fb=document.getElementById('activity-'+i), correct=choice===item.answer;
+  fb.style.display='block';fb.style.background=correct?'var(--green-bg)':'var(--red-bg)';fb.style.color=correct?'var(--green)':'var(--red)';fb.style.border=correct?'.5px solid var(--green)':'.5px solid var(--red)';
+  fb.innerHTML=`<strong>${correct?'✓ Correct.':'✗ Not quite.'}</strong> ${item.explanation}`;
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.disabled=true);
+}
+
+function toggleEx(header){const body=header.nextElementSibling,toggle=header.querySelector('.ex-toggle'),open=body.classList.toggle('open');toggle.textContent=open?'−':'+';if(window.MathJax)MathJax.typesetPromise();}
+function toggleAns(btn){const box=btn.nextElementSibling,open=box.classList.toggle('open');btn.textContent=open?'Hide answer':'Show answer';if(window.MathJax)MathJax.typesetPromise();}
+
+function initQuiz(){quizIndex=0;selectedOption=null;answered=false;score=0;renderQuiz();}
+function renderQuiz(){
+  const container=document.getElementById('quiz-container');
+  if(quizIndex>=quiz.length){
+    container.innerHTML=`<div class="quiz-complete"><div class="score-big">${score}/${quiz.length}</div><p>${score>=7?'Excellent — strong understanding of multiple regression and confounding.':score>=5?'Good work. Review adjusted interpretation and confounding.':'Review the notes and try the quiz again.'}</p><button class="btn-check" onclick="initQuiz()">Retry quiz</button></div>`;
+    return;
+  }
+  const q=quiz[quizIndex];
+  container.innerHTML=`<div class="quiz-progress">Question ${quizIndex+1} of ${quiz.length}</div><div class="quiz-q">${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<div class="quiz-opt" id="qo${i}" onclick="selectOption(${i})"><div class="opt-key">${['A','B','C','D'][i]}</div>${o}</div>`).join('')}</div><div id="quizFeedback" class="feedback"></div><div class="quiz-actions"><button id="checkBtn" class="btn-check" onclick="checkQuiz()" disabled>Check answer</button><button id="nextBtn" class="btn-next" onclick="nextQuiz()">${quizIndex<quiz.length-1?'Next question →':'See result'}</button></div>`;
+  selectedOption=null;answered=false;
+}
+function selectOption(i){if(answered)return;document.querySelectorAll('.quiz-opt').forEach(o=>o.classList.remove('selected'));document.getElementById('qo'+i).classList.add('selected');selectedOption=i;document.getElementById('checkBtn').disabled=false;}
+function checkQuiz(){
+  if(selectedOption===null||answered)return;answered=true;
+  const q=quiz[quizIndex],correct=selectedOption===q.correct;if(correct)score++;
+  document.querySelectorAll('.quiz-opt').forEach((el,i)=>{el.classList.add('locked');if(i===q.correct)el.classList.add('correct');if(i===selectedOption&&i!==q.correct)el.classList.add('wrong');});
+  const fb=document.getElementById('quizFeedback');fb.className='feedback show '+(correct?'ok':'no');fb.textContent=correct?'Correct.':'Not quite. Review the multiple regression notes.';
+  document.getElementById('checkBtn').disabled=true;document.getElementById('nextBtn').classList.add('show');
+}
+function nextQuiz(){quizIndex++;renderQuiz();}
+</script>
+<!-- My Academic Tutor platform footer with logo -->
+<footer class="mat-platform-footer">
+  <div class="mat-footer-brand">
+    <img class="mat-footer-logo" src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <p><strong>Statistics Foundation for University Students</strong></p>
+  </div>
+  <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+  <p>© 2026 My Academic Tutor. All rights reserved.</p>
+</footer>
+<style>
+.mat-platform-footer{
+  max-width:960px;
+  margin:34px auto 0;
+  padding:22px 34px;
+  border-top:1px solid var(--border, #ded9cf);
+  color:var(--text2, #5f5f5a);
+  font-size:13px;
+  line-height:1.65;
+}
+.mat-platform-footer strong{color:var(--text, #171717);}
+.mat-footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.mat-footer-logo{width:36px;height:36px;object-fit:contain;border-radius:9px;background:#fff;border:1px solid var(--border, #ded9cf);padding:4px;}
+@media(max-width:850px){.mat-platform-footer{padding:20px 18px;}}
+</style>
+
+</body>
+</html>

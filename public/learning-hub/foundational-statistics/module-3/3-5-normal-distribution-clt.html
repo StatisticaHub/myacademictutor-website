@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.5 Normal Distribution and Central Limit Theorem — Foundational Statistics</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#ffffff;--bg2:#f6f5f0;--bg3:#f0ede6;--border:#e0ddd6;--text:#1a1a18;--text2:#5a5a56;--text3:#8a8a84;--blue:#378ADD;--blue-bg:#E6F1FB;--blue-txt:#0C447C;--green:#3B6D11;--green-bg:#EAF3DE;--amber:#BA7517;--amber-bg:#FAEEDA;--amber-txt:#633806;--red:#A32D2D;--red-bg:#FCEBEB;--purple:#534AB7;--purple-bg:#EEEDFE;--purple-txt:#3C3489;--radius:8px;--radius-lg:12px;--sans:system-ui,-apple-system,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--border:#3a3a36;--text:#e8e6df;--text2:#a8a69f;--text3:#6a6a64;--blue-bg:#0c1f35;--blue-txt:#85B7EB;--green-bg:#0f2005;--amber-bg:#2a1800;--amber-txt:#FAC775;--red-bg:#2a0a0a;--purple-bg:#1a1740;--purple-txt:#AFA9EC}}
+html{font-family:var(--sans);font-size:16px;color:var(--text);background:var(--bg3);scroll-behavior:smooth}
+body{display:flex;min-height:100vh}.sidebar{width:278px;min-width:278px;background:var(--bg);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-brand{padding:16px;border-bottom:.5px solid var(--border)}.brand-course{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}.brand-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}
+.progress-wrap{height:3px;background:var(--border)}.progress-bar{height:3px;background:var(--blue);width:60%}
+.nav-section{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:12px 16px 4px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12.5px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;text-decoration:none;transition:background .12s}
+.nav-item:hover{background:var(--bg2);color:var(--text)}.nav-item.active{color:var(--text);border-left-color:var(--blue);background:var(--bg2);font-weight:500}.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0}.nav-item.active .nav-dot{background:var(--blue)}
+.main{flex:1;min-width:0}.tab-bar{background:var(--bg);border-bottom:.5px solid var(--border);display:flex;padding:0 32px;position:sticky;top:0;z-index:10;overflow-x:auto}
+.tab{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-.5px;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);white-space:nowrap}.tab:hover{color:var(--text)}.tab.active{color:var(--text);border-bottom-color:var(--blue);font-weight:500}
+.content{max-width:960px;margin:0 auto;padding:34px}.section{display:none}.section.active{display:block}.lesson-eyebrow{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+h1{font-size:29px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.25}.lesson-meta{font-size:12px;color:var(--text3);margin-bottom:28px}
+h2{font-size:19px;font-weight:500;color:var(--text);margin:32px 0 11px}h3{font-size:15.5px;font-weight:500;color:var(--text);margin:22px 0 8px}
+p{font-size:14.7px;color:var(--text2);line-height:1.78;margin-bottom:14px}strong{color:var(--text);font-weight:500}ul,ol{padding-left:21px;margin-bottom:14px}li{font-size:14.5px;color:var(--text2);line-height:1.76;margin-bottom:4px}
+.scene-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:24px 0 12px;padding:6px 10px;background:var(--bg2);border-radius:var(--radius);display:inline-block}
+.dialogue{display:flex;flex-direction:column;gap:12px;margin:16px 0}.line{display:flex;gap:12px;align-items:flex-start}.line.right{flex-direction:row-reverse}.speaker-badge{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:2px}
+.sp-prof{background:var(--blue-bg);color:var(--blue-txt)}.sp-emma{background:var(--green-bg);color:var(--green)}.sp-oliver{background:var(--amber-bg);color:var(--amber-txt)}.sp-james{background:var(--purple-bg);color:var(--purple-txt)}.sp-sophia{background:var(--red-bg);color:var(--red)}
+.bubble{max-width:78%;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px}.line.right .bubble{background:var(--blue-bg);border-color:transparent}.speaker-name{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:3px}.bubble p{font-size:14px;color:var(--text);margin:0;line-height:1.62}
+.def-box{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin:17px 0}.def-box .def-label{font-size:11px;font-weight:500;color:var(--blue-txt);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}.def-box.green{border-left-color:var(--green);background:var(--green-bg)}.def-box.green .def-label{color:var(--green)}.def-box.amber{border-left-color:var(--amber);background:var(--amber-bg)}.def-box.amber .def-label{color:var(--amber-txt)}.def-box.red{border-left-color:var(--red);background:var(--red-bg)}.def-box.red .def-label{color:var(--red)}.def-box p{font-size:13.7px;color:var(--text);margin:0;line-height:1.65}
+.math-block{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius);padding:15px 20px;margin:16px 0;text-align:center;font-size:15px;color:var(--text);overflow-x:auto;line-height:1.7}
+.tbl-wrap{overflow-x:auto;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:13.5px}thead tr{background:var(--bg2)}th{padding:9px 12px;text-align:left;font-weight:500;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.05em}td{padding:9px 12px;color:var(--text2);border-bottom:.5px solid var(--border);line-height:1.55}tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg2)}
+.takeaway{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin:25px 0}.takeaway .tk-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}.takeaway ul{margin:0}.takeaway li{font-size:14px;color:var(--text)}
+.plot-grid{display:grid;grid-template-columns:1fr;gap:18px}.plot-box{border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;background:var(--bg)}.plot-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}.plot-sub{font-size:12px;color:var(--text3);margin-bottom:14px}.chart-wrap{position:relative;width:100%;height:300px}
+.controls-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;align-items:center}.ctrl{display:flex;align-items:center;gap:8px}.ctrl label{font-size:12.5px;color:var(--text2);white-space:nowrap}.ctrl input[type=range]{width:145px;accent-color:var(--blue)}.ctrl select{padding:6px 8px;border:.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text)}.ctrl-val{font-size:12.5px;font-weight:500;color:var(--text);min-width:42px}
+.stat-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}.stat-card{flex:1;min-width:120px;background:var(--bg2);border-radius:var(--radius);padding:10px 14px;text-align:center}.stat-card .sc-label{font-size:11px;color:var(--text3);margin-bottom:4px}.stat-card .sc-val{font-size:20px;font-weight:500;color:var(--text)}
+.activity-card{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:10px 0}.activity-inner{padding:12px 16px}.choice-btn{padding:6px 12px;border:.5px solid var(--border);border-radius:var(--radius);background:none;font-size:12.5px;cursor:pointer;font-family:var(--sans);color:var(--text2);margin-right:6px;margin-top:6px}.choice-btn:hover{background:var(--bg2);color:var(--text)}.feedback-mini{display:none;margin-top:10px;padding:10px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5}
+.exercise{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:16px 0}.ex-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer}.ex-header:hover{background:var(--bg2)}.ex-qnum{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}.ex-qtitle{font-size:14px;font-weight:500;color:var(--text);margin-top:2px}.ex-difficulty{font-size:11px;padding:2px 8px;border-radius:10px}.diff-easy{background:var(--green-bg);color:var(--green)}.diff-medium{background:var(--amber-bg);color:var(--amber-txt)}.diff-hard{background:var(--red-bg);color:var(--red)}.ex-toggle{font-size:18px;color:var(--text3)}.ex-body{display:none;padding:0 16px 16px;border-top:.5px solid var(--border)}.ex-body.open{display:block}.ex-question{font-size:14px;color:var(--text2);line-height:1.7;margin:12px 0}.answer-toggle{background:none;border:.5px solid var(--border);border-radius:var(--radius);padding:7px 14px;font-size:12.5px;cursor:pointer;color:var(--text2);font-family:var(--sans);margin-top:10px}.answer-box{display:none;margin-top:12px;background:var(--green-bg);border:.5px solid var(--green);border-radius:var(--radius);padding:12px 16px}.answer-box.open{display:block;animation:fadeIn .2s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}.answer-box .ans-label{font-size:11px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}.answer-box p,.answer-box li{font-size:13.5px;color:var(--text);line-height:1.65}
+.quiz-q{font-size:14.5px;font-weight:500;color:var(--text);margin-bottom:14px;line-height:1.55}.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}.quiz-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:.5px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13.5px;color:var(--text2)}.quiz-opt:hover:not(.locked){border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.selected{border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}.quiz-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}.quiz-opt .opt-key{width:22px;height:22px;border-radius:50%;border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}.feedback{padding:10px 14px;border-radius:var(--radius);font-size:13.5px;line-height:1.6;margin-bottom:14px;display:none}.feedback.show{display:block}.feedback.ok{background:var(--green-bg);color:var(--green);border:.5px solid var(--green)}.feedback.no{background:var(--red-bg);color:var(--red);border:.5px solid var(--red)}.quiz-actions{display:flex;gap:10px}.btn-check{padding:8px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:var(--sans)}.btn-check:disabled{opacity:.4;cursor:default}.btn-next{padding:8px 18px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer;background:none;color:var(--text2);font-family:var(--sans);display:none}.btn-next.show{display:inline-block}.quiz-progress{font-size:11.5px;color:var(--text3);margin-bottom:20px}.quiz-complete{text-align:center;padding:32px 0}.quiz-complete .score-big{font-size:48px;font-weight:500;color:var(--text)}
+@media(max-width:850px){body{display:block}.sidebar{width:100%;height:auto;position:relative;min-width:0}.content{padding:24px 18px}.tab-bar{padding:0 12px}.bubble{max-width:88%}}
+</style>
+
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-course">Foundational Statistics</div>
+    <div class="brand-title">Statistics Foundation for University Students</div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="sidebar-progress" style="width:60%;"></div></div>
+
+  <div class="nav-section">Course modules</div>
+  <a class="nav-item" href="../module-1/index.html"><div class="nav-dot"></div>Module 1 · Introduction</a>
+  <a class="nav-item" href="../module-2/index.html"><div class="nav-dot"></div>Module 2 · Descriptive statistics</a>
+  <a class="nav-item active" href="../module-3/index.html"><div class="nav-dot"></div>Module 3 · Probability</a>
+  <a class="nav-item" href="../module-4/index.html"><div class="nav-dot"></div>Module 4 · Statistical inference</a>
+  <a class="nav-item" href="../module-5/index.html"><div class="nav-dot"></div>Module 5 · Regression</a>
+
+  <div class="nav-section">Module 3 lessons</div>
+  <a class="nav-item done" href="3-1-probability-basics-axioms.html"><div class="nav-dot"></div>3.1 Probability basics & axioms</a>
+  <a class="nav-item done" href="3-2-conditional-probability-bayes.html"><div class="nav-dot"></div>3.2 Conditional probability & Bayes</a>
+  <a class="nav-item done" href="3-3-random-variables-expectation.html"><div class="nav-dot"></div>3.3 Random variables & expectation</a>
+  <a class="nav-item done" href="3-4-discrete-distributions.html"><div class="nav-dot"></div>3.4 Discrete distributions</a>
+  <a class="nav-item active" href="3-5-normal-distribution-clt.html"><div class="nav-dot"></div>3.5 Normal distribution & CLT</a>
+</nav>
+
+<div class="main">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('lecture',this)">Lecture</button>
+    <button class="tab" onclick="showTab('notes',this)">Notes</button>
+    <button class="tab" onclick="showTab('interactive',this)">Interactive</button>
+    <button class="tab" onclick="showTab('exercises',this)">Exercises</button>
+    <button class="tab" onclick="showTab('quiz',this)">Quiz</button>
+  </div>
+
+<div class="content">
+
+<section id="sec-lecture" class="section active">
+  <div class="lesson-eyebrow">Module 3 · Lesson 3.5</div>
+  <h1>Normal distribution and the Central Limit Theorem</h1>
+  <div class="lesson-meta">Mr. R · Prof Stat · ~45 min · Final probability foundation lesson</div>
+
+  <div class="scene-label">📍 Scene — probability classroom, bridge to inference</div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>We have studied probability, conditional probability, random variables, and discrete distributions. Now everyone says the normal distribution is the most important one. Why?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>The normal distribution is important for two reasons. First, many measured variables are roughly bell-shaped. Second, and more importantly, many sample averages become approximately normal even when the original data are not normal.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>That second part sounds like the Central Limit Theorem?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. The Central Limit Theorem is the reason confidence intervals and many hypothesis tests work so widely.</p></div></div>
+  </div>
+
+  <h2>The shape of the normal distribution</h2>
+  <p>The normal distribution is a continuous probability distribution with a symmetric bell shape. It is centred at its mean \( \mu \), and its spread is controlled by its standard deviation \( \sigma \).</p>
+
+  <div class="math-block">
+    \[
+    X\sim N(\mu,\sigma^2)
+    \]
+  </div>
+
+  <p>This notation means \(X\) follows a normal distribution with mean \(\mu\) and variance \(\sigma^2\).</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>Why do we write \(\sigma^2\) instead of \(\sigma\)?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Because the second parameter of the normal distribution is conventionally the variance. The standard deviation is \(\sigma\), but the variance is \(\sigma^2\).</p></div></div>
+  </div>
+
+  <h2>Continuous probability means area</h2>
+  <p>For continuous variables, probabilities are not assigned to single exact points. Instead, probabilities are areas under the curve.</p>
+
+  <div class="math-block">
+    \[
+    P(a\leq X\leq b)=\int_a^b f(x)\,dx
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>So \(P(X=170)\) for height is not meaningful in the same way as \(P(X=2)\) for a die?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Correct. For a continuous distribution, the probability of one exact point is zero. We calculate probabilities over intervals.</p></div></div>
+  </div>
+
+  <h2>The standard normal distribution</h2>
+  <p>The standard normal distribution has mean 0 and standard deviation 1.</p>
+
+  <div class="math-block">
+    \[
+    Z\sim N(0,1)
+    \]
+  </div>
+
+  <p>Any normal random variable can be standardised into a \(Z\)-score:</p>
+
+  <div class="math-block">
+    \[
+    Z=\frac{X-\mu}{\sigma}
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>So the z-score tells us how many standard deviations a value is from the mean?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. That connects this lesson back to Module 2.</p></div></div>
+  </div>
+
+  <h2>The empirical rule</h2>
+  <p>For a normal distribution, approximately 68% of values lie within one standard deviation of the mean, 95% lie within two standard deviations, and 99.7% lie within three standard deviations.</p>
+
+  <div class="math-block">
+    \[
+    P(\mu-\sigma\leq X\leq \mu+\sigma)\approx 0.68
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    P(\mu-2\sigma\leq X\leq \mu+2\sigma)\approx 0.95
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    P(\mu-3\sigma\leq X\leq \mu+3\sigma)\approx 0.997
+    \]
+  </div>
+
+  <h2>The Central Limit Theorem</h2>
+  <p>The Central Limit Theorem says that under suitable conditions, the sampling distribution of the sample mean becomes approximately normal as sample size increases.</p>
+
+  <div class="math-block">
+    \[
+    \bar{X}\approx N\left(\mu,\frac{\sigma^2}{n}\right)
+    \]
+  </div>
+
+  <p>Equivalently:</p>
+
+  <div class="math-block">
+    \[
+    \frac{\bar{X}-\mu}{\sigma/\sqrt{n}}\approx N(0,1)
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>So the original data do not have to be normal?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Correct. The theorem is about the sample mean, not necessarily about the raw observations.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>And the spread of sample means is \(\sigma/\sqrt{n}\)?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes. That quantity is the standard error of the mean. It becomes central in Module 4.</p></div></div>
+  </div>
+
+  <h2>Why this matters for inference</h2>
+  <p>Confidence intervals and hypothesis tests often use normal or approximately normal sampling distributions. The Central Limit Theorem explains why sample means can be handled with normal-based methods even when individual observations are not perfectly normal.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>So this lesson is the bridge from probability to statistical inference?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. Module 4 begins with standard errors, confidence intervals, and hypothesis tests. The Central Limit Theorem is the probability engine underneath them.</p></div></div>
+  </div>
+
+  <div class="takeaway">
+    <div class="tk-label">Key takeaways from this lecture</div>
+    <ul>
+      <li>The normal distribution is continuous, symmetric and bell-shaped.</li>
+      <li>Normal probabilities are areas under the density curve.</li>
+      <li>The standard normal distribution has mean 0 and variance 1.</li>
+      <li>Z-scores convert normal variables to the standard normal scale.</li>
+      <li>The Central Limit Theorem concerns the sample mean, not the raw data.</li>
+      <li>The standard error of \(\bar{X}\) is \(\sigma/\sqrt{n}\).</li>
+      <li>The Central Limit Theorem prepares the foundation for inference.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-notes" class="section">
+  <div class="lesson-eyebrow">Detailed theoretical notes</div>
+  <h1>Normal distribution and the Central Limit Theorem</h1>
+
+  <h2>1. Continuous random variables</h2>
+  <p>A continuous random variable can take values on an interval. Unlike a discrete random variable, it does not assign positive probability to single exact values. Probabilities are calculated over intervals.</p>
+
+  <div class="math-block">
+    \[
+    P(a\leq X\leq b)=\int_a^b f(x)\,dx
+    \]
+  </div>
+
+  <p>The function \(f(x)\) is called a probability density function. It must satisfy:</p>
+
+  <div class="math-block">
+    \[
+    f(x)\geq 0
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \int_{-\infty}^{\infty} f(x)\,dx=1
+    \]
+  </div>
+
+  <h2>2. The normal distribution</h2>
+  <p>A random variable \(X\) follows a normal distribution with mean \(\mu\) and variance \(\sigma^2\) if its density is:</p>
+
+  <div class="math-block">
+    \[
+    f(x)=\frac{1}{\sigma\sqrt{2\pi}}
+    \exp\left[-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2\right],
+    \qquad -\infty<x<\infty
+    \]
+  </div>
+
+  <p>We write:</p>
+
+  <div class="math-block">
+    \[
+    X\sim N(\mu,\sigma^2)
+    \]
+  </div>
+
+  <p>The mean \(\mu\) controls the centre. The standard deviation \(\sigma\) controls the spread. The variance is \(\sigma^2\).</p>
+
+  <h2>3. Properties of the normal distribution</h2>
+  <ul>
+    <li>It is symmetric around \(\mu\).</li>
+    <li>Mean, median and mode are equal.</li>
+    <li>The total area under the curve is 1.</li>
+    <li>The tails extend indefinitely but approach zero.</li>
+    <li>The distribution is fully determined by \(\mu\) and \(\sigma\).</li>
+  </ul>
+
+  <h2>4. Standard normal distribution</h2>
+  <p>The standard normal distribution is the normal distribution with mean 0 and variance 1.</p>
+
+  <div class="math-block">
+    \[
+    Z\sim N(0,1)
+    \]
+  </div>
+
+  <h2>5. Standardisation</h2>
+  <p>If \(X\sim N(\mu,\sigma^2)\), then the standardised variable</p>
+
+  <div class="math-block">
+    \[
+    Z=\frac{X-\mu}{\sigma}
+    \]
+  </div>
+
+  <p>has the standard normal distribution:</p>
+
+  <div class="math-block">
+    \[
+    Z\sim N(0,1)
+    \]
+  </div>
+
+  <h3>Derivation of mean and variance after standardisation</h3>
+  <p>Using linearity of expectation:</p>
+
+  <div class="math-block">
+    \[
+    E(Z)=E\left(\frac{X-\mu}{\sigma}\right)
+    =\frac{E(X)-\mu}{\sigma}
+    =\frac{\mu-\mu}{\sigma}=0
+    \]
+  </div>
+
+  <p>Using the variance rule \(\operatorname{Var}(aX+b)=a^2\operatorname{Var}(X)\):</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(Z)=\operatorname{Var}\left(\frac{X-\mu}{\sigma}\right)
+    =\frac{1}{\sigma^2}\operatorname{Var}(X)
+    =\frac{\sigma^2}{\sigma^2}=1
+    \]
+  </div>
+
+  <h2>6. Normal interval probabilities</h2>
+  <p>Because the normal distribution is continuous, probability is area. For example:</p>
+
+  <div class="math-block">
+    \[
+    P(X\leq x)=P\left(Z\leq \frac{x-\mu}{\sigma}\right)
+    \]
+  </div>
+
+  <p>This allows all normal probability calculations to be converted to standard normal calculations.</p>
+
+  <h2>7. Empirical rule</h2>
+  <p>For normal distributions, approximate probability areas are:</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Interval</th><th>Approximate probability</th></tr></thead>
+      <tbody>
+        <tr><td>\(\mu\pm\sigma\)</td><td>0.68</td></tr>
+        <tr><td>\(\mu\pm2\sigma\)</td><td>0.95</td></tr>
+        <tr><td>\(\mu\pm3\sigma\)</td><td>0.997</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>8. Sampling distribution of the sample mean</h2>
+  <p>Let \(X_1,X_2,\ldots,X_n\) be independent observations from a population with mean \(\mu\) and variance \(\sigma^2\). The sample mean is:</p>
+
+  <div class="math-block">
+    \[
+    \bar{X}=\frac{1}{n}\sum_{i=1}^{n}X_i
+    \]
+  </div>
+
+  <h3>Expectation of the sample mean</h3>
+  <div class="math-block">
+    \[
+    E(\bar{X})=
+    E\left(\frac{1}{n}\sum_{i=1}^{n}X_i\right)
+    =
+    \frac{1}{n}\sum_{i=1}^{n}E(X_i)
+    =
+    \frac{1}{n}(n\mu)=\mu
+    \]
+  </div>
+
+  <h3>Variance of the sample mean</h3>
+  <p>If the observations are independent:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(\bar{X})=
+    \operatorname{Var}\left(\frac{1}{n}\sum_{i=1}^{n}X_i\right)
+    =
+    \frac{1}{n^2}\sum_{i=1}^{n}\operatorname{Var}(X_i)
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    \operatorname{Var}(\bar{X})=
+    \frac{1}{n^2}(n\sigma^2)=\frac{\sigma^2}{n}
+    \]
+  </div>
+
+  <h3>Standard error of the sample mean</h3>
+  <div class="math-block">
+    \[
+    \operatorname{SE}(\bar{X})=\sqrt{\operatorname{Var}(\bar{X})}
+    =
+    \sqrt{\frac{\sigma^2}{n}}
+    =
+    \frac{\sigma}{\sqrt{n}}
+    \]
+  </div>
+
+  <h2>9. Central Limit Theorem</h2>
+  <p>The Central Limit Theorem states that if \(X_1,\ldots,X_n\) are independent and identically distributed with mean \(\mu\) and variance \(\sigma^2<\infty\), then for large \(n\):</p>
+
+  <div class="math-block">
+    \[
+    \bar{X}\approx N\left(\mu,\frac{\sigma^2}{n}\right)
+    \]
+  </div>
+
+  <p>Equivalently:</p>
+
+  <div class="math-block">
+    \[
+    \frac{\bar{X}-\mu}{\sigma/\sqrt{n}}\approx N(0,1)
+    \]
+  </div>
+
+  <h2>10. What the CLT does and does not say</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Correct statement</th><th>Common wrong version</th></tr></thead>
+      <tbody>
+        <tr><td>The sampling distribution of \(\bar{X}\) becomes approximately normal.</td><td>The raw data become normal.</td></tr>
+        <tr><td>Approximation improves as \(n\) increases.</td><td>Any sample size always works.</td></tr>
+        <tr><td>Finite variance is required in the classical version.</td><td>No conditions are needed.</td></tr>
+        <tr><td>Independence matters.</td><td>Dependence never matters.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>11. Why the CLT matters</h2>
+  <p>The CLT justifies normal approximations for sample means. This is the mathematical basis for many confidence intervals and hypothesis tests.</p>
+
+  <div class="def-box green">
+    <div class="def-label">Bridge to Module 4</div>
+    <p>Module 4 uses the standard error and approximate normality of estimators to build confidence intervals and hypothesis tests.</p>
+  </div>
+
+  <h2>12. Common mistakes</h2>
+  <ul>
+    <li><strong>Thinking the CLT says data become normal:</strong> it says the sampling distribution of the mean becomes approximately normal.</li>
+    <li><strong>Forgetting standard error:</strong> the spread of sample means is \(\sigma/\sqrt{n}\), not \(\sigma\).</li>
+    <li><strong>Ignoring dependence:</strong> strong dependence can invalidate simple CLT reasoning.</li>
+    <li><strong>Using normal approximation blindly:</strong> severe skewness or heavy tails may require larger sample sizes.</li>
+    <li><strong>Confusing probability distribution and sampling distribution:</strong> raw observations and sample means are different objects.</li>
+  </ul>
+
+  <div class="takeaway">
+    <div class="tk-label">Notes summary</div>
+    <ul>
+      <li>The normal distribution is a continuous bell-shaped distribution.</li>
+      <li>Probabilities for continuous variables are areas under the density.</li>
+      <li>Standardisation converts \(X\sim N(\mu,\sigma^2)\) to \(Z\sim N(0,1)\).</li>
+      <li>The sample mean has expectation \(\mu\) and variance \(\sigma^2/n\).</li>
+      <li>The standard error of the mean is \(\sigma/\sqrt{n}\).</li>
+      <li>The CLT explains why sample means are often approximately normal.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-interactive" class="section">
+  <div class="lesson-eyebrow">Interactive probability lab</div>
+  <h1>Normal distribution and Central Limit Theorem</h1>
+
+  <div class="plot-grid">
+
+    <div class="plot-box">
+      <div class="plot-title">1. Normal curve explorer</div>
+      <div class="plot-sub">Change \(\mu\) and \(\sigma\). The mean shifts the curve; the standard deviation controls spread.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(\mu\)</label><input id="mu" type="range" min="-30" max="30" value="0" oninput="updateNormal()"><span id="muVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(\sigma\)</label><input id="sigma" type="range" min="5" max="30" value="10" oninput="updateNormal()"><span id="sigmaVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="chart-wrap"><canvas id="normalChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">2. Z-score converter</div>
+      <div class="plot-sub">Move \(x\) and compute \(z=(x-\mu)/\sigma\).</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(x\)</label><input id="xVal" type="range" min="-50" max="50" value="15" oninput="updateZ()"><span id="xText" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">z-score</div><div id="zOut" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Meaning</div><div id="zMeaning" class="sc-val" style="font-size:14px"></div></div>
+      </div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">3. Empirical rule visual</div>
+      <div class="plot-sub">Choose how many standard deviations from the mean.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Band</label><select id="band" onchange="updateBand()"><option value="1">±1σ</option><option value="2">±2σ</option><option value="3">±3σ</option></select></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Approximate area</div><div id="bandArea" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="bandChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">4. Standard error curve</div>
+      <div class="plot-sub">For a population standard deviation \(\sigma\), the standard error is \(\sigma/\sqrt{n}\).</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(\sigma\)</label><input id="seSigma" type="range" min="5" max="60" value="20" oninput="updateSE()"><span id="seSigmaVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(n\)</label><input id="seN" type="range" min="2" max="500" value="50" oninput="updateSE()"><span id="seNVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">SE</div><div id="seOut" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="seChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">5. CLT simulator</div>
+      <div class="plot-sub">Draw repeated sample means from a skewed population. Larger \(n\) makes sample means more bell-shaped.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Sample size \(n\)</label><input id="cltN" type="range" min="1" max="80" value="5" oninput="updateCLT()"><span id="cltNVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="chart-wrap"><canvas id="cltChart"></canvas></div>
+    </div>
+
+  </div>
+
+  <h2>Interpretation activity</h2>
+  <p>Choose the best label for each statement. This trains careful CLT language.</p>
+  <div id="activity-area"></div>
+</section>
+
+<section id="sec-exercises" class="section">
+  <div class="lesson-eyebrow">Practice exercises</div>
+  <h1>Normal distribution and Central Limit Theorem</h1>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 1</div><div class="ex-qtitle">Identify parameters</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If \(X\sim N(50,16)\), identify the mean, variance and standard deviation.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The mean is \(\mu=50\). The variance is \(\sigma^2=16\). The standard deviation is \(\sigma=4\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 2</div><div class="ex-qtitle">Z-score</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A variable has mean 100 and standard deviation 15. Calculate the z-score for \(x=130\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(z=(130-100)/15=30/15=2\). The value is 2 standard deviations above the mean.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 3</div><div class="ex-qtitle">Empirical rule</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If \(X\sim N(70,10^2)\), approximately what percentage of observations lie between 50 and 90?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The interval 50 to 90 is \(70\pm20\), which is \(\mu\pm2\sigma\). By the empirical rule, about 95% of observations lie in this interval.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 4</div><div class="ex-qtitle">Expectation of sample mean</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If a population has mean \(\mu=40\), what is \(E(\bar{X})\) for samples of size \(n=25\)?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(E(\bar{X})=\mu=40\). The sample mean is centred at the population mean.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 5</div><div class="ex-qtitle">Standard error</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If \(\sigma=12\) and \(n=36\), calculate \(\operatorname{SE}(\bar{X})\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\operatorname{SE}(\bar{X})=\sigma/\sqrt{n}=12/\sqrt{36}=12/6=2\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 6</div><div class="ex-qtitle">Sampling distribution</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If \(X_i\) have mean 80 and variance 100, and \(n=25\), give the approximate distribution of \(\bar{X}\) using the CLT.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The mean of \(\bar{X}\) is 80. The variance is \(100/25=4\). Therefore, \(\bar{X}\approx N(80,4)\), assuming CLT conditions are reasonable.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 7</div><div class="ex-qtitle">CLT misconception</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A student says, “The CLT says the original data become normal when \(n\) is large.” Explain the error.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The CLT concerns the sampling distribution of the sample mean, not the distribution of the original raw observations. The raw data can remain skewed while sample means become approximately normal.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 8</div><div class="ex-qtitle">Sample size and precision</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If sample size increases from 25 to 100, what happens to the standard error of the mean?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The sample size is multiplied by 4. Since \(\operatorname{SE}(\bar{X})=\sigma/\sqrt{n}\), the standard error is divided by \(\sqrt{4}=2\). It is halved.</p></div></div></div>
+
+</section>
+
+<section id="sec-quiz" class="section">
+  <div class="lesson-eyebrow">Topic quiz</div>
+  <h1>Normal distribution and Central Limit Theorem</h1>
+  <div id="quiz-container"></div>
+</section>
+
+</div>
+</div>
+
+<script>
+let charts = {};
+let quizIndex = 0;
+let selectedOption = null;
+let answered = false;
+let score = 0;
+
+const activities = [
+  {text:"The normal distribution is continuous, so probabilities are areas under a curve.",answer:"Correct statement",explanation:"Correct. Continuous distributions assign probabilities to intervals."},
+  {text:"The CLT says the raw data become normal when sample size is large.",answer:"Misinterpretation",explanation:"Not correct. The CLT concerns the sampling distribution of the sample mean."},
+  {text:"The standard error of the mean is sigma divided by square root of n.",answer:"Correct formula",explanation:"Correct. This is the spread of the sampling distribution of the sample mean."},
+  {text:"Increasing n reduces standard error but does not automatically remove bias.",answer:"Careful inference",explanation:"Correct. Larger n reduces random sampling uncertainty, not systematic bias."}
+];
+
+const quiz = [
+  {q:"If X~N(mu,sigma^2), the second parameter is:",opts:["Mean","Variance","Standard deviation","Median"],correct:1},
+  {q:"For a continuous random variable, probability is:",opts:["Area under the density curve","Height at one point","Always 0.5","A count only"],correct:0},
+  {q:"The standard normal distribution has:",opts:["Mean 0 and variance 1","Mean 1 and variance 0","Mean 0 and variance sigma","Mean mu and variance sigma^2"],correct:0},
+  {q:"The z-score formula is:",opts:["(X-mu)/sigma","X+sigma","mu/X","sigma/sqrt(n)"],correct:0},
+  {q:"The empirical rule says about 95% of normal observations lie within:",opts:["1 SD","2 SDs","3 SDs","0.5 SD"],correct:1},
+  {q:"The CLT is mainly about the distribution of:",opts:["The sample mean","The raw data only","The maximum only","The sample label"],correct:0},
+  {q:"The standard error of the mean is:",opts:["sigma/sqrt(n)","sigma*n","sqrt(n)/sigma","sigma^2"],correct:0},
+  {q:"Increasing n usually makes the sampling distribution of the mean:",opts:["Less variable","More variable","Impossible to analyse","Always biased"],correct:0}
+];
+
+function showTab(name, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='interactive') initInteractive();
+  if(name==='quiz') initQuiz();
+  if(window.MathJax) MathJax.typesetPromise();
+}
+
+function makeChart(id,type,data,options={}){
+  if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(document.getElementById(id),{type,data,options:Object.assign({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}},options)});
+}
+
+function normalPdf(x,mu,sigma){return Math.exp(-0.5*Math.pow((x-mu)/sigma,2))/(sigma*Math.sqrt(2*Math.PI));}
+
+function updateNormal(){
+  const mu=Number(document.getElementById('mu').value);
+  const sigma=Number(document.getElementById('sigma').value);
+  document.getElementById('muVal').textContent=mu;
+  document.getElementById('sigmaVal').textContent=sigma;
+  const xs=[], ys=[];
+  for(let i=-80;i<=80;i+=2){xs.push(i); ys.push(normalPdf(i,mu,sigma));}
+  makeChart('normalChart','line',{labels:xs,datasets:[{data:ys,borderColor:'#378ADD',backgroundColor:'transparent',pointRadius:0,borderWidth:2,tension:.25}]},{scales:{y:{beginAtZero:true}}});
+  updateZ();
+  updateBand();
+}
+
+function updateZ(){
+  const x=Number(document.getElementById('xVal').value);
+  const mu=Number(document.getElementById('mu').value);
+  const sigma=Number(document.getElementById('sigma').value);
+  const z=(x-mu)/sigma;
+  document.getElementById('xText').textContent=x;
+  document.getElementById('zOut').textContent=z.toFixed(2);
+  document.getElementById('zMeaning').textContent=z>=0 ? "above mean" : "below mean";
+}
+
+function updateBand(){
+  const k=Number(document.getElementById('band').value);
+  const area={1:"≈68%",2:"≈95%",3:"≈99.7%"}[k];
+  document.getElementById('bandArea').textContent=area;
+  const labels=[], values=[];
+  for(let i=-4;i<=4;i+=0.1){labels.push(i.toFixed(1)); values.push(normalPdf(i,0,1));}
+  makeChart('bandChart','line',{labels,datasets:[{data:values,borderColor:'#3B6D11',backgroundColor:'transparent',pointRadius:0,borderWidth:2,tension:.25}]},{scales:{y:{beginAtZero:true}}});
+}
+
+function updateSE(){
+  const sigma=Number(document.getElementById('seSigma').value);
+  const n=Number(document.getElementById('seN').value);
+  document.getElementById('seSigmaVal').textContent=sigma;
+  document.getElementById('seNVal').textContent=n;
+  document.getElementById('seOut').textContent=(sigma/Math.sqrt(n)).toFixed(2);
+  const labels=[], vals=[];
+  for(let i=1;i<=n;i++){labels.push(i); vals.push(sigma/Math.sqrt(i));}
+  makeChart('seChart','line',{labels,datasets:[{data:vals,borderColor:'#BA7517',backgroundColor:'transparent',pointRadius:0,borderWidth:2,tension:.25}]},{scales:{y:{beginAtZero:true}}});
+}
+
+function randExp(){return -Math.log(1-Math.random());}
+function updateCLT(){
+  const n=Number(document.getElementById('cltN').value);
+  document.getElementById('cltNVal').textContent=n;
+  const means=[];
+  for(let r=0;r<800;r++){
+    let sum=0;
+    for(let i=0;i<n;i++) sum+=randExp();
+    means.push(sum/n);
+  }
+  const bins=Array(20).fill(0), max=3.5, min=0, width=(max-min)/bins.length;
+  means.forEach(m=>{let idx=Math.floor((m-min)/width); if(idx>=0 && idx<bins.length) bins[idx]++;});
+  const labels=bins.map((_,i)=>(min+i*width).toFixed(2));
+  makeChart('cltChart','bar',{labels,datasets:[{data:bins,backgroundColor:'rgba(83,74,183,0.35)',borderColor:'#534AB7',borderWidth:1}]},{scales:{y:{beginAtZero:true}}});
+}
+
+function initInteractive(){
+  updateNormal(); updateSE(); updateCLT(); renderActivities();
+}
+
+function renderActivities(){
+  const area=document.getElementById('activity-area');
+  if(area.children.length) return;
+  const options=["Correct statement","Correct formula","Misinterpretation","Careful inference"];
+  activities.forEach((a,i)=>{
+    const div=document.createElement('div');
+    div.className='activity-card';
+    div.innerHTML=`<div class="activity-inner"><div style="font-size:13.5px;color:var(--text);line-height:1.6;margin-bottom:8px;">${a.text}</div>${options.map(o=>`<button class="choice-btn" onclick="checkActivity(${i}, '${o}', this)">${o}</button>`).join('')}<div id="activity-${i}" class="feedback-mini"></div></div>`;
+    area.appendChild(div);
+  });
+}
+
+function checkActivity(i,choice,btn){
+  const item=activities[i], fb=document.getElementById('activity-'+i), correct=choice===item.answer;
+  fb.style.display='block'; fb.style.background=correct?'var(--green-bg)':'var(--red-bg)'; fb.style.color=correct?'var(--green)':'var(--red)'; fb.style.border=correct?'.5px solid var(--green)':'.5px solid var(--red)';
+  fb.innerHTML=`<strong>${correct?'✓ Correct.':'✗ Not quite.'}</strong> ${item.explanation}`;
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.disabled=true);
+}
+
+function toggleEx(header){
+  const body=header.nextElementSibling, toggle=header.querySelector('.ex-toggle'), open=body.classList.toggle('open');
+  toggle.textContent=open?'−':'+'; if(window.MathJax) MathJax.typesetPromise();
+}
+
+function toggleAns(btn){
+  const box=btn.nextElementSibling, open=box.classList.toggle('open');
+  btn.textContent=open?'Hide answer':'Show answer'; if(window.MathJax) MathJax.typesetPromise();
+}
+
+function initQuiz(){quizIndex=0;selectedOption=null;answered=false;score=0;renderQuiz();}
+
+function renderQuiz(){
+  const container=document.getElementById('quiz-container');
+  if(quizIndex>=quiz.length){
+    container.innerHTML=`<div class="quiz-complete"><div class="score-big">${score}/${quiz.length}</div><p>${score>=7?'Excellent — strong understanding of normal distribution and CLT.':score>=5?'Good work. Review the missed ideas.':'Review the notes and try the quiz again.'}</p><button class="btn-check" onclick="initQuiz()">Retry quiz</button></div>`;
+    return;
+  }
+  const q=quiz[quizIndex];
+  container.innerHTML=`<div class="quiz-progress">Question ${quizIndex+1} of ${quiz.length}</div><div class="quiz-q">${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<div class="quiz-opt" id="qo${i}" onclick="selectOption(${i})"><div class="opt-key">${['A','B','C','D'][i]}</div>${o}</div>`).join('')}</div><div id="quizFeedback" class="feedback"></div><div class="quiz-actions"><button id="checkBtn" class="btn-check" onclick="checkQuiz()" disabled>Check answer</button><button id="nextBtn" class="btn-next" onclick="nextQuiz()">${quizIndex<quiz.length-1?'Next question →':'See result'}</button></div>`;
+  selectedOption=null;answered=false;
+}
+
+function selectOption(i){
+  if(answered) return;
+  document.querySelectorAll('.quiz-opt').forEach(o=>o.classList.remove('selected'));
+  document.getElementById('qo'+i).classList.add('selected');
+  selectedOption=i; document.getElementById('checkBtn').disabled=false;
+}
+
+function checkQuiz(){
+  if(selectedOption===null||answered) return;
+  answered=true;
+  const q=quiz[quizIndex], correct=selectedOption===q.correct;
+  if(correct) score++;
+  document.querySelectorAll('.quiz-opt').forEach((el,i)=>{el.classList.add('locked'); if(i===q.correct) el.classList.add('correct'); if(i===selectedOption&&i!==q.correct) el.classList.add('wrong');});
+  const fb=document.getElementById('quizFeedback');
+  fb.className='feedback show '+(correct?'ok':'no');
+  fb.textContent=correct?'Correct.':'Not quite. Review the normal distribution, standardisation and CLT notes.';
+  document.getElementById('checkBtn').disabled=true; document.getElementById('nextBtn').classList.add('show');
+}
+
+function nextQuiz(){quizIndex++; renderQuiz();}
+</script>
+<!-- My Academic Tutor platform footer with logo -->
+<footer class="mat-platform-footer">
+  <div class="mat-footer-brand">
+    <img class="mat-footer-logo" src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <p><strong>Statistics Foundation for University Students</strong></p>
+  </div>
+  <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+  <p>© 2026 My Academic Tutor. All rights reserved.</p>
+</footer>
+<style>
+.mat-platform-footer{
+  max-width:960px;
+  margin:34px auto 0;
+  padding:22px 34px;
+  border-top:1px solid var(--border, #ded9cf);
+  color:var(--text2, #5f5f5a);
+  font-size:13px;
+  line-height:1.65;
+}
+.mat-platform-footer strong{color:var(--text, #171717);}
+.mat-footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.mat-footer-logo{width:36px;height:36px;object-fit:contain;border-radius:9px;background:#fff;border:1px solid var(--border, #ded9cf);padding:4px;}
+@media(max-width:850px){.mat-platform-footer{padding:20px 18px;}}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5.1 Simple Linear Regression — Foundational Statistics</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--bg2:#f6f5f0;--bg3:#f0ede6;--border:#e0ddd6;--text:#1a1a18;--text2:#5a5a56;--text3:#8a8a84;--blue:#378ADD;--blue-bg:#E6F1FB;--blue-txt:#0C447C;--green:#3B6D11;--green-bg:#EAF3DE;--amber:#BA7517;--amber-bg:#FAEEDA;--amber-txt:#633806;--red:#A32D2D;--red-bg:#FCEBEB;--purple:#534AB7;--purple-bg:#EEEDFE;--purple-txt:#3C3489;--radius:8px;--radius-lg:12px;--sans:system-ui,-apple-system,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--border:#3a3a36;--text:#e8e6df;--text2:#a8a69f;--text3:#6a6a64;--blue-bg:#0c1f35;--blue-txt:#85B7EB;--green-bg:#0f2005;--amber-bg:#2a1800;--amber-txt:#FAC775;--red-bg:#2a0a0a;--purple-bg:#1a1740;--purple-txt:#AFA9EC}}
+html{font-family:var(--sans);font-size:16px;color:var(--text);background:var(--bg3);scroll-behavior:smooth}
+body{display:flex;min-height:100vh}.sidebar{width:278px;min-width:278px;background:var(--bg);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-brand{padding:16px;border-bottom:.5px solid var(--border)}.brand-course{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}.brand-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}.progress-wrap{height:3px;background:var(--border)}.progress-bar{height:3px;background:var(--blue);width:84%}
+.nav-section{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:12px 16px 4px}.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12.5px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;text-decoration:none;transition:background .12s}.nav-item:hover{background:var(--bg2);color:var(--text)}.nav-item.active{color:var(--text);border-left-color:var(--blue);background:var(--bg2);font-weight:500}.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0}.nav-item.active .nav-dot{background:var(--blue)}
+.main{flex:1;min-width:0}.tab-bar{background:var(--bg);border-bottom:.5px solid var(--border);display:flex;padding:0 32px;position:sticky;top:0;z-index:10;overflow-x:auto}.tab{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-.5px;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);white-space:nowrap}.tab:hover{color:var(--text)}.tab.active{color:var(--text);border-bottom-color:var(--blue);font-weight:500}
+.content{max-width:960px;margin:0 auto;padding:34px}.section{display:none}.section.active{display:block}.lesson-eyebrow{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}h1{font-size:29px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.25}.lesson-meta{font-size:12px;color:var(--text3);margin-bottom:28px}
+h2{font-size:19px;font-weight:500;color:var(--text);margin:32px 0 11px}h3{font-size:15.5px;font-weight:500;color:var(--text);margin:22px 0 8px}p{font-size:14.7px;color:var(--text2);line-height:1.78;margin-bottom:14px}strong{color:var(--text);font-weight:500}ul,ol{padding-left:21px;margin-bottom:14px}li{font-size:14.5px;color:var(--text2);line-height:1.76;margin-bottom:4px}
+.scene-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:24px 0 12px;padding:6px 10px;background:var(--bg2);border-radius:var(--radius);display:inline-block}.dialogue{display:flex;flex-direction:column;gap:12px;margin:16px 0}.line{display:flex;gap:12px;align-items:flex-start}.line.right{flex-direction:row-reverse}.speaker-badge{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:2px}.sp-prof{background:var(--blue-bg);color:var(--blue-txt)}.sp-emma{background:var(--green-bg);color:var(--green)}.sp-oliver{background:var(--amber-bg);color:var(--amber-txt)}.sp-james{background:var(--purple-bg);color:var(--purple-txt)}.sp-sophia{background:var(--red-bg);color:var(--red)}.bubble{max-width:78%;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px}.line.right .bubble{background:var(--blue-bg);border-color:transparent}.speaker-name{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:3px}.bubble p{font-size:14px;color:var(--text);margin:0;line-height:1.62}
+.def-box{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin:17px 0}.def-box .def-label{font-size:11px;font-weight:500;color:var(--blue-txt);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}.def-box.green{border-left-color:var(--green);background:var(--green-bg)}.def-box.green .def-label{color:var(--green)}.def-box.amber{border-left-color:var(--amber);background:var(--amber-bg)}.def-box.amber .def-label{color:var(--amber-txt)}.def-box.red{border-left-color:var(--red);background:var(--red-bg)}.def-box.red .def-label{color:var(--red)}.def-box.purple{border-left-color:var(--purple);background:var(--purple-bg)}.def-box.purple .def-label{color:var(--purple-txt)}.def-box p{font-size:13.7px;color:var(--text);margin:0;line-height:1.65}
+.math-block{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius);padding:15px 20px;margin:16px 0;text-align:center;font-size:15px;color:var(--text);overflow-x:auto;line-height:1.7}
+.tbl-wrap{overflow-x:auto;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:13.5px}thead tr{background:var(--bg2)}th{padding:9px 12px;text-align:left;font-weight:500;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.05em}td{padding:9px 12px;color:var(--text2);border-bottom:.5px solid var(--border);line-height:1.55}tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg2)}
+.takeaway{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin:25px 0}.takeaway .tk-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}.takeaway ul{margin:0}.takeaway li{font-size:14px;color:var(--text)}
+.plot-grid{display:grid;grid-template-columns:1fr;gap:18px}.plot-box{border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;background:var(--bg)}.plot-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}.plot-sub{font-size:12px;color:var(--text3);margin-bottom:14px}.chart-wrap{position:relative;width:100%;height:320px}
+.controls-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;align-items:center}.ctrl{display:flex;align-items:center;gap:8px}.ctrl label{font-size:12.5px;color:var(--text2);white-space:nowrap}.ctrl input[type=range]{width:145px;accent-color:var(--blue)}.ctrl select{padding:6px 8px;border:.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text)}.ctrl-val{font-size:12.5px;font-weight:500;color:var(--text);min-width:42px}.stat-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}.stat-card{flex:1;min-width:120px;background:var(--bg2);border-radius:var(--radius);padding:10px 14px;text-align:center}.stat-card .sc-label{font-size:11px;color:var(--text3);margin-bottom:4px}.stat-card .sc-val{font-size:20px;font-weight:500;color:var(--text)}
+.activity-card{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:10px 0}.activity-inner{padding:12px 16px}.choice-btn{padding:6px 12px;border:.5px solid var(--border);border-radius:var(--radius);background:none;font-size:12.5px;cursor:pointer;font-family:var(--sans);color:var(--text2);margin-right:6px;margin-top:6px}.choice-btn:hover{background:var(--bg2);color:var(--text)}.feedback-mini{display:none;margin-top:10px;padding:10px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5}
+.exercise{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:16px 0}.ex-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer}.ex-header:hover{background:var(--bg2)}.ex-qnum{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}.ex-qtitle{font-size:14px;font-weight:500;color:var(--text);margin-top:2px}.ex-difficulty{font-size:11px;padding:2px 8px;border-radius:10px}.diff-easy{background:var(--green-bg);color:var(--green)}.diff-medium{background:var(--amber-bg);color:var(--amber-txt)}.diff-hard{background:var(--red-bg);color:var(--red)}.ex-toggle{font-size:18px;color:var(--text3)}.ex-body{display:none;padding:0 16px 16px;border-top:.5px solid var(--border)}.ex-body.open{display:block}.ex-question{font-size:14px;color:var(--text2);line-height:1.7;margin:12px 0}.answer-toggle{background:none;border:.5px solid var(--border);border-radius:var(--radius);padding:7px 14px;font-size:12.5px;cursor:pointer;color:var(--text2);font-family:var(--sans);margin-top:10px}.answer-box{display:none;margin-top:12px;background:var(--green-bg);border:.5px solid var(--green);border-radius:var(--radius);padding:12px 16px}.answer-box.open{display:block;animation:fadeIn .2s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}.answer-box .ans-label{font-size:11px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}.answer-box p,.answer-box li{font-size:13.5px;color:var(--text);line-height:1.65}
+.quiz-q{font-size:14.5px;font-weight:500;color:var(--text);margin-bottom:14px;line-height:1.55}.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}.quiz-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:.5px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13.5px;color:var(--text2)}.quiz-opt:hover:not(.locked){border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.selected{border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}.quiz-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}.quiz-opt .opt-key{width:22px;height:22px;border-radius:50%;border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}.feedback{padding:10px 14px;border-radius:var(--radius);font-size:13.5px;line-height:1.6;margin-bottom:14px;display:none}.feedback.show{display:block}.feedback.ok{background:var(--green-bg);color:var(--green);border:.5px solid var(--green)}.feedback.no{background:var(--red-bg);color:var(--red);border:.5px solid var(--red)}.quiz-actions{display:flex;gap:10px}.btn-check{padding:8px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:var(--sans)}.btn-check:disabled{opacity:.4;cursor:default}.btn-next{padding:8px 18px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer;background:none;color:var(--text2);font-family:var(--sans);display:none}.btn-next.show{display:inline-block}.quiz-progress{font-size:11.5px;color:var(--text3);margin-bottom:20px}.quiz-complete{text-align:center;padding:32px 0}.quiz-complete .score-big{font-size:48px;font-weight:500;color:var(--text)}
+@media(max-width:850px){body{display:block}.sidebar{width:100%;height:auto;position:relative;min-width:0}.content{padding:24px 18px}.tab-bar{padding:0 12px}.bubble{max-width:88%}}
+</style>
+
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-course">Foundational Statistics</div>
+    <div class="brand-title">Statistics Foundation for University Students</div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="sidebar-progress" style="width:100%;"></div></div>
+
+  <div class="nav-section">Course modules</div>
+  <a class="nav-item" href="../module-1/index.html"><div class="nav-dot"></div>Module 1 · Introduction</a>
+  <a class="nav-item" href="../module-2/index.html"><div class="nav-dot"></div>Module 2 · Descriptive statistics</a>
+  <a class="nav-item" href="../module-3/index.html"><div class="nav-dot"></div>Module 3 · Probability</a>
+  <a class="nav-item" href="../module-4/index.html"><div class="nav-dot"></div>Module 4 · Statistical inference</a>
+  <a class="nav-item active" href="../module-5/index.html"><div class="nav-dot"></div>Module 5 · Regression</a>
+
+  <div class="nav-section">Module 5 lessons</div>
+  <a class="nav-item active" href="5-1-simple-linear-regression.html"><div class="nav-dot"></div>5.1 Simple linear regression</a>
+  <a class="nav-item done" href="5-2-least-squares-derivation.html"><div class="nav-dot"></div>5.2 Least squares derivation</a>
+  <a class="nav-item done" href="5-3-multiple-regression-confounding.html"><div class="nav-dot"></div>5.3 Multiple regression & confounding</a>
+  <a class="nav-item done" href="5-4-model-assessment-diagnostics.html"><div class="nav-dot"></div>5.4 Model assessment & diagnostics</a>
+  <a class="nav-item done" href="5-5-logistic-regression-intro.html"><div class="nav-dot"></div>5.5 Logistic regression intro</a>
+</nav>
+
+<div class="main">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('lecture',this)">Lecture</button>
+    <button class="tab" onclick="showTab('notes',this)">Notes</button>
+    <button class="tab" onclick="showTab('interactive',this)">Interactive</button>
+    <button class="tab" onclick="showTab('exercises',this)">Exercises</button>
+    <button class="tab" onclick="showTab('quiz',this)">Quiz</button>
+  </div>
+
+<div class="content">
+
+<section id="sec-lecture" class="section active">
+  <div class="lesson-eyebrow">Module 5 · Lesson 5.1</div>
+  <h1>Simple linear regression</h1>
+  <div class="lesson-meta">Mr. R · Prof Stat · ~55 min · First regression lesson</div>
+
+  <div class="scene-label">📍 Scene — statistics classroom, moving from comparison to modelling</div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>So far we compared means, proportions and categories. Regression feels different. Is regression just drawing a line through points?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Drawing a line is the visual part. Regression is deeper: it models how the mean of an outcome changes with an explanatory variable.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>Mean of an outcome? Not every individual value?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. Simple linear regression models the conditional mean of \(Y\) given \(X\). It does not claim every person follows the line exactly.</p></div></div>
+  </div>
+
+  <h2>The basic regression question</h2>
+  <p>Simple linear regression studies the relationship between one quantitative outcome \(Y\) and one explanatory variable \(X\). The word “simple” means there is only one explanatory variable. The word “linear” means the model assumes a straight-line relationship in the mean.</p>
+
+  <div class="math-block">
+    \[
+    E(Y\mid X=x)=\beta_0+\beta_1x
+    \]
+  </div>
+
+  <p>This equation says: among all observations with \(X=x\), the average value of \(Y\) is modelled as \(\beta_0+\beta_1x\).</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>Why write \(E(Y\mid X=x)\) instead of just \(Y\)?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Because actual observations vary around the line. The line represents the average outcome at a given value of \(X\), not every individual outcome.</p></div></div>
+  </div>
+
+  <h2>The statistical model</h2>
+  <p>The observed value \(Y_i\) is written as a fitted mean plus random error:</p>
+
+  <div class="math-block">
+    \[
+    Y_i=\beta_0+\beta_1X_i+\varepsilon_i
+    \]
+  </div>
+
+  <p>The error term \(\varepsilon_i\) represents everything that makes observation \(i\) differ from the conditional mean: measurement noise, individual variation, omitted factors and random fluctuation.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>So \(\varepsilon_i\) is not necessarily a mistake?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Correct. In regression, “error” usually means unexplained deviation from the modelled mean, not a data entry error.</p></div></div>
+  </div>
+
+  <h2>Intercept and slope</h2>
+  <p>The intercept \(\beta_0\) is the modelled mean of \(Y\) when \(X=0\). The slope \(\beta_1\) is the expected change in the mean of \(Y\) for a one-unit increase in \(X\).</p>
+
+  <div class="math-block">
+    \[
+    \beta_1=\text{change in }E(Y\mid X)\text{ for one-unit increase in }X
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>If \(X\) is age and \(Y\) is blood pressure, a slope of 0.7 means blood pressure increases by 0.7 for each extra year of age?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>More carefully: the modelled mean blood pressure is 0.7 units higher for each one-year increase in age, on average, within the scope of the data.</p></div></div>
+  </div>
+
+  <h2>Fitted values and residuals</h2>
+  <p>After fitting the model, we get estimated coefficients \(b_0\) and \(b_1\). The fitted value for observation \(i\) is:</p>
+
+  <div class="math-block">
+    \[
+    \hat{y}_i=b_0+b_1x_i
+    \]
+  </div>
+
+  <p>The residual is the difference between the observed outcome and the fitted value:</p>
+
+  <div class="math-block">
+    \[
+    e_i=y_i-\hat{y}_i
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>If the observed value is above the line, the residual is positive?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes. A positive residual means the observed value is higher than the fitted value. A negative residual means it is lower.</p></div></div>
+  </div>
+
+  <h2>Least squares idea</h2>
+  <p>The usual regression line is chosen by least squares. It chooses \(b_0\) and \(b_1\) to minimise the sum of squared residuals.</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{SSE}=\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+    \]
+  </div>
+
+  <p>Squaring prevents positive and negative residuals from cancelling and gives larger penalties to larger errors.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>Will we derive the least squares formulas?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes. Lesson 5.2 is devoted to that derivation. Today we build the meaning and interpretation first.</p></div></div>
+  </div>
+
+  <h2>Association is not causation</h2>
+  <p>A regression slope describes an association in the fitted model. It does not automatically prove that changing \(X\) would cause \(Y\) to change. Causal interpretation requires study design and assumptions, not just a regression line.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>So if ice-cream sales and drowning incidents are positively associated, regression alone does not mean ice cream causes drowning?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. A third factor, such as hot weather, may explain both. Regression is powerful, but interpretation must be careful.</p></div></div>
+  </div>
+
+  <h2>Prediction and explanation</h2>
+  <p>Simple linear regression can be used for prediction, explanation, or description. The same fitted line can serve different goals, but the interpretation changes. Predictive use asks how accurately \(Y\) can be predicted. Explanatory use asks how \(Y\) changes with \(X\), often requiring deeper assumptions.</p>
+
+  <div class="takeaway">
+    <div class="tk-label">Key takeaways from this lecture</div>
+    <ul>
+      <li>Simple linear regression models the mean of \(Y\) conditional on one explanatory variable \(X\).</li>
+      <li>The population regression model is \(Y_i=\beta_0+\beta_1X_i+\varepsilon_i\).</li>
+      <li>The intercept is the modelled mean when \(X=0\), if that value is meaningful.</li>
+      <li>The slope is the expected change in mean \(Y\) for a one-unit increase in \(X\).</li>
+      <li>Fitted values are predicted means from the fitted line.</li>
+      <li>Residuals are observed minus fitted values.</li>
+      <li>Least squares chooses the line that minimises squared residuals.</li>
+      <li>A regression slope is not automatically causal.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-notes" class="section">
+  <div class="lesson-eyebrow">Detailed theoretical notes</div>
+  <h1>Simple linear regression</h1>
+
+  <h2>1. Regression as conditional mean modelling</h2>
+  <p>Simple linear regression models how the mean of a quantitative outcome changes with one explanatory variable. The central object is not the value of \(Y\) for every individual, but the conditional expectation of \(Y\) given \(X=x\).</p>
+
+  <div class="math-block">
+    \[
+    E(Y\mid X=x)=\beta_0+\beta_1x
+    \]
+  </div>
+
+  <p>This is the population regression line. It is usually unknown and must be estimated from sample data.</p>
+
+  <h2>2. Population model</h2>
+  <p>The simple linear regression model is:</p>
+
+  <div class="math-block">
+    \[
+    Y_i=\beta_0+\beta_1X_i+\varepsilon_i,\qquad i=1,\ldots,n
+    \]
+  </div>
+
+  <p>where:</p>
+  <ul>
+    <li>\(Y_i\) is the outcome for observation \(i\),</li>
+    <li>\(X_i\) is the explanatory variable for observation \(i\),</li>
+    <li>\(\beta_0\) is the intercept,</li>
+    <li>\(\beta_1\) is the slope,</li>
+    <li>\(\varepsilon_i\) is the random error term.</li>
+  </ul>
+
+  <p>The usual mean-zero error assumption is:</p>
+
+  <div class="math-block">
+    \[
+    E(\varepsilon_i\mid X_i)=0
+    \]
+  </div>
+
+  <p>This implies:</p>
+
+  <div class="math-block">
+    \[
+    E(Y_i\mid X_i)=\beta_0+\beta_1X_i
+    \]
+  </div>
+
+  <h2>3. Interpreting the intercept</h2>
+  <p>The intercept is:</p>
+
+  <div class="math-block">
+    \[
+    \beta_0=E(Y\mid X=0)
+    \]
+  </div>
+
+  <p>This interpretation is meaningful only when \(X=0\) is within the relevant range and makes scientific sense. If \(X=0\) is impossible or far outside the data range, the intercept may be mathematically necessary but not substantively meaningful.</p>
+
+  <div class="def-box amber">
+    <div class="def-label">Interpretation warning</div>
+    <p>Do not over-interpret the intercept when \(X=0\) is outside the observed data range or has no real meaning.</p>
+  </div>
+
+  <h2>4. Interpreting the slope</h2>
+  <p>The slope is the change in the conditional mean of \(Y\) for a one-unit increase in \(X\):</p>
+
+  <div class="math-block">
+    \[
+    \beta_1=
+    E(Y\mid X=x+1)-E(Y\mid X=x)
+    \]
+  </div>
+
+  <p>Using the model:</p>
+
+  <div class="math-block">
+    \[
+    E(Y\mid X=x+1)=\beta_0+\beta_1(x+1)
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    E(Y\mid X=x)=\beta_0+\beta_1x
+    \]
+  </div>
+
+  <p>Subtracting gives:</p>
+
+  <div class="math-block">
+    \[
+    E(Y\mid X=x+1)-E(Y\mid X=x)=\beta_1
+    \]
+  </div>
+
+  <h2>5. Fitted regression line</h2>
+  <p>Because \(\beta_0\) and \(\beta_1\) are unknown, we estimate them from data. Let the estimates be \(b_0\) and \(b_1\). The fitted regression line is:</p>
+
+  <div class="math-block">
+    \[
+    \hat{y}_i=b_0+b_1x_i
+    \]
+  </div>
+
+  <p>The fitted value \(\hat{y}_i\) is the model's estimated mean outcome at \(x_i\).</p>
+
+  <h2>6. Residuals</h2>
+  <p>The residual for observation \(i\) is:</p>
+
+  <div class="math-block">
+    \[
+    e_i=y_i-\hat{y}_i
+    \]
+  </div>
+
+  <p>Residuals show how far observed values are from the fitted line. They are sample quantities, while the model errors \(\varepsilon_i\) are population-level theoretical quantities.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Quantity</th><th>Meaning</th><th>Observed?</th></tr></thead>
+      <tbody>
+        <tr><td>\(\varepsilon_i\)</td><td>True error around population regression line</td><td>No</td></tr>
+        <tr><td>\(e_i\)</td><td>Residual around fitted regression line</td><td>Yes</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>7. Least squares criterion</h2>
+  <p>Least squares chooses the fitted line that minimises the sum of squared residuals:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{SSE}(b_0,b_1)
+    =
+    \sum_{i=1}^{n}(y_i-b_0-b_1x_i)^2
+    \]
+  </div>
+
+  <p>The least squares estimates are the values of \(b_0\) and \(b_1\) that minimise this function.</p>
+
+  <div class="math-block">
+    \[
+    (b_0,b_1)=
+    \underset{a,c}{\operatorname{arg\,min}}
+    \sum_{i=1}^{n}(y_i-a-cx_i)^2
+    \]
+  </div>
+
+  <p>Lesson 5.2 derives the closed-form solutions. For now, the conceptual idea is that the fitted line makes squared vertical deviations as small as possible.</p>
+
+  <h2>8. Regression and correlation</h2>
+  <p>Correlation and simple linear regression are related but not identical.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Correlation</th><th>Simple linear regression</th></tr></thead>
+      <tbody>
+        <tr><td>Measures strength and direction of linear association</td><td>Models mean outcome as a function of \(X\)</td></tr>
+        <tr><td>Symmetric: correlation of \(X,Y\) equals correlation of \(Y,X\)</td><td>Asymmetric: \(Y\) is outcome, \(X\) is predictor</td></tr>
+        <tr><td>Unit-free</td><td>Slope has units of \(Y\) per unit of \(X\)</td></tr>
+        <tr><td>No fitted prediction equation by itself</td><td>Produces fitted values and residuals</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>9. Assumptions of simple linear regression</h2>
+  <p>Common assumptions include:</p>
+  <ul>
+    <li><strong>Linearity:</strong> the conditional mean of \(Y\) changes linearly with \(X\).</li>
+    <li><strong>Independence:</strong> observations are independent unless the design says otherwise.</li>
+    <li><strong>Mean-zero errors:</strong> \(E(\varepsilon_i\mid X_i)=0\).</li>
+    <li><strong>Constant variance:</strong> the variability of errors is constant across values of \(X\).</li>
+    <li><strong>Approximate normality of errors:</strong> mainly needed for small-sample inference, not for defining the line.</li>
+  </ul>
+
+  <h2>10. Prediction versus causal interpretation</h2>
+  <p>A regression model can be used for prediction without causal interpretation. A causal interpretation of \(\beta_1\) requires stronger assumptions, such as no uncontrolled confounding and an appropriate study design.</p>
+
+  <div class="def-box red">
+    <div class="def-label">Causality warning</div>
+    <p>A statistically significant slope does not automatically mean that \(X\) causes \(Y\). Association, prediction and causation are different goals.</p>
+  </div>
+
+  <h2>11. Extrapolation</h2>
+  <p>Regression lines should not be trusted far outside the range of observed \(X\)-values. A relationship that is roughly linear inside the observed range may not remain linear outside it.</p>
+
+  <div class="math-block">
+    \[
+    \text{Prediction outside the observed range of }X
+    \text{ is extrapolation.}
+    \]
+  </div>
+
+  <h2>12. Common mistakes</h2>
+  <ul>
+    <li><strong>Thinking regression predicts every individual exactly:</strong> it models the conditional mean.</li>
+    <li><strong>Calling residuals “errors” without context:</strong> residuals are observed deviations from the fitted line.</li>
+    <li><strong>Interpreting the intercept when \(X=0\) is meaningless:</strong> check the data range.</li>
+    <li><strong>Assuming significance implies causation:</strong> causal interpretation needs design and assumptions.</li>
+    <li><strong>Extrapolating far outside the observed \(X\)-range:</strong> the fitted line may not remain valid.</li>
+    <li><strong>Ignoring residual patterns:</strong> patterns can reveal non-linearity, unequal variance or outliers.</li>
+  </ul>
+
+  <div class="takeaway">
+    <div class="tk-label">Notes summary</div>
+    <ul>
+      <li>Simple linear regression models \(E(Y\mid X=x)\).</li>
+      <li>The population model is \(Y_i=\beta_0+\beta_1X_i+\varepsilon_i\).</li>
+      <li>The slope \(\beta_1\) is the expected change in mean \(Y\) per one-unit increase in \(X\).</li>
+      <li>The fitted line is \(\hat{y}_i=b_0+b_1x_i\).</li>
+      <li>The residual is \(e_i=y_i-\hat{y}_i\).</li>
+      <li>Least squares minimises \(\sum (y_i-b_0-b_1x_i)^2\).</li>
+      <li>Regression association is not automatically causal.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-interactive" class="section">
+  <div class="lesson-eyebrow">Interactive regression lab</div>
+  <h1>Simple linear regression</h1>
+
+  <div class="plot-grid">
+    <div class="plot-box">
+      <div class="plot-title">1. Regression line explorer</div>
+      <div class="plot-sub">Change intercept and slope. The line shows the modelled conditional mean.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Intercept \(b_0\)</label><input id="intercept" type="range" min="-20" max="60" value="10" oninput="updateLine()"><span id="interceptVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Slope \(b_1\)</label><input id="slope" type="range" min="-30" max="50" value="20" oninput="updateLine()"><span id="slopeVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Equation</div><div id="eqOut" class="sc-val" style="font-size:16px"></div></div>
+        <div class="stat-card"><div class="sc-label">Meaning of slope</div><div id="slopeMeaning" class="sc-val" style="font-size:14px"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">2. Residual visual</div>
+      <div class="plot-sub">Select one observation. See observed value, fitted value and residual.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Observation</label><input id="obsIndex" type="range" min="0" max="9" value="4" oninput="updateResidual()"><span id="obsIndexVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Observed \(y\)</div><div id="obsY" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Fitted \(\hat{y}\)</div><div id="fitY" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Residual \(e\)</div><div id="residY" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="residChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">3. Least squares idea</div>
+      <div class="plot-sub">Move the slope. The sum of squared residuals changes.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Trial slope</label><input id="trialSlope" type="range" min="-20" max="60" value="20" oninput="updateSSE()"><span id="trialSlopeVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">SSE</div><div id="sseOut" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="sseChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">4. Extrapolation warning</div>
+      <div class="plot-sub">Predictions are safer inside the observed \(X\)-range than outside it.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Prediction \(x\)</label><input id="predX" type="range" min="-5" max="25" value="8" oninput="updatePrediction()"><span id="predXVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Predicted value</div><div id="predY" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Warning</div><div id="predWarn" class="sc-val" style="font-size:14px"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="predChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">5. Interpretation checker</div>
+      <div class="plot-sub">Choose the best interpretation of regression statements.</div>
+      <div id="activity-area"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-exercises" class="section">
+  <div class="lesson-eyebrow">Practice exercises</div>
+  <h1>Simple linear regression</h1>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 1</div><div class="ex-qtitle">Interpret a slope</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A fitted regression line is \(\hat{y}=12+3x\). Interpret the slope.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>For each one-unit increase in \(x\), the fitted mean of \(Y\) increases by 3 units, on average, within the scope of the data.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 2</div><div class="ex-qtitle">Calculate a fitted value</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Using \(\hat{y}=12+3x\), calculate \(\hat{y}\) when \(x=5\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\hat{y}=12+3(5)=12+15=27\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 3</div><div class="ex-qtitle">Calculate a residual</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If the observed value is \(y=31\) and the fitted value is \(\hat{y}=27\), calculate the residual.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The residual is \(e=y-\hat{y}=31-27=4\). The observed value is 4 units above the fitted line.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 4</div><div class="ex-qtitle">Interpret intercept carefully</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A model predicts blood pressure from age and has an intercept of 62. Explain why the intercept may not be scientifically meaningful.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The intercept is the fitted mean blood pressure when age is 0. If the study includes adults, age 0 is outside the relevant data range, so the intercept is mathematically part of the line but not substantively meaningful.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 5</div><div class="ex-qtitle">SSE calculation</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Residuals are \(2,-1,3\). Calculate the sum of squared residuals.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\operatorname{SSE}=2^2+(-1)^2+3^2=4+1+9=14\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 6</div><div class="ex-qtitle">Conditional mean interpretation</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Explain why \(E(Y\mid X=x)=\beta_0+\beta_1x\) is not the same as saying every observation with \(X=x\) equals \(\beta_0+\beta_1x\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The equation describes the conditional mean of \(Y\) at \(X=x\). Individual observations vary around this mean because of the error term \(\varepsilon_i\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 7</div><div class="ex-qtitle">Correlation versus regression</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Give one difference between correlation and simple linear regression.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>Correlation is symmetric and unit-free. Simple linear regression treats one variable as the outcome and one as the predictor, and the slope has units of \(Y\) per unit of \(X\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 8</div><div class="ex-qtitle">Association versus causation</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A regression slope between exercise hours and health score is positive. Why should we avoid immediately claiming exercise caused the higher health score?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The association may be affected by confounding, selection bias or reverse causation. Causal interpretation requires appropriate design and assumptions, not just a positive regression slope.</p></div></div></div>
+
+</section>
+
+<section id="sec-quiz" class="section">
+  <div class="lesson-eyebrow">Topic quiz</div>
+  <h1>Simple linear regression</h1>
+  <div id="quiz-container"></div>
+</section>
+
+</div>
+</div>
+
+<script>
+let charts = {};
+let quizIndex = 0;
+let selectedOption = null;
+let answered = false;
+let score = 0;
+
+const baseX=[1,2,3,4,5,6,7,8,9,10];
+const baseY=[12,16,18,23,25,31,30,36,40,41];
+
+const activities = [
+  {text:"The slope is the expected change in mean Y for a one-unit increase in X.",answer:"Correct interpretation",explanation:"Correct. The slope is about the modelled conditional mean."},
+  {text:"A positive regression slope proves X causes Y.",answer:"Causation mistake",explanation:"Not correct. Regression association is not automatically causal."},
+  {text:"A residual is observed value minus fitted value.",answer:"Correct formula",explanation:"Correct. \(e_i=y_i-\hat{y}_i\)."},
+  {text:"A prediction far outside the observed X range should be treated cautiously.",answer:"Extrapolation warning",explanation:"Correct. Extrapolation can be unreliable."}
+];
+
+const quiz = [
+  {q:"Simple linear regression models:",opts:["The conditional mean of Y given X","Only the maximum of Y","Only categorical counts","The variance of X only"],correct:0},
+  {q:"The population simple linear regression model is:",opts:["Y_i = beta0 + beta1 X_i + error_i","Y = X only","p = x/n only","chi-square = observed"],correct:0},
+  {q:"The slope beta1 represents:",opts:["Expected change in mean Y for one-unit increase in X","The value of Y when X is zero only","The sample size","The residual variance only"],correct:0},
+  {q:"The fitted value is:",opts:["yhat_i = b0 + b1 x_i","y_i - yhat_i","x_i/y_i","beta0 only"],correct:0},
+  {q:"The residual is:",opts:["Observed minus fitted","Fitted minus slope","Intercept times slope","Only the x-value"],correct:0},
+  {q:"Least squares minimises:",opts:["Sum of squared residuals","Sum of raw x-values","Number of observations","The p-value only"],correct:0},
+  {q:"Correlation and regression differ because regression:",opts:["Has a specified outcome and predictor","Is always symmetric","Has no units","Cannot predict"],correct:0},
+  {q:"A significant regression slope:",opts:["Does not automatically prove causation","Always proves causation","Means no residuals exist","Makes assumptions unnecessary"],correct:0}
+];
+
+function showTab(name, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='interactive') initInteractive();
+  if(name==='quiz') initQuiz();
+  if(window.MathJax) MathJax.typesetPromise();
+}
+
+function makeChart(id,type,data,options={}){
+  if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(document.getElementById(id),{type,data,options:Object.assign({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}},options)});
+}
+
+function currentLine(){
+  const b0=Number(document.getElementById('intercept').value);
+  const b1=Number(document.getElementById('slope').value)/10;
+  return {b0,b1};
+}
+
+function updateLine(){
+  const {b0,b1}=currentLine();
+  document.getElementById('interceptVal').textContent=b0.toFixed(0);
+  document.getElementById('slopeVal').textContent=b1.toFixed(1);
+  document.getElementById('eqOut').textContent='ŷ = '+b0.toFixed(1)+' + '+b1.toFixed(1)+'x';
+  document.getElementById('slopeMeaning').textContent=(b1>=0?'+':'')+b1.toFixed(1)+' per 1 unit x';
+
+  const lineData=baseX.map(x=>({x:x,y:b0+b1*x}));
+  const scatter=baseX.map((x,i)=>({x:x,y:baseY[i]}));
+  makeChart('lineChart','scatter',{
+    datasets:[
+      {label:'Observed data',data:scatter,backgroundColor:'#378ADD',borderColor:'#378ADD'},
+      {label:'Regression line',data:lineData,type:'line',borderColor:'#A32D2D',backgroundColor:'transparent',pointRadius:0,borderWidth:2}
+    ]
+  },{plugins:{legend:{display:true}},scales:{x:{type:'linear',min:0,max:11},y:{min:0,max:60}}});
+  updateResidual();
+}
+
+function updateResidual(){
+  const idx=Number(document.getElementById('obsIndex').value);
+  const {b0,b1}=currentLine();
+  const x=baseX[idx], y=baseY[idx], fitted=b0+b1*x, resid=y-fitted;
+  document.getElementById('obsIndexVal').textContent=idx+1;
+  document.getElementById('obsY').textContent=y.toFixed(1);
+  document.getElementById('fitY').textContent=fitted.toFixed(1);
+  document.getElementById('residY').textContent=resid.toFixed(1);
+  const scatter=baseX.map((xx,i)=>({x:xx,y:baseY[i]}));
+  const lineData=baseX.map(xx=>({x:xx,y:b0+b1*xx}));
+  const residualLine=[{x:x,y:fitted},{x:x,y:y}];
+  makeChart('residChart','scatter',{
+    datasets:[
+      {label:'Observed data',data:scatter,backgroundColor:'#378ADD',borderColor:'#378ADD'},
+      {label:'Fitted line',data:lineData,type:'line',borderColor:'#3B6D11',backgroundColor:'transparent',pointRadius:0,borderWidth:2},
+      {label:'Selected residual',data:residualLine,type:'line',borderColor:'#A32D2D',backgroundColor:'transparent',pointRadius:4,borderWidth:3}
+    ]
+  },{plugins:{legend:{display:true}},scales:{x:{type:'linear',min:0,max:11},y:{min:0,max:60}}});
+}
+
+function sseFor(b0,b1){
+  return baseX.reduce((s,x,i)=>s+Math.pow(baseY[i]-(b0+b1*x),2),0);
+}
+function updateSSE(){
+  const b1=Number(document.getElementById('trialSlope').value)/10;
+  const b0=10;
+  document.getElementById('trialSlopeVal').textContent=b1.toFixed(1);
+  const sse=sseFor(b0,b1);
+  document.getElementById('sseOut').textContent=sse.toFixed(1);
+  const labels=[], vals=[];
+  for(let raw=-20;raw<=60;raw+=2){const sl=raw/10;labels.push(sl.toFixed(1));vals.push(sseFor(b0,sl));}
+  makeChart('sseChart','line',{labels,datasets:[{data:vals,borderColor:'#BA7517',backgroundColor:'transparent',pointRadius:0,borderWidth:2,tension:.25}]},{scales:{y:{beginAtZero:true}}});
+}
+
+function updatePrediction(){
+  const x=Number(document.getElementById('predX').value);
+  const b0=10,b1=3.2;
+  const y=b0+b1*x;
+  document.getElementById('predXVal').textContent=x;
+  document.getElementById('predY').textContent=y.toFixed(1);
+  document.getElementById('predWarn').textContent=(x<1||x>10)?'Extrapolation':'Inside observed range';
+  const scatter=baseX.map((xx,i)=>({x:xx,y:baseY[i]}));
+  const line=[{x:-5,y:b0+b1*(-5)},{x:25,y:b0+b1*25}];
+  makeChart('predChart','scatter',{
+    datasets:[
+      {label:'Observed data',data:scatter,backgroundColor:'#378ADD',borderColor:'#378ADD'},
+      {label:'Line',data:line,type:'line',borderColor:'#3B6D11',backgroundColor:'transparent',pointRadius:0,borderWidth:2},
+      {label:'Prediction point',data:[{x:x,y:y}],backgroundColor:'#A32D2D',borderColor:'#A32D2D',pointRadius:7}
+    ]
+  },{plugins:{legend:{display:true}},scales:{x:{type:'linear',min:-5,max:25},y:{min:0,max:100}}});
+}
+
+function initInteractive(){updateLine();updateSSE();updatePrediction();renderActivities();}
+
+function renderActivities(){
+  const area=document.getElementById('activity-area');
+  if(area.children.length) return;
+  const options=["Correct interpretation","Correct formula","Causation mistake","Extrapolation warning"];
+  activities.forEach((a,i)=>{
+    const div=document.createElement('div');
+    div.className='activity-card';
+    div.innerHTML=`<div class="activity-inner"><div style="font-size:13.5px;color:var(--text);line-height:1.6;margin-bottom:8px;">${a.text}</div>${options.map(o=>`<button class="choice-btn" onclick="checkActivity(${i}, '${o}', this)">${o}</button>`).join('')}<div id="activity-${i}" class="feedback-mini"></div></div>`;
+    area.appendChild(div);
+  });
+}
+
+function checkActivity(i,choice,btn){
+  const item=activities[i], fb=document.getElementById('activity-'+i), correct=choice===item.answer;
+  fb.style.display='block';fb.style.background=correct?'var(--green-bg)':'var(--red-bg)';fb.style.color=correct?'var(--green)':'var(--red)';fb.style.border=correct?'.5px solid var(--green)':'.5px solid var(--red)';
+  fb.innerHTML=`<strong>${correct?'✓ Correct.':'✗ Not quite.'}</strong> ${item.explanation}`;
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.disabled=true);
+}
+
+function toggleEx(header){const body=header.nextElementSibling,toggle=header.querySelector('.ex-toggle'),open=body.classList.toggle('open');toggle.textContent=open?'−':'+';if(window.MathJax)MathJax.typesetPromise();}
+function toggleAns(btn){const box=btn.nextElementSibling,open=box.classList.toggle('open');btn.textContent=open?'Hide answer':'Show answer';if(window.MathJax)MathJax.typesetPromise();}
+
+function initQuiz(){quizIndex=0;selectedOption=null;answered=false;score=0;renderQuiz();}
+function renderQuiz(){
+  const container=document.getElementById('quiz-container');
+  if(quizIndex>=quiz.length){
+    container.innerHTML=`<div class="quiz-complete"><div class="score-big">${score}/${quiz.length}</div><p>${score>=7?'Excellent — strong understanding of simple linear regression.':score>=5?'Good work. Review the missed ideas.':'Review the notes and try the quiz again.'}</p><button class="btn-check" onclick="initQuiz()">Retry quiz</button></div>`;
+    return;
+  }
+  const q=quiz[quizIndex];
+  container.innerHTML=`<div class="quiz-progress">Question ${quizIndex+1} of ${quiz.length}</div><div class="quiz-q">${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<div class="quiz-opt" id="qo${i}" onclick="selectOption(${i})"><div class="opt-key">${['A','B','C','D'][i]}</div>${o}</div>`).join('')}</div><div id="quizFeedback" class="feedback"></div><div class="quiz-actions"><button id="checkBtn" class="btn-check" onclick="checkQuiz()" disabled>Check answer</button><button id="nextBtn" class="btn-next" onclick="nextQuiz()">${quizIndex<quiz.length-1?'Next question →':'See result'}</button></div>`;
+  selectedOption=null;answered=false;
+}
+function selectOption(i){if(answered)return;document.querySelectorAll('.quiz-opt').forEach(o=>o.classList.remove('selected'));document.getElementById('qo'+i).classList.add('selected');selectedOption=i;document.getElementById('checkBtn').disabled=false;}
+function checkQuiz(){
+  if(selectedOption===null||answered)return;answered=true;
+  const q=quiz[quizIndex],correct=selectedOption===q.correct;if(correct)score++;
+  document.querySelectorAll('.quiz-opt').forEach((el,i)=>{el.classList.add('locked');if(i===q.correct)el.classList.add('correct');if(i===selectedOption&&i!==q.correct)el.classList.add('wrong');});
+  const fb=document.getElementById('quizFeedback');fb.className='feedback show '+(correct?'ok':'no');fb.textContent=correct?'Correct.':'Not quite. Review the regression interpretation notes.';
+  document.getElementById('checkBtn').disabled=true;document.getElementById('nextBtn').classList.add('show');
+}
+function nextQuiz(){quizIndex++;renderQuiz();}
+</script>
+<!-- My Academic Tutor platform footer with logo -->
+<footer class="mat-platform-footer">
+  <div class="mat-footer-brand">
+    <img class="mat-footer-logo" src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <p><strong>Statistics Foundation for University Students</strong></p>
+  </div>
+  <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+  <p>© 2026 My Academic Tutor. All rights reserved.</p>
+</footer>
+<style>
+.mat-platform-footer{
+  max-width:960px;
+  margin:34px auto 0;
+  padding:22px 34px;
+  border-top:1px solid var(--border, #ded9cf);
+  color:var(--text2, #5f5f5a);
+  font-size:13px;
+  line-height:1.65;
+}
+.mat-platform-footer strong{color:var(--text, #171717);}
+.mat-footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.mat-footer-logo{width:36px;height:36px;object-fit:contain;border-radius:9px;background:#fff;border:1px solid var(--border, #ded9cf);padding:4px;}
+@media(max-width:850px){.mat-platform-footer{padding:20px 18px;}}
+</style>
+
+</body>
+</html>

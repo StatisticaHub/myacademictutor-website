@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4.4 z-tests, t-tests and Proportion Tests — Foundational Statistics</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--bg2:#f6f5f0;--bg3:#f0ede6;--border:#e0ddd6;--text:#1a1a18;--text2:#5a5a56;--text3:#8a8a84;--blue:#378ADD;--blue-bg:#E6F1FB;--blue-txt:#0C447C;--green:#3B6D11;--green-bg:#EAF3DE;--amber:#BA7517;--amber-bg:#FAEEDA;--amber-txt:#633806;--red:#A32D2D;--red-bg:#FCEBEB;--purple:#534AB7;--purple-bg:#EEEDFE;--purple-txt:#3C3489;--radius:8px;--radius-lg:12px;--sans:system-ui,-apple-system,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--border:#3a3a36;--text:#e8e6df;--text2:#a8a69f;--text3:#6a6a64;--blue-bg:#0c1f35;--blue-txt:#85B7EB;--green-bg:#0f2005;--amber-bg:#2a1800;--amber-txt:#FAC775;--red-bg:#2a0a0a;--purple-bg:#1a1740;--purple-txt:#AFA9EC}}
+html{font-family:var(--sans);font-size:16px;color:var(--text);background:var(--bg3);scroll-behavior:smooth}
+body{display:flex;min-height:100vh}.sidebar{width:278px;min-width:278px;background:var(--bg);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-brand{padding:16px;border-bottom:.5px solid var(--border)}.brand-course{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}.brand-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}.progress-wrap{height:3px;background:var(--border)}.progress-bar{height:3px;background:var(--blue);width:76%}
+.nav-section{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:12px 16px 4px}.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12.5px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;text-decoration:none;transition:background .12s}.nav-item:hover{background:var(--bg2);color:var(--text)}.nav-item.active{color:var(--text);border-left-color:var(--blue);background:var(--bg2);font-weight:500}.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0}.nav-item.active .nav-dot{background:var(--blue)}
+.main{flex:1;min-width:0}.tab-bar{background:var(--bg);border-bottom:.5px solid var(--border);display:flex;padding:0 32px;position:sticky;top:0;z-index:10;overflow-x:auto}.tab{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-.5px;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);white-space:nowrap}.tab:hover{color:var(--text)}.tab.active{color:var(--text);border-bottom-color:var(--blue);font-weight:500}
+.content{max-width:960px;margin:0 auto;padding:34px}.section{display:none}.section.active{display:block}.lesson-eyebrow{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}h1{font-size:29px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.25}.lesson-meta{font-size:12px;color:var(--text3);margin-bottom:28px}
+h2{font-size:19px;font-weight:500;color:var(--text);margin:32px 0 11px}h3{font-size:15.5px;font-weight:500;color:var(--text);margin:22px 0 8px}p{font-size:14.7px;color:var(--text2);line-height:1.78;margin-bottom:14px}strong{color:var(--text);font-weight:500}ul,ol{padding-left:21px;margin-bottom:14px}li{font-size:14.5px;color:var(--text2);line-height:1.76;margin-bottom:4px}
+.scene-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:24px 0 12px;padding:6px 10px;background:var(--bg2);border-radius:var(--radius);display:inline-block}.dialogue{display:flex;flex-direction:column;gap:12px;margin:16px 0}.line{display:flex;gap:12px;align-items:flex-start}.line.right{flex-direction:row-reverse}.speaker-badge{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:2px}.sp-prof{background:var(--blue-bg);color:var(--blue-txt)}.sp-emma{background:var(--green-bg);color:var(--green)}.sp-oliver{background:var(--amber-bg);color:var(--amber-txt)}.sp-james{background:var(--purple-bg);color:var(--purple-txt)}.sp-sophia{background:var(--red-bg);color:var(--red)}.bubble{max-width:78%;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px}.line.right .bubble{background:var(--blue-bg);border-color:transparent}.speaker-name{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:3px}.bubble p{font-size:14px;color:var(--text);margin:0;line-height:1.62}
+.def-box{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin:17px 0}.def-box .def-label{font-size:11px;font-weight:500;color:var(--blue-txt);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}.def-box.green{border-left-color:var(--green);background:var(--green-bg)}.def-box.green .def-label{color:var(--green)}.def-box.amber{border-left-color:var(--amber);background:var(--amber-bg)}.def-box.amber .def-label{color:var(--amber-txt)}.def-box.red{border-left-color:var(--red);background:var(--red-bg)}.def-box.red .def-label{color:var(--red)}.def-box.purple{border-left-color:var(--purple);background:var(--purple-bg)}.def-box.purple .def-label{color:var(--purple-txt)}.def-box p{font-size:13.7px;color:var(--text);margin:0;line-height:1.65}
+.math-block{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius);padding:15px 20px;margin:16px 0;text-align:center;font-size:15px;color:var(--text);overflow-x:auto;line-height:1.7}
+.tbl-wrap{overflow-x:auto;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:13.5px}thead tr{background:var(--bg2)}th{padding:9px 12px;text-align:left;font-weight:500;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.05em}td{padding:9px 12px;color:var(--text2);border-bottom:.5px solid var(--border);line-height:1.55}tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg2)}
+.takeaway{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin:25px 0}.takeaway .tk-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}.takeaway ul{margin:0}.takeaway li{font-size:14px;color:var(--text)}
+.plot-grid{display:grid;grid-template-columns:1fr;gap:18px}.plot-box{border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;background:var(--bg)}.plot-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}.plot-sub{font-size:12px;color:var(--text3);margin-bottom:14px}.chart-wrap{position:relative;width:100%;height:300px}
+.controls-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;align-items:center}.ctrl{display:flex;align-items:center;gap:8px}.ctrl label{font-size:12.5px;color:var(--text2);white-space:nowrap}.ctrl input[type=range]{width:145px;accent-color:var(--blue)}.ctrl select{padding:6px 8px;border:.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text)}.ctrl-val{font-size:12.5px;font-weight:500;color:var(--text);min-width:42px}.stat-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}.stat-card{flex:1;min-width:120px;background:var(--bg2);border-radius:var(--radius);padding:10px 14px;text-align:center}.stat-card .sc-label{font-size:11px;color:var(--text3);margin-bottom:4px}.stat-card .sc-val{font-size:20px;font-weight:500;color:var(--text)}
+.activity-card{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:10px 0}.activity-inner{padding:12px 16px}.choice-btn{padding:6px 12px;border:.5px solid var(--border);border-radius:var(--radius);background:none;font-size:12.5px;cursor:pointer;font-family:var(--sans);color:var(--text2);margin-right:6px;margin-top:6px}.choice-btn:hover{background:var(--bg2);color:var(--text)}.feedback-mini{display:none;margin-top:10px;padding:10px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5}
+.exercise{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:16px 0}.ex-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer}.ex-header:hover{background:var(--bg2)}.ex-qnum{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}.ex-qtitle{font-size:14px;font-weight:500;color:var(--text);margin-top:2px}.ex-difficulty{font-size:11px;padding:2px 8px;border-radius:10px}.diff-easy{background:var(--green-bg);color:var(--green)}.diff-medium{background:var(--amber-bg);color:var(--amber-txt)}.diff-hard{background:var(--red-bg);color:var(--red)}.ex-toggle{font-size:18px;color:var(--text3)}.ex-body{display:none;padding:0 16px 16px;border-top:.5px solid var(--border)}.ex-body.open{display:block}.ex-question{font-size:14px;color:var(--text2);line-height:1.7;margin:12px 0}.answer-toggle{background:none;border:.5px solid var(--border);border-radius:var(--radius);padding:7px 14px;font-size:12.5px;cursor:pointer;color:var(--text2);font-family:var(--sans);margin-top:10px}.answer-box{display:none;margin-top:12px;background:var(--green-bg);border:.5px solid var(--green);border-radius:var(--radius);padding:12px 16px}.answer-box.open{display:block;animation:fadeIn .2s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}.answer-box .ans-label{font-size:11px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}.answer-box p,.answer-box li{font-size:13.5px;color:var(--text);line-height:1.65}
+.quiz-q{font-size:14.5px;font-weight:500;color:var(--text);margin-bottom:14px;line-height:1.55}.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}.quiz-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:.5px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13.5px;color:var(--text2)}.quiz-opt:hover:not(.locked){border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.selected{border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}.quiz-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}.quiz-opt .opt-key{width:22px;height:22px;border-radius:50%;border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}.feedback{padding:10px 14px;border-radius:var(--radius);font-size:13.5px;line-height:1.6;margin-bottom:14px;display:none}.feedback.show{display:block}.feedback.ok{background:var(--green-bg);color:var(--green);border:.5px solid var(--green)}.feedback.no{background:var(--red-bg);color:var(--red);border:.5px solid var(--red)}.quiz-actions{display:flex;gap:10px}.btn-check{padding:8px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:var(--sans)}.btn-check:disabled{opacity:.4;cursor:default}.btn-next{padding:8px 18px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer;background:none;color:var(--text2);font-family:var(--sans);display:none}.btn-next.show{display:inline-block}.quiz-progress{font-size:11.5px;color:var(--text3);margin-bottom:20px}.quiz-complete{text-align:center;padding:32px 0}.quiz-complete .score-big{font-size:48px;font-weight:500;color:var(--text)}
+@media(max-width:850px){body{display:block}.sidebar{width:100%;height:auto;position:relative;min-width:0}.content{padding:24px 18px}.tab-bar{padding:0 12px}.bubble{max-width:88%}}
+</style>
+
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-course">Foundational Statistics</div>
+    <div class="brand-title">Statistics Foundation for University Students</div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="sidebar-progress" style="width:80%;"></div></div>
+
+  <div class="nav-section">Course modules</div>
+  <a class="nav-item" href="../module-1/index.html"><div class="nav-dot"></div>Module 1 · Introduction</a>
+  <a class="nav-item" href="../module-2/index.html"><div class="nav-dot"></div>Module 2 · Descriptive statistics</a>
+  <a class="nav-item" href="../module-3/index.html"><div class="nav-dot"></div>Module 3 · Probability</a>
+  <a class="nav-item active" href="../module-4/index.html"><div class="nav-dot"></div>Module 4 · Statistical inference</a>
+  <a class="nav-item" href="../module-5/index.html"><div class="nav-dot"></div>Module 5 · Regression</a>
+
+  <div class="nav-section">Module 4 lessons</div>
+  <a class="nav-item done" href="4-1-sampling-distributions-standard-error.html"><div class="nav-dot"></div>4.1 Sampling distributions & SE</a>
+  <a class="nav-item done" href="4-2-confidence-intervals.html"><div class="nav-dot"></div>4.2 Confidence intervals</a>
+  <a class="nav-item done" href="4-3-hypothesis-testing-framework.html"><div class="nav-dot"></div>4.3 Hypothesis testing framework</a>
+  <a class="nav-item active" href="4-4-t-tests-z-tests-proportions.html"><div class="nav-dot"></div>4.4 t-tests, z-tests & proportions</a>
+  <a class="nav-item done" href="4-5-chi-square-non-parametric-tests.html"><div class="nav-dot"></div>4.5 Chi-square & non-parametric tests</a>
+</nav>
+
+<div class="main">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('lecture',this)">Lecture</button>
+    <button class="tab" onclick="showTab('notes',this)">Notes</button>
+    <button class="tab" onclick="showTab('interactive',this)">Interactive</button>
+    <button class="tab" onclick="showTab('exercises',this)">Exercises</button>
+    <button class="tab" onclick="showTab('quiz',this)">Quiz</button>
+  </div>
+
+<div class="content">
+
+<section id="sec-lecture" class="section active">
+  <div class="lesson-eyebrow">Module 4 · Lesson 4.4</div>
+  <h1>z-tests, t-tests and tests for proportions</h1>
+  <div class="lesson-meta">Mr. R · Prof Stat · ~55 min · After hypothesis testing framework</div>
+
+  <div class="scene-label">📍 Scene — inference classroom, choosing the right test</div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>We know the general hypothesis testing framework now. But in examples I see z-tests, one-sample t-tests, paired t-tests, two-sample t-tests and proportion tests. How do I know which one to use?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Start with the outcome and the study design. Is the outcome quantitative or binary? Is there one group, two independent groups, or paired measurements? The test follows from the estimand and the sampling distribution.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>So tests are not just names to memorise. They are attached to designs?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. A test is a mathematical expression of a research question plus assumptions.</p></div></div>
+  </div>
+
+  <h2>One-sample z-test for a mean</h2>
+  <p>A one-sample z-test for a mean is used when we compare a sample mean with a hypothesised population mean and the population standard deviation \(\sigma\) is known.</p>
+
+  <div class="math-block">
+    \[
+    H_0:\mu=\mu_0
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    z=\frac{\bar{x}-\mu_0}{\sigma/\sqrt{n}}
+    \]
+  </div>
+
+  <p>In practice, true \(\sigma\) is rarely known, so this test is more common as a theoretical foundation than as a real-data default.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>If we do not know \(\sigma\), we use \(s\), right?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes, and once we replace \(\sigma\) with \(s\), the uncertainty increases. That leads us to the t-test.</p></div></div>
+  </div>
+
+  <h2>One-sample t-test</h2>
+  <p>A one-sample t-test compares a sample mean with a hypothesised mean when the population standard deviation is unknown and estimated from the sample.</p>
+
+  <div class="math-block">
+    \[
+    t=\frac{\bar{x}-\mu_0}{s/\sqrt{n}}
+    \]
+  </div>
+
+  <p>The test statistic is compared with a \(t\)-distribution with \(n-1\) degrees of freedom.</p>
+
+  <div class="math-block">
+    \[
+    \nu=n-1
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>Why does the t-distribution have degrees of freedom?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Because the sample standard deviation is estimated from the same data. After estimating the sample mean, only \(n-1\) independent pieces of information remain for estimating variability.</p></div></div>
+  </div>
+
+  <h2>Paired t-test</h2>
+  <p>A paired t-test is used when observations come in natural pairs: before and after treatment, left and right eye, matched participants, or the same person measured twice. The key is that we analyse the within-pair differences.</p>
+
+  <div class="math-block">
+    \[
+    D_i=X_{i,\text{after}}-X_{i,\text{before}}
+    \]
+  </div>
+
+  <p>Then the paired t-test is just a one-sample t-test on the differences:</p>
+
+  <div class="math-block">
+    \[
+    t=\frac{\bar{d}-0}{s_d/\sqrt{n}}
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>So paired does not mean two independent groups?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Correct. Paired means the two measurements are linked. Ignoring the pairing throws away useful information and can give the wrong standard error.</p></div></div>
+  </div>
+
+  <h2>Two-sample t-test</h2>
+  <p>A two-sample t-test compares the means of two independent groups. For example, mean blood pressure in treatment and control groups.</p>
+
+  <div class="math-block">
+    \[
+    H_0:\mu_1-\mu_2=0
+    \]
+  </div>
+
+  <p>A common version is Welch's t-test, which does not assume equal population variances:</p>
+
+  <div class="math-block">
+    \[
+    t=\frac{\bar{x}_1-\bar{x}_2}{\sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}}}
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>Why use Welch's version?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Because equal variances are often not guaranteed. Welch's test is usually safer as a default for independent groups.</p></div></div>
+  </div>
+
+  <h2>One-sample test for a proportion</h2>
+  <p>When the outcome is binary, the parameter is often a population proportion \(p\). To test whether \(p=p_0\), we use the null standard error based on \(p_0\):</p>
+
+  <div class="math-block">
+    \[
+    z=\frac{\hat{p}-p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}}
+    \]
+  </div>
+
+  <p>This is a large-sample normal approximation. It works better when the expected numbers of successes and failures under the null are not too small.</p>
+
+  <h2>Two-sample test for proportions</h2>
+  <p>To compare two independent proportions, we test:</p>
+
+  <div class="math-block">
+    \[
+    H_0:p_1-p_2=0
+    \]
+  </div>
+
+  <p>Under the null, the two proportions are assumed equal, so we use a pooled estimate:</p>
+
+  <div class="math-block">
+    \[
+    \hat{p}_{\text{pool}}=\frac{x_1+x_2}{n_1+n_2}
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    z=\frac{\hat{p}_1-\hat{p}_2}
+    {\sqrt{\hat{p}_{\text{pool}}(1-\hat{p}_{\text{pool}})
+    \left(\frac{1}{n_1}+\frac{1}{n_2}\right)}}
+    \]
+  </div>
+
+  <h2>Choosing the test</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Research question</th><th>Outcome</th><th>Design</th><th>Common test</th></tr></thead>
+      <tbody>
+        <tr><td>Mean equals a benchmark?</td><td>Quantitative</td><td>One sample</td><td>One-sample t-test, or z-test if \(\sigma\) known</td></tr>
+        <tr><td>Mean before vs after?</td><td>Quantitative</td><td>Paired</td><td>Paired t-test</td></tr>
+        <tr><td>Mean differs between two groups?</td><td>Quantitative</td><td>Independent groups</td><td>Two-sample t-test, often Welch</td></tr>
+        <tr><td>Proportion equals a benchmark?</td><td>Binary</td><td>One sample</td><td>One-sample proportion z-test</td></tr>
+        <tr><td>Proportions differ between groups?</td><td>Binary</td><td>Independent groups</td><td>Two-sample proportion z-test</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Assumptions matter</h2>
+  <p>All tests rely on assumptions. These include independence, appropriate measurement scale, correct pairing or grouping, approximate normality of the relevant sampling distribution, and absence of major design bias.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>If the sample is huge, can we ignore all assumptions?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>No. Large samples help with sampling distribution approximations, but they do not fix dependence, confounding, selection bias, measurement error, or the wrong study design.</p></div></div>
+  </div>
+
+  <div class="takeaway">
+    <div class="tk-label">Key takeaways from this lecture</div>
+    <ul>
+      <li>A z-test for a mean uses known \(\sigma\); a t-test uses estimated \(s\).</li>
+      <li>A one-sample t-test compares one mean with a benchmark.</li>
+      <li>A paired t-test analyses within-pair differences.</li>
+      <li>A two-sample t-test compares independent group means.</li>
+      <li>Welch's t-test is often safer when variances may differ.</li>
+      <li>Proportion tests use normal approximations for binary outcomes.</li>
+      <li>The correct test depends on outcome type, design, estimand and assumptions.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-notes" class="section">
+  <div class="lesson-eyebrow">Detailed theoretical notes</div>
+  <h1>z-tests, t-tests and tests for proportions</h1>
+
+  <h2>1. The common structure of tests</h2>
+  <p>Many tests in this lesson have the same underlying structure:</p>
+
+  <div class="math-block">
+    \[
+    \text{test statistic}
+    =
+    \frac{\text{estimate}-\text{null value}}{\text{standard error under the null}}
+    \]
+  </div>
+
+  <p>The difference between tests lies in the estimate, the standard error, the reference distribution and the study design.</p>
+
+  <h2>2. One-sample z-test for a mean</h2>
+  <p>Suppose \(X_1,\ldots,X_n\) are independent observations from a population with mean \(\mu\) and known standard deviation \(\sigma\). To test:</p>
+
+  <div class="math-block">
+    \[
+    H_0:\mu=\mu_0
+    \]
+  </div>
+
+  <p>use:</p>
+
+  <div class="math-block">
+    \[
+    z=\frac{\bar{x}-\mu_0}{\sigma/\sqrt{n}}
+    \]
+  </div>
+
+  <p>Under \(H_0\), if assumptions are satisfied:</p>
+
+  <div class="math-block">
+    \[
+    Z\sim N(0,1)
+    \]
+  </div>
+
+  <h2>3. One-sample t-test</h2>
+  <p>When \(\sigma\) is unknown, we estimate it using the sample standard deviation \(s\). The test statistic becomes:</p>
+
+  <div class="math-block">
+    \[
+    t=\frac{\bar{x}-\mu_0}{s/\sqrt{n}}
+    \]
+  </div>
+
+  <p>Under \(H_0\), and assuming the data are normal or the sample size is sufficiently large, this statistic follows approximately a t-distribution with:</p>
+
+  <div class="math-block">
+    \[
+    \nu=n-1
+    \]
+  </div>
+
+  <h3>Why \(t\), not \(z\)?</h3>
+  <p>The \(t\)-distribution has heavier tails than the normal distribution because \(s\) is estimated from the data. The extra uncertainty is larger when \(n\) is small. As \(n\) grows, the \(t\)-distribution approaches the standard normal distribution.</p>
+
+  <h2>4. Paired t-test</h2>
+  <p>A paired test is appropriate when each observation in one condition is naturally linked to an observation in another condition. Define the differences:</p>
+
+  <div class="math-block">
+    \[
+    D_i=X_{i,2}-X_{i,1},\qquad i=1,\ldots,n
+    \]
+  </div>
+
+  <p>The null hypothesis is usually:</p>
+
+  <div class="math-block">
+    \[
+    H_0:\mu_D=0
+    \]
+  </div>
+
+  <p>The test statistic is:</p>
+
+  <div class="math-block">
+    \[
+    t=\frac{\bar{d}}{s_D/\sqrt{n}}
+    \]
+  </div>
+
+  <p>with \(n-1\) degrees of freedom. The paired test is a one-sample t-test applied to the differences.</p>
+
+  <h2>5. Independent two-sample t-test</h2>
+  <p>For two independent groups, the parameter of interest is often the difference in population means:</p>
+
+  <div class="math-block">
+    \[
+    \Delta=\mu_1-\mu_2
+    \]
+  </div>
+
+  <p>The null hypothesis is often:</p>
+
+  <div class="math-block">
+    \[
+    H_0:\mu_1-\mu_2=0
+    \]
+  </div>
+
+  <h3>Welch's t-test</h3>
+  <p>Welch's t-test uses the standard error:</p>
+
+  <div class="math-block">
+    \[
+    \operatorname{SE}(\bar{x}_1-\bar{x}_2)
+    =
+    \sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}}
+    \]
+  </div>
+
+  <p>The test statistic is:</p>
+
+  <div class="math-block">
+    \[
+    t=\frac{(\bar{x}_1-\bar{x}_2)-0}
+    {\sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}}}
+    \]
+  </div>
+
+  <p>Welch's test uses an approximate degrees-of-freedom formula and does not require equal variances.</p>
+
+  <h3>Pooled two-sample t-test</h3>
+  <p>If equal variances are assumed, a pooled variance may be used:</p>
+
+  <div class="math-block">
+    \[
+    s_p^2=
+    \frac{(n_1-1)s_1^2+(n_2-1)s_2^2}{n_1+n_2-2}
+    \]
+  </div>
+
+  <p>The pooled test statistic is:</p>
+
+  <div class="math-block">
+    \[
+    t=
+    \frac{\bar{x}_1-\bar{x}_2}
+    {s_p\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}}
+    \]
+  </div>
+
+  <p>Because equal variances are not always plausible, Welch's test is often preferred.</p>
+
+  <h2>6. One-sample proportion z-test</h2>
+  <p>For binary data, let \(X\) be the number of successes in \(n\) trials:</p>
+
+  <div class="math-block">
+    \[
+    X\sim \operatorname{Binomial}(n,p)
+    \]
+  </div>
+
+  <p>The sample proportion is:</p>
+
+  <div class="math-block">
+    \[
+    \hat{p}=\frac{X}{n}
+    \]
+  </div>
+
+  <p>To test \(H_0:p=p_0\), use:</p>
+
+  <div class="math-block">
+    \[
+    z=
+    \frac{\hat{p}-p_0}
+    {\sqrt{\frac{p_0(1-p_0)}{n}}}
+    \]
+  </div>
+
+  <p>The standard error uses \(p_0\) because the test is performed under the null hypothesis.</p>
+
+  <h2>7. Two-sample proportion z-test</h2>
+  <p>For two independent groups, let:</p>
+
+  <div class="math-block">
+    \[
+    \hat{p}_1=\frac{x_1}{n_1},\qquad
+    \hat{p}_2=\frac{x_2}{n_2}
+    \]
+  </div>
+
+  <p>To test:</p>
+
+  <div class="math-block">
+    \[
+    H_0:p_1-p_2=0
+    \]
+  </div>
+
+  <p>we pool the successes under the null:</p>
+
+  <div class="math-block">
+    \[
+    \hat{p}_{\text{pool}}=\frac{x_1+x_2}{n_1+n_2}
+    \]
+  </div>
+
+  <p>The test statistic is:</p>
+
+  <div class="math-block">
+    \[
+    z=
+    \frac{\hat{p}_1-\hat{p}_2}
+    {\sqrt{\hat{p}_{\text{pool}}(1-\hat{p}_{\text{pool}})
+    \left(\frac{1}{n_1}+\frac{1}{n_2}\right)}}
+    \]
+  </div>
+
+  <h2>8. Test choice guide</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Situation</th><th>Estimate</th><th>Standard error</th><th>Reference distribution</th></tr></thead>
+      <tbody>
+        <tr><td>One mean, \(\sigma\) known</td><td>\(\bar{x}\)</td><td>\(\sigma/\sqrt{n}\)</td><td>Standard normal</td></tr>
+        <tr><td>One mean, \(\sigma\) unknown</td><td>\(\bar{x}\)</td><td>\(s/\sqrt{n}\)</td><td>t with \(n-1\) df</td></tr>
+        <tr><td>Paired means</td><td>\(\bar{d}\)</td><td>\(s_D/\sqrt{n}\)</td><td>t with \(n-1\) df</td></tr>
+        <tr><td>Two independent means</td><td>\(\bar{x}_1-\bar{x}_2\)</td><td>\(\sqrt{s_1^2/n_1+s_2^2/n_2}\)</td><td>Welch t</td></tr>
+        <tr><td>One proportion</td><td>\(\hat{p}\)</td><td>\(\sqrt{p_0(1-p_0)/n}\)</td><td>Standard normal approx.</td></tr>
+        <tr><td>Two proportions</td><td>\(\hat{p}_1-\hat{p}_2\)</td><td>Pooled SE under \(H_0\)</td><td>Standard normal approx.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>9. Conditions and assumptions</h2>
+  <ul>
+    <li><strong>Independence:</strong> observations should be independent unless using a paired design.</li>
+    <li><strong>Correct pairing:</strong> paired tests require meaningful one-to-one pairs.</li>
+    <li><strong>Quantitative outcome:</strong> t-tests are for numeric outcomes.</li>
+    <li><strong>Binary outcome:</strong> proportion tests are for success/failure outcomes.</li>
+    <li><strong>Approximate normality:</strong> t-tests rely on normality of the mean or differences, especially in small samples.</li>
+    <li><strong>Large-sample proportion approximation:</strong> expected success and failure counts should not be too small.</li>
+    <li><strong>Study design validity:</strong> tests cannot fix bias, confounding or poor measurement.</li>
+  </ul>
+
+  <h2>10. Common mistakes</h2>
+  <ul>
+    <li><strong>Using a paired test for independent groups:</strong> pairing must reflect linked observations.</li>
+    <li><strong>Using an independent t-test for before-after data:</strong> this ignores within-person pairing.</li>
+    <li><strong>Using a z-test for a mean when \(\sigma\) is unknown:</strong> a t-test is usually more appropriate.</li>
+    <li><strong>Using a proportion test for a quantitative outcome:</strong> binary and quantitative outcomes require different tests.</li>
+    <li><strong>Reporting only p-values:</strong> estimates and confidence intervals should also be reported.</li>
+  </ul>
+
+  <div class="takeaway">
+    <div class="tk-label">Notes summary</div>
+    <ul>
+      <li>The test statistic is estimate minus null value divided by standard error.</li>
+      <li>z-tests use a standard normal reference distribution.</li>
+      <li>t-tests account for estimating variability with \(s\).</li>
+      <li>Paired t-tests analyse differences within pairs.</li>
+      <li>Welch's t-test compares independent means without assuming equal variances.</li>
+      <li>Proportion tests use binomial-to-normal approximations.</li>
+      <li>Correct test choice depends on outcome type and study design.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-interactive" class="section">
+  <div class="lesson-eyebrow">Interactive inference lab</div>
+  <h1>z-tests, t-tests and tests for proportions</h1>
+
+  <div class="plot-grid">
+    <div class="plot-box">
+      <div class="plot-title">1. z-test versus t-test for one mean</div>
+      <div class="plot-sub">Compare the statistic when standard deviation is known or estimated.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(\bar{x}\)</label><input id="xbar" type="range" min="80" max="120" value="106" oninput="updateOneMean()"><span id="xbarVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(\mu_0\)</label><input id="mu0" type="range" min="80" max="120" value="100" oninput="updateOneMean()"><span id="mu0Val" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>SD</label><input id="sd" type="range" min="5" max="30" value="15" oninput="updateOneMean()"><span id="sdVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(n\)</label><input id="n1" type="range" min="5" max="200" value="30" oninput="updateOneMean()"><span id="n1Val" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Statistic</div><div id="oneStat" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">SE</div><div id="oneSE" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="oneMeanChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">2. Paired t-test idea</div>
+      <div class="plot-sub">The test is performed on differences, not separate before and after means.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Mean difference</label><input id="dbar" type="range" min="-20" max="20" value="5" oninput="updatePaired()"><span id="dbarVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>SD of differences</label><input id="sdD" type="range" min="2" max="30" value="10" oninput="updatePaired()"><span id="sdDVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Pairs</label><input id="pairs" type="range" min="5" max="100" value="25" oninput="updatePaired()"><span id="pairsVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Paired t statistic</div><div id="pairedT" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">df</div><div id="pairedDf" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="pairedChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">3. Welch two-sample t-test</div>
+      <div class="plot-sub">Compare independent group means using unequal variances.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(\bar{x}_1-\bar{x}_2\)</label><input id="diff" type="range" min="-30" max="30" value="8" oninput="updateWelch()"><span id="diffVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(s_1\)</label><input id="s1" type="range" min="5" max="40" value="18" oninput="updateWelch()"><span id="s1Val" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(s_2\)</label><input id="s2" type="range" min="5" max="40" value="22" oninput="updateWelch()"><span id="s2Val" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Welch SE</div><div id="welchSE" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">t statistic</div><div id="welchT" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="welchChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">4. One-sample proportion test</div>
+      <div class="plot-sub">The null standard error uses \(p_0\), not \(\hat{p}\).</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(\hat{p}\)</label><input id="phat" type="range" min="1" max="99" value="58" oninput="updatePropOne()"><span id="phatVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(p_0\)</label><input id="p0" type="range" min="1" max="99" value="50" oninput="updatePropOne()"><span id="p0Val" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(n\)</label><input id="propN" type="range" min="30" max="1000" value="200" oninput="updatePropOne()"><span id="propNVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">z statistic</div><div id="propZ" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Two-sided p</div><div id="propP" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="propOneChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">5. Test choice helper</div>
+      <div class="plot-sub">Choose a scenario and see the appropriate test.</div>
+      <div id="activity-area"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-exercises" class="section">
+  <div class="lesson-eyebrow">Practice exercises</div>
+  <h1>z-tests, t-tests and tests for proportions</h1>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 1</div><div class="ex-qtitle">One-sample z-test</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A sample has \(\bar{x}=52\), \(n=64\), known \(\sigma=16\). Test against \(\mu_0=50\). Calculate the z statistic.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\operatorname{SE}=16/\sqrt{64}=2\). Therefore \(z=(52-50)/2=1\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 2</div><div class="ex-qtitle">One-sample t-test</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A sample has \(\bar{x}=105\), \(s=12\), \(n=36\). Test against \(\mu_0=100\). Calculate the t statistic.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\operatorname{SE}=12/\sqrt{36}=2\). Therefore \(t=(105-100)/2=2.5\). The degrees of freedom are \(35\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 3</div><div class="ex-qtitle">Paired t-test</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">In a before-after study with \(n=25\), the mean difference is \(\bar{d}=4\) and \(s_D=10\). Calculate the paired t statistic.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\operatorname{SE}=10/\sqrt{25}=2\). Therefore \(t=4/2=2\), with \(24\) degrees of freedom.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 4</div><div class="ex-qtitle">Welch two-sample statistic</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Two independent groups have \(\bar{x}_1=70\), \(\bar{x}_2=64\), \(s_1=12\), \(s_2=16\), \(n_1=36\), \(n_2=64\). Calculate the Welch t statistic.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The difference is \(6\). The SE is \(\sqrt{12^2/36+16^2/64}=\sqrt{4+4}=\sqrt{8}\approx2.828\). Thus \(t=6/2.828\approx2.12\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 5</div><div class="ex-qtitle">One-sample proportion test</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">In a sample of \(n=200\), \(\hat{p}=0.58\). Test \(H_0:p=0.50\). Calculate the z statistic.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The null SE is \(\sqrt{0.5(0.5)/200}=\sqrt{0.00125}\approx0.0354\). Thus \(z=(0.58-0.50)/0.0354\approx2.26\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 6</div><div class="ex-qtitle">Two-sample proportion test</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Group 1 has \(x_1=40\) successes out of \(n_1=100\). Group 2 has \(x_2=60\) successes out of \(n_2=120\). Calculate \(\hat{p}_{\text{pool}}\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\hat{p}_{\text{pool}}=(40+60)/(100+120)=100/220\approx0.455\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 7</div><div class="ex-qtitle">Choose the correct test</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A study measures anxiety score before and after an intervention in the same 30 participants. Which test is appropriate and why?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>A paired t-test is appropriate because the before and after scores are linked within the same participants. The analysis should be based on within-person differences.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 8</div><div class="ex-qtitle">Common design mistake</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Why is it wrong to use an independent two-sample t-test for paired before-after data?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The observations are not independent across conditions because each before score is linked to an after score from the same participant. Ignoring pairing loses information and uses the wrong standard error.</p></div></div></div>
+
+</section>
+
+<section id="sec-quiz" class="section">
+  <div class="lesson-eyebrow">Topic quiz</div>
+  <h1>z-tests, t-tests and tests for proportions</h1>
+  <div id="quiz-container"></div>
+</section>
+
+</div>
+</div>
+
+<script>
+let charts = {};
+let quizIndex = 0;
+let selectedOption = null;
+let answered = false;
+let score = 0;
+
+const activities = [
+  {text:"One quantitative sample, unknown population SD, compare mean with benchmark.",answer:"One-sample t-test",explanation:"Correct. Use a one-sample t-test when sigma is unknown."},
+  {text:"Same participants measured before and after treatment.",answer:"Paired t-test",explanation:"Correct. Analyse within-person differences."},
+  {text:"Two independent groups with quantitative outcomes.",answer:"Welch two-sample t-test",explanation:"Correct. Welch is often a safe default for independent means."},
+  {text:"One binary outcome, compare sample proportion with benchmark.",answer:"One-sample proportion z-test",explanation:"Correct. This uses a binomial normal approximation."}
+];
+
+const quiz = [
+  {q:"A one-sample z-test for a mean requires:",opts:["Known population standard deviation","Paired data only","Binary outcome only","Two independent groups"],correct:0},
+  {q:"A one-sample t-test uses:",opts:["s/sqrt(n)","sigma only","pooled proportion","chi-square statistic"],correct:0},
+  {q:"A paired t-test is applied to:",opts:["Within-pair differences","Two unrelated groups","Only binary data","Raw frequencies only"],correct:0},
+  {q:"Welch's t-test compares:",opts:["Two independent means","One proportion only","Paired ranks","Three or more groups only"],correct:0},
+  {q:"For a one-sample proportion test, the null SE uses:",opts:["p0","xbar","s only","sd of differences"],correct:0},
+  {q:"A two-sample proportion test under H0 uses:",opts:["Pooled proportion","Pooled mean only","Median difference","Range"],correct:0},
+  {q:"Before-after scores from the same people require:",opts:["Paired analysis","Independent two-sample analysis","Poisson test","No standard error"],correct:0},
+  {q:"The best test choice depends mainly on:",opts:["Outcome type and study design","Which p-value is smallest","Alphabetical order","Only sample size"],correct:0}
+];
+
+function showTab(name, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='interactive') initInteractive();
+  if(name==='quiz') initQuiz();
+  if(window.MathJax) MathJax.typesetPromise();
+}
+
+function makeChart(id,type,data,options={}){
+  if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(document.getElementById(id),{type,data,options:Object.assign({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}},options)});
+}
+
+function erf(x){const sign=x>=0?1:-1;x=Math.abs(x);const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;const t=1/(1+p*x);const y=1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);return sign*y;}
+function phi(x){return 0.5*(1+erf(x/Math.sqrt(2)));}
+function normalPdf(x){return Math.exp(-0.5*x*x)/Math.sqrt(2*Math.PI);}
+
+function updateOneMean(){
+  const xbar=Number(document.getElementById('xbar').value);
+  const mu0=Number(document.getElementById('mu0').value);
+  const sd=Number(document.getElementById('sd').value);
+  const n=Number(document.getElementById('n1').value);
+  const se=sd/Math.sqrt(n);
+  const stat=(xbar-mu0)/se;
+  document.getElementById('xbarVal').textContent=xbar;
+  document.getElementById('mu0Val').textContent=mu0;
+  document.getElementById('sdVal').textContent=sd;
+  document.getElementById('n1Val').textContent=n;
+  document.getElementById('oneSE').textContent=se.toFixed(2);
+  document.getElementById('oneStat').textContent=stat.toFixed(2);
+  const xs=[], ys=[];
+  for(let x=-4;x<=4;x+=0.1){xs.push(x.toFixed(1));ys.push(normalPdf(x));}
+  makeChart('oneMeanChart','line',{labels:xs,datasets:[{data:ys,borderColor:'#378ADD',backgroundColor:'transparent',pointRadius:0,borderWidth:2,tension:.25}]},{scales:{y:{beginAtZero:true}}});
+}
+
+function updatePaired(){
+  const dbar=Number(document.getElementById('dbar').value);
+  const sdD=Number(document.getElementById('sdD').value);
+  const n=Number(document.getElementById('pairs').value);
+  const se=sdD/Math.sqrt(n);
+  const t=dbar/se;
+  document.getElementById('dbarVal').textContent=dbar;
+  document.getElementById('sdDVal').textContent=sdD;
+  document.getElementById('pairsVal').textContent=n;
+  document.getElementById('pairedT').textContent=t.toFixed(2);
+  document.getElementById('pairedDf').textContent=n-1;
+  makeChart('pairedChart','bar',{labels:['mean difference','SE','t statistic'],datasets:[{data:[dbar,se,t],backgroundColor:['rgba(59,109,17,0.35)','rgba(55,138,221,0.35)','rgba(186,117,23,0.35)'],borderColor:['#3B6D11','#378ADD','#BA7517'],borderWidth:1}]});
+}
+
+function updateWelch(){
+  const diff=Number(document.getElementById('diff').value);
+  const s1=Number(document.getElementById('s1').value);
+  const s2=Number(document.getElementById('s2').value);
+  const n1=40,n2=40;
+  const se=Math.sqrt(s1*s1/n1+s2*s2/n2);
+  const t=diff/se;
+  document.getElementById('diffVal').textContent=diff;
+  document.getElementById('s1Val').textContent=s1;
+  document.getElementById('s2Val').textContent=s2;
+  document.getElementById('welchSE').textContent=se.toFixed(2);
+  document.getElementById('welchT').textContent=t.toFixed(2);
+  makeChart('welchChart','bar',{labels:['difference','standard error','t statistic'],datasets:[{data:[diff,se,t],backgroundColor:['rgba(59,109,17,0.35)','rgba(55,138,221,0.35)','rgba(186,117,23,0.35)'],borderColor:['#3B6D11','#378ADD','#BA7517'],borderWidth:1}]});
+}
+
+function updatePropOne(){
+  const phat=Number(document.getElementById('phat').value)/100;
+  const p0=Number(document.getElementById('p0').value)/100;
+  const n=Number(document.getElementById('propN').value);
+  const se=Math.sqrt(p0*(1-p0)/n);
+  const z=(phat-p0)/se;
+  const p=2*(1-phi(Math.abs(z)));
+  document.getElementById('phatVal').textContent=phat.toFixed(2);
+  document.getElementById('p0Val').textContent=p0.toFixed(2);
+  document.getElementById('propNVal').textContent=n;
+  document.getElementById('propZ').textContent=z.toFixed(2);
+  document.getElementById('propP').textContent=p.toFixed(3);
+  const xs=[], ys=[], colors=[];
+  for(let x=-4;x<=4;x+=0.1){xs.push(x.toFixed(1));ys.push(normalPdf(x));colors.push(Math.abs(x)>=Math.abs(z)?'rgba(163,45,45,0.45)':'rgba(55,138,221,0.20)');}
+  makeChart('propOneChart','bar',{labels:xs,datasets:[{data:ys,backgroundColor:colors,borderColor:colors,borderWidth:1}]},{scales:{y:{beginAtZero:true}}});
+}
+
+function initInteractive(){updateOneMean();updatePaired();updateWelch();updatePropOne();renderActivities();}
+
+function renderActivities(){
+  const area=document.getElementById('activity-area');
+  if(area.children.length) return;
+  const options=["One-sample t-test","Paired t-test","Welch two-sample t-test","One-sample proportion z-test"];
+  activities.forEach((a,i)=>{
+    const div=document.createElement('div');
+    div.className='activity-card';
+    div.innerHTML=`<div class="activity-inner"><div style="font-size:13.5px;color:var(--text);line-height:1.6;margin-bottom:8px;">${a.text}</div>${options.map(o=>`<button class="choice-btn" onclick="checkActivity(${i}, '${o}', this)">${o}</button>`).join('')}<div id="activity-${i}" class="feedback-mini"></div></div>`;
+    area.appendChild(div);
+  });
+}
+
+function checkActivity(i,choice,btn){
+  const item=activities[i], fb=document.getElementById('activity-'+i), correct=choice===item.answer;
+  fb.style.display='block';fb.style.background=correct?'var(--green-bg)':'var(--red-bg)';fb.style.color=correct?'var(--green)':'var(--red)';fb.style.border=correct?'.5px solid var(--green)':'.5px solid var(--red)';
+  fb.innerHTML=`<strong>${correct?'✓ Correct.':'✗ Not quite.'}</strong> ${item.explanation}`;
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.disabled=true);
+}
+
+function toggleEx(header){const body=header.nextElementSibling,toggle=header.querySelector('.ex-toggle'),open=body.classList.toggle('open');toggle.textContent=open?'−':'+';if(window.MathJax)MathJax.typesetPromise();}
+function toggleAns(btn){const box=btn.nextElementSibling,open=box.classList.toggle('open');btn.textContent=open?'Hide answer':'Show answer';if(window.MathJax)MathJax.typesetPromise();}
+
+function initQuiz(){quizIndex=0;selectedOption=null;answered=false;score=0;renderQuiz();}
+function renderQuiz(){
+  const container=document.getElementById('quiz-container');
+  if(quizIndex>=quiz.length){
+    container.innerHTML=`<div class="quiz-complete"><div class="score-big">${score}/${quiz.length}</div><p>${score>=7?'Excellent — strong understanding of z-tests, t-tests and proportion tests.':score>=5?'Good work. Review the missed ideas.':'Review the notes and try the quiz again.'}</p><button class="btn-check" onclick="initQuiz()">Retry quiz</button></div>`;
+    return;
+  }
+  const q=quiz[quizIndex];
+  container.innerHTML=`<div class="quiz-progress">Question ${quizIndex+1} of ${quiz.length}</div><div class="quiz-q">${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<div class="quiz-opt" id="qo${i}" onclick="selectOption(${i})"><div class="opt-key">${['A','B','C','D'][i]}</div>${o}</div>`).join('')}</div><div id="quizFeedback" class="feedback"></div><div class="quiz-actions"><button id="checkBtn" class="btn-check" onclick="checkQuiz()" disabled>Check answer</button><button id="nextBtn" class="btn-next" onclick="nextQuiz()">${quizIndex<quiz.length-1?'Next question →':'See result'}</button></div>`;
+  selectedOption=null;answered=false;
+}
+function selectOption(i){if(answered)return;document.querySelectorAll('.quiz-opt').forEach(o=>o.classList.remove('selected'));document.getElementById('qo'+i).classList.add('selected');selectedOption=i;document.getElementById('checkBtn').disabled=false;}
+function checkQuiz(){
+  if(selectedOption===null||answered)return;answered=true;
+  const q=quiz[quizIndex],correct=selectedOption===q.correct;if(correct)score++;
+  document.querySelectorAll('.quiz-opt').forEach((el,i)=>{el.classList.add('locked');if(i===q.correct)el.classList.add('correct');if(i===selectedOption&&i!==q.correct)el.classList.add('wrong');});
+  const fb=document.getElementById('quizFeedback');fb.className='feedback show '+(correct?'ok':'no');fb.textContent=correct?'Correct.':'Not quite. Review the test-choice and formula notes.';
+  document.getElementById('checkBtn').disabled=true;document.getElementById('nextBtn').classList.add('show');
+}
+function nextQuiz(){quizIndex++;renderQuiz();}
+</script>
+<!-- My Academic Tutor platform footer with logo -->
+<footer class="mat-platform-footer">
+  <div class="mat-footer-brand">
+    <img class="mat-footer-logo" src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <p><strong>Statistics Foundation for University Students</strong></p>
+  </div>
+  <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+  <p>© 2026 My Academic Tutor. All rights reserved.</p>
+</footer>
+<style>
+.mat-platform-footer{
+  max-width:960px;
+  margin:34px auto 0;
+  padding:22px 34px;
+  border-top:1px solid var(--border, #ded9cf);
+  color:var(--text2, #5f5f5a);
+  font-size:13px;
+  line-height:1.65;
+}
+.mat-platform-footer strong{color:var(--text, #171717);}
+.mat-footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.mat-footer-logo{width:36px;height:36px;object-fit:contain;border-radius:9px;background:#fff;border:1px solid var(--border, #ded9cf);padding:4px;}
+@media(max-width:850px){.mat-platform-footer{padding:20px 18px;}}
+</style>
+
+</body>
+</html>

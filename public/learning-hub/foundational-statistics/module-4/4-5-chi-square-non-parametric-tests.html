@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4.5 Chi-square and Non-parametric Tests — Foundational Statistics</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--bg2:#f6f5f0;--bg3:#f0ede6;--border:#e0ddd6;--text:#1a1a18;--text2:#5a5a56;--text3:#8a8a84;--blue:#378ADD;--blue-bg:#E6F1FB;--blue-txt:#0C447C;--green:#3B6D11;--green-bg:#EAF3DE;--amber:#BA7517;--amber-bg:#FAEEDA;--amber-txt:#633806;--red:#A32D2D;--red-bg:#FCEBEB;--purple:#534AB7;--purple-bg:#EEEDFE;--purple-txt:#3C3489;--radius:8px;--radius-lg:12px;--sans:system-ui,-apple-system,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--border:#3a3a36;--text:#e8e6df;--text2:#a8a69f;--text3:#6a6a64;--blue-bg:#0c1f35;--blue-txt:#85B7EB;--green-bg:#0f2005;--amber-bg:#2a1800;--amber-txt:#FAC775;--red-bg:#2a0a0a;--purple-bg:#1a1740;--purple-txt:#AFA9EC}}
+html{font-family:var(--sans);font-size:16px;color:var(--text);background:var(--bg3);scroll-behavior:smooth}
+body{display:flex;min-height:100vh}.sidebar{width:278px;min-width:278px;background:var(--bg);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-brand{padding:16px;border-bottom:.5px solid var(--border)}.brand-course{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}.brand-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}.progress-wrap{height:3px;background:var(--border)}.progress-bar{height:3px;background:var(--blue);width:80%}
+.nav-section{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:12px 16px 4px}.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12.5px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;text-decoration:none;transition:background .12s}.nav-item:hover{background:var(--bg2);color:var(--text)}.nav-item.active{color:var(--text);border-left-color:var(--blue);background:var(--bg2);font-weight:500}.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0}.nav-item.active .nav-dot{background:var(--blue)}
+.main{flex:1;min-width:0}.tab-bar{background:var(--bg);border-bottom:.5px solid var(--border);display:flex;padding:0 32px;position:sticky;top:0;z-index:10;overflow-x:auto}.tab{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-.5px;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);white-space:nowrap}.tab:hover{color:var(--text)}.tab.active{color:var(--text);border-bottom-color:var(--blue);font-weight:500}
+.content{max-width:960px;margin:0 auto;padding:34px}.section{display:none}.section.active{display:block}.lesson-eyebrow{font-size:11px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}h1{font-size:29px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.25}.lesson-meta{font-size:12px;color:var(--text3);margin-bottom:28px}
+h2{font-size:19px;font-weight:500;color:var(--text);margin:32px 0 11px}h3{font-size:15.5px;font-weight:500;color:var(--text);margin:22px 0 8px}p{font-size:14.7px;color:var(--text2);line-height:1.78;margin-bottom:14px}strong{color:var(--text);font-weight:500}ul,ol{padding-left:21px;margin-bottom:14px}li{font-size:14.5px;color:var(--text2);line-height:1.76;margin-bottom:4px}
+.scene-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:24px 0 12px;padding:6px 10px;background:var(--bg2);border-radius:var(--radius);display:inline-block}.dialogue{display:flex;flex-direction:column;gap:12px;margin:16px 0}.line{display:flex;gap:12px;align-items:flex-start}.line.right{flex-direction:row-reverse}.speaker-badge{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:2px}.sp-prof{background:var(--blue-bg);color:var(--blue-txt)}.sp-emma{background:var(--green-bg);color:var(--green)}.sp-oliver{background:var(--amber-bg);color:var(--amber-txt)}.sp-james{background:var(--purple-bg);color:var(--purple-txt)}.sp-sophia{background:var(--red-bg);color:var(--red)}.bubble{max-width:78%;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px}.line.right .bubble{background:var(--blue-bg);border-color:transparent}.speaker-name{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:3px}.bubble p{font-size:14px;color:var(--text);margin:0;line-height:1.62}
+.def-box{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin:17px 0}.def-box .def-label{font-size:11px;font-weight:500;color:var(--blue-txt);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}.def-box.green{border-left-color:var(--green);background:var(--green-bg)}.def-box.green .def-label{color:var(--green)}.def-box.amber{border-left-color:var(--amber);background:var(--amber-bg)}.def-box.amber .def-label{color:var(--amber-txt)}.def-box.red{border-left-color:var(--red);background:var(--red-bg)}.def-box.red .def-label{color:var(--red)}.def-box.purple{border-left-color:var(--purple);background:var(--purple-bg)}.def-box.purple .def-label{color:var(--purple-txt)}.def-box p{font-size:13.7px;color:var(--text);margin:0;line-height:1.65}
+.math-block{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius);padding:15px 20px;margin:16px 0;text-align:center;font-size:15px;color:var(--text);overflow-x:auto;line-height:1.7}
+.tbl-wrap{overflow-x:auto;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:13.5px}thead tr{background:var(--bg2)}th{padding:9px 12px;text-align:left;font-weight:500;font-size:12px;color:var(--text);border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.05em}td{padding:9px 12px;color:var(--text2);border-bottom:.5px solid var(--border);line-height:1.55}tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg2)}
+.takeaway{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin:25px 0}.takeaway .tk-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}.takeaway ul{margin:0}.takeaway li{font-size:14px;color:var(--text)}
+.plot-grid{display:grid;grid-template-columns:1fr;gap:18px}.plot-box{border:.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;background:var(--bg)}.plot-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}.plot-sub{font-size:12px;color:var(--text3);margin-bottom:14px}.chart-wrap{position:relative;width:100%;height:300px}
+.controls-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;align-items:center}.ctrl{display:flex;align-items:center;gap:8px}.ctrl label{font-size:12.5px;color:var(--text2);white-space:nowrap}.ctrl input[type=range]{width:145px;accent-color:var(--blue)}.ctrl select{padding:6px 8px;border:.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text)}.ctrl-val{font-size:12.5px;font-weight:500;color:var(--text);min-width:42px}.stat-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}.stat-card{flex:1;min-width:120px;background:var(--bg2);border-radius:var(--radius);padding:10px 14px;text-align:center}.stat-card .sc-label{font-size:11px;color:var(--text3);margin-bottom:4px}.stat-card .sc-val{font-size:20px;font-weight:500;color:var(--text)}
+.activity-card{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:10px 0}.activity-inner{padding:12px 16px}.choice-btn{padding:6px 12px;border:.5px solid var(--border);border-radius:var(--radius);background:none;font-size:12.5px;cursor:pointer;font-family:var(--sans);color:var(--text2);margin-right:6px;margin-top:6px}.choice-btn:hover{background:var(--bg2);color:var(--text)}.feedback-mini{display:none;margin-top:10px;padding:10px 12px;border-radius:var(--radius);font-size:13px;line-height:1.5}
+.exercise{border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:16px 0}.ex-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer}.ex-header:hover{background:var(--bg2)}.ex-qnum{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}.ex-qtitle{font-size:14px;font-weight:500;color:var(--text);margin-top:2px}.ex-difficulty{font-size:11px;padding:2px 8px;border-radius:10px}.diff-easy{background:var(--green-bg);color:var(--green)}.diff-medium{background:var(--amber-bg);color:var(--amber-txt)}.diff-hard{background:var(--red-bg);color:var(--red)}.ex-toggle{font-size:18px;color:var(--text3)}.ex-body{display:none;padding:0 16px 16px;border-top:.5px solid var(--border)}.ex-body.open{display:block}.ex-question{font-size:14px;color:var(--text2);line-height:1.7;margin:12px 0}.answer-toggle{background:none;border:.5px solid var(--border);border-radius:var(--radius);padding:7px 14px;font-size:12.5px;cursor:pointer;color:var(--text2);font-family:var(--sans);margin-top:10px}.answer-box{display:none;margin-top:12px;background:var(--green-bg);border:.5px solid var(--green);border-radius:var(--radius);padding:12px 16px}.answer-box.open{display:block;animation:fadeIn .2s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}.answer-box .ans-label{font-size:11px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}.answer-box p,.answer-box li{font-size:13.5px;color:var(--text);line-height:1.65}
+.quiz-q{font-size:14.5px;font-weight:500;color:var(--text);margin-bottom:14px;line-height:1.55}.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}.quiz-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:.5px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13.5px;color:var(--text2)}.quiz-opt:hover:not(.locked){border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.selected{border-color:var(--blue);background:var(--blue-bg);color:var(--text)}.quiz-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}.quiz-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}.quiz-opt .opt-key{width:22px;height:22px;border-radius:50%;border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}.feedback{padding:10px 14px;border-radius:var(--radius);font-size:13.5px;line-height:1.6;margin-bottom:14px;display:none}.feedback.show{display:block}.feedback.ok{background:var(--green-bg);color:var(--green);border:.5px solid var(--green)}.feedback.no{background:var(--red-bg);color:var(--red);border:.5px solid var(--red)}.quiz-actions{display:flex;gap:10px}.btn-check{padding:8px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:var(--sans)}.btn-check:disabled{opacity:.4;cursor:default}.btn-next{padding:8px 18px;border:.5px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer;background:none;color:var(--text2);font-family:var(--sans);display:none}.btn-next.show{display:inline-block}.quiz-progress{font-size:11.5px;color:var(--text3);margin-bottom:20px}.quiz-complete{text-align:center;padding:32px 0}.quiz-complete .score-big{font-size:48px;font-weight:500;color:var(--text)}
+@media(max-width:850px){body{display:block}.sidebar{width:100%;height:auto;position:relative;min-width:0}.content{padding:24px 18px}.tab-bar{padding:0 12px}.bubble{max-width:88%}}
+</style>
+
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-course">Foundational Statistics</div>
+    <div class="brand-title">Statistics Foundation for University Students</div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="sidebar-progress" style="width:80%;"></div></div>
+
+  <div class="nav-section">Course modules</div>
+  <a class="nav-item" href="../module-1/index.html"><div class="nav-dot"></div>Module 1 · Introduction</a>
+  <a class="nav-item" href="../module-2/index.html"><div class="nav-dot"></div>Module 2 · Descriptive statistics</a>
+  <a class="nav-item" href="../module-3/index.html"><div class="nav-dot"></div>Module 3 · Probability</a>
+  <a class="nav-item active" href="../module-4/index.html"><div class="nav-dot"></div>Module 4 · Statistical inference</a>
+  <a class="nav-item" href="../module-5/index.html"><div class="nav-dot"></div>Module 5 · Regression</a>
+
+  <div class="nav-section">Module 4 lessons</div>
+  <a class="nav-item done" href="4-1-sampling-distributions-standard-error.html"><div class="nav-dot"></div>4.1 Sampling distributions & SE</a>
+  <a class="nav-item done" href="4-2-confidence-intervals.html"><div class="nav-dot"></div>4.2 Confidence intervals</a>
+  <a class="nav-item done" href="4-3-hypothesis-testing-framework.html"><div class="nav-dot"></div>4.3 Hypothesis testing framework</a>
+  <a class="nav-item done" href="4-4-t-tests-z-tests-proportions.html"><div class="nav-dot"></div>4.4 t-tests, z-tests & proportions</a>
+  <a class="nav-item active" href="4-5-chi-square-non-parametric-tests.html"><div class="nav-dot"></div>4.5 Chi-square & non-parametric tests</a>
+</nav>
+
+<div class="main">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('lecture',this)">Lecture</button>
+    <button class="tab" onclick="showTab('notes',this)">Notes</button>
+    <button class="tab" onclick="showTab('interactive',this)">Interactive</button>
+    <button class="tab" onclick="showTab('exercises',this)">Exercises</button>
+    <button class="tab" onclick="showTab('quiz',this)">Quiz</button>
+  </div>
+
+<div class="content">
+
+<section id="sec-lecture" class="section active">
+  <div class="lesson-eyebrow">Module 4 · Lesson 4.5</div>
+  <h1>Chi-square and non-parametric tests</h1>
+  <div class="lesson-meta">Mr. R · Prof Stat · ~55 min · Final inference foundation lesson</div>
+
+  <div class="scene-label">📍 Scene — inference classroom, when usual mean tests are not enough</div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>We have learned t-tests and proportion tests. But I keep seeing chi-square tests and non-parametric tests. Are these for situations where t-tests do not fit?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Often, yes. Chi-square tests are commonly used for categorical count data. Non-parametric tests are useful when we do not want to rely strongly on normality or when the data are ordinal or heavily skewed.</p></div></div>
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>So again, the first question is: what type of outcome and design do we have?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. Test choice always begins with the scientific question, the data type and the sampling design.</p></div></div>
+  </div>
+
+  <h2>Why chi-square tests use counts</h2>
+  <p>Chi-square tests compare observed counts with expected counts. They do not work directly with raw continuous measurements. They are designed for frequency tables.</p>
+
+  <div class="math-block">
+    \[
+    \chi^2=\sum \frac{(O-E)^2}{E}
+    \]
+  </div>
+
+  <p>Here, \(O\) means observed count and \(E\) means expected count under the null hypothesis.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>Why square the difference \(O-E\)?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Squaring makes positive and negative deviations both contribute positively. Dividing by \(E\) scales the difference relative to how large the expected count is.</p></div></div>
+  </div>
+
+  <h2>Chi-square goodness-of-fit test</h2>
+  <p>A chi-square goodness-of-fit test asks whether observed counts across categories are consistent with a specified theoretical distribution.</p>
+
+  <p>For example, suppose a die is rolled 120 times. Under the null hypothesis of fairness, each face should occur about 20 times.</p>
+
+  <div class="math-block">
+    \[
+    H_0:\text{the category probabilities match the specified probabilities}
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-sophia">SO</div><div class="bubble"><div class="speaker-name">Sophia</div><p>So this test compares observed counts with expected counts from a claimed model?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Correct. It asks whether the departures are larger than would be expected from random variation alone.</p></div></div>
+  </div>
+
+  <h2>Chi-square test of independence</h2>
+  <p>A chi-square test of independence is used for two categorical variables arranged in a contingency table. It asks whether the variables are associated.</p>
+
+  <p>For example, we may record smoking status and disease status. The question is whether disease status is independent of smoking status.</p>
+
+  <div class="math-block">
+    \[
+    H_0:\text{the two categorical variables are independent}
+    \]
+  </div>
+
+  <p>The expected count in row \(i\), column \(j\) is:</p>
+
+  <div class="math-block">
+    \[
+    E_{ij}=\frac{(\text{row }i\text{ total})(\text{column }j\text{ total})}{\text{grand total}}
+    \]
+  </div>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-emma">EM</div><div class="bubble"><div class="speaker-name">Emma</div><p>So expected counts are what we would expect if the row and column variables had no association?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Exactly. If observed counts are very different from these expected counts, that suggests evidence against independence.</p></div></div>
+  </div>
+
+  <h2>Degrees of freedom</h2>
+  <p>For a chi-square test of independence in an \(r\times c\) table, the degrees of freedom are:</p>
+
+  <div class="math-block">
+    \[
+    \nu=(r-1)(c-1)
+    \]
+  </div>
+
+  <p>For a goodness-of-fit test with \(k\) categories and no estimated parameters, the degrees of freedom are:</p>
+
+  <div class="math-block">
+    \[
+    \nu=k-1
+    \]
+  </div>
+
+  <h2>When chi-square approximation may be poor</h2>
+  <p>The chi-square approximation needs expected counts to be sufficiently large. If expected counts are very small, the approximation may be inaccurate. In small \(2\times2\) tables, Fisher's exact test is often considered.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-oliver">OL</div><div class="bubble"><div class="speaker-name">Oliver</div><p>So if my table has tiny expected counts, I should be careful with chi-square?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Yes. The test statistic may still be computed, but the reference distribution may not approximate well.</p></div></div>
+  </div>
+
+  <h2>What non-parametric tests mean</h2>
+  <p>Non-parametric tests do not usually mean “no assumptions”. They mean the test does not rely on a fully specified parametric distribution such as a normal distribution for the raw data. Many non-parametric tests work with ranks rather than raw values.</p>
+
+  <div class="def-box amber">
+    <div class="def-label">Important distinction</div>
+    <p>Non-parametric does not mean assumption-free. It often means fewer or different assumptions, especially about distributional shape.</p>
+  </div>
+
+  <h2>Mann–Whitney U test</h2>
+  <p>The Mann–Whitney U test is commonly used to compare two independent groups when the outcome is ordinal or continuous but not well suited to a two-sample t-test.</p>
+
+  <p>It ranks all observations together and compares the rank patterns between groups.</p>
+
+  <div class="dialogue">
+    <div class="line"><div class="speaker-badge sp-james">JA</div><div class="bubble"><div class="speaker-name">James</div><p>Does Mann–Whitney always test whether medians are different?</p></div></div>
+    <div class="line right"><div class="speaker-badge sp-prof">MR</div><div class="bubble"><div class="speaker-name">Mr. R</div><p>Not always. That is a common oversimplification. If the two distributions have the same shape and differ mainly by location, it can be interpreted as a location or median shift. More generally, it tests differences in distributional tendency.</p></div></div>
+  </div>
+
+  <h2>Wilcoxon signed-rank test</h2>
+  <p>The Wilcoxon signed-rank test is a non-parametric alternative for paired data. It analyses the signs and ranks of within-pair differences.</p>
+
+  <p>It is useful when the paired differences are not well modelled by a normal distribution but are still reasonably symmetric around a central location.</p>
+
+  <h2>Kruskal–Wallis test</h2>
+  <p>The Kruskal–Wallis test extends rank-based comparison to more than two independent groups. It is often viewed as a non-parametric alternative to one-way ANOVA.</p>
+
+  <p>If the Kruskal–Wallis test finds evidence of differences, follow-up pairwise comparisons are usually needed to identify which groups differ.</p>
+
+  <h2>Choosing between tests</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Situation</th><th>Data type/design</th><th>Common test</th></tr></thead>
+      <tbody>
+        <tr><td>Counts across categories versus expected probabilities</td><td>One categorical variable</td><td>Chi-square goodness-of-fit</td></tr>
+        <tr><td>Association between two categorical variables</td><td>Contingency table</td><td>Chi-square independence test</td></tr>
+        <tr><td>Small \(2\times2\) categorical table</td><td>Low expected counts</td><td>Fisher's exact test</td></tr>
+        <tr><td>Two independent groups, ordinal/skewed outcome</td><td>Independent samples</td><td>Mann–Whitney U test</td></tr>
+        <tr><td>Paired ordinal/skewed outcome</td><td>Matched or before-after</td><td>Wilcoxon signed-rank test</td></tr>
+        <tr><td>More than two independent groups, ordinal/skewed outcome</td><td>Independent groups</td><td>Kruskal–Wallis test</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>What this lesson completes</h2>
+  <p>Module 4 introduced standard error, confidence intervals, hypothesis testing, common mean/proportion tests, and now categorical and rank-based tests. You now have a practical foundation for deciding what kind of inference matches a research question.</p>
+
+  <div class="takeaway">
+    <div class="tk-label">Key takeaways from this lecture</div>
+    <ul>
+      <li>Chi-square tests compare observed counts with expected counts.</li>
+      <li>Goodness-of-fit tests compare one categorical distribution with a specified model.</li>
+      <li>Independence tests assess association between two categorical variables.</li>
+      <li>Expected cell counts matter for the chi-square approximation.</li>
+      <li>Non-parametric tests often use ranks and avoid strong normality assumptions.</li>
+      <li>Mann–Whitney compares two independent groups.</li>
+      <li>Wilcoxon signed-rank handles paired data.</li>
+      <li>Kruskal–Wallis compares more than two independent groups.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-notes" class="section">
+  <div class="lesson-eyebrow">Detailed theoretical notes</div>
+  <h1>Chi-square and non-parametric tests</h1>
+
+  <h2>1. Why we need these tests</h2>
+  <p>Not every research question involves a mean or a proportion in a form suitable for the tests in Lesson 4.4. Many data sets involve counts in categories, ordinal outcomes, skewed measurements, small samples, or ranked information. Chi-square and non-parametric tests extend the inferential toolkit to these situations.</p>
+
+  <h2>2. Chi-square statistic</h2>
+  <p>The general chi-square statistic compares observed counts \(O\) with expected counts \(E\):</p>
+
+  <div class="math-block">
+    \[
+    \chi^2=\sum \frac{(O-E)^2}{E}
+    \]
+  </div>
+
+  <p>Each term measures a squared discrepancy between observed and expected count, scaled by the expected count. Larger discrepancies produce larger \(\chi^2\) values.</p>
+
+  <h2>3. Chi-square goodness-of-fit test</h2>
+  <p>The goodness-of-fit test is used when there is one categorical variable and a specified expected distribution.</p>
+
+  <p>If the expected category probabilities are \(p_1,p_2,\ldots,p_k\), and the total sample size is \(n\), then the expected count in category \(i\) is:</p>
+
+  <div class="math-block">
+    \[
+    E_i=np_i
+    \]
+  </div>
+
+  <p>The hypotheses are:</p>
+
+  <div class="math-block">
+    \[
+    H_0:\text{the category probabilities are }p_1,p_2,\ldots,p_k
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    H_1:\text{at least one category probability differs}
+    \]
+  </div>
+
+  <p>The test statistic is:</p>
+
+  <div class="math-block">
+    \[
+    \chi^2=\sum_{i=1}^{k}\frac{(O_i-E_i)^2}{E_i}
+    \]
+  </div>
+
+  <p>If no parameters are estimated from the data, the degrees of freedom are:</p>
+
+  <div class="math-block">
+    \[
+    \nu=k-1
+    \]
+  </div>
+
+  <h2>4. Chi-square test of independence</h2>
+  <p>The chi-square test of independence is used with a contingency table containing two categorical variables.</p>
+
+  <p>For an \(r\times c\) table, the expected count in cell \((i,j)\) under independence is:</p>
+
+  <div class="math-block">
+    \[
+    E_{ij}=
+    \frac{(\text{row }i\text{ total})(\text{column }j\text{ total})}{\text{grand total}}
+    \]
+  </div>
+
+  <p>The test statistic is:</p>
+
+  <div class="math-block">
+    \[
+    \chi^2=\sum_{i=1}^{r}\sum_{j=1}^{c}
+    \frac{(O_{ij}-E_{ij})^2}{E_{ij}}
+    \]
+  </div>
+
+  <p>The degrees of freedom are:</p>
+
+  <div class="math-block">
+    \[
+    \nu=(r-1)(c-1)
+    \]
+  </div>
+
+  <h3>Derivation of expected count under independence</h3>
+  <p>If two categorical variables are independent, then:</p>
+
+  <div class="math-block">
+    \[
+    P(A_i\cap B_j)=P(A_i)P(B_j)
+    \]
+  </div>
+
+  <p>In a table, we estimate these probabilities using marginal proportions:</p>
+
+  <div class="math-block">
+    \[
+    \widehat{P}(A_i)=\frac{\text{row }i\text{ total}}{n},
+    \qquad
+    \widehat{P}(B_j)=\frac{\text{column }j\text{ total}}{n}
+    \]
+  </div>
+
+  <p>Therefore, the expected cell proportion is:</p>
+
+  <div class="math-block">
+    \[
+    \frac{\text{row }i\text{ total}}{n}
+    \cdot
+    \frac{\text{column }j\text{ total}}{n}
+    \]
+  </div>
+
+  <p>Multiplying by \(n\) gives:</p>
+
+  <div class="math-block">
+    \[
+    E_{ij}
+    =
+    n\left(
+    \frac{\text{row }i\text{ total}}{n}
+    \cdot
+    \frac{\text{column }j\text{ total}}{n}
+    \right)
+    =
+    \frac{(\text{row }i\text{ total})(\text{column }j\text{ total})}{n}
+    \]
+  </div>
+
+  <h2>5. Assumptions and cautions for chi-square tests</h2>
+  <ul>
+    <li>The data should be counts, not percentages alone.</li>
+    <li>Categories should be mutually exclusive.</li>
+    <li>Observations should be independent.</li>
+    <li>Expected counts should generally not be too small.</li>
+    <li>The test indicates evidence of discrepancy or association, not its direction or practical importance by itself.</li>
+  </ul>
+
+  <div class="def-box red">
+    <div class="def-label">Common warning</div>
+    <p>A statistically significant chi-square result does not automatically explain which cells caused the association. Inspect observed and expected counts, residuals, and subject-matter context.</p>
+  </div>
+
+  <h2>6. Fisher's exact test</h2>
+  <p>Fisher's exact test is often used for \(2\times2\) tables when expected counts are small. It calculates probabilities exactly under fixed margins rather than relying on a large-sample chi-square approximation.</p>
+
+  <p>It is especially common in small biomedical studies where a rare outcome leads to sparse cells.</p>
+
+  <h2>7. What are non-parametric tests?</h2>
+  <p>Non-parametric tests avoid specifying a full parametric distribution for the raw data. Many common non-parametric tests transform data into ranks and then test whether rank distributions differ across groups.</p>
+
+  <div class="def-box amber">
+    <div class="def-label">Not assumption-free</div>
+    <p>Non-parametric tests still have assumptions. For example, independence, correct pairing, meaningful ordering, and similar distributional shapes may matter depending on the interpretation.</p>
+  </div>
+
+  <h2>8. Mann–Whitney U test</h2>
+  <p>The Mann–Whitney U test compares two independent groups using ranks. It is useful for ordinal outcomes or continuous outcomes with strong skewness or outliers.</p>
+
+  <p>The broad hypotheses can be described as:</p>
+
+  <div class="math-block">
+    \[
+    H_0:\text{the two groups have the same distribution}
+    \]
+  </div>
+
+  <div class="math-block">
+    \[
+    H_1:\text{the distributions differ in location or tendency}
+    \]
+  </div>
+
+  <p>If the distributions have similar shape, a difference in ranks may be interpreted as a difference in location, often described informally as a median difference. Without similar shapes, the interpretation is broader.</p>
+
+  <h2>9. Wilcoxon signed-rank test</h2>
+  <p>The Wilcoxon signed-rank test is used for paired or matched data. It ranks the absolute values of non-zero differences and uses their signs to assess whether the differences are centred around zero.</p>
+
+  <p>The null hypothesis is often:</p>
+
+  <div class="math-block">
+    \[
+    H_0:\text{the distribution of paired differences is centred at }0
+    \]
+  </div>
+
+  <p>It is not the same as the Mann–Whitney U test because the data are paired.</p>
+
+  <h2>10. Kruskal–Wallis test</h2>
+  <p>The Kruskal–Wallis test compares more than two independent groups using ranks. It is a rank-based analogue of one-way ANOVA.</p>
+
+  <p>The null hypothesis is:</p>
+
+  <div class="math-block">
+    \[
+    H_0:\text{all groups have the same distribution}
+    \]
+  </div>
+
+  <p>If the test rejects the null, it tells us that not all groups are similar, but it does not identify which specific groups differ. Follow-up comparisons are needed.</p>
+
+  <h2>11. Test choice guide</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Question</th><th>Data/design</th><th>Test</th><th>Main caution</th></tr></thead>
+      <tbody>
+        <tr><td>Do observed category counts match expected probabilities?</td><td>One categorical variable</td><td>Chi-square goodness-of-fit</td><td>Expected counts should not be too small</td></tr>
+        <tr><td>Are two categorical variables associated?</td><td>Contingency table</td><td>Chi-square independence</td><td>Independence and expected counts</td></tr>
+        <tr><td>Are two categorical variables associated in a sparse \(2\times2\) table?</td><td>Small counts</td><td>Fisher's exact</td><td>Fixed-margin interpretation</td></tr>
+        <tr><td>Do two independent groups differ on an ordinal/skewed outcome?</td><td>Independent groups</td><td>Mann–Whitney U</td><td>Interpretation depends on distribution shapes</td></tr>
+        <tr><td>Do paired measurements differ?</td><td>Matched or before-after</td><td>Wilcoxon signed-rank</td><td>Works with paired differences</td></tr>
+        <tr><td>Do more than two independent groups differ?</td><td>Independent groups</td><td>Kruskal–Wallis</td><td>Follow-up tests needed after rejection</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>12. Common mistakes</h2>
+  <ul>
+    <li><strong>Using chi-square on percentages without counts:</strong> chi-square tests need counts.</li>
+    <li><strong>Ignoring small expected counts:</strong> sparse tables may require exact or alternative methods.</li>
+    <li><strong>Thinking chi-square gives direction automatically:</strong> inspect cells and residuals.</li>
+    <li><strong>Calling non-parametric tests assumption-free:</strong> they still have assumptions.</li>
+    <li><strong>Using Mann–Whitney for paired data:</strong> use a paired rank test instead.</li>
+    <li><strong>Saying Mann–Whitney always tests medians:</strong> that requires additional distributional conditions.</li>
+    <li><strong>Stopping at Kruskal–Wallis:</strong> a significant result usually needs post-hoc comparisons.</li>
+  </ul>
+
+  <div class="takeaway">
+    <div class="tk-label">Notes summary</div>
+    <ul>
+      <li>Chi-square tests are for categorical counts.</li>
+      <li>The chi-square statistic is \(\sum (O-E)^2/E\).</li>
+      <li>Goodness-of-fit compares one categorical distribution to expected probabilities.</li>
+      <li>Independence tests compare observed and expected counts in contingency tables.</li>
+      <li>Non-parametric tests often use ranks and reduce reliance on normality.</li>
+      <li>Correct test choice depends on data type, grouping, pairing and sample size.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sec-interactive" class="section">
+  <div class="lesson-eyebrow">Interactive inference lab</div>
+  <h1>Chi-square and non-parametric tests</h1>
+
+  <div class="plot-grid">
+    <div class="plot-box">
+      <div class="plot-title">1. Chi-square goodness-of-fit explorer</div>
+      <div class="plot-sub">Change observed counts. Expected counts are equal across four categories.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Category A</label><input id="gofA" type="range" min="5" max="80" value="25" oninput="updateGOF()"><span id="gofAVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Category B</label><input id="gofB" type="range" min="5" max="80" value="25" oninput="updateGOF()"><span id="gofBVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Category C</label><input id="gofC" type="range" min="5" max="80" value="25" oninput="updateGOF()"><span id="gofCVal" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>Category D</label><input id="gofD" type="range" min="5" max="80" value="25" oninput="updateGOF()"><span id="gofDVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">\(\chi^2\)</div><div id="gofChi" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">df</div><div id="gofDf" class="sc-val">3</div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="gofChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">2. Chi-square independence table</div>
+      <div class="plot-sub">Explore a \(2\times2\) table. Expected counts are computed from margins.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>\(O_{11}\)</label><input id="o11" type="range" min="1" max="100" value="35" oninput="updateIndep()"><span id="o11Val" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(O_{12}\)</label><input id="o12" type="range" min="1" max="100" value="15" oninput="updateIndep()"><span id="o12Val" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(O_{21}\)</label><input id="o21" type="range" min="1" max="100" value="20" oninput="updateIndep()"><span id="o21Val" class="ctrl-val"></span></div>
+        <div class="ctrl"><label>\(O_{22}\)</label><input id="o22" type="range" min="1" max="100" value="30" oninput="updateIndep()"><span id="o22Val" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">\(\chi^2\)</div><div id="indChi" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">df</div><div id="indDf" class="sc-val">1</div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="indChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">3. Expected count checker</div>
+      <div class="plot-sub">Small expected counts make chi-square approximation less reliable.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Minimum expected count</label><input id="minExp" type="range" min="1" max="20" value="5" oninput="updateExpectedWarning()"><span id="minExpVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Guidance</div><div id="expGuidance" class="sc-val" style="font-size:15px"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="expChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">4. Rank idea for non-parametric tests</div>
+      <div class="plot-sub">A few extreme values can affect means strongly; ranks reduce their influence.</div>
+      <div class="controls-row">
+        <div class="ctrl"><label>Outlier size</label><input id="outlier" type="range" min="10" max="100" value="40" oninput="updateRanks()"><span id="outlierVal" class="ctrl-val"></span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sc-label">Mean difference</div><div id="meanDiff" class="sc-val"></div></div>
+        <div class="stat-card"><div class="sc-label">Rank-sum difference</div><div id="rankDiff" class="sc-val"></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="rankChart"></canvas></div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title">5. Test choice helper</div>
+      <div class="plot-sub">Choose the most suitable test for each scenario.</div>
+      <div id="activity-area"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-exercises" class="section">
+  <div class="lesson-eyebrow">Practice exercises</div>
+  <h1>Chi-square and non-parametric tests</h1>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 1</div><div class="ex-qtitle">Goodness-of-fit expected counts</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A fair die is rolled 120 times. Under the null hypothesis of fairness, what is the expected count for each face?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>Each face has probability \(1/6\). Therefore \(E_i=120(1/6)=20\) for each face.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 2</div><div class="ex-qtitle">Chi-square contribution</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-easy">Easy</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">If \(O=30\) and \(E=20\) for one category, calculate that category's contribution to \(\chi^2\).</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The contribution is \((O-E)^2/E=(30-20)^2/20=100/20=5\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 3</div><div class="ex-qtitle">Degrees of freedom for independence</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A contingency table has 3 rows and 4 columns. What are the degrees of freedom for a chi-square test of independence?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(\nu=(r-1)(c-1)=(3-1)(4-1)=2(3)=6\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 4</div><div class="ex-qtitle">Expected cell count</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">In a contingency table, a row total is 40, a column total is 50, and the grand total is 200. Calculate the expected count for that cell under independence.</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>\(E=(40)(50)/200=2000/200=10\).</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 5</div><div class="ex-qtitle">Small expected counts</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-medium">Medium</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Why should we be cautious using a chi-square test when expected counts are very small?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The chi-square reference distribution is a large-sample approximation. With very small expected counts, that approximation may be poor, so p-values may be unreliable.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 6</div><div class="ex-qtitle">Choose a non-parametric test</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Two independent groups are compared on an ordinal pain score. Which non-parametric test is commonly considered?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The Mann–Whitney U test is commonly considered because there are two independent groups and an ordinal outcome.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 7</div><div class="ex-qtitle">Paired non-parametric design</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">A symptom score is measured before and after treatment in the same 20 patients, and differences are highly skewed. Which test might be considered?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The Wilcoxon signed-rank test may be considered because the data are paired and the paired differences are not well suited to a paired t-test.</p></div></div></div>
+
+  <div class="exercise"><div class="ex-header" onclick="toggleEx(this)"><div><div class="ex-qnum">Exercise 8</div><div class="ex-qtitle">Mann–Whitney interpretation</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="ex-difficulty diff-hard">Hard</span><span class="ex-toggle">+</span></div></div><div class="ex-body"><p class="ex-question">Why is it too simple to say the Mann–Whitney U test always tests equality of medians?</p><button class="answer-toggle" onclick="toggleAns(this)">Show answer</button><div class="answer-box"><div class="ans-label">Answer</div><p>The median interpretation is most natural when the distributions have similar shapes and differ mainly by location. More generally, Mann–Whitney compares rank distributions or distributional tendency.</p></div></div></div>
+
+</section>
+
+<section id="sec-quiz" class="section">
+  <div class="lesson-eyebrow">Topic quiz</div>
+  <h1>Chi-square and non-parametric tests</h1>
+  <div id="quiz-container"></div>
+</section>
+
+</div>
+</div>
+
+<script>
+let charts = {};
+let quizIndex = 0;
+let selectedOption = null;
+let answered = false;
+let score = 0;
+
+const activities = [
+  {text:"Observed category counts compared with expected probabilities.",answer:"Chi-square goodness-of-fit",explanation:"Correct. One categorical variable is compared with a specified distribution."},
+  {text:"Association between smoking status and disease status in a contingency table.",answer:"Chi-square independence",explanation:"Correct. Two categorical variables are being compared."},
+  {text:"Two independent groups compared on an ordinal pain score.",answer:"Mann–Whitney U",explanation:"Correct. Two independent groups with ordinal/skewed outcomes."},
+  {text:"Before-after symptom scores in the same patients, analysed using ranks of differences.",answer:"Wilcoxon signed-rank",explanation:"Correct. This is the paired rank-based test."},
+  {text:"Four independent treatment groups compared on a skewed continuous outcome.",answer:"Kruskal–Wallis",explanation:"Correct. This is a rank-based test for more than two independent groups."}
+];
+
+const quiz = [
+  {q:"The chi-square statistic compares:",opts:["Observed and expected counts","Means and medians only","Only standard deviations","Only p-values"],correct:0},
+  {q:"A chi-square goodness-of-fit test is used for:",opts:["One categorical variable compared with expected probabilities","Two paired means","One continuous mean","A regression slope only"],correct:0},
+  {q:"For an r by c independence table, degrees of freedom are:",opts:["(r-1)(c-1)","r+c","rc","n-1"],correct:0},
+  {q:"Expected count in a contingency table cell is:",opts:["row total times column total divided by grand total","observed minus expected","sample mean divided by n","always 5"],correct:0},
+  {q:"Fisher's exact test is often considered when:",opts:["A 2 by 2 table has small expected counts","There are four independent means","A histogram is normal","The outcome is a large continuous measurement"],correct:0},
+  {q:"Non-parametric tests are best described as:",opts:["Using fewer or different distributional assumptions","Having no assumptions at all","Always more powerful","Only for percentages"],correct:0},
+  {q:"Mann–Whitney U is commonly used for:",opts:["Two independent groups with ordinal/skewed outcome","Paired before-after data only","One categorical goodness-of-fit","Correlation only"],correct:0},
+  {q:"Wilcoxon signed-rank is used for:",opts:["Paired or matched data","Two independent proportions","Counts in categories","Three independent groups only"],correct:0}
+];
+
+function showTab(name, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='interactive') initInteractive();
+  if(name==='quiz') initQuiz();
+  if(window.MathJax) MathJax.typesetPromise();
+}
+
+function makeChart(id,type,data,options={}){
+  if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(document.getElementById(id),{type,data,options:Object.assign({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}},options)});
+}
+
+function updateGOF(){
+  const obs=['A','B','C','D'].map(k=>Number(document.getElementById('gof'+k).value));
+  ['A','B','C','D'].forEach((k,i)=>document.getElementById('gof'+k+'Val').textContent=obs[i]);
+  const total=obs.reduce((a,b)=>a+b,0);
+  const exp=total/4;
+  const chi=obs.reduce((s,o)=>s+(o-exp)*(o-exp)/exp,0);
+  document.getElementById('gofChi').textContent=chi.toFixed(2);
+  makeChart('gofChart','bar',{labels:['A','B','C','D'],datasets:[{label:'Observed',data:obs,backgroundColor:'rgba(55,138,221,0.35)',borderColor:'#378ADD',borderWidth:1},{label:'Expected',data:[exp,exp,exp,exp],backgroundColor:'rgba(59,109,17,0.25)',borderColor:'#3B6D11',borderWidth:1}]},{plugins:{legend:{display:true}},scales:{y:{beginAtZero:true}}});
+}
+
+function updateIndep(){
+  const o11=Number(document.getElementById('o11').value),o12=Number(document.getElementById('o12').value),o21=Number(document.getElementById('o21').value),o22=Number(document.getElementById('o22').value);
+  document.getElementById('o11Val').textContent=o11;document.getElementById('o12Val').textContent=o12;document.getElementById('o21Val').textContent=o21;document.getElementById('o22Val').textContent=o22;
+  const row1=o11+o12,row2=o21+o22,col1=o11+o21,col2=o12+o22,n=row1+row2;
+  const e11=row1*col1/n,e12=row1*col2/n,e21=row2*col1/n,e22=row2*col2/n;
+  const obs=[o11,o12,o21,o22], exp=[e11,e12,e21,e22];
+  const chi=obs.reduce((s,o,i)=>s+(o-exp[i])*(o-exp[i])/exp[i],0);
+  document.getElementById('indChi').textContent=chi.toFixed(2);
+  makeChart('indChart','bar',{labels:['Cell 11','Cell 12','Cell 21','Cell 22'],datasets:[{label:'Observed',data:obs,backgroundColor:'rgba(186,117,23,0.35)',borderColor:'#BA7517',borderWidth:1},{label:'Expected',data:exp,backgroundColor:'rgba(55,138,221,0.25)',borderColor:'#378ADD',borderWidth:1}]},{plugins:{legend:{display:true}},scales:{y:{beginAtZero:true}}});
+}
+
+function updateExpectedWarning(){
+  const m=Number(document.getElementById('minExp').value);
+  document.getElementById('minExpVal').textContent=m;
+  document.getElementById('expGuidance').textContent=m<5?'Use caution / consider exact test':'Chi-square approximation more reasonable';
+  makeChart('expChart','bar',{labels:['minimum expected count'],datasets:[{data:[m],backgroundColor:m<5?'rgba(163,45,45,0.45)':'rgba(59,109,17,0.45)',borderColor:m<5?'#A32D2D':'#3B6D11',borderWidth:1}]},{scales:{y:{beginAtZero:true,max:20}}});
+}
+
+function ranks(values){
+  const pairs=values.map((v,i)=>({v,i})).sort((a,b)=>a.v-b.v);
+  const r=Array(values.length);
+  for(let i=0;i<pairs.length;i++) r[pairs[i].i]=i+1;
+  return r;
+}
+function mean(a){return a.reduce((s,x)=>s+x,0)/a.length;}
+function updateRanks(){
+  const out=Number(document.getElementById('outlier').value);
+  document.getElementById('outlierVal').textContent=out;
+  const g1=[8,9,10,11,12,13];
+  const g2=[9,10,11,12,13,out];
+  const all=g1.concat(g2), r=ranks(all);
+  const r1=r.slice(0,6), r2=r.slice(6);
+  document.getElementById('meanDiff').textContent=(mean(g2)-mean(g1)).toFixed(2);
+  document.getElementById('rankDiff').textContent=(r2.reduce((a,b)=>a+b,0)-r1.reduce((a,b)=>a+b,0)).toFixed(1);
+  makeChart('rankChart','bar',{labels:['G1 values mean','G2 values mean','G1 rank sum','G2 rank sum'],datasets:[{data:[mean(g1),mean(g2),r1.reduce((a,b)=>a+b,0),r2.reduce((a,b)=>a+b,0)],backgroundColor:['rgba(55,138,221,0.35)','rgba(163,45,45,0.35)','rgba(55,138,221,0.20)','rgba(163,45,45,0.20)'],borderColor:['#378ADD','#A32D2D','#378ADD','#A32D2D'],borderWidth:1}]});
+}
+
+function initInteractive(){updateGOF();updateIndep();updateExpectedWarning();updateRanks();renderActivities();}
+
+function renderActivities(){
+  const area=document.getElementById('activity-area');
+  if(area.children.length) return;
+  const options=["Chi-square goodness-of-fit","Chi-square independence","Mann–Whitney U","Wilcoxon signed-rank","Kruskal–Wallis"];
+  activities.forEach((a,i)=>{
+    const div=document.createElement('div');
+    div.className='activity-card';
+    div.innerHTML=`<div class="activity-inner"><div style="font-size:13.5px;color:var(--text);line-height:1.6;margin-bottom:8px;">${a.text}</div>${options.map(o=>`<button class="choice-btn" onclick="checkActivity(${i}, '${o}', this)">${o}</button>`).join('')}<div id="activity-${i}" class="feedback-mini"></div></div>`;
+    area.appendChild(div);
+  });
+}
+
+function checkActivity(i,choice,btn){
+  const item=activities[i], fb=document.getElementById('activity-'+i), correct=choice===item.answer;
+  fb.style.display='block';fb.style.background=correct?'var(--green-bg)':'var(--red-bg)';fb.style.color=correct?'var(--green)':'var(--red)';fb.style.border=correct?'.5px solid var(--green)':'.5px solid var(--red)';
+  fb.innerHTML=`<strong>${correct?'✓ Correct.':'✗ Not quite.'}</strong> ${item.explanation}`;
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.disabled=true);
+}
+
+function toggleEx(header){const body=header.nextElementSibling,toggle=header.querySelector('.ex-toggle'),open=body.classList.toggle('open');toggle.textContent=open?'−':'+';if(window.MathJax)MathJax.typesetPromise();}
+function toggleAns(btn){const box=btn.nextElementSibling,open=box.classList.toggle('open');btn.textContent=open?'Hide answer':'Show answer';if(window.MathJax)MathJax.typesetPromise();}
+
+function initQuiz(){quizIndex=0;selectedOption=null;answered=false;score=0;renderQuiz();}
+function renderQuiz(){
+  const container=document.getElementById('quiz-container');
+  if(quizIndex>=quiz.length){
+    container.innerHTML=`<div class="quiz-complete"><div class="score-big">${score}/${quiz.length}</div><p>${score>=7?'Excellent — strong understanding of chi-square and non-parametric tests.':score>=5?'Good work. Review the missed ideas.':'Review the notes and try the quiz again.'}</p><button class="btn-check" onclick="initQuiz()">Retry quiz</button></div>`;
+    return;
+  }
+  const q=quiz[quizIndex];
+  container.innerHTML=`<div class="quiz-progress">Question ${quizIndex+1} of ${quiz.length}</div><div class="quiz-q">${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<div class="quiz-opt" id="qo${i}" onclick="selectOption(${i})"><div class="opt-key">${['A','B','C','D'][i]}</div>${o}</div>`).join('')}</div><div id="quizFeedback" class="feedback"></div><div class="quiz-actions"><button id="checkBtn" class="btn-check" onclick="checkQuiz()" disabled>Check answer</button><button id="nextBtn" class="btn-next" onclick="nextQuiz()">${quizIndex<quiz.length-1?'Next question →':'See result'}</button></div>`;
+  selectedOption=null;answered=false;
+}
+function selectOption(i){if(answered)return;document.querySelectorAll('.quiz-opt').forEach(o=>o.classList.remove('selected'));document.getElementById('qo'+i).classList.add('selected');selectedOption=i;document.getElementById('checkBtn').disabled=false;}
+function checkQuiz(){
+  if(selectedOption===null||answered)return;answered=true;
+  const q=quiz[quizIndex],correct=selectedOption===q.correct;if(correct)score++;
+  document.querySelectorAll('.quiz-opt').forEach((el,i)=>{el.classList.add('locked');if(i===q.correct)el.classList.add('correct');if(i===selectedOption&&i!==q.correct)el.classList.add('wrong');});
+  const fb=document.getElementById('quizFeedback');fb.className='feedback show '+(correct?'ok':'no');fb.textContent=correct?'Correct.':'Not quite. Review the chi-square and non-parametric test notes.';
+  document.getElementById('checkBtn').disabled=true;document.getElementById('nextBtn').classList.add('show');
+}
+function nextQuiz(){quizIndex++;renderQuiz();}
+</script>
+<!-- My Academic Tutor platform footer with logo -->
+<footer class="mat-platform-footer">
+  <div class="mat-footer-brand">
+    <img class="mat-footer-logo" src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <p><strong>Statistics Foundation for University Students</strong></p>
+  </div>
+  <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+  <p>© 2026 My Academic Tutor. All rights reserved.</p>
+</footer>
+<style>
+.mat-platform-footer{
+  max-width:960px;
+  margin:34px auto 0;
+  padding:22px 34px;
+  border-top:1px solid var(--border, #ded9cf);
+  color:var(--text2, #5f5f5a);
+  font-size:13px;
+  line-height:1.65;
+}
+.mat-platform-footer strong{color:var(--text, #171717);}
+.mat-footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.mat-footer-logo{width:36px;height:36px;object-fit:contain;border-radius:9px;background:#fff;border:1px solid var(--border, #ded9cf);padding:4px;}
+@media(max-width:850px){.mat-platform-footer{padding:20px 18px;}}
+</style>
+
+</body>
+</html>

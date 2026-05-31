@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Statistics Foundation for University Students — My Academic Tutor</title>
+<meta name="description" content="A theoretical, beginner-friendly statistics foundation course for university students. Developed by My Academic Tutor.">
+
+<style>
+:root{
+  --bg:#f2efe7;
+  --paper:#ffffff;
+  --paper-soft:#f8f6f1;
+  --paper-warm:#fbfaf6;
+  --ink:#171717;
+  --muted:#5f5f5a;
+  --faint:#8d8b84;
+  --line:#ded9cf;
+  --blue:#2f7fd0;
+  --blue-dark:#0c447c;
+  --blue-soft:#e7f1fb;
+  --green:#3b6d11;
+  --green-soft:#eaf3de;
+  --amber:#ba7517;
+  --amber-soft:#faeeda;
+  --red:#a32d2d;
+  --red-soft:#fcebeb;
+  --purple:#534ab7;
+  --purple-soft:#eeedfe;
+  --radius:20px;
+  --radius-lg:30px;
+  --shadow:0 22px 70px rgba(31,29,23,.10);
+  --shadow-soft:0 10px 30px rgba(31,29,23,.06);
+  --font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-family:var(--font);background:var(--bg);color:var(--ink);scroll-behavior:smooth}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at top left, rgba(47,127,208,.16), transparent 34%),
+    radial-gradient(circle at top right, rgba(186,117,23,.12), transparent 32%),
+    linear-gradient(180deg,#f6f3ec 0%,#ebe6dc 100%);
+}
+a{color:inherit;text-decoration:none}
+.site-shell{max-width:1220px;margin:0 auto;padding:26px 22px 42px}
+
+/* Header */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:28px;
+}
+.brand-row{display:flex;align-items:center;gap:12px}
+.logo-mark{
+  width:46px;
+  height:46px;
+  object-fit:contain;
+  border-radius:14px;
+  background:#fff;
+  border:1px solid var(--line);
+  padding:6px;
+  box-shadow:0 8px 22px rgba(31,29,23,.07);
+}
+.brand-kicker{
+  display:block;
+  font-size:11px;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  color:var(--blue);
+  font-weight:800;
+  margin-bottom:2px;
+}
+.brand-title{
+  display:block;
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:-.03em;
+}
+.top-links{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.top-link{
+  font-size:13px;
+  color:var(--muted);
+  padding:8px 12px;
+  border:1px solid rgba(222,217,207,.9);
+  border-radius:999px;
+  background:rgba(255,255,255,.62);
+  backdrop-filter:blur(10px);
+  transition:.16s ease;
+}
+.top-link:hover{background:var(--paper);color:var(--ink);transform:translateY(-1px);box-shadow:var(--shadow-soft)}
+
+/* Hero */
+.hero{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(135deg,#fff 0%,#fbfaf6 52%,#eaf3fc 100%);
+  border:1px solid var(--line);
+  border-radius:34px;
+  padding:42px;
+  box-shadow:var(--shadow);
+  margin-bottom:26px;
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  width:360px;
+  height:360px;
+  border-radius:50%;
+  right:-130px;
+  top:-160px;
+  background:rgba(47,127,208,.12);
+}
+.hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1.4fr .8fr;gap:28px;align-items:end}
+.hero-labels{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.hero-label{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:var(--blue-soft);
+  color:var(--blue-dark);
+  border-radius:999px;
+  padding:7px 12px;
+  font-size:12px;
+  font-weight:800;
+}
+.hero-label.green{background:var(--green-soft);color:var(--green)}
+.hero h1{
+  font-size:52px;
+  line-height:1.03;
+  letter-spacing:-.055em;
+  max-width:900px;
+  margin-bottom:18px;
+}
+.hero p{
+  font-size:16px;
+  line-height:1.82;
+  color:var(--muted);
+  max-width:910px;
+  margin-bottom:12px;
+}
+.hero-credit{font-size:14px;color:var(--ink);font-weight:750;margin-top:18px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  padding:12px 17px;
+  font-size:14px;
+  font-weight:800;
+  border:1px solid var(--line);
+  transition:.15s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-soft)}
+.btn-primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn-secondary{background:#fff;color:var(--ink)}
+.hero-panel{
+  background:rgba(255,255,255,.76);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:20px;
+  box-shadow:var(--shadow-soft);
+}
+.hero-panel h2{font-size:17px;letter-spacing:-.02em;margin-bottom:12px}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.hero-stat{
+  background:var(--paper-soft);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:13px;
+}
+.hero-stat strong{display:block;font-size:26px;letter-spacing:-.04em}
+.hero-stat span{font-size:12px;color:var(--muted)}
+.hero-panel ul{padding-left:18px}
+.hero-panel li{font-size:13px;line-height:1.62;color:var(--muted);margin-bottom:4px}
+
+/* Section headings */
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:16px;
+  margin:36px 0 16px;
+}
+.section-kicker{
+  font-size:11px;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  color:var(--blue);
+  font-weight:850;
+  margin-bottom:6px;
+}
+.section-head h2{font-size:28px;letter-spacing:-.04em}
+.section-head p{font-size:14px;color:var(--muted);line-height:1.65;max-width:650px}
+
+/* Course map */
+.course-map{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:14px;
+  margin-bottom:24px;
+}
+.module-card{
+  position:relative;
+  background:rgba(255,255,255,.88);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:18px;
+  min-height:246px;
+  display:flex;
+  flex-direction:column;
+  box-shadow:var(--shadow-soft);
+  transition:.16s ease;
+}
+.module-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.module-no{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  background:var(--blue-soft);
+  color:var(--blue-dark);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:15px;
+  margin-bottom:15px;
+}
+.module-card:nth-child(2) .module-no{background:var(--green-soft);color:var(--green)}
+.module-card:nth-child(3) .module-no{background:var(--amber-soft);color:var(--amber)}
+.module-card:nth-child(4) .module-no{background:var(--purple-soft);color:var(--purple)}
+.module-card:nth-child(5) .module-no{background:var(--red-soft);color:var(--red)}
+.module-card h3{font-size:17px;line-height:1.25;margin-bottom:9px;letter-spacing:-.02em}
+.module-card p{font-size:13px;line-height:1.62;color:var(--muted);margin-bottom:14px}
+.module-list{padding-left:16px;margin:2px 0 14px}
+.module-list li{font-size:12.5px;line-height:1.5;color:var(--muted);margin-bottom:3px}
+.module-meta{margin-top:auto;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--faint);gap:8px}
+.status{padding:5px 8px;border-radius:999px;background:var(--green-soft);color:var(--green);font-weight:800;white-space:nowrap}
+
+/* Learning path */
+.path-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:14px;
+}
+.path-card{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:20px;
+  box-shadow:var(--shadow-soft);
+}
+.path-card h3{font-size:17px;margin-bottom:8px;letter-spacing:-.02em}
+.path-card p{font-size:14px;color:var(--muted);line-height:1.7}
+.path-tag{
+  display:inline-flex;
+  font-size:11px;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  color:var(--blue-dark);
+  background:var(--blue-soft);
+  border-radius:999px;
+  padding:6px 9px;
+  margin-bottom:12px;
+}
+
+/* Details */
+.info-layout{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-top:22px;
+}
+.info-panel{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:22px;
+  box-shadow:var(--shadow-soft);
+}
+.info-panel h2{font-size:20px;margin-bottom:12px;letter-spacing:-.03em}
+.info-panel ul{padding-left:20px}
+.info-panel li{font-size:14px;color:var(--muted);line-height:1.72;margin-bottom:5px}
+.final-cta{
+  margin-top:24px;
+  background:linear-gradient(135deg,#171717 0%,#2d2d29 100%);
+  color:#fff;
+  border-radius:28px;
+  padding:26px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  box-shadow:var(--shadow);
+}
+.final-cta h2{font-size:25px;letter-spacing:-.04em;margin-bottom:7px}
+.final-cta p{font-size:14px;line-height:1.65;color:rgba(255,255,255,.76)}
+.final-cta .btn{background:#fff;color:#171717;border-color:#fff;white-space:nowrap}
+
+/* Footer */
+.footer{
+  margin-top:34px;
+  padding:24px 0 4px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.65;
+  border-top:1px solid var(--line);
+}
+.footer strong{color:var(--ink)}
+.footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.footer-logo{
+  width:38px;
+  height:38px;
+  object-fit:contain;
+  border-radius:11px;
+  background:#fff;
+  border:1px solid var(--line);
+  padding:5px;
+}
+
+/* Mobile */
+@media(max-width:1080px){
+  .hero-inner{grid-template-columns:1fr}
+  .course-map{grid-template-columns:repeat(2,1fr)}
+  .hero h1{font-size:42px}
+}
+@media(max-width:760px){
+  .site-shell{padding:20px 14px 34px}
+  .topbar{align-items:flex-start;flex-direction:column}
+  .top-links{justify-content:flex-start}
+  .top-link{font-size:12.5px;padding:7px 10px}
+  .hero{padding:26px 20px;border-radius:26px}
+  .hero h1{font-size:33px}
+  .hero p{font-size:15px}
+  .hero-stats{grid-template-columns:1fr 1fr}
+  .course-map{grid-template-columns:1fr}
+  .section-head{align-items:flex-start;flex-direction:column}
+  .path-grid{grid-template-columns:1fr}
+  .info-layout{grid-template-columns:1fr}
+  .final-cta{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:430px){
+  .brand-title{font-size:16px}
+  .logo-mark{width:42px;height:42px}
+  .hero h1{font-size:30px}
+  .hero-stats{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<div class="site-shell">
+
+<header class="topbar">
+  <a class="brand-row" href="index.html" aria-label="Statistics Foundation homepage">
+    <img class="logo-mark" src="assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <div>
+      <span class="brand-kicker">My Academic Tutor</span>
+      <span class="brand-title">Statistics Foundation</span>
+    </div>
+  </a>
+
+  <nav class="top-links" aria-label="Main navigation">
+    <a class="top-link" href="index.html">Home</a>
+    <a class="top-link" href="module-1/index.html">Module 1</a>
+    <a class="top-link" href="module-2/index.html">Module 2</a>
+    <a class="top-link" href="module-3/index.html">Module 3</a>
+    <a class="top-link" href="module-4/index.html">Module 4</a>
+    <a class="top-link" href="module-5/index.html">Module 5</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-labels">
+          <span class="hero-label">Beginner-friendly</span>
+          <span class="hero-label green">Theoretical</span>
+          <span class="hero-label">No coding</span>
+        </div>
+
+        <h1>Statistics Foundation for University Students</h1>
+
+        <p class="hero-credit"><strong>Course developed by My Academic Tutor.</strong></p>
+
+        <p>Statistics Foundation for University Students is a theoretical and beginner-friendly course for students who want to build a strong base in statistics before studying biostatistics, epidemiology, data science, machine learning, research methods, or quantitative analysis.</p>
+
+        <p>The course avoids coding and focuses on concepts, notation, mathematical reasoning, derivations, interpretation, and exam-style thinking.</p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="module-1/index.html">Start learning</a>
+          <a class="btn btn-secondary" href="#course-modules">View all modules</a>
+        </div>
+      </div>
+
+      <aside class="hero-panel" aria-label="Course summary">
+        <h2>Course snapshot</h2>
+        <div class="hero-stats">
+          <div class="hero-stat"><strong>5</strong><span>Core modules</span></div>
+          <div class="hero-stat"><strong>25</strong><span>Structured lessons</span></div>
+          <div class="hero-stat"><strong>0</strong><span>Coding required</span></div>
+          <div class="hero-stat"><strong>100%</strong><span>Concept focused</span></div>
+        </div>
+        <ul>
+          <li>Lecture-style explanations with recurring characters.</li>
+          <li>Detailed notes with notation and derivations.</li>
+          <li>Interactive activities, exercises and quizzes.</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section id="course-modules">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">Course structure</div>
+        <h2>Five modules from foundations to regression</h2>
+      </div>
+      <p>Start with the language of data, then move through descriptive statistics, probability, inference and regression foundations.</p>
+    </div>
+
+    <div class="course-map">
+      <a class="module-card" href="module-1/index.html">
+        <div class="module-no">1</div>
+        <h3>Introduction to Statistics</h3>
+        <p>Build the language of data, variables, populations, samples, graphs and sampling methods.</p>
+        <ul class="module-list">
+          <li>What statistics means</li>
+          <li>Populations and samples</li>
+          <li>Data types and graphs</li>
+        </ul>
+        <div class="module-meta"><span>5 lessons</span><span class="status">Available</span></div>
+      </a>
+
+      <a class="module-card" href="module-2/index.html">
+        <div class="module-no">2</div>
+        <h3>Descriptive Statistics</h3>
+        <p>Learn how to summarise datasets using centre, spread, shape, z-scores and correlation.</p>
+        <ul class="module-list">
+          <li>Mean, median and mode</li>
+          <li>Variance and standard deviation</li>
+          <li>Correlation and interpretation</li>
+        </ul>
+        <div class="module-meta"><span>5 lessons</span><span class="status">Available</span></div>
+      </a>
+
+      <a class="module-card" href="module-3/index.html">
+        <div class="module-no">3</div>
+        <h3>Probability Foundations</h3>
+        <p>Develop probability reasoning before moving into statistical inference and uncertainty.</p>
+        <ul class="module-list">
+          <li>Axioms and probability rules</li>
+          <li>Bayes theorem</li>
+          <li>Random variables and distributions</li>
+        </ul>
+        <div class="module-meta"><span>5 lessons</span><span class="status">Available</span></div>
+      </a>
+
+      <a class="module-card" href="module-4/index.html">
+        <div class="module-no">4</div>
+        <h3>Statistical Inference</h3>
+        <p>Understand sampling distributions, standard errors, confidence intervals and hypothesis tests.</p>
+        <ul class="module-list">
+          <li>Standard error</li>
+          <li>Confidence intervals</li>
+          <li>Testing frameworks</li>
+        </ul>
+        <div class="module-meta"><span>5 lessons</span><span class="status">Available</span></div>
+      </a>
+
+      <a class="module-card" href="module-5/index.html">
+        <div class="module-no">5</div>
+        <h3>Regression Foundations</h3>
+        <p>Move from comparison to modelling using simple, multiple and logistic regression ideas.</p>
+        <ul class="module-list">
+          <li>Linear regression</li>
+          <li>Least squares derivation</li>
+          <li>Diagnostics and logistic regression</li>
+        </ul>
+        <div class="module-meta"><span>5 lessons</span><span class="status">Available</span></div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">Learning approach</div>
+        <h2>Built for understanding, not memorisation</h2>
+      </div>
+      <p>The course is designed to help students understand why statistical methods work before using them in applied subjects.</p>
+    </div>
+
+    <div class="path-grid">
+      <div class="path-card">
+        <span class="path-tag">Step 1</span>
+        <h3>Understand the idea</h3>
+        <p>Each lesson begins with a conversational lecture that introduces the concept using clear examples and recurring characters.</p>
+      </div>
+      <div class="path-card">
+        <span class="path-tag">Step 2</span>
+        <h3>Study the theory</h3>
+        <p>Detailed notes explain notation, definitions, assumptions, derivations and common interpretation mistakes.</p>
+      </div>
+      <div class="path-card">
+        <span class="path-tag">Step 3</span>
+        <h3>Practise and check</h3>
+        <p>Interactive tasks, exercises and quizzes help students test understanding before moving to the next topic.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-layout">
+    <div class="info-panel">
+      <h2>Designed for</h2>
+      <ul>
+        <li>University students beginning statistics for the first time.</li>
+        <li>Students preparing for biostatistics, epidemiology, data science or research methods.</li>
+        <li>Learners who want mathematical notation explained clearly before moving to software.</li>
+        <li>Students who prefer conceptual, theoretical and exam-style learning without coding.</li>
+      </ul>
+    </div>
+
+    <div class="info-panel">
+      <h2>What makes it different</h2>
+      <ul>
+        <li>No programming distractions in the foundation stage.</li>
+        <li>Clear movement from definitions to interpretation.</li>
+        <li>Mathematical reasoning explained gradually.</li>
+        <li>Consistent structure across every lesson.</li>
+        <li>Useful preparation for applied quantitative subjects.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div>
+      <h2>Ready to start?</h2>
+      <p>Begin with Module 1 and build the statistical language needed for later biostatistics, epidemiology, data science and research methods.</p>
+    </div>
+    <a class="btn" href="module-1/index.html">Start Module 1</a>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-brand">
+    <img class="footer-logo" src="assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo">
+    <p><strong>Statistics Foundation for University Students</strong></p>
+  </div>
+  <p>Course developed by <strong>My Academic Tutor</strong>.</p>
+  <p>© 2026 My Academic Tutor. All rights reserved.</p>
+</footer>
+
+</div>
+</body>
+</html>
