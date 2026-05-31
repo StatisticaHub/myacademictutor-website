@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Lesson 13: Elastic Net | Machine Learning in Biostatistics</title>
+
+  <meta
+    name="description"
+    content="Lesson 13 of Machine Learning in Biostatistics: elastic net, ridge-lasso mixing, alpha, lambda, correlated predictors, omics, tuning and validation."
+  />
+
+  <link rel="stylesheet" href="../assets/course.css" />
+
+  <style>
+    .alpha-scale {
+      display: grid;
+      gap: 0.75rem;
+      margin: 1.2rem 0;
+    }
+
+    .alpha-row {
+      display: grid;
+      grid-template-columns: 90px 1fr 120px;
+      gap: 0.8rem;
+      align-items: center;
+      font-size: 0.95rem;
+    }
+
+    .alpha-track {
+      height: 14px;
+      background: #f3eadc;
+      border: 1px solid #ddcfb8;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .alpha-fill {
+      height: 100%;
+      background: #8C1515;
+      border-radius: 999px;
+    }
+
+    .alpha-demo {
+      margin-top: 1rem;
+      padding: 1.2rem;
+      border: 1px solid #ddcfb8;
+      border-radius: 16px;
+      background: #fffaf2;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+    }
+
+    .alpha-demo input[type="range"] {
+      width: 100%;
+      margin: 1rem 0;
+    }
+
+    .demo-output {
+      display: grid;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+
+    .demo-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #ddcfb8;
+      background: #f8f6f2;
+      border-radius: 999px;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="brand-logo" />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Module 4 · Lesson 13</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="../module-2/index.html">Module 2</a>
+          <a href="../module-3/index.html">Module 3</a>
+          <a href="./index.html">Module 4</a>
+          <a href="../case-studies/index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Module 4 · Regularisation and Feature Selection</p>
+        <h1>Lesson 13: Elastic Net</h1>
+
+        <p class="hero-intro">
+          Elastic net combines ridge and lasso. It can shrink coefficients, select predictors, and behave more
+          stably than pure lasso when biomedical predictors are correlated.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#lecture">Start lesson</a>
+          <a class="btn btn-secondary" href="./4-3-lasso-regression.html">Previous lesson</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <div class="lesson-layout">
+        <aside class="lesson-sidebar" aria-label="Lesson sections">
+          <h3>Lesson sections</h3>
+          <a class="active" href="#lecture">Lecture</a>
+          <a href="#alpha-lambda">Alpha and lambda</a>
+          <a href="#correlated">Correlated predictors</a>
+          <a href="#interactive">Interactive checks</a>
+          <a href="#notes">Detailed notes</a>
+          <a href="#r-code">R code</a>
+          <a href="#exercises">Exercises</a>
+          <a href="#quiz">Quiz</a>
+        </aside>
+
+        <article class="lesson-content">
+          <section class="lesson-section" id="lecture">
+            <p class="kicker">Lecture</p>
+            <h2>Lecture 13: Elastic Net</h2>
+
+            <div class="scene-card">
+              <div class="scene-title">Opening scene: Between ridge and lasso</div>
+              <div class="dialogue-box">
+                
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“Ridge keeps everything. Lasso selects predictors. What if I want something in between?”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“That is the motivation for elastic net.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“So it can select predictors but not behave as sharply as lasso?”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Exactly. It combines ridge-like shrinkage with lasso-like selection.”</p>
+      </div>
+    
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="big-idea">
+            <p class="kicker">Big idea</p>
+            <h2>Elastic net combines ridge and lasso</h2>
+
+            <p>
+              Ridge regression shrinks coefficients but usually keeps all predictors.
+              Lasso regression shrinks some coefficients to zero and performs feature selection.
+              Elastic net sits between them.
+            </p>
+
+            <div class="big-question">
+              <p>
+                Elastic net can shrink coefficients, select predictors, and behave more stably when predictors are correlated.
+              </p>
+            </div>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Main behaviour</th>
+                    <th>Useful when</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Ridge</td><td>Shrinks coefficients, usually keeps predictors</td><td>Many predictors each contain small signal</td></tr>
+                  <tr><td>Lasso</td><td>Shrinks some coefficients to zero</td><td>A very sparse model is desired</td></tr>
+                  <tr><td>Elastic net</td><td>Combines shrinkage and selection</td><td>Predictors are correlated and some selection is desired</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="why-exists">
+            <p class="kicker">Why elastic net exists</p>
+            <h2>Lasso can be unstable with correlated predictors</h2>
+
+            <p>
+              If three biomarkers measure a similar biological process, lasso may select one and discard the others.
+              In another dataset, it may select a different one.
+            </p>
+
+            <div class="clinical-check">
+              <h3>Elastic net solution</h3>
+              <p>
+                Elastic net can handle correlated groups more smoothly.
+                It may keep related predictors together while still applying shrinkage.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="alpha-lambda">
+            <p class="kicker">Alpha and lambda</p>
+            <h2>Elastic net has two tuning ideas</h2>
+
+            <div class="grid grid-2">
+              <div class="model-card">
+                <p class="model-label">Alpha</p>
+                <h3>Ridge-lasso mixture</h3>
+                <p>Alpha controls whether the model behaves more like ridge or more like lasso.</p>
+              </div>
+
+              <div class="model-card">
+                <p class="model-label">Lambda</p>
+                <h3>Penalty strength</h3>
+                <p>Lambda controls how strong the overall regularisation penalty is.</p>
+              </div>
+            </div>
+
+            <div class="formula-box">
+              alpha = 0 &nbsp;&nbsp; → ridge regression<br />
+              alpha = 1 &nbsp;&nbsp; → lasso regression<br />
+              0 &lt; alpha &lt; 1 &nbsp;&nbsp; → elastic net
+            </div>
+
+            <div class="dialogue-box">
+              
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“Ridge has lambda. Lasso has lambda. Elastic net has alpha and lambda?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Correct. Alpha controls the ridge-lasso mixture. Lambda controls how strong the penalty is.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“More tuning means more responsibility.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Exactly. Tuning must be done inside the validation process.”</p>
+      </div>
+    
+            </div>
+
+            <div class="alpha-demo">
+              <h3>Interactive alpha demo</h3>
+              <p>Move the slider to see how alpha changes the model behaviour.</p>
+
+              <label for="alphaSlider"><strong>Alpha:</strong> <span id="alphaValue">0.50 · elastic net</span></label>
+              <input id="alphaSlider" type="range" min="0" max="100" value="50" />
+
+              <div class="demo-output" id="alphaOutput">
+                <span class="demo-pill">Shrinkage <strong>moderate</strong></span>
+                <span class="demo-pill">Feature selection <strong>some</strong></span>
+                <span class="demo-pill">Correlated predictors <strong>more stable than pure lasso</strong></span>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="correlated">
+            <p class="kicker">Correlated predictors</p>
+            <h2>Elastic net is useful for grouped biomedical signals</h2>
+
+            <p>Biomedical predictors are often correlated. Examples include:</p>
+
+            <ul>
+              <li>genes in the same pathway;</li>
+              <li>neighbouring methylation sites;</li>
+              <li>related proteins;</li>
+              <li>repeated clinical measurements;</li>
+              <li>imaging features from the same region.</li>
+            </ul>
+
+            <div class="formula-box">
+              300 participants<br />
+              20,000 gene expression features<br />
+              Many genes move together in pathways
+            </div>
+
+            <p>
+              Elastic net can be useful because it can select features while also keeping grouped information more stable than lasso alone.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="method-choice">
+            <p class="kicker">Choosing between ridge, lasso and elastic net</p>
+            <h2>The goal determines the method</h2>
+
+            <div class="grid grid-2">
+              <div class="model-card">
+                <p class="model-label">Prefer elastic net over ridge when</p>
+                <h3>Some feature selection is desired</h3>
+                <p>Use it when many predictors may be irrelevant, measurement burden matters, or a smaller model is preferred.</p>
+              </div>
+
+              <div class="model-card">
+                <p class="model-label">Prefer elastic net over lasso when</p>
+                <h3>Predictors are highly correlated</h3>
+                <p>Use it when lasso selection is unstable or grouped biological signals are expected.</p>
+              </div>
+            </div>
+
+            <div class="common-mistake">
+              <h3>Common mistake: tuning on the final test set</h3>
+              <p>
+                Do not try many alpha and lambda values and choose the combination with the best final test AUC.
+                The test set would become part of model development, making final performance optimistic.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="validation">
+            <p class="kicker">Tuning and validation</p>
+            <h2>Keep tuning inside the training data</h2>
+
+            <p>An honest workflow is:</p>
+
+            <div class="formula-box">
+              1. Split data into training and test data.<br />
+              2. Use cross-validation inside training data to choose alpha and lambda.<br />
+              3. Fit the final elastic net model on training data.<br />
+              4. Evaluate once on the untouched test data.
+            </div>
+
+            <p>
+              When many tuning values are explored, nested cross-validation can be useful.
+              The inner loop tunes alpha and lambda. The outer loop estimates model performance.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="interpretation">
+            <p class="kicker">Interpretation</p>
+            <h2>Selected features are not automatic biological discoveries</h2>
+
+            <p>Elastic net-selected features are prediction features. Before making biological or clinical claims, ask:</p>
+
+            <ul>
+              <li>Are the features stable?</li>
+              <li>Are they biologically plausible?</li>
+              <li>Are they measured reliably?</li>
+              <li>Are they available at prediction time?</li>
+              <li>Do they validate externally?</li>
+              <li>Could they reflect batch effects?</li>
+            </ul>
+
+            <div class="clinical-check">
+              <h3>Clinical reality check</h3>
+              <p>
+                Elastic net may reduce overfitting, but it does not guarantee good calibration.
+                After fitting an elastic net model, assess discrimination, calibration, Brier score and clinical usefulness.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="interactive">
+            <p class="kicker">Interactive checks</p>
+            <h2>Practise elastic net reasoning</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">What does alpha control in elastic net?</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">The balance between ridge-like and lasso-like behaviour</button>
+                <button class="option-btn" data-answer="incorrect">The number of patients in the dataset</button>
+                <button class="option-btn" data-answer="incorrect">The observed outcome prevalence only</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Alpha controls the ridge-lasso mixture."
+                data-incorrect="<strong>Not quite.</strong> Alpha controls whether elastic net behaves more like ridge or lasso."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Elastic net may be preferred over lasso when:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">Predictors are strongly correlated</button>
+                <button class="option-btn" data-answer="incorrect">No validation is needed</button>
+                <button class="option-btn" data-answer="incorrect">The goal is to prove causality automatically</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Elastic net can handle correlated predictors more smoothly than pure lasso."
+                data-incorrect="<strong>Not quite.</strong> Elastic net is useful when correlated predictors make lasso selection unstable."
+              ></div>
+            </div>
+
+            <div class="interactive-panel">
+              <h3>Flashcards: elastic net concepts</h3>
+              <p>Click each card to reveal the explanation.</p>
+
+              <div class="flashcard-grid">
+                <div class="flashcard">
+                  <div class="flashcard-front">Elastic net</div>
+                  <div class="flashcard-back">A regularisation method combining ridge and lasso penalties.</div>
+                </div>
+                <div class="flashcard">
+                  <div class="flashcard-front">Alpha</div>
+                  <div class="flashcard-back">Controls the ridge-lasso mixing. Alpha = 0 is ridge; alpha = 1 is lasso.</div>
+                </div>
+                <div class="flashcard">
+                  <div class="flashcard-front">Lambda</div>
+                  <div class="flashcard-back">Controls the overall strength of regularisation.</div>
+                </div>
+                <div class="flashcard">
+                  <div class="flashcard-front">Nested cross-validation</div>
+                  <div class="flashcard-back">A validation design with an inner loop for tuning and an outer loop for performance estimation.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="lecture-key">
+            <p class="kicker">Key takeaway</p>
+            <h2>Elastic net balances stability and selection</h2>
+
+            <div class="key-takeaway">
+              <p>
+                Elastic net is a flexible compromise between ridge and lasso.
+                It is especially useful when biomedical predictors are correlated and we want both shrinkage and some feature selection.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="notes">
+            <p class="kicker">Detailed notes</p>
+            <h2>Note 13: Elastic Net</h2>
+
+            <div class="key-takeaway">
+              <p>
+                Elastic net is useful when we want both coefficient shrinkage and some feature selection,
+                especially when predictors are correlated.
+              </p>
+            </div>
+
+            <h3>Learning objectives</h3>
+            <ul>
+              <li>Explain why elastic net combines ridge and lasso penalties.</li>
+              <li>Describe the role of the alpha parameter.</li>
+              <li>Describe the role of the lambda parameter.</li>
+              <li>Explain why elastic net is useful when predictors are correlated.</li>
+              <li>Understand how elastic net can perform shrinkage and feature selection.</li>
+              <li>Distinguish elastic net from ridge and lasso.</li>
+              <li>Explain why elastic net tuning must be done inside validation.</li>
+              <li>Describe biomedical situations where elastic net may be useful.</li>
+            </ul>
+
+            <h3>1. Why this note matters</h3>
+            <p>
+              Ridge and lasso are both useful regularisation methods, but each has limitations.
+              Ridge is stable with correlated predictors, but usually keeps all predictors.
+              Lasso can perform feature selection, but may be unstable when predictors are strongly correlated.
+            </p>
+
+            <h3>2. What elastic net does</h3>
+            <p>
+              Elastic net uses a mixture of ridge and lasso penalties.
+              It can shrink coefficients, set some coefficients to zero, handle correlated predictors better than lasso alone,
+              and produce a model that is more stable than pure lasso in some settings.
+            </p>
+
+            <h3>3. The alpha parameter</h3>
+            <p>
+              Alpha controls the balance between ridge-like and lasso-like behaviour.
+              If alpha is closer to 0, the model behaves more like ridge.
+              If alpha is closer to 1, the model behaves more like lasso.
+            </p>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Alpha</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td>0</td><td>Ridge regression</td></tr>
+                  <tr><td>1</td><td>Lasso regression</td></tr>
+                  <tr><td>Between 0 and 1</td><td>Elastic net</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>4. The lambda parameter</h3>
+            <p>
+              Lambda controls the overall strength of regularisation.
+              Small lambda gives a weak penalty, while large lambda gives a strong penalty.
+              Elastic net therefore has two tuning ideas: alpha for the type of penalty mixture and lambda for penalty strength.
+            </p>
+
+            <h3>5. Why elastic net helps with correlated predictors</h3>
+            <p>
+              Biomedical predictors are often correlated, such as genes in the same pathway, neighbouring methylation sites,
+              related proteins, repeated clinical measurements, or imaging features from the same region.
+              Lasso may select one predictor from a correlated group and ignore the others.
+              Elastic net can allow groups of related predictors to contribute more smoothly.
+            </p>
+
+            <h3>6. Elastic net in omics</h3>
+            <p>
+              Elastic net is commonly useful in omics prediction because omics data often have many predictors,
+              high correlation, limited sample size, noisy measurements, many weak signals and high overfitting risk.
+            </p>
+
+            <h3>7. Elastic net versus ridge and lasso</h3>
+            <p>
+              Elastic net may be preferable to ridge when we want some feature selection, some predictors are likely irrelevant,
+              the final model should be smaller, or measurement burden matters.
+            </p>
+            <p>
+              Elastic net may be preferable to lasso when predictors are strongly correlated, lasso selection is unstable,
+              groups of related predictors may be useful, or high-dimensional biomedical features are present.
+            </p>
+
+            <h3>8. Tuning elastic net</h3>
+            <p>A simple workflow is:</p>
+            <div class="formula-box">
+              1. Define candidate alpha values.<br />
+              2. Define candidate lambda values.<br />
+              3. Use cross-validation in the training data.<br />
+              4. Select tuning values.<br />
+              5. Fit the final model in the training data.<br />
+              6. Evaluate once on the untouched test data.
+            </div>
+
+            <p>The test set should not be used repeatedly to choose alpha or lambda.</p>
+
+            <h3>9. Nested cross-validation</h3>
+            <p>
+              When many tuning values are explored, nested cross-validation can be helpful.
+              The inner loop tunes alpha and lambda, while the outer loop estimates model performance.
+              This avoids using the same validation data for both model selection and performance estimation.
+            </p>
+
+            <h3>10. Medical examples</h3>
+            <p>
+              In cancer recurrence prediction using age, stage, grade, treatment and thousands of gene expression features,
+              ridge may keep all gene features and lasso may select a small but unstable set.
+              Elastic net may select a group of related genes while shrinking coefficients.
+            </p>
+            <p>
+              In a small diabetes model with only a few clinical predictors, elastic net may not always be necessary.
+              It becomes more useful when the number of candidate predictors increases or predictors are strongly correlated.
+            </p>
+
+            <h3>11. Interpretation of selected features</h3>
+            <p>Elastic net-selected features should be interpreted cautiously. They may be:</p>
+            <ul>
+              <li>true biological signals;</li>
+              <li>proxies for other variables;</li>
+              <li>correlated with selected pathways;</li>
+              <li>artefacts of preprocessing;</li>
+              <li>dataset-specific patterns;</li>
+              <li>selected due to random variation.</li>
+            </ul>
+
+            <h3>12. Calibration and validation</h3>
+            <p>
+              Elastic net may reduce overfitting, but it does not guarantee good calibration.
+              After fitting an elastic net model, assess discrimination, calibration plot, calibration slope,
+              calibration intercept, Brier score and decision curve analysis if linked to action.
+            </p>
+
+            <h3>13. Common mistakes</h3>
+            <ul>
+              <li>Tuning alpha and lambda on the final test set.</li>
+              <li>Selecting features before validation.</li>
+              <li>Interpreting selected features as causal.</li>
+              <li>Reporting only AUC.</li>
+              <li>Ignoring calibration.</li>
+              <li>Ignoring feature stability.</li>
+              <li>Failing to externally validate high-dimensional models.</li>
+            </ul>
+
+            <h3>14. Reporting elastic net models</h3>
+            <p>A clear report should describe:</p>
+            <ul>
+              <li>outcome definition;</li>
+              <li>candidate predictors;</li>
+              <li>preprocessing;</li>
+              <li>standardisation;</li>
+              <li>alpha selection;</li>
+              <li>lambda selection;</li>
+              <li>validation design;</li>
+              <li>selected predictors;</li>
+              <li>discrimination;</li>
+              <li>calibration;</li>
+              <li>feature stability if relevant;</li>
+              <li>external validation if available.</li>
+            </ul>
+
+            <h3>15. Summary</h3>
+            <p>
+              Elastic net combines ridge and lasso. It can shrink coefficients and perform feature selection.
+              It is especially useful when predictors are correlated, which is common in biomedical data.
+              Like ridge and lasso, elastic net requires careful validation and cautious interpretation.
+            </p>
+
+            <h3>Revision questions</h3>
+            <ul>
+              <li>What is elastic net?</li>
+              <li>How does elastic net combine ridge and lasso?</li>
+              <li>What does alpha control?</li>
+              <li>What does lambda control?</li>
+              <li>Why is elastic net useful with correlated predictors?</li>
+              <li>Why might elastic net be useful in omics?</li>
+              <li>Why should tuning happen inside validation?</li>
+              <li>Why are selected features not automatically causal?</li>
+              <li>Why does elastic net still require calibration assessment?</li>
+            </ul>
+
+            <h3>Key terms</h3>
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Elastic net</strong></td><td>Regularisation method combining ridge and lasso penalties.</td></tr>
+                  <tr><td><strong>Alpha</strong></td><td>Parameter controlling the ridge-lasso mixing.</td></tr>
+                  <tr><td><strong>Lambda</strong></td><td>Parameter controlling overall penalty strength.</td></tr>
+                  <tr><td><strong>Correlated predictors</strong></td><td>Predictors containing overlapping information.</td></tr>
+                  <tr><td><strong>Nested cross-validation</strong></td><td>Validation approach separating tuning from evaluation.</td></tr>
+                  <tr><td><strong>Omics</strong></td><td>High-dimensional molecular biomedical data.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>References</h3>
+            <p class="reference-item">Zou, H., & Hastie, T. (2005). Regularization and variable selection via the elastic net. Journal of the Royal Statistical Society: Series B.</p>
+            <p class="reference-item">Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning: Data Mining, Inference, and Prediction.</p>
+            <p class="reference-item">James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An Introduction to Statistical Learning: With Applications in R.</p>
+            <p class="reference-item">Friedman, J., Hastie, T., & Tibshirani, R. glmnet: Lasso and elastic-net regularized generalized linear models.</p>
+            <p class="reference-item">Steyerberg, E. W. (2019). Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating.</p>
+          </section>
+
+          <section class="lesson-section" id="r-code">
+            <p class="kicker">R code</p>
+            <h2>R practical: elastic net across alpha values</h2>
+
+            <div class="practice-note">
+              <p>
+                This script fits elastic net models with different alpha values and compares their performance for diabetes prediction.
+                It also prints the selected features from the best model.
+              </p>
+            </div>
+
+            <div class="grid grid-3">
+              <div class="card">
+                <h3>Alpha comparison</h3>
+                <p>Compares alpha values from ridge-like to lasso-like behaviour.</p>
+              </div>
+              <div class="card">
+                <h3>Test AUC</h3>
+                <p>Calculates AUC for each fitted model on the test data.</p>
+              </div>
+              <div class="card">
+                <h3>Selected features</h3>
+                <p>Shows non-zero coefficients from the best elastic net model.</p>
+              </div>
+            </div>
+
+            <p style="margin-top: 1.2rem;">
+              <a class="btn btn-primary" href="../r/13_elastic_net.R" download>
+                Download R script
+              </a>
+              <button class="btn btn-secondary" data-copy-target="r-code-13" type="button">
+                Copy code
+              </button>
+            </p>
+
+            <pre class="code-block"><code id="r-code-13"># Machine Learning in Biostatistics
+# Script 13: Elastic Net
+#
+# This script fits elastic net models with different alpha values
+# and compares their performance for diabetes prediction.
+
+library(tidyverse)
+library(mlbench)
+library(pROC)
+library(glmnet)
+
+set.seed(123)
+
+data("PimaIndiansDiabetes")
+
+diabetes_data &lt;- PimaIndiansDiabetes %&gt;%
+  mutate(
+    diabetes = factor(diabetes, levels = c("neg", "pos"))
+  )
+
+train_index &lt;- sample(seq_len(nrow(diabetes_data)), size = round(0.80 * nrow(diabetes_data)))
+
+train_data &lt;- diabetes_data[train_index, ]
+test_data &lt;- diabetes_data[-train_index, ]
+
+x_train &lt;- model.matrix(
+  diabetes ~ pregnant + glucose + pressure + triceps +
+    insulin + mass + pedigree + age,
+  data = train_data
+)[, -1]
+
+x_test &lt;- model.matrix(
+  diabetes ~ pregnant + glucose + pressure + triceps +
+    insulin + mass + pedigree + age,
+  data = test_data
+)[, -1]
+
+y_train &lt;- ifelse(train_data$diabetes == "pos", 1, 0)
+y_test_factor &lt;- test_data$diabetes
+
+calculate_auc &lt;- function(actual, risk) {
+  roc_object &lt;- roc(
+    response = actual,
+    predictor = risk,
+    levels = c("neg", "pos"),
+    quiet = TRUE
+  )
+
+  as.numeric(auc(roc_object))
+}
+
+alpha_values &lt;- c(0, 0.25, 0.50, 0.75, 1)
+
+elastic_net_results &lt;- map_dfr(alpha_values, function(current_alpha) {
+  elastic_net_model &lt;- cv.glmnet(
+    x = x_train,
+    y = y_train,
+    family = "binomial",
+    alpha = current_alpha
+  )
+
+  elastic_net_risk &lt;- as.numeric(
+    predict(
+      elastic_net_model,
+      newx = x_test,
+      s = "lambda.min",
+      type = "response"
+    )
+  )
+
+  elastic_net_auc &lt;- calculate_auc(y_test_factor, elastic_net_risk)
+
+  tibble(
+    alpha = current_alpha,
+    lambda_min = elastic_net_model$lambda.min,
+    test_auc = elastic_net_auc,
+    model_object = list(elastic_net_model)
+  )
+})
+
+cat("\nElastic net comparison across alpha values:\n")
+print(
+  elastic_net_results %&gt;%
+    select(alpha, lambda_min, test_auc)
+)
+
+best_elastic_net &lt;- elastic_net_results %&gt;%
+  arrange(desc(test_auc)) %&gt;%
+  slice(1)
+
+best_alpha &lt;- best_elastic_net$alpha
+best_model &lt;- best_elastic_net$model_object[[1]]
+
+best_coefficients &lt;- coef(best_model, s = "lambda.min")
+
+best_selected &lt;- tibble(
+  term = rownames(best_coefficients),
+  coefficient = as.numeric(best_coefficients)
+) %&gt;%
+  filter(coefficient != 0)
+
+cat("\nBest alpha based on test AUC:\n")
+print(best_alpha)
+
+cat("\nFeatures selected by the best elastic net model:\n")
+print(best_selected)
+
+plot(
+  elastic_net_results$alpha,
+  elastic_net_results$test_auc,
+  type = "b",
+  xlab = "Alpha",
+  ylab = "Test AUC",
+  main = "Elastic Net: Alpha versus Test AUC"
+)
+
+cat("\nLearning points:\n")
+cat("1. Elastic net combines ridge and lasso behaviour.\n")
+cat("2. Alpha controls the balance between ridge and lasso.\n")
+cat("3. Alpha = 0 gives ridge regression.\n")
+cat("4. Alpha = 1 gives lasso regression.\n")
+cat("5. Elastic net can be useful when predictors are correlated.\n")</code></pre>
+          </section>
+
+          <section class="lesson-section" id="exercises">
+            <p class="kicker">Exercises</p>
+            <h2>Exercise 13: Elastic Net</h2>
+
+            <div class="practice-note">
+              <p>
+                This exercise helps you understand elastic net as a compromise between ridge and lasso.
+              </p>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part A: Conceptual understanding</h3>
+
+              <h4>Question 1</h4>
+              <p>In your own words, explain what elastic net does using ridge, lasso, shrinkage, feature selection and correlated predictors.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Elastic net combines ridge and lasso. It shrinks coefficients, can perform some feature selection, and can be more stable than lasso when predictors are correlated.</p>
+              </div></details>
+
+              <h4>Question 2</h4>
+              <p>Complete: alpha = 0 → ____; alpha = 1 → ____; 0 &lt; alpha &lt; 1 → ____.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>alpha = 0 → ridge regression; alpha = 1 → lasso regression; 0 &lt; alpha &lt; 1 → elastic net.</p>
+              </div></details>
+
+              <h4>Question 3</h4>
+              <p>What does lambda control in elastic net?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Lambda controls the overall strength of the regularisation penalty.</p>
+              </div></details>
+
+              <h4>Question 4</h4>
+              <p>Which statement is most correct?</p>
+              <ol type="A">
+                <li>Elastic net is only useful for small datasets with one predictor.</li>
+                <li>Elastic net combines ridge-like and lasso-like regularisation.</li>
+                <li>Elastic net proves biological causality.</li>
+                <li>Elastic net removes the need for external validation.</li>
+              </ol>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content"><p><strong>B.</strong> Elastic net combines ridge-like and lasso-like regularisation.</p></div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part B: Ridge, lasso or elastic net?</h3>
+
+              <h4>Question 5</h4>
+              <p>Choose the possible method for each situation.</p>
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Situation</th><th>Possible method</th></tr></thead>
+                  <tbody>
+                    <tr><td>Many correlated predictors may each contain small predictive information</td><td></td></tr>
+                    <tr><td>A very small selected predictor set is desired</td><td></td></tr>
+                    <tr><td>Predictors are highly correlated and some feature selection is desired</td><td></td></tr>
+                    <tr><td>Feature stability is more important than sparsity</td><td></td></tr>
+                    <tr><td>A compromise between shrinkage and selection is desired</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <ul>
+                  <li>Many correlated predictors with small signals: <strong>ridge or elastic net</strong>.</li>
+                  <li>Very small selected predictor set: <strong>lasso</strong>.</li>
+                  <li>Highly correlated predictors and some selection: <strong>elastic net</strong>.</li>
+                  <li>Stability more important than sparsity: <strong>ridge or elastic net</strong>.</li>
+                  <li>Compromise between shrinkage and selection: <strong>elastic net</strong>.</li>
+                </ul>
+              </div></details>
+
+              <h4>Question 6</h4>
+              <p>Explain why elastic net may be more stable than lasso when predictors are correlated.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Elastic net includes a ridge-like component, which helps handle correlated predictors more smoothly. Lasso may choose one predictor from a correlated group and discard others, while elastic net may allow grouped predictors to contribute together.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part C: Biomedical scenarios</h3>
+
+              <h4>Question 7</h4>
+              <p>A gene expression dataset has 250 patients and 15,000 features. Many genes belong to related pathways. Why might elastic net be useful?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Elastic net may be useful because the dataset has many predictors and many genes may be correlated through biological pathways. Elastic net can shrink coefficients, select features and handle correlated predictors better than pure lasso.</p>
+              </div></details>
+
+              <h4>Question 8</h4>
+              <p>A model contains only age, BMI, glucose and blood pressure. Would elastic net always be necessary?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>No. With only four clinically meaningful predictors, ordinary logistic regression or ridge may be sufficient. Elastic net becomes more useful when there are many candidate predictors or strong correlation with a need for feature selection.</p>
+              </div></details>
+
+              <h4>Question 9</h4>
+              <p>A methylation study includes neighbouring CpG sites that are highly correlated. Why might pure lasso selection be unstable?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Neighbouring CpG sites may contain similar information. Lasso may select one CpG site and remove others, but a small change in the sample could lead to a different CpG being selected.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part D: Tuning and validation</h3>
+
+              <h4>Question 10</h4>
+              <p>A student tried many alpha and lambda values and selected the combination with the best final test set AUC. What is wrong?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>The final test set was used for model tuning. This means the test set became part of model development, so the final test AUC may be optimistic.</p>
+              </div></details>
+
+              <h4>Question 11</h4>
+              <p>Write a better workflow for tuning elastic net.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Split data into training and test sets. Use cross-validation inside the training data to choose alpha and lambda. Fit the final model on the training data. Evaluate once on the untouched test set.</p>
+              </div></details>
+
+              <h4>Question 12</h4>
+              <p>What is nested cross-validation, and why may it be useful for elastic net?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Nested cross-validation separates tuning from performance estimation. The inner loop tunes alpha and lambda. The outer loop estimates model performance. This is useful when many tuning combinations are tested.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part E: Interpretation</h3>
+
+              <h4>Question 13</h4>
+              <p>An elastic net model selected 25 genes for predicting cancer recurrence. Can we say these 25 genes cause recurrence?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>No. Elastic net-selected genes are predictors in a model. They may be causal, correlated with causal factors, proxies, artefacts or selected by chance. Causality requires additional evidence.</p>
+              </div></details>
+
+              <h4>Question 14</h4>
+              <p>List four questions before making biological claims about elastic net-selected features.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Ask whether the features are stable, biologically plausible, externally validated, reliably measured, available at prediction time and not explained by batch effects.</p>
+              </div></details>
+
+              <h4>Question 15</h4>
+              <p>Why should calibration still be assessed after fitting an elastic net model?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Elastic net may improve stability, but it does not guarantee well-calibrated probabilities. Calibration must be checked because clinical decisions may depend on accurate risk estimates.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part F: True or false</h3>
+
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Statement</th><th>True / False</th></tr></thead>
+                  <tbody>
+                    <tr><td>Elastic net combines ridge and lasso penalties.</td><td></td></tr>
+                    <tr><td>Elastic net always gives a causal explanation.</td><td></td></tr>
+                    <tr><td>Elastic net can be useful when predictors are correlated.</td><td></td></tr>
+                    <tr><td>Alpha controls the ridge-lasso mixture.</td><td></td></tr>
+                    <tr><td>Lambda controls the strength of the penalty.</td><td></td></tr>
+                    <tr><td>The test set should be repeatedly used for tuning.</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <ul>
+                  <li>Combines ridge and lasso penalties: <strong>True</strong>.</li>
+                  <li>Always gives causal explanation: <strong>False</strong>.</li>
+                  <li>Useful when predictors are correlated: <strong>True</strong>.</li>
+                  <li>Alpha controls ridge-lasso mixture: <strong>True</strong>.</li>
+                  <li>Lambda controls penalty strength: <strong>True</strong>.</li>
+                  <li>Test set repeatedly used for tuning: <strong>False</strong>.</li>
+                </ul>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part G: Short written answer</h3>
+              <p>Write a short explanation of elastic net for a biomedical researcher working with omics data.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>
+                  Elastic net is useful for omics data because it combines shrinkage and feature selection.
+                  It can handle correlated features better than lasso alone, which is helpful when genes, methylation sites,
+                  or proteins move together. However, selected features still need careful validation and cautious biological interpretation.
+                </p>
+              </div></details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="quiz">
+            <p class="kicker">Quick quiz</p>
+            <h2>Final checks</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Alpha = 0 corresponds to:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">Ridge regression</button>
+                <button class="option-btn" data-answer="incorrect">Lasso regression</button>
+                <button class="option-btn" data-answer="incorrect">No regularisation</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> In elastic net, alpha = 0 gives ridge regression."
+                data-incorrect="<strong>Not quite.</strong> Alpha controls the ridge-lasso mixture; alpha = 0 is ridge."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Elastic net-selected genes should first be interpreted as:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">Proven causal genes</button>
+                <button class="option-btn" data-answer="correct">Prediction features needing validation</button>
+                <button class="option-btn" data-answer="incorrect">Features that remove the need for calibration</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Selected features need validation and cautious biological interpretation."
+                data-incorrect="<strong>Not quite.</strong> Elastic net is a prediction method, not automatic causal discovery."
+              ></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="next-lesson-card">
+              <div>
+                <p class="kicker">Next lesson</p>
+                <h2 style="margin: 0;">Feature Selection in Biomedical Data</h2>
+                <p style="margin-bottom: 0;">
+                  Learn how to interpret selected biomarkers and avoid leakage in biomedical feature selection.
+                </p>
+              </div>
+
+              <a class="btn btn-primary" href="./4-5-feature-selection-biomedical-data.html">
+                Continue
+              </a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="footer-logo" />
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+
+  <script>
+    const alphaSlider = document.getElementById("alphaSlider");
+    const alphaValue = document.getElementById("alphaValue");
+    const alphaOutput = document.getElementById("alphaOutput");
+
+    function updateAlphaDemo() {
+      if (!alphaSlider || !alphaValue || !alphaOutput) return;
+
+      const alpha = Number(alphaSlider.value) / 100;
+
+      if (alpha === 0) {
+        alphaValue.textContent = "0.00 · ridge-like";
+        alphaOutput.innerHTML = `
+          <span class="demo-pill">Shrinkage <strong>strong ridge-like shrinkage</strong></span>
+          <span class="demo-pill">Feature selection <strong>usually none</strong></span>
+          <span class="demo-pill">Correlated predictors <strong>stable</strong></span>
+        `;
+      } else if (alpha === 1) {
+        alphaValue.textContent = "1.00 · lasso-like";
+        alphaOutput.innerHTML = `
+          <span class="demo-pill">Shrinkage <strong>lasso shrinkage</strong></span>
+          <span class="demo-pill">Feature selection <strong>more sparse</strong></span>
+          <span class="demo-pill">Correlated predictors <strong>may be unstable</strong></span>
+        `;
+      } else if (alpha < 0.5) {
+        alphaValue.textContent = alpha.toFixed(2) + " · more ridge-like elastic net";
+        alphaOutput.innerHTML = `
+          <span class="demo-pill">Shrinkage <strong>more ridge-like</strong></span>
+          <span class="demo-pill">Feature selection <strong>limited</strong></span>
+          <span class="demo-pill">Correlated predictors <strong>fairly stable</strong></span>
+        `;
+      } else if (alpha > 0.5) {
+        alphaValue.textContent = alpha.toFixed(2) + " · more lasso-like elastic net";
+        alphaOutput.innerHTML = `
+          <span class="demo-pill">Shrinkage <strong>more lasso-like</strong></span>
+          <span class="demo-pill">Feature selection <strong>stronger</strong></span>
+          <span class="demo-pill">Correlated predictors <strong>less sharp than pure lasso</strong></span>
+        `;
+      } else {
+        alphaValue.textContent = "0.50 · balanced elastic net";
+        alphaOutput.innerHTML = `
+          <span class="demo-pill">Shrinkage <strong>moderate</strong></span>
+          <span class="demo-pill">Feature selection <strong>some</strong></span>
+          <span class="demo-pill">Correlated predictors <strong>more stable than pure lasso</strong></span>
+        `;
+      }
+    }
+
+    if (alphaSlider) {
+      alphaSlider.addEventListener("input", updateAlphaDemo);
+      updateAlphaDemo();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Lesson 14: Feature Selection in Biomedical Data | Machine Learning in Biostatistics</title>
+
+  <meta
+    name="description"
+    content="Lesson 14 of Machine Learning in Biostatistics: feature selection, clinical selection, statistical selection, model-based selection, leakage, batch effects and feature stability."
+  />
+
+  <link rel="stylesheet" href="../assets/course.css" />
+
+  <style>
+    .workflow-compare {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .workflow-box {
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      padding: 1.2rem;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+    }
+
+    .workflow-box.bad {
+      border-left: 6px solid #991b1b;
+      background: #fff5f5;
+    }
+
+    .workflow-box.good {
+      border-left: 6px solid #166534;
+      background: #f0fdf4;
+    }
+
+    .batch-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .batch-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 16px;
+      padding: 1rem;
+      background: #fffaf2;
+    }
+
+    .stability-dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin: 1rem 0;
+    }
+
+    .dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #ddcfb8;
+      background: #f8f6f2;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .dot.stable {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: #166534;
+    }
+
+    .dot.unstable {
+      background: #fff5f5;
+      border-color: #fecaca;
+      color: #991b1b;
+    }
+
+    @media (max-width: 850px) {
+      .workflow-compare,
+      .batch-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="brand-logo" />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Module 4 · Lesson 14</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="../module-2/index.html">Module 2</a>
+          <a href="../module-3/index.html">Module 3</a>
+          <a href="./index.html">Module 4</a>
+          <a href="../case-studies/index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Module 4 · Regularisation and Feature Selection</p>
+        <h1>Lesson 14: Feature Selection in Biomedical Data</h1>
+
+        <p class="hero-intro">
+          Feature selection can make biomedical prediction models simpler and more practical.
+          But if it is done before validation, it can create serious leakage and make performance look much better than it really is.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#lecture">Start lesson</a>
+          <a class="btn btn-secondary" href="./4-4-elastic-net.html">Previous lesson</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <div class="lesson-layout">
+        <aside class="lesson-sidebar" aria-label="Lesson sections">
+          <h3>Lesson sections</h3>
+          <a class="active" href="#lecture">Lecture</a>
+          <a href="#types">Types of selection</a>
+          <a href="#leakage">Leakage</a>
+          <a href="#batch-effects">Batch effects</a>
+          <a href="#interactive">Interactive checks</a>
+          <a href="#notes">Detailed notes</a>
+          <a href="#r-code">R code</a>
+          <a href="#exercises">Exercises</a>
+          <a href="#quiz">Quiz</a>
+        </aside>
+
+        <article class="lesson-content">
+          <section class="lesson-section" id="lecture">
+            <p class="kicker">Lecture</p>
+            <h2>Lecture 14: Feature Selection in Biomedical Data</h2>
+
+            <div class="scene-card">
+              <div class="scene-title">Opening scene: The top biomarkers</div>
+              <div class="dialogue-box">
+                
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“I selected the top 20 biomarkers using the full dataset, then cross-validated my model. The AUC is excellent.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line leakage-monster">
+        <p><span class="character">Leakage Monster:</span><br />“Beautiful! Very impressive!”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Wait. If you used the full dataset before cross-validation, the validation folds influenced feature selection.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“So the AUC may be inflated?”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Exactly. That is feature-selection leakage.”</p>
+      </div>
+    
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="big-idea">
+            <p class="kicker">Big idea</p>
+            <h2>Feature selection chooses a subset of predictors</h2>
+
+            <p>
+              In biomedical machine learning, feature selection is common because datasets may contain many clinical variables,
+              biomarkers, imaging features, genes, methylation sites, proteins or metabolites.
+            </p>
+
+            <div class="big-question">
+              <p>
+                Feature selection can make a model simpler, but if done incorrectly, it can create serious data leakage.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="why-used">
+            <p class="kicker">Why feature selection is used</p>
+            <h2>Smaller models can be more practical</h2>
+
+            <p>Feature selection may be used to:</p>
+            <ul>
+              <li>reduce model complexity;</li>
+              <li>remove noisy predictors;</li>
+              <li>reduce measurement burden;</li>
+              <li>make the model easier to explain;</li>
+              <li>identify candidate biomarkers;</li>
+              <li>improve practicality;</li>
+              <li>create a smaller prediction model.</li>
+            </ul>
+
+            <div class="clinical-check">
+              <h3>Clinical practicality</h3>
+              <p>
+                A model using routinely available predictors is often easier to implement than a model requiring expensive specialised tests.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="types">
+            <p class="kicker">Types of feature selection</p>
+            <h2>Clinical, statistical and model-based selection</h2>
+
+            <div class="grid grid-3">
+              <div class="model-card">
+                <p class="model-label">Clinical</p>
+                <h3>Based on medical knowledge</h3>
+                <p>Uses predictors that are clinically plausible and available at prediction time.</p>
+              </div>
+
+              <div class="model-card">
+                <p class="model-label">Statistical</p>
+                <h3>Based on data patterns</h3>
+                <p>Uses p-values, correlations, univariable screening or other data-driven criteria.</p>
+              </div>
+
+              <div class="model-card">
+                <p class="model-label">Model-based</p>
+                <h3>Based on fitted model behaviour</h3>
+                <p>Uses lasso coefficients, random forest importance or recursive feature elimination.</p>
+              </div>
+            </div>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Selection method</th>
+                    <th>Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Prior clinical knowledge</td><td>Clinical</td></tr>
+                  <tr><td>Lowest p-values</td><td>Statistical</td></tr>
+                  <tr><td>Lasso retained predictors</td><td>Model-based / statistical</td></tr>
+                  <tr><td>Random forest importance</td><td>Model-based</td></tr>
+                  <tr><td>Routinely available hospital variables</td><td>Clinical / practical</td></tr>
+                  <tr><td>Top genes by association with outcome</td><td>Statistical</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="leakage">
+            <p class="kicker">Feature-selection leakage</p>
+            <h2>The most dangerous mistake</h2>
+
+            <p>
+              Feature-selection leakage happens when validation or test data influence predictor selection.
+            </p>
+
+            <div class="workflow-compare">
+              <div class="workflow-box bad">
+                <h3>Incorrect workflow</h3>
+                <ol>
+                  <li>Use full dataset to select features.</li>
+                  <li>Split into train and test sets.</li>
+                  <li>Fit model on training data.</li>
+                  <li>Evaluate on test data.</li>
+                </ol>
+                <p><strong>Problem:</strong> the test set helped choose the features.</p>
+              </div>
+
+              <div class="workflow-box good">
+                <h3>Correct workflow</h3>
+                <ol>
+                  <li>Split data into training and test sets.</li>
+                  <li>Select features using training data only.</li>
+                  <li>Fit model using training data only.</li>
+                  <li>Evaluate once on the untouched test set.</li>
+                </ol>
+                <p><strong>Principle:</strong> validation data must remain unseen.</p>
+              </div>
+            </div>
+
+            <div class="dialogue-box">
+              
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“But selecting features before validation feels easier.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Easier, yes. Honest, no.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“If the model is going to be used on patients, honesty matters more than convenience.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Exactly.”</p>
+      </div>
+    
+            </div>
+          </section>
+
+          <section class="lesson-section" id="omics-risk">
+            <p class="kicker">Why biomedical data are risky</p>
+            <h2>Thousands of predictors create many accidental patterns</h2>
+
+            <div class="formula-box">
+              300 patients<br />
+              450,000 methylation sites
+            </div>
+
+            <p>
+              With so many features, some will appear associated with the outcome by chance.
+              If those features are selected using the full dataset before validation, performance may look excellent but fail externally.
+            </p>
+
+            <div class="common-mistake">
+              <h3>Common mistake</h3>
+              <p>
+                Do not select biomarkers using the full dataset before cross-validation.
+                This leaks outcome information into validation and can seriously inflate performance.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="batch-effects">
+            <p class="kicker">Batch effects</p>
+            <h2>Technical artefacts can masquerade as biological signal</h2>
+
+            <p>
+              Batch effects are technical differences unrelated to biology.
+            </p>
+
+            <div class="batch-grid">
+              <div class="batch-card">
+                <h3>Example sources</h3>
+                <ul>
+                  <li>lab batch;</li>
+                  <li>sequencing run;</li>
+                  <li>methylation array plate;</li>
+                  <li>sample processing date;</li>
+                  <li>scanner type;</li>
+                  <li>technician;</li>
+                  <li>hospital site.</li>
+                </ul>
+              </div>
+
+              <div class="batch-card">
+                <h3>Confounding problem</h3>
+                <p>
+                  If most cases are processed on Plate 1 and most controls on Plate 2, feature selection may identify plate differences,
+                  not disease biology.
+                </p>
+              </div>
+            </div>
+
+            <p>
+              If a model learns batch effects instead of disease biology, it may perform well internally but fail in external data
+              where the batch structure is different.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="stability">
+            <p class="kicker">Feature stability</p>
+            <h2>A selected feature list should not change wildly</h2>
+
+            <p>
+              Feature stability means selected features are consistent across bootstrap samples, cross-validation folds,
+              repeated analyses or external datasets.
+            </p>
+
+            <div class="stability-dots" aria-label="Feature stability illustration">
+              <span class="dot stable">G1</span>
+              <span class="dot stable">G2</span>
+              <span class="dot stable">G3</span>
+              <span class="dot unstable">G4</span>
+              <span class="dot unstable">G8</span>
+              <span class="dot unstable">G12</span>
+              <span class="dot unstable">G21</span>
+              <span class="dot unstable">G33</span>
+            </div>
+
+            <p>
+              If selected features change dramatically across resamples, interpretation should be cautious.
+              The model may still predict, but the specific biomarker list may not be reliable.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="prediction-discovery">
+            <p class="kicker">Prediction versus discovery</p>
+            <h2>Selected does not automatically mean causal</h2>
+
+            <p>A selected feature may be:</p>
+            <ul>
+              <li>causally important;</li>
+              <li>correlated with a causal factor;</li>
+              <li>a proxy for disease severity;</li>
+              <li>a technical artefact;</li>
+              <li>selected by chance;</li>
+              <li>specific to one dataset.</li>
+            </ul>
+
+            <div class="key-takeaway">
+              <p>
+                Always separate the prediction question from the discovery question.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="methylation-example">
+            <p class="kicker">Medical example</p>
+            <h2>Methylation prediction workflow</h2>
+
+            <p>Suppose we predict exposure status using DNA methylation.</p>
+
+            <div class="workflow-compare">
+              <div class="workflow-box bad">
+                <h3>Poor workflow</h3>
+                <ol>
+                  <li>Select top 100 CpG sites using full data.</li>
+                  <li>Cross-validate classifier.</li>
+                  <li>Report AUC.</li>
+                </ol>
+              </div>
+
+              <div class="workflow-box good">
+                <h3>Better workflow</h3>
+                <ol>
+                  <li>Create folds first.</li>
+                  <li>Select CpG sites inside each training fold.</li>
+                  <li>Fit model inside each training fold.</li>
+                  <li>Evaluate on held-out fold.</li>
+                </ol>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="interactive">
+            <p class="kicker">Interactive checks</p>
+            <h2>Practise feature-selection reasoning</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Which workflow is correct for 5-fold cross-validation with feature selection?</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">Select features once using the full dataset, then cross-validate.</button>
+                <button class="option-btn" data-answer="correct">For each fold, select features using only the training fold, then evaluate on the validation fold.</button>
+                <button class="option-btn" data-answer="incorrect">Use the validation fold to choose the best feature list.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Feature selection must happen inside each training fold so the validation fold remains unseen."
+                data-incorrect="<strong>Not quite.</strong> Full-data feature selection before cross-validation causes leakage."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">A methylation study has cases mostly on Plate 1 and controls mostly on Plate 2. What is the risk?</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">Feature selection may identify plate effects instead of biology.</button>
+                <button class="option-btn" data-answer="incorrect">This automatically improves external validation.</button>
+                <button class="option-btn" data-answer="incorrect">This proves selected CpG sites are causal.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> The model may learn technical artefacts if batch is confounded with outcome."
+                data-incorrect="<strong>Not quite.</strong> Confounding between batch and outcome can create misleading selected features."
+              ></div>
+            </div>
+
+            <div class="interactive-panel">
+              <h3>Flashcards: feature-selection terms</h3>
+              <p>Click each card to reveal the explanation.</p>
+
+              <div class="flashcard-grid">
+                <div class="flashcard">
+                  <div class="flashcard-front">Feature selection</div>
+                  <div class="flashcard-back">Choosing a subset of predictors from a larger candidate set.</div>
+                </div>
+                <div class="flashcard">
+                  <div class="flashcard-front">Feature-selection leakage</div>
+                  <div class="flashcard-back">Leakage caused when validation or test data influence predictor selection.</div>
+                </div>
+                <div class="flashcard">
+                  <div class="flashcard-front">Batch effect</div>
+                  <div class="flashcard-back">Technical variation unrelated to the biological signal of interest.</div>
+                </div>
+                <div class="flashcard">
+                  <div class="flashcard-front">Feature stability</div>
+                  <div class="flashcard-back">Consistency of selected features across folds, resamples or datasets.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="lecture-key">
+            <p class="kicker">Key takeaway</p>
+            <h2>Feature selection must be honest and cautious</h2>
+
+            <div class="key-takeaway">
+              <p>
+                Feature selection can make biomedical models simpler and more practical, but it must be performed inside validation.
+                Selected features should be interpreted as prediction features first, not automatic biological discoveries.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="notes">
+            <p class="kicker">Detailed notes</p>
+            <h2>Note 14: Feature Selection in Biomedical Data</h2>
+
+            <div class="key-takeaway">
+              <p>
+                Feature selection can simplify a biomedical prediction model, but if done incorrectly, it can seriously bias model performance.
+              </p>
+            </div>
+
+            <h3>Learning objectives</h3>
+            <ul>
+              <li>Explain why feature selection is common in biomedical machine learning.</li>
+              <li>Distinguish clinical, statistical, and model-based feature selection.</li>
+              <li>Understand why feature selection can cause data leakage.</li>
+              <li>Explain why feature selection must happen inside validation.</li>
+              <li>Describe why selected features may be unstable.</li>
+              <li>Explain why prediction feature selection does not prove causality.</li>
+              <li>Recognise special risks in omics and biomarker studies.</li>
+              <li>Apply a practical checklist before trusting selected features.</li>
+            </ul>
+
+            <h3>1. Why this note matters</h3>
+            <p>
+              Biomedical datasets often contain many possible predictors, including clinical variables, blood test measurements,
+              imaging features, biomarkers, gene expression values, DNA methylation sites, proteins, metabolites and electronic health record codes.
+            </p>
+
+            <p>
+              Feature selection is the process of choosing a subset of predictors.
+              It can make models simpler and more practical, but it is also one of the easiest ways to accidentally create data leakage.
+            </p>
+
+            <h3>2. Feature selection is not automatically good</h3>
+            <p>
+              Feature selection can help, but it can also harm. It may remove useful predictors, select unstable predictors,
+              select variables that work only in one dataset, or create data leakage if performed before validation.
+            </p>
+
+            <h3>3. Clinical feature selection</h3>
+            <p>
+              Clinical feature selection uses subject-matter knowledge.
+              It helps ensure that the model uses predictors that are meaningful, measurable and available at the intended prediction time.
+            </p>
+
+            <h3>4. Statistical and model-based feature selection</h3>
+            <p>
+              Statistical feature selection uses data-driven criteria such as p-values, correlation filtering, stepwise regression,
+              lasso selection, recursive feature elimination or model-based variable importance.
+            </p>
+
+            <p>
+              Model-based methods identify predictors that help prediction in a specific dataset and modelling workflow.
+              They do not automatically identify causal factors.
+            </p>
+
+            <h3>5. Feature-selection leakage</h3>
+            <p>
+              Feature-selection leakage occurs when validation or test data influence predictor selection.
+              If the full dataset is used to select predictors before splitting or cross-validation, evaluation is no longer independent.
+            </p>
+
+            <h3>6. Correct feature selection workflow</h3>
+            <p>A safer train/test workflow is:</p>
+            <div class="formula-box">
+              1. Split data into training and test sets.<br />
+              2. Select features using training data only.<br />
+              3. Fit the model using training data only.<br />
+              4. Evaluate once on the untouched test set.
+            </div>
+
+            <p>
+              For cross-validation, feature selection must happen inside each training fold so each validation fold remains genuinely unseen.
+            </p>
+
+            <h3>7. Why this matters in omics</h3>
+            <p>
+              Omics datasets often contain thousands or hundreds of thousands of predictors.
+              With so many features, some will appear associated with the outcome by chance.
+              If selected before validation, these chance associations can seriously inflate performance.
+            </p>
+
+            <h3>8. Batch effects</h3>
+            <p>
+              Batch effects are technical differences unrelated to biology.
+              Examples include laboratory batch, sequencing run, methylation array plate, sample processing date,
+              scanner, technician or hospital site.
+            </p>
+
+            <p>
+              If batch is associated with outcome, feature selection may select variables that reflect batch rather than disease biology.
+              This can produce excellent internal performance and poor external performance.
+            </p>
+
+            <h3>9. Feature stability</h3>
+            <p>
+              Stability means that the same or similar features are selected across bootstrap samples, cross-validation folds,
+              repeated analyses or external datasets.
+              If selected features change dramatically across resamples, interpretation should be cautious.
+            </p>
+
+            <h3>10. Correlated predictors and instability</h3>
+            <p>
+              Biomedical predictors are often correlated. Nearby methylation sites, genes in the same pathway,
+              related proteins and imaging features from the same region may carry overlapping information.
+              Selection methods may choose one predictor from a group in one sample and another predictor from the same group in another sample.
+            </p>
+
+            <h3>11. Prediction versus discovery</h3>
+            <p>
+              Feature selection for prediction is not the same as biological discovery.
+              A selected predictor may help prediction because it is correlated with the outcome, but that does not prove it causes the outcome.
+            </p>
+
+            <p>
+              Similarly, a biologically important predictor may not be selected if it does not improve prediction in that dataset.
+            </p>
+
+            <h3>12. Biomedical examples</h3>
+            <p>
+              In diabetes prediction, feature selection may identify glucose, BMI, age and pedigree.
+              These are clinically plausible, but selection should still be validated.
+            </p>
+
+            <p>
+              In methylation prediction, selecting the top CpG sites using full data before cross-validation will bias performance.
+              The correct workflow is to select CpG sites inside each training fold and use external validation where possible.
+            </p>
+
+            <h3>13. Practical checklist</h3>
+            <ul>
+              <li>Were features selected inside validation?</li>
+              <li>Was the final test set untouched?</li>
+              <li>Are selected features stable?</li>
+              <li>Are they clinically or biologically plausible?</li>
+              <li>Are they measured reliably?</li>
+              <li>Are they available at the intended prediction time?</li>
+              <li>Could batch effects explain them?</li>
+              <li>Do they validate externally?</li>
+              <li>Do they improve calibration or only AUC?</li>
+              <li>Are claims limited to what the study design supports?</li>
+            </ul>
+
+            <h3>14. Reporting feature selection</h3>
+            <p>A clear report should describe:</p>
+            <ul>
+              <li>all candidate predictors;</li>
+              <li>feature selection method;</li>
+              <li>when feature selection was performed;</li>
+              <li>whether it was inside validation;</li>
+              <li>number of selected features;</li>
+              <li>stability of selected features if assessed;</li>
+              <li>clinical or biological interpretation;</li>
+              <li>validation performance;</li>
+              <li>limitations.</li>
+            </ul>
+
+            <h3>15. Summary</h3>
+            <p>
+              Feature selection is common in biomedical machine learning.
+              It can make models simpler and more practical.
+              However, feature selection must be included inside the validation process.
+            </p>
+
+            <div class="key-takeaway">
+              <p>
+                Selected features should be interpreted as prediction features first,
+                not automatically as causal or biologically validated discoveries.
+              </p>
+            </div>
+
+            <h3>Revision questions</h3>
+            <ul>
+              <li>What is feature selection?</li>
+              <li>Why is feature selection used in biomedical prediction?</li>
+              <li>What is clinical feature selection?</li>
+              <li>What is statistical feature selection?</li>
+              <li>What is model-based feature selection?</li>
+              <li>What is feature-selection leakage?</li>
+              <li>Why must feature selection happen inside cross-validation?</li>
+              <li>Why is omics feature selection especially risky?</li>
+              <li>What are batch effects?</li>
+              <li>What does feature stability mean?</li>
+              <li>Why does prediction feature selection not prove causality?</li>
+            </ul>
+
+            <h3>Key terms</h3>
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Feature selection</strong></td><td>Choosing a subset of predictors.</td></tr>
+                  <tr><td><strong>Clinical feature selection</strong></td><td>Predictor selection based on domain knowledge.</td></tr>
+                  <tr><td><strong>Statistical feature selection</strong></td><td>Predictor selection based on data-driven criteria.</td></tr>
+                  <tr><td><strong>Model-based selection</strong></td><td>Feature selection based on fitted model behaviour.</td></tr>
+                  <tr><td><strong>Feature-selection leakage</strong></td><td>Leakage caused by selecting predictors before validation.</td></tr>
+                  <tr><td><strong>Stability</strong></td><td>Consistency of selected predictors across resamples.</td></tr>
+                  <tr><td><strong>Batch effect</strong></td><td>Technical variation unrelated to biological signal.</td></tr>
+                  <tr><td><strong>Omics</strong></td><td>High-dimensional molecular biomedical data.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>References</h3>
+            <p class="reference-item">Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning: Data Mining, Inference, and Prediction.</p>
+            <p class="reference-item">James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An Introduction to Statistical Learning: With Applications in R.</p>
+            <p class="reference-item">Steyerberg, E. W. (2019). Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating.</p>
+            <p class="reference-item">Riley, R. D., van der Windt, D., Croft, P., & Moons, K. G. M. (2019). Prognosis Research in Healthcare: Concepts, Methods, and Impact.</p>
+            <p class="reference-item">Tibshirani, R. (1996). Regression shrinkage and selection via the lasso.</p>
+          </section>
+
+          <section class="lesson-section" id="r-code">
+            <p class="kicker">R code</p>
+            <h2>R practical: feature selection leakage versus honest selection</h2>
+
+            <div class="practice-note">
+              <p>
+                This script demonstrates why feature selection should be done inside the validation process.
+                It compares selecting predictors using the full dataset with selecting predictors using training data only.
+              </p>
+            </div>
+
+            <div class="grid grid-3">
+              <div class="card">
+                <h3>Full-data selection</h3>
+                <p>Shows the leakage-prone workflow where all data are used before testing.</p>
+              </div>
+
+              <div class="card">
+                <h3>Training-only selection</h3>
+                <p>Shows the safer workflow where test data remain untouched.</p>
+              </div>
+
+              <div class="card">
+                <h3>AUC comparison</h3>
+                <p>Compares performance from the two workflows.</p>
+              </div>
+            </div>
+
+            <p style="margin-top: 1.2rem;">
+              <a class="btn btn-primary" href="../r/14_feature_selection_biomedical_data.R" download>
+                Download R script
+              </a>
+              <button class="btn btn-secondary" data-copy-target="r-code-14" type="button">
+                Copy code
+              </button>
+            </p>
+
+            <pre class="code-block"><code id="r-code-14"># Machine Learning in Biostatistics
+# Script 14: Feature Selection in Biomedical Data
+#
+# This script demonstrates why feature selection should be done
+# inside the validation process, not before validation.
+
+library(tidyverse)
+library(mlbench)
+library(pROC)
+
+set.seed(123)
+
+data("PimaIndiansDiabetes")
+
+diabetes_data &lt;- PimaIndiansDiabetes %&gt;%
+  mutate(
+    diabetes = factor(diabetes, levels = c("neg", "pos"))
+  )
+
+candidate_predictors &lt;- c(
+  "pregnant",
+  "glucose",
+  "pressure",
+  "triceps",
+  "insulin",
+  "mass",
+  "pedigree",
+  "age"
+)
+
+rank_predictors_by_auc &lt;- function(data, predictors) {
+  map_dfr(predictors, function(current_predictor) {
+    roc_object &lt;- roc(
+      response = data$diabetes,
+      predictor = data[[current_predictor]],
+      levels = c("neg", "pos"),
+      quiet = TRUE
+    )
+
+    auc_value &lt;- as.numeric(auc(roc_object))
+
+    tibble(
+      predictor = current_predictor,
+      univariable_auc = max(auc_value, 1 - auc_value)
+    )
+  }) %&gt;%
+    arrange(desc(univariable_auc))
+}
+
+evaluate_model &lt;- function(train_data, test_data, selected_predictors) {
+  model_formula &lt;- as.formula(
+    paste("diabetes ~", paste(selected_predictors, collapse = " + "))
+  )
+
+  model &lt;- glm(
+    model_formula,
+    data = train_data,
+    family = binomial
+  )
+
+  risk &lt;- predict(
+    model,
+    newdata = test_data,
+    type = "response"
+  )
+
+  roc_object &lt;- roc(
+    response = test_data$diabetes,
+    predictor = risk,
+    levels = c("neg", "pos"),
+    quiet = TRUE
+  )
+
+  as.numeric(auc(roc_object))
+}
+
+train_index &lt;- sample(seq_len(nrow(diabetes_data)), size = round(0.80 * nrow(diabetes_data)))
+
+train_data &lt;- diabetes_data[train_index, ]
+test_data &lt;- diabetes_data[-train_index, ]
+
+full_data_ranking &lt;- rank_predictors_by_auc(
+  data = diabetes_data,
+  predictors = candidate_predictors
+)
+
+leakage_selected_predictors &lt;- full_data_ranking %&gt;%
+  slice_head(n = 4) %&gt;%
+  pull(predictor)
+
+train_data_ranking &lt;- rank_predictors_by_auc(
+  data = train_data,
+  predictors = candidate_predictors
+)
+
+honest_selected_predictors &lt;- train_data_ranking %&gt;%
+  slice_head(n = 4) %&gt;%
+  pull(predictor)
+
+leakage_auc &lt;- evaluate_model(
+  train_data = train_data,
+  test_data = test_data,
+  selected_predictors = leakage_selected_predictors
+)
+
+honest_auc &lt;- evaluate_model(
+  train_data = train_data,
+  test_data = test_data,
+  selected_predictors = honest_selected_predictors
+)
+
+feature_selection_comparison &lt;- tibble(
+  workflow = c(
+    "Leakage-prone: features selected using full data",
+    "Honest: features selected using training data only"
+  ),
+  selected_predictors = c(
+    paste(leakage_selected_predictors, collapse = ", "),
+    paste(honest_selected_predictors, collapse = ", ")
+  ),
+  test_auc = c(
+    leakage_auc,
+    honest_auc
+  )
+)
+
+cat("\nFeature ranking using the full dataset:\n")
+print(full_data_ranking)
+
+cat("\nFeature ranking using training data only:\n")
+print(train_data_ranking)
+
+cat("\nComparison of feature selection workflows:\n")
+print(feature_selection_comparison)
+
+cat("\nLearning points:\n")
+cat("1. Feature selection is part of model development.\n")
+cat("2. Feature selection should use training data only.\n")
+cat("3. Selecting features before validation can cause leakage.\n")
+cat("4. Leakage can make model performance look better than it really is.\n")
+cat("5. Selected features are prediction features, not automatically causal factors.\n")</code></pre>
+          </section>
+
+          <section class="lesson-section" id="exercises">
+            <p class="kicker">Exercises</p>
+            <h2>Exercise 14: Feature Selection in Biomedical Data</h2>
+
+            <div class="practice-note">
+              <p>
+                This exercise helps you understand clinical feature selection, statistical feature selection, model-based selection,
+                feature-selection leakage, batch effects, stability and prediction versus discovery.
+              </p>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part A: Conceptual understanding</h3>
+
+              <h4>Question 1</h4>
+              <p>What is feature selection?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Feature selection is the process of choosing a subset of predictors from a larger set of candidate predictors for use in a model.</p>
+              </div></details>
+
+              <h4>Question 2</h4>
+              <p>Give three reasons why feature selection may be useful in biomedical prediction modelling.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>It may reduce model complexity, reduce measurement burden, improve practicality, remove noisy predictors and make the model easier to communicate.</p>
+              </div></details>
+
+              <h4>Question 3</h4>
+              <p>Give three risks of feature selection.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Feature selection can cause leakage, select unstable predictors, remove useful predictors, identify dataset-specific patterns or encourage overinterpretation of selected features.</p>
+              </div></details>
+
+              <h4>Question 4</h4>
+              <p>What is the difference between clinical feature selection and statistical feature selection?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Clinical feature selection uses subject knowledge and clinical practicality. Statistical feature selection uses data-driven criteria such as p-values, correlations or model-based importance.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part B: Types of feature selection</h3>
+
+              <h4>Question 5</h4>
+              <p>Classify each method as clinical, statistical or model-based feature selection.</p>
+
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Method</th><th>Type</th></tr></thead>
+                  <tbody>
+                    <tr><td>Selecting predictors based on prior clinical knowledge</td><td></td></tr>
+                    <tr><td>Selecting predictors with lowest p-values</td><td></td></tr>
+                    <tr><td>Selecting predictors retained by lasso</td><td></td></tr>
+                    <tr><td>Selecting variables based on random forest importance</td><td></td></tr>
+                    <tr><td>Selecting predictors because they are routinely available in hospital records</td><td></td></tr>
+                    <tr><td>Selecting top genes by association with outcome</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <ul>
+                  <li>Prior clinical knowledge: <strong>clinical</strong>.</li>
+                  <li>Lowest p-values: <strong>statistical</strong>.</li>
+                  <li>Lasso retained predictors: <strong>model-based/statistical</strong>.</li>
+                  <li>Random forest importance: <strong>model-based</strong>.</li>
+                  <li>Routinely available hospital records: <strong>clinical/practical</strong>.</li>
+                  <li>Top genes by association: <strong>statistical</strong>.</li>
+                </ul>
+              </div></details>
+
+              <h4>Question 6</h4>
+              <p>Why is model-based feature selection not the same as causal discovery?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Model-based feature selection identifies variables useful for prediction in a specific dataset and model. It does not prove that these variables cause the outcome.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part C: Feature-selection leakage</h3>
+
+              <h4>Question 7</h4>
+              <p>A researcher selects the top 50 biomarkers using the full dataset, then splits into training and test sets. What is wrong?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>The test set influenced feature selection because the full dataset was used before splitting. This creates leakage and may inflate test performance.</p>
+              </div></details>
+
+              <h4>Question 8</h4>
+              <p>Rewrite the workflow correctly.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Split into training and test sets, select features using training data only, fit the model using training data only, and evaluate once on the untouched test set.</p>
+              </div></details>
+
+              <h4>Question 9</h4>
+              <p>Why can feature-selection leakage make model performance look better than it really is?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Validation or test data have already influenced model development, so evaluation is no longer independent. Random patterns from validation or test data can be selected and make performance look better.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part D: Cross-validation workflow</h3>
+
+              <h4>Question 10</h4>
+              <p>Which workflow is correct: A, select features once using full data before cross-validation; or B, select features inside each training fold?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>B is correct. Feature selection must happen inside each training fold so that the validation fold remains unseen.</p>
+              </div></details>
+
+              <h4>Question 11</h4>
+              <p>Why is feature selection before cross-validation especially problematic in omics data?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Omics data contain many thousands of features. Some will appear related to the outcome by chance. If selected before validation, those chance signals can inflate performance.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part E: Batch effects</h3>
+
+              <h4>Question 12</h4>
+              <p>What is a batch effect? Give two biomedical examples.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>A batch effect is technical variation unrelated to biology. Examples include sequencing run, methylation array plate, lab technician, scanner, processing date or hospital site.</p>
+              </div></details>
+
+              <h4>Question 13</h4>
+              <p>A methylation study has cases mostly on Plate 1 and controls mostly on Plate 2. Why is this a problem?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Feature selection may identify methylation sites that distinguish plates rather than disease status. Because plate is confounded with outcome, selected features may reflect technical artefacts.</p>
+              </div></details>
+
+              <h4>Question 14</h4>
+              <p>What might happen if a model learns batch effects instead of disease biology?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>The model may perform well internally but fail in external data where the batch structure is different.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part F: Feature stability</h3>
+
+              <h4>Question 15</h4>
+              <p>What does feature stability mean?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Feature stability means selected features are consistent across resamples, folds, bootstrap samples or external datasets.</p>
+              </div></details>
+
+              <h4>Question 16</h4>
+              <p>A lasso model selects different biomarkers in each bootstrap sample. What does this suggest?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>It suggests the selected biomarker list is unstable. The model may not provide a reliable set of biomarkers for interpretation.</p>
+              </div></details>
+
+              <h4>Question 17</h4>
+              <p>Why can correlated predictors make selected feature lists unstable?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>When predictors are correlated, several variables contain similar information. A selection method may choose one in one sample and another in a different sample.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part G: Prediction versus discovery</h3>
+
+              <h4>Question 18</h4>
+              <p>A feature is selected by a prediction model. Does this prove it causes the outcome?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>No. A selected feature may be causal, correlated with a causal factor, a proxy, a batch artefact or selected by chance.</p>
+              </div></details>
+
+              <h4>Question 19</h4>
+              <p>A biologically important predictor is not selected by the model. Does this mean it is not biologically important?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>No. A biologically important predictor may not improve prediction enough to be selected, or it may be redundant with other predictors.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part H: Biomedical scenario</h3>
+
+              <p>A team is building a recurrence prediction model with 400 patients, 120 recurrence events, 10 clinical predictors and 10,000 gene expression features. They select the top 100 genes using the full dataset before cross-validation.</p>
+
+              <h4>Question 20</h4>
+              <p>Identify the main problem.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content"><p>The main problem is feature-selection leakage. The full dataset was used to select genes before cross-validation.</p></div></details>
+
+              <h4>Question 21</h4>
+              <p>Describe a corrected analysis plan.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Define cross-validation folds. Within each training fold, perform gene selection. Fit the prediction model using selected genes in that training fold. Predict the held-out validation fold. Repeat across folds. Estimate performance from held-out predictions. Use external validation if possible.</p>
+              </div></details>
+
+              <h4>Question 22</h4>
+              <p>List five questions before claiming that the selected genes are important.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Were genes selected inside validation? Are selected genes stable? Are they biologically plausible? Could batch effects explain them? Do they validate externally? Are they measured reliably? Do they improve calibration or only AUC? Are claims limited to prediction rather than causation?</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part I: True or false</h3>
+
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Statement</th><th>True / False</th></tr></thead>
+                  <tbody>
+                    <tr><td>Feature selection can reduce measurement burden.</td><td></td></tr>
+                    <tr><td>Feature selection always improves external validation performance.</td><td></td></tr>
+                    <tr><td>Feature selection should be done inside validation.</td><td></td></tr>
+                    <tr><td>Selected features are automatically causal.</td><td></td></tr>
+                    <tr><td>Batch effects can influence selected features.</td><td></td></tr>
+                    <tr><td>Feature stability is important for interpretation.</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <ul>
+                  <li>Feature selection can reduce measurement burden: <strong>True</strong>.</li>
+                  <li>Always improves external validation performance: <strong>False</strong>.</li>
+                  <li>Should be done inside validation: <strong>True</strong>.</li>
+                  <li>Selected features are automatically causal: <strong>False</strong>.</li>
+                  <li>Batch effects can influence selected features: <strong>True</strong>.</li>
+                  <li>Feature stability is important: <strong>True</strong>.</li>
+                </ul>
+              </div></details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="quiz">
+            <p class="kicker">Quick quiz</p>
+            <h2>Final checks</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Feature-selection leakage happens when:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">Validation or test data influence predictor selection.</button>
+                <button class="option-btn" data-answer="incorrect">Only clinical knowledge is used before modelling.</button>
+                <button class="option-btn" data-answer="incorrect">Features are selected inside each training fold.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Leakage occurs when validation or test data influence model development."
+                data-incorrect="<strong>Not quite.</strong> The problem is validation/test information entering feature selection."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">A selected biomarker should first be interpreted as:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">A proven causal mechanism.</button>
+                <button class="option-btn" data-answer="correct">A prediction feature needing validation and cautious interpretation.</button>
+                <button class="option-btn" data-answer="incorrect">A guarantee of clinical usefulness.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Prediction selection is not automatic biological discovery."
+                data-incorrect="<strong>Not quite.</strong> Selected features may reflect prediction, correlation, artefact or chance."
+              ></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="next-lesson-card">
+              <div>
+                <p class="kicker">Next lesson</p>
+                <h2 style="margin: 0;">Penalised Regression for High-Dimensional Data</h2>
+                <p style="margin-bottom: 0;">
+                  Learn how penalised regression is used when predictors greatly outnumber patients.
+                </p>
+              </div>
+
+              <a class="btn btn-primary" href="./4-6-penalised-regression-high-dimensional-data.html">
+                Continue
+              </a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="footer-logo" />
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+</body>
+</html>

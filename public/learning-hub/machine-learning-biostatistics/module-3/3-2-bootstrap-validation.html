@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Lesson 7: Bootstrap Validation | Machine Learning in Biostatistics</title>
+
+  <meta
+    name="description"
+    content="Lesson 7 of Machine Learning in Biostatistics: bootstrap validation, apparent performance, optimism, optimism-corrected performance, calibration and internal validation."
+  />
+
+  <link rel="stylesheet" href="../assets/course.css" />
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="brand-logo" />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Module 3 · Lesson 7</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="../module-2/index.html">Module 2</a>
+          <a href="./index.html">Module 3</a>
+          <a href="../module-4/index.html">Module 4</a>
+          <a href="../case-studies/index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Module 3 · Model Evaluation, Validation and Clinical Usefulness</p>
+        <h1>Lesson 7: Bootstrap Validation</h1>
+
+        <p class="hero-intro">
+          Bootstrap validation estimates how much apparent model performance may be exaggerated.
+          This lesson explains apparent performance, optimism, bootstrap sampling, optimism-corrected performance,
+          and why bootstrap validation remains internal validation.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#lecture">Start lesson</a>
+          <a class="btn btn-secondary" href="./3-1-cross-validation.html">Previous lesson</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <div class="lesson-layout">
+        <aside class="lesson-sidebar" aria-label="Lesson sections">
+          <h3>Lesson sections</h3>
+          <a class="active" href="#lecture">Lecture</a>
+          <a href="#bootstrap-sample">Bootstrap sample</a>
+          <a href="#optimism">Optimism</a>
+          <a href="#interactive">Interactive checks</a>
+          <a href="#notes">Detailed notes</a>
+          <a href="#r-code">R code</a>
+          <a href="#exercises">Exercises</a>
+          <a href="#quiz">Quiz</a>
+        </aside>
+
+        <article class="lesson-content">
+          <section class="lesson-section" id="lecture">
+            <p class="kicker">Lecture</p>
+            <h2>Lecture 7: Bootstrap Validation</h2>
+
+            <div class="scene-card">
+              <div class="scene-title">Opening scene: The optimism machine</div>
+              <div class="dialogue-box">
+                
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“My model performs beautifully on the development data.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“That performance is probably optimistic.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line captain-overfit">
+        <p><span class="character">Captain Overfit:</span><br />“Of course it is. I helped the model look amazing on the same data it learned from.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“So we need to estimate how much performance is exaggerated?”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Exactly. That is where bootstrap validation can help.”</p>
+      </div>
+    
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="big-question">
+            <p class="kicker">Today’s big question</p>
+            <h2>How can bootstrap validation help estimate optimism in model performance?</h2>
+
+            <p>
+              Bootstrap validation is an internal validation method. It repeatedly samples from the development data,
+              fits the model, and estimates how much apparent performance may be too optimistic.
+            </p>
+
+            <div class="big-question">
+              <p>
+                Bootstrap validation helps adjust for overly optimistic performance estimates from the development data.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="intuition">
+            <p class="kicker">Intuition first</p>
+            <h2>Performance on the development data is usually too good</h2>
+
+            <p>
+              When a model is evaluated on the same data used to build it, it usually looks better than it really is.
+              This is called <strong>optimism</strong>.
+            </p>
+
+            <p>Bootstrap validation tries to estimate that optimism.</p>
+
+            <div class="formula-box">
+              <strong>Optimism =</strong><br />
+              apparent performance - expected new-data performance
+            </div>
+          </section>
+
+          <section class="lesson-section" id="bootstrap-sample">
+            <p class="kicker">Bootstrap sample</p>
+            <h2>Sampling patients with replacement</h2>
+
+            <p>A bootstrap sample is created by sampling patients from the original dataset with replacement.</p>
+
+            <p>This means:</p>
+            <ul>
+              <li>some patients appear more than once;</li>
+              <li>some patients do not appear at all;</li>
+              <li>the sample has the same size as the original dataset.</li>
+            </ul>
+
+            <p>The patients not selected in a bootstrap sample are sometimes called out-of-bag observations.</p>
+
+            <div class="dialogue-box">
+              
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“So bootstrap creates new fake datasets?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Not fake, but resampled versions of the original data.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“And we use them to understand how stable the model performance is?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Yes. Especially how much apparent performance may be optimistic.”</p>
+      </div>
+    
+            </div>
+          </section>
+
+          <section class="lesson-section" id="optimism">
+            <p class="kicker">Apparent performance and optimism</p>
+            <h2>Why bootstrap validation is useful</h2>
+
+            <div class="grid grid-2">
+              <div class="model-card">
+                <p class="model-label">Apparent performance</p>
+                <h3>Same data for fitting and evaluation</h3>
+                <p>Fit the model on all development data, then evaluate it on the same data.</p>
+                <p>This is often overly positive.</p>
+              </div>
+
+              <div class="model-card">
+                <p class="model-label">Optimism</p>
+                <h3>The exaggeration amount</h3>
+                <p>The difference between performance on the development data and expected performance on new data.</p>
+              </div>
+            </div>
+
+            <div class="formula-box">
+              Apparent AUC = 0.84<br />
+              Estimated optimism = 0.04<br />
+              Optimism-corrected AUC = 0.84 - 0.04 = 0.80
+            </div>
+
+            <p>This gives a more realistic estimate of performance.</p>
+          </section>
+
+          <section class="lesson-section" id="medical-example">
+            <p class="kicker">Medical example</p>
+            <h2>Cancer recurrence prediction</h2>
+
+            <p>Suppose a logistic regression model for cancer recurrence has:</p>
+
+            <code class="inline-code">Apparent AUC = 0.84</code>
+
+            <p>After bootstrap validation, estimated optimism is:</p>
+
+            <code class="inline-code">Optimism = 0.04</code>
+
+            <p>Then optimism-corrected AUC is approximately:</p>
+
+            <code class="inline-code">0.84 - 0.04 = 0.80</code>
+
+            <p>
+              This suggests that some of the apparent performance was due to overfitting.
+              The corrected estimate is more cautious and more realistic than apparent performance alone.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="common-mistake">
+            <p class="kicker">Common mistake</p>
+            <h2>Reporting only apparent performance</h2>
+
+            <div class="common-mistake">
+              <h3>Common mistake: reporting only apparent performance</h3>
+              <p>
+                If you fit a model and report performance on the same data, the result is likely too optimistic.
+              </p>
+              <p>
+                Medical prediction models should include internal validation, such as bootstrap validation or cross-validation.
+              </p>
+            </div>
+
+            <div class="clinical-check">
+              <h3>Clinical reality check</h3>
+              <p>
+                An optimism-corrected model can still fail externally.
+                Bootstrap validation improves internal assessment, but it does not prove the model will work in another hospital or population.
+              </p>
+              <p>External validation is still needed before clinical use.</p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="interactive">
+            <p class="kicker">Interactive checks</p>
+            <h2>Practise bootstrap reasoning</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">A model has apparent AUC = 0.86 and estimated optimism = 0.05. What is the optimism-corrected AUC?</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">0.91</button>
+                <button class="option-btn" data-answer="correct">0.81</button>
+                <button class="option-btn" data-answer="incorrect">0.05</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Optimism-corrected AUC = 0.86 - 0.05 = 0.81."
+                data-incorrect="<strong>Not quite.</strong> For higher-is-better metrics such as AUC, subtract optimism from apparent performance."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Bootstrap validation is:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">Internal validation</button>
+                <button class="option-btn" data-answer="incorrect">External validation</button>
+                <button class="option-btn" data-answer="incorrect">Proof of clinical usefulness</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Bootstrap validation uses the development dataset, so it is internal validation."
+                data-incorrect="<strong>Not quite.</strong> Bootstrap validation does not test the model in an independent hospital or population."
+              ></div>
+            </div>
+
+            <div class="interactive-panel">
+              <h3>Flashcards: bootstrap terms</h3>
+              <p>Click each card to reveal the explanation.</p>
+
+              <div class="flashcard-grid">
+                <div class="flashcard">
+                  <div class="flashcard-front">Apparent performance</div>
+                  <div class="flashcard-back">Performance measured on the same development data used to fit the model.</div>
+                </div>
+
+                <div class="flashcard">
+                  <div class="flashcard-front">Optimism</div>
+                  <div class="flashcard-back">The amount by which apparent performance overestimates expected new-data performance.</div>
+                </div>
+
+                <div class="flashcard">
+                  <div class="flashcard-front">Bootstrap sample</div>
+                  <div class="flashcard-back">A sample drawn from the original dataset with replacement.</div>
+                </div>
+
+                <div class="flashcard">
+                  <div class="flashcard-front">Calibration slope</div>
+                  <div class="flashcard-back">A measure of whether predictions are too extreme. A slope below 1 often suggests overfitting.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="lecture-key">
+            <p class="kicker">Key takeaway</p>
+            <h2>Bootstrap validation estimates optimism</h2>
+
+            <div class="key-takeaway">
+              <p>
+                Bootstrap validation is useful for estimating optimism in model performance.
+                It is especially valuable in clinical prediction modelling because it uses the full development dataset
+                while still assessing how much performance may be exaggerated.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="lecture-reflection">
+            <p class="kicker">Reflection question</p>
+            <h2>Why is apparent performance usually too optimistic?</h2>
+
+            <div class="reflection-box">
+              <p>Why is apparent performance usually too optimistic?</p>
+
+              <details class="answer-box">
+                <summary>Show suggested answer</summary>
+                <div class="answer-content">
+                  <p>
+                    Because the model is evaluated on the same data it used to learn.
+                    It may capture noise or dataset-specific patterns, so performance on the development data is usually better than expected performance on new patients.
+                  </p>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="notes">
+            <p class="kicker">Detailed notes</p>
+            <h2>Note 7: Bootstrap Validation in Clinical Prediction Modelling</h2>
+
+            <div class="key-takeaway">
+              <p>
+                Bootstrap validation helps estimate how much a model’s apparent performance is likely to be too optimistic.
+              </p>
+            </div>
+
+            <h3>Learning objectives</h3>
+            <ul>
+              <li>Explain what apparent performance means.</li>
+              <li>Explain why apparent performance is usually optimistic.</li>
+              <li>Define optimism in the context of prediction model performance.</li>
+              <li>Describe what bootstrap sampling means.</li>
+              <li>Explain how bootstrap validation estimates optimism.</li>
+              <li>Interpret optimism-corrected performance.</li>
+              <li>Understand why bootstrap validation is useful in clinical prediction modelling.</li>
+              <li>Distinguish bootstrap internal validation from external validation.</li>
+            </ul>
+
+            <h3>1. Why this note matters</h3>
+            <p>
+              In medical prediction modelling, performance estimated in the development dataset is usually too optimistic.
+              A model may appear to discriminate well, classify patients accurately, or produce low prediction error simply because
+              it has already been developed using the same data.
+            </p>
+
+            <p>
+              This is especially important in medical research because many datasets are small,
+              outcomes may be rare, and the number of candidate predictors may be large.
+              A model can easily learn dataset-specific patterns that do not apply to future patients.
+            </p>
+
+            <h3>2. Apparent performance</h3>
+            <p>
+              Apparent performance is the performance of a model when it is evaluated on the same data used to develop it.
+            </p>
+
+            <code class="inline-code">Fit the model on the full development dataset.
+Evaluate the model on the same full development dataset.</code>
+
+            <p>
+              The problem is that the model has already seen the data. It may have learned real patterns,
+              but it may also have learned random noise, sample-specific patterns, or modelling choices that worked well in this dataset.
+            </p>
+
+            <h3>3. Why apparent performance is optimistic</h3>
+            <p>Apparent performance is optimistic because model development is not a neutral process.</p>
+
+            <p>During development, analysts may:</p>
+            <ul>
+              <li>try several models;</li>
+              <li>select predictors;</li>
+              <li>transform variables;</li>
+              <li>tune hyperparameters;</li>
+              <li>choose interactions;</li>
+              <li>remove outliers;</li>
+              <li>compare thresholds;</li>
+              <li>select the best-performing model.</li>
+            </ul>
+
+            <p>Therefore, apparent performance reflects both true signal and overfitting.</p>
+
+            <h3>4. Optimism</h3>
+            <p>Optimism is the amount by which apparent performance overestimates performance on new data.</p>
+
+            <div class="formula-box">
+              Optimism = apparent performance - expected performance on new data
+            </div>
+
+            <p>For higher-is-better measures such as AUC or C-index, optimism is subtracted from apparent performance.</p>
+
+            <code class="inline-code">Apparent AUC = 0.86
+Estimated optimism = 0.04
+Optimism-corrected AUC = 0.82</code>
+
+            <h3>5. What is bootstrap sampling?</h3>
+            <p>
+              Bootstrap sampling means sampling observations from the original dataset with replacement.
+              If the original dataset contains 500 patients, a bootstrap sample also contains 500 rows.
+            </p>
+
+            <p>However:</p>
+            <ul>
+              <li>some patients may appear more than once;</li>
+              <li>some patients may not appear at all;</li>
+              <li>the sample is a resampled version of the original dataset.</li>
+            </ul>
+
+            <h3>6. Basic bootstrap validation process</h3>
+            <div class="formula-box">
+              1. Fit the original model in the full development data.<br />
+              2. Calculate apparent performance.<br />
+              3. Draw a bootstrap sample.<br />
+              4. Fit the model in the bootstrap sample.<br />
+              5. Evaluate performance in the bootstrap sample.<br />
+              6. Evaluate the same bootstrap-fitted model in the original data.<br />
+              7. Estimate optimism for that bootstrap sample.<br />
+              8. Repeat many times.<br />
+              9. Average the optimism.<br />
+              10. Subtract average optimism from apparent performance.
+            </div>
+
+            <h3>7. Bootstrap validation versus train/test split</h3>
+            <p>
+              A train/test split holds out part of the dataset for evaluation.
+              Bootstrap validation uses resampling and can allow the full dataset to contribute to model development.
+              This can be attractive in clinical prediction modelling because sample sizes are often limited.
+            </p>
+
+            <h3>8. Bootstrap validation versus cross-validation</h3>
+            <p>
+              Both bootstrap validation and cross-validation are internal validation methods.
+              Cross-validation repeatedly divides the dataset into training and validation folds.
+              Bootstrap validation repeatedly samples with replacement and estimates optimism.
+            </p>
+
+            <p>
+              In clinical prediction modelling, bootstrap validation is often preferred for estimating optimism in a final model,
+              especially when the sample size is limited. Cross-validation is often used for model comparison and tuning.
+            </p>
+
+            <h3>9. Include the full modelling process</h3>
+            <p>Bootstrap validation should include all major steps in model development, such as:</p>
+            <ul>
+              <li>feature selection;</li>
+              <li>transformation selection;</li>
+              <li>tuning;</li>
+              <li>imputation;</li>
+              <li>variable filtering;</li>
+              <li>model comparison.</li>
+            </ul>
+
+            <p>If not, the optimism estimate may be too small.</p>
+
+            <h3>10. Bootstrap validation and calibration</h3>
+            <p>Bootstrap validation can assess more than discrimination. It can also assess:</p>
+            <ul>
+              <li>calibration slope;</li>
+              <li>calibration intercept;</li>
+              <li>Brier score;</li>
+              <li>calibration plots;</li>
+              <li>C-index;</li>
+              <li>overall performance.</li>
+            </ul>
+
+            <p>A calibration slope less than 1 often suggests overfitting and predictions that are too extreme.</p>
+
+            <h3>11. How many bootstrap samples?</h3>
+            <p>
+              Common choices include 100, 200, 500 or 1000 bootstrap samples.
+              More samples usually give more stable estimates but require more computation.
+            </p>
+
+            <h3>12. Bootstrap validation is internal validation</h3>
+            <p>
+              Bootstrap validation uses the development dataset.
+              It gives information about expected performance in similar patients from the same source population.
+              It does not prove that the model will work in another hospital, country, laboratory system, or time period.
+            </p>
+
+            <h3>13. What bootstrap validation does not solve</h3>
+            <ul>
+              <li>poor outcome definition;</li>
+              <li>poor predictor quality;</li>
+              <li>data leakage;</li>
+              <li>missing important predictors;</li>
+              <li>poor measurement quality;</li>
+              <li>unrepresentative data;</li>
+              <li>lack of external validation;</li>
+              <li>lack of clinical usefulness.</li>
+            </ul>
+
+            <h3>14. Common mistakes</h3>
+            <ul>
+              <li>Reporting only apparent performance.</li>
+              <li>Calling bootstrap validation external validation.</li>
+              <li>Not repeating feature selection inside the bootstrap process.</li>
+              <li>Ignoring calibration.</li>
+              <li>Using too few bootstrap samples.</li>
+            </ul>
+
+            <h3>15. Reporting bootstrap validation</h3>
+            <p>A clear report should describe:</p>
+            <ul>
+              <li>number of bootstrap samples;</li>
+              <li>performance measures evaluated;</li>
+              <li>apparent performance;</li>
+              <li>estimated optimism;</li>
+              <li>optimism-corrected performance;</li>
+              <li>whether feature selection was repeated;</li>
+              <li>whether tuning was repeated;</li>
+              <li>calibration assessment;</li>
+              <li>limitations.</li>
+            </ul>
+
+            <h3>16. Worked example: hospital mortality model</h3>
+            <p>Suppose we develop a model to predict 30-day hospital mortality.</p>
+
+            <code class="inline-code">Apparent AUC = 0.88
+Estimated optimism = 0.06
+Optimism-corrected AUC = 0.82</code>
+
+            <p>
+              This suggests that the model is likely less impressive than the apparent performance suggested.
+              If the calibration slope is also low, the model may be overfitted and may require shrinkage or recalibration before further testing.
+            </p>
+
+            <h3>17. Summary</h3>
+            <p>
+              Bootstrap validation is a practical internal validation method for clinical prediction models.
+              It estimates how much apparent performance may be exaggerated due to overfitting.
+            </p>
+
+            <p>
+              It is particularly useful when sample size is limited and when holding out a test set would be inefficient.
+              However, bootstrap validation is not external validation.
+            </p>
+
+            <h3>Revision questions</h3>
+            <ul>
+              <li>What is apparent performance?</li>
+              <li>Why is apparent performance usually optimistic?</li>
+              <li>What is optimism?</li>
+              <li>What does sampling with replacement mean?</li>
+              <li>What is a bootstrap sample?</li>
+              <li>How does bootstrap validation estimate optimism?</li>
+              <li>How is optimism-corrected AUC calculated?</li>
+              <li>Why can bootstrap validation be useful in small clinical datasets?</li>
+              <li>Why should feature selection be repeated inside bootstrap validation?</li>
+              <li>Why is bootstrap validation internal validation?</li>
+              <li>Why does bootstrap validation not replace external validation?</li>
+              <li>What does a calibration slope less than 1 suggest?</li>
+            </ul>
+
+            <h3>Key terms</h3>
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Apparent performance</strong></td><td>Performance measured on the development data used to fit the model.</td></tr>
+                  <tr><td><strong>Optimism</strong></td><td>Amount by which apparent performance overestimates expected new-data performance.</td></tr>
+                  <tr><td><strong>Bootstrap sample</strong></td><td>Sample drawn from the original data with replacement.</td></tr>
+                  <tr><td><strong>Optimism-corrected performance</strong></td><td>Apparent performance adjusted by estimated optimism.</td></tr>
+                  <tr><td><strong>Internal validation</strong></td><td>Validation using the same data source as model development.</td></tr>
+                  <tr><td><strong>External validation</strong></td><td>Validation using independent data from another setting, time, or population.</td></tr>
+                  <tr><td><strong>Calibration slope</strong></td><td>Measure of whether predictions are too extreme or not extreme enough.</td></tr>
+                  <tr><td><strong>Shrinkage</strong></td><td>Reducing model coefficients or predictions to improve generalisability.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>References</h3>
+            <p class="reference-item">Steyerberg, E. W. (2019). Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating (2nd ed.). Springer.</p>
+            <p class="reference-item">Harrell, F. E. (2015). Regression Modeling Strategies. Springer.</p>
+            <p class="reference-item">Riley, R. D., van der Windt, D., Croft, P., & Moons, K. G. M. (2019). Prognosis Research in Healthcare: Concepts, Methods, and Impact. Oxford University Press.</p>
+            <p class="reference-item">Moons, K. G. M., et al. (2015). Transparent Reporting of a multivariable prediction model for Individual Prognosis Or Diagnosis: TRIPOD.</p>
+            <p class="reference-item">Van Calster, B., McLernon, D. J., van Smeden, M., Wynants, L., & Steyerberg, E. W. (2019). Calibration: the Achilles heel of predictive analytics. BMC Medicine, 17, 230.</p>
+          </section>
+
+          <section class="lesson-section" id="r-code">
+            <p class="kicker">R code</p>
+            <h2>R practical: bootstrap validation for optimism in AUC</h2>
+
+            <div class="practice-note">
+              <p>
+                This script estimates optimism in AUC using a simple bootstrap approach.
+                It fits a logistic regression model, calculates apparent AUC, repeatedly fits the model in bootstrap samples,
+                estimates optimism, and calculates optimism-corrected AUC.
+              </p>
+            </div>
+
+            <div class="grid grid-3">
+              <div class="card">
+                <h3>Apparent AUC</h3>
+                <p>The model is fitted and evaluated on the full development dataset.</p>
+              </div>
+              <div class="card">
+                <h3>Bootstrap optimism</h3>
+                <p>Each bootstrap sample estimates how much performance is exaggerated.</p>
+              </div>
+              <div class="card">
+                <h3>Corrected AUC</h3>
+                <p>Estimated optimism is subtracted from apparent AUC.</p>
+              </div>
+            </div>
+
+            <p style="margin-top: 1.2rem;">
+              <a class="btn btn-primary" href="../r/07_bootstrap_validation.R" download>
+                Download R script
+              </a>
+              <button class="btn btn-secondary" data-copy-target="r-code-07" type="button">
+                Copy code
+              </button>
+            </p>
+
+            <pre class="code-block"><code id="r-code-07"># Machine Learning in Biostatistics
+# Script 07: Bootstrap Validation
+#
+# This script estimates optimism in AUC using a simple bootstrap approach.
+# It is written for teaching, so the steps are explicit.
+
+library(tidyverse)
+library(mlbench)
+library(pROC)
+
+set.seed(123)
+
+data("PimaIndiansDiabetes")
+
+diabetes_data &lt;- PimaIndiansDiabetes %&gt;%
+  mutate(
+    diabetes = factor(diabetes, levels = c("neg", "pos"))
+  )
+
+fit_model &lt;- function(data) {
+  glm(
+    diabetes ~ pregnant + glucose + pressure + triceps +
+      insulin + mass + pedigree + age,
+    data = data,
+    family = binomial
+  )
+}
+
+calculate_auc &lt;- function(model, data) {
+  predicted_risk &lt;- predict(model, newdata = data, type = "response")
+
+  roc_object &lt;- roc(
+    response = data$diabetes,
+    predictor = predicted_risk,
+    levels = c("neg", "pos"),
+    quiet = TRUE
+  )
+
+  as.numeric(auc(roc_object))
+}
+
+apparent_model &lt;- fit_model(diabetes_data)
+apparent_auc &lt;- calculate_auc(apparent_model, diabetes_data)
+
+cat("\nApparent AUC:\n")
+print(apparent_auc)
+
+n_boot &lt;- 100
+n &lt;- nrow(diabetes_data)
+
+bootstrap_results &lt;- map_dfr(1:n_boot, function(b) {
+  bootstrap_index &lt;- sample(seq_len(n), size = n, replace = TRUE)
+
+  bootstrap_data &lt;- diabetes_data[bootstrap_index, ]
+
+  bootstrap_model &lt;- fit_model(bootstrap_data)
+
+  auc_bootstrap &lt;- calculate_auc(bootstrap_model, bootstrap_data)
+  auc_original &lt;- calculate_auc(bootstrap_model, diabetes_data)
+
+  tibble(
+    bootstrap_sample = b,
+    auc_bootstrap = auc_bootstrap,
+    auc_original = auc_original,
+    optimism = auc_bootstrap - auc_original
+  )
+})
+
+cat("\nFirst few bootstrap results:\n")
+print(head(bootstrap_results))
+
+optimism_estimate &lt;- mean(bootstrap_results$optimism)
+optimism_corrected_auc &lt;- apparent_auc - optimism_estimate
+
+summary_table &lt;- tibble(
+  apparent_auc = apparent_auc,
+  mean_optimism = optimism_estimate,
+  optimism_corrected_auc = optimism_corrected_auc
+)
+
+cat("\nBootstrap validation summary:\n")
+print(summary_table)
+
+plot(
+  bootstrap_results$bootstrap_sample,
+  bootstrap_results$optimism,
+  type = "h",
+  xlab = "Bootstrap sample",
+  ylab = "Optimism",
+  main = "Estimated Optimism Across Bootstrap Samples"
+)
+
+abline(h = optimism_estimate, lty = 2)
+
+cat("\nLearning points:\n")
+cat("1. Apparent performance is usually optimistic.\n")
+cat("2. Bootstrap validation estimates optimism.\n")
+cat("3. Optimism-corrected performance is more realistic.\n")
+cat("4. Bootstrap validation is internal validation.\n")
+cat("5. External validation is still needed before clinical use.\n")</code></pre>
+          </section>
+
+          <section class="lesson-section" id="exercises">
+            <p class="kicker">Exercises</p>
+            <h2>Exercise 7: Bootstrap Validation</h2>
+
+            <div class="practice-note">
+              <p>
+                This exercise helps you understand apparent performance, optimism, and the role of bootstrap validation
+                in clinical prediction modelling.
+              </p>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Question 1: Concept check</h3>
+              <p>What is apparent performance?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>
+                  Apparent performance is the performance measured on the same development data used to fit or develop the model.
+                  It is often too optimistic because the model has already seen the data.
+                </p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Question 2: Optimism</h3>
+              <code class="inline-code">Apparent AUC = 0.86
+Estimated optimism = 0.05</code>
+              <p>What is the optimism-corrected AUC?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>
+                  Optimism-corrected AUC = 0.86 - 0.05 = <strong>0.81</strong>.
+                </p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Question 3: Interpretation</h3>
+              <p>Why is apparent performance usually too optimistic?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>
+                  The model is evaluated on the same data used during development.
+                  It may have learned not only real signal but also random noise, sample-specific patterns, and modelling decisions that worked well only in that dataset.
+                </p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Question 4: Bootstrap sample</h3>
+              <p>What does it mean to sample with replacement?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>
+                  Sampling with replacement means each patient can be selected more than once.
+                  As a result, some patients appear multiple times in the bootstrap sample, while others are not selected at all.
+                </p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Question 5: Clinical interpretation</h3>
+              <code class="inline-code">Apparent C-index = 0.78
+Optimism-corrected C-index = 0.70</code>
+              <p>What does this suggest?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>
+                  It suggests that the apparent model performance was substantially optimistic.
+                  The model may have overfitted the development data, so expected performance in similar new patients may be closer to 0.70 than 0.78.
+                </p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Question 6: External validation</h3>
+              <p>A model has good optimism-corrected performance after bootstrap validation. Is it ready for clinical use?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>
+                  Not necessarily. Bootstrap validation is internal validation.
+                  The model still needs external validation, calibration assessment, clinical usefulness assessment,
+                  and careful evaluation in the intended setting before clinical use.
+                </p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Question 7: Method choice</h3>
+              <p>Why might bootstrap validation be attractive in studies with limited sample size?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>
+                  Bootstrap validation can use the full development dataset while estimating optimism.
+                  This can be attractive when holding out a test set would leave too little data or too few events for stable model development and evaluation.
+                </p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Reflection</h3>
+              <p>Why is it risky to report only apparent performance in a medical prediction study?</p>
+              <details class="answer-box"><summary>Show reflection answer</summary><div class="answer-content">
+                <p>
+                  Reporting only apparent performance can exaggerate how well the model will perform for new patients.
+                  This can lead researchers and clinicians to trust a model that may fail when applied outside the development data.
+                  In medical settings, that can affect diagnosis, treatment, monitoring, and patient safety.
+                </p>
+              </div></details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="quiz">
+            <p class="kicker">Quick quiz</p>
+            <h2>Final checks</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">For higher-is-better metrics such as AUC, optimism-corrected performance is usually calculated by:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">Subtracting optimism from apparent performance</button>
+                <button class="option-btn" data-answer="incorrect">Adding optimism to apparent performance</button>
+                <button class="option-btn" data-answer="incorrect">Ignoring apparent performance</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Optimism-corrected AUC = apparent AUC - estimated optimism."
+                data-incorrect="<strong>Not quite.</strong> Optimism is the amount by which apparent performance is too high."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">A calibration slope less than 1 often suggests:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">Perfect generalisation</button>
+                <button class="option-btn" data-answer="correct">Overfitting and predictions that are too extreme</button>
+                <button class="option-btn" data-answer="incorrect">External validation has been completed</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> A slope below 1 often suggests overfitting with overly extreme predictions."
+                data-incorrect="<strong>Not quite.</strong> A slope below 1 is a warning sign of overfitting or overly extreme risk predictions."
+              ></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="next-lesson-card">
+              <div>
+                <p class="kicker">Next lesson</p>
+                <h2 style="margin: 0;">Calibration and Brier Score</h2>
+                <p style="margin-bottom: 0;">
+                  Learn how to assess whether predicted probabilities agree with observed risks.
+                </p>
+              </div>
+
+              <a class="btn btn-primary" href="./3-3-calibration-brier-score.html">
+                Continue
+              </a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="footer-logo" />
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+</body>
+</html>

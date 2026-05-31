@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Case Study 1: Diabetes Risk Prediction | Machine Learning in Biostatistics</title>
+
+  <meta
+    name="description"
+    content="Case Study 1 for Machine Learning in Biostatistics: diabetes risk prediction using logistic regression, ROC AUC, calibration, Brier score, threshold interpretation and clinical limitations."
+  />
+
+  <link rel="stylesheet" href="../assets/course.css" />
+
+  <style>
+    .case-study-meta {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .meta-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fff;
+      padding: 1rem;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+    }
+
+    .meta-card span {
+      display: block;
+      color: #8C1515;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.35rem;
+    }
+
+    .workflow-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin: 1.4rem 0;
+    }
+
+    .workflow-step {
+      position: relative;
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fffaf2;
+      padding: 1rem;
+      min-height: 145px;
+    }
+
+    .workflow-step::after {
+      content: "→";
+      position: absolute;
+      right: -0.72rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8C1515;
+      font-weight: 900;
+      font-size: 1.35rem;
+      z-index: 2;
+    }
+
+    .workflow-step:nth-child(4)::after,
+    .workflow-step:nth-child(8)::after,
+    .workflow-step:nth-child(12)::after {
+      content: "";
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background: #8C1515;
+      color: #fff;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+    }
+
+    .figure-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 22px;
+      background: #ffffff;
+      padding: 1.2rem;
+      margin: 1.4rem 0;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+    }
+
+    .figure-card img {
+      width: 100%;
+      max-width: 920px;
+      display: block;
+      margin: 1rem auto;
+      border: 1px solid #ddcfb8;
+      border-radius: 16px;
+      background: #f8f6f2;
+    }
+
+    .figure-card figcaption {
+      font-size: 0.95rem;
+      color: #5b4636;
+      margin-top: 0.6rem;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin: 1.3rem 0;
+    }
+
+    .metric-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fffaf2;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .metric-value {
+      display: block;
+      color: #8C1515;
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-top: 0.25rem;
+    }
+
+    .confusion-matrix {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.2rem 0;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid #ddcfb8;
+    }
+
+    .confusion-matrix th,
+    .confusion-matrix td {
+      border: 1px solid #ddcfb8;
+      padding: 0.9rem;
+      text-align: center;
+    }
+
+    .confusion-matrix th {
+      background: #f8f1e7;
+      font-weight: 800;
+    }
+
+    .confusion-matrix td.good {
+      background: #f0fdf4;
+      font-weight: 900;
+      color: #166534;
+    }
+
+    .confusion-matrix td.warn {
+      background: #fff5f5;
+      font-weight: 900;
+      color: #991b1b;
+    }
+
+    .threshold-lab {
+      border: 1px solid #ddcfb8;
+      border-radius: 22px;
+      background: #fff;
+      padding: 1.2rem;
+      margin: 1.4rem 0;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+    }
+
+    .threshold-lab input[type="range"] {
+      width: 100%;
+      margin: 1rem 0;
+    }
+
+    .threshold-output {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .threshold-pill {
+      border: 1px solid #ddcfb8;
+      border-radius: 16px;
+      background: #fffaf2;
+      padding: 0.85rem;
+      display: grid;
+      gap: 0.25rem;
+    }
+
+    .threshold-pill strong {
+      color: #8C1515;
+      font-size: 1.25rem;
+    }
+
+    .clinical-box {
+      border: 1px solid #ddcfb8;
+      border-left: 6px solid #8C1515;
+      border-radius: 18px;
+      background: #fffaf2;
+      padding: 1rem 1.1rem;
+      margin: 1.2rem 0;
+    }
+
+    .limitation-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.3rem 0;
+    }
+
+    .limitation-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fff;
+      padding: 1rem;
+    }
+
+    .limitation-card.warning {
+      border-left: 6px solid #991b1b;
+      background: #fff5f5;
+    }
+
+    .code-path {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: #f8f1e7;
+      border: 1px solid #ddcfb8;
+      border-radius: 10px;
+      padding: 0.2rem 0.4rem;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 950px) {
+      .case-study-meta,
+      .workflow-map,
+      .metric-grid,
+      .threshold-output,
+      .limitation-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .workflow-step::after {
+        content: "↓";
+        right: 50%;
+        top: auto;
+        bottom: -1.1rem;
+        transform: translateX(50%);
+      }
+
+      .workflow-step:last-child::after {
+        content: "";
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img
+            src="../assets/my-academic-tutor-logo.png"
+            alt="My Academic Tutor logo"
+            class="brand-logo"
+          />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Case Study 1</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="../module-2/index.html">Module 2</a>
+          <a href="../module-3/index.html">Module 3</a>
+          <a href="../module-4/index.html">Module 4</a>
+          <a href="../module-5/index.html">Module 5</a>
+          <a href="./index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Applied medical machine learning case study</p>
+        <h1>Case Study 1: Diabetes Risk Prediction</h1>
+
+        <p class="hero-intro">
+          This case study applies supervised learning and logistic regression to a diabetes risk prediction problem.
+          The aim is not only to fit a model, but to define the prediction question clearly, evaluate performance properly,
+          and interpret the results in a clinically meaningful way.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#overview">Start case study</a>
+          <a class="btn btn-secondary" href="../r/C1_diabetes_risk_prediction_case_study.R" download>Download R script</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <div class="lesson-layout">
+        <aside class="lesson-sidebar" aria-label="Case study sections">
+          <h3>Case study sections</h3>
+          <a class="active" href="#overview">Overview</a>
+          <a href="#clinical-question">Clinical question</a>
+          <a href="#dataset">Dataset</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#outcome-distribution">Outcome distribution</a>
+          <a href="#model">Model</a>
+          <a href="#classification">Classification results</a>
+          <a href="#roc">ROC and AUC</a>
+          <a href="#calibration">Calibration</a>
+          <a href="#thresholds">Thresholds</a>
+          <a href="#limitations">Limitations</a>
+          <a href="#reflection">Reflection</a>
+          <a href="#code">Code</a>
+        </aside>
+
+        <article class="lesson-content">
+          <section class="lesson-section" id="overview">
+            <p class="kicker">Case study overview</p>
+            <h2>What this case study is about</h2>
+
+            <p>
+              This case study applies supervised learning and logistic regression to a diabetes risk prediction problem.
+              It shows the full modelling workflow from clinical question to model evaluation and interpretation.
+            </p>
+
+            <p>
+              The aim is to think like a medical statistician. A good prediction analysis is not finished when the model runs.
+              We need to understand the outcome, check predictors, avoid leakage, evaluate the model honestly, interpret thresholds,
+              examine calibration and explain limitations.
+            </p>
+
+            <div class="case-study-meta">
+              <div class="meta-card">
+                <span>Outcome</span>
+                Diabetes status
+              </div>
+              <div class="meta-card">
+                <span>Model</span>
+                Logistic regression
+              </div>
+              <div class="meta-card">
+                <span>Task</span>
+                Binary classification
+              </div>
+              <div class="meta-card">
+                <span>Dataset</span>
+                Pima Indians Diabetes
+              </div>
+            </div>
+
+            <div class="clinical-box">
+              <h3>Core message</h3>
+              <p>
+                A model should not be judged by accuracy alone. In medical prediction, we need to consider discrimination,
+                calibration, threshold-specific metrics, intended use and generalisability.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="clinical-question">
+            <p class="kicker">Clinical question</p>
+            <h2>Can we predict whether a patient has diabetes?</h2>
+
+            <p>The clinical question is:</p>
+
+            <div class="big-question">
+              <p>
+                Can we predict whether a patient has diabetes using routinely measured clinical characteristics?
+              </p>
+            </div>
+
+            <p>
+              This is a binary classification problem because the outcome has two categories:
+              diabetes positive and diabetes negative.
+            </p>
+
+            <p>
+              In a real-world setting, a model like this could potentially support screening, risk stratification,
+              or identifying patients who may need further testing. However, this case study is for teaching only
+              and should not be interpreted as a deployable clinical model.
+            </p>
+
+            <h3>Why this case study matters</h3>
+            <p>
+              Diabetes risk prediction is a useful first case study because it brings together many issues that appear
+              in real medical machine learning:
+            </p>
+
+            <ul>
+              <li>Is the outcome clearly defined?</li>
+              <li>Are the predictors clinically meaningful?</li>
+              <li>Are predictors available at the time of prediction?</li>
+              <li>Does the model perform well on unseen data?</li>
+              <li>Is sensitivity high enough for screening?</li>
+              <li>Is specificity high enough to avoid too many false positives?</li>
+              <li>Are predicted probabilities well calibrated?</li>
+              <li>Would the model generalise to another population?</li>
+            </ul>
+          </section>
+
+          <section class="lesson-section" id="dataset">
+            <p class="kicker">Dataset</p>
+            <h2>Pima Indians Diabetes dataset</h2>
+
+            <p>
+              This case study uses the Pima Indians Diabetes dataset, a commonly used teaching dataset for binary classification.
+              The dataset includes diagnostic measurements and diabetes status.
+            </p>
+
+            <h3>Outcome</h3>
+            <p>The outcome is <strong>diabetes status</strong>.</p>
+
+            <ul>
+              <li><strong>Positive class:</strong> diabetes positive</li>
+              <li><strong>Negative class:</strong> diabetes negative</li>
+            </ul>
+
+            <p>
+              Defining the positive class clearly is essential because sensitivity, specificity, positive predictive value
+              and negative predictive value all depend on which group is treated as the event.
+            </p>
+
+            <h3>Predictors</h3>
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Predictor</th>
+                    <th>Clinical interpretation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Pregnancies</td><td>Number of pregnancies</td></tr>
+                  <tr><td>Glucose</td><td>Plasma glucose concentration</td></tr>
+                  <tr><td>Blood pressure</td><td>Diastolic blood pressure</td></tr>
+                  <tr><td>Triceps</td><td>Skinfold thickness</td></tr>
+                  <tr><td>Insulin</td><td>Serum insulin</td></tr>
+                  <tr><td>BMI / mass</td><td>Body mass index</td></tr>
+                  <tr><td>Pedigree</td><td>Diabetes pedigree function</td></tr>
+                  <tr><td>Age</td><td>Age in years</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>Prediction time point</h3>
+            <p>
+              For this teaching example, the prediction time point can be understood as
+              <strong>the time of clinical assessment</strong>. The model should only use information available at that moment.
+            </p>
+
+            <div class="common-mistake">
+              <h3>Leakage reminder</h3>
+              <p>
+                If information measured after the prediction time point is used as a predictor, the model may look better than it truly is.
+                This is data leakage.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="workflow">
+            <p class="kicker">Analysis workflow</p>
+            <h2>From data to clinical interpretation</h2>
+
+            <div class="workflow-map">
+              <div class="workflow-step"><span class="step-badge">1</span><h3>Load data</h3><p>Import and prepare the dataset.</p></div>
+              <div class="workflow-step"><span class="step-badge">2</span><h3>Define outcome</h3><p>Set diabetes positive as the event.</p></div>
+              <div class="workflow-step"><span class="step-badge">3</span><h3>Split data</h3><p>Use training data for fitting and test data for evaluation.</p></div>
+              <div class="workflow-step"><span class="step-badge">4</span><h3>Fit model</h3><p>Fit logistic regression on training data.</p></div>
+              <div class="workflow-step"><span class="step-badge">5</span><h3>Predict risk</h3><p>Generate predicted probabilities in the test set.</p></div>
+              <div class="workflow-step"><span class="step-badge">6</span><h3>Classify</h3><p>Convert probabilities to classes using a threshold.</p></div>
+              <div class="workflow-step"><span class="step-badge">7</span><h3>Evaluate</h3><p>Assess sensitivity, specificity, AUC and Brier score.</p></div>
+              <div class="workflow-step"><span class="step-badge">8</span><h3>Calibrate</h3><p>Compare predicted risk with observed risk.</p></div>
+              <div class="workflow-step"><span class="step-badge">9</span><h3>Thresholds</h3><p>Compare clinical behaviour at different thresholds.</p></div>
+              <div class="workflow-step"><span class="step-badge">10</span><h3>Interpret</h3><p>Connect performance to clinical purpose.</p></div>
+              <div class="workflow-step"><span class="step-badge">11</span><h3>Limitations</h3><p>Explain what could go wrong.</p></div>
+              <div class="workflow-step"><span class="step-badge">12</span><h3>Report</h3><p>Write conclusions carefully.</p></div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="outcome-distribution">
+            <p class="kicker">Step 1</p>
+            <h2>Outcome distribution</h2>
+
+            <p>
+              Before fitting a model, we examine the outcome distribution. This helps us understand whether the dataset is balanced
+              or imbalanced. If one class is much more common, accuracy can become misleading.
+            </p>
+
+            <figure class="figure-card">
+              <h3>Diabetes outcome distribution</h3>
+              <img
+                src="../figures/diabetes_outcome_distribution.png"
+                alt="Bar chart showing diabetes outcome distribution in the Pima Indians Diabetes dataset"
+              />
+              <figcaption>
+                Figure 1. Diabetes-negative patients are more common than diabetes-positive patients in this teaching dataset.
+              </figcaption>
+            </figure>
+
+            <div class="clinical-box">
+              <h3>Interpretation</h3>
+              <p>
+                The diabetes-negative group is larger than the diabetes-positive group. In the full dataset, there are approximately
+                500 diabetes-negative patients and 268 diabetes-positive patients. The outcome is moderately imbalanced.
+              </p>
+              <p>
+                This imbalance is not extreme, but it is enough that accuracy should not be used alone.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="model">
+            <p class="kicker">Steps 2–4</p>
+            <h2>Train/test split and logistic regression model</h2>
+
+            <p>
+              The data are split into 80% training and 20% testing. The training set is used to fit the model.
+              The test set is used to evaluate performance on unseen patients.
+            </p>
+
+            <p>The logistic regression model estimates:</p>
+
+            <div class="formula-box">
+              P(diabetes = positive | predictors)
+            </div>
+
+            <p>Conceptually, the model is:</p>
+
+            <div class="formula-box">
+              logit(P(diabetes positive)) =
+              β<sub>0</sub> + β<sub>1</sub>(pregnancies) + β<sub>2</sub>(glucose)
+              + β<sub>3</sub>(blood pressure) + β<sub>4</sub>(triceps)
+              + β<sub>5</sub>(insulin) + β<sub>6</sub>(BMI)
+              + β<sub>7</sub>(pedigree) + β<sub>8</sub>(age)
+            </div>
+
+            <h3>Broad coefficient interpretation</h3>
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Predictor</th>
+                    <th>Direction in this fitted model</th>
+                    <th>Interpretation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Pregnancies</td><td>Positive</td><td>Higher pregnancies associated with higher predicted diabetes risk.</td></tr>
+                  <tr><td>Glucose</td><td>Positive</td><td>Higher glucose associated with higher predicted diabetes risk.</td></tr>
+                  <tr><td>Blood pressure</td><td>Slightly negative</td><td>Coefficient slightly below zero in this fitted model.</td></tr>
+                  <tr><td>Triceps</td><td>Very close to zero</td><td>Little independent contribution in this fitted model.</td></tr>
+                  <tr><td>Insulin</td><td>Very close to zero</td><td>Little independent contribution in this fitted model.</td></tr>
+                  <tr><td>BMI / mass</td><td>Positive</td><td>Higher BMI associated with higher predicted diabetes risk.</td></tr>
+                  <tr><td>Pedigree</td><td>Positive</td><td>Higher pedigree score associated with higher predicted diabetes risk.</td></tr>
+                  <tr><td>Age</td><td>Slightly positive</td><td>Older age associated with higher predicted diabetes risk.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="clinical-box">
+              <h3>Statistical interpretation</h3>
+              <p>
+                Glucose, BMI, pregnancies and diabetes pedigree function had stronger evidence of association with diabetes status
+                than some other predictors in this fitted model. This should not be overinterpreted because it is one split of an
+                educational dataset.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="classification">
+            <p class="kicker">Steps 5–6</p>
+            <h2>Predicted probabilities and classification results</h2>
+
+            <p>
+              Predicted probabilities are converted into predicted classes using a threshold. We begin with a threshold of 0.50:
+            </p>
+
+            <div class="formula-box">
+              Predicted probability ≥ 0.50 → diabetes positive<br />
+              Predicted probability &lt; 0.50 → diabetes negative
+            </div>
+
+            <h3>Confusion matrix at threshold 0.50</h3>
+
+            <table class="confusion-matrix">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Actual negative</th>
+                  <th>Actual positive</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Predicted negative</th>
+                  <td class="good">92</td>
+                  <td class="warn">22</td>
+                </tr>
+                <tr>
+                  <th>Predicted positive</th>
+                  <td class="warn">10</td>
+                  <td class="good">30</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="metric-grid">
+              <div class="metric-card">Accuracy<span class="metric-value">0.792</span></div>
+              <div class="metric-card">Sensitivity<span class="metric-value">0.577</span></div>
+              <div class="metric-card">Specificity<span class="metric-value">0.902</span></div>
+              <div class="metric-card">PPV<span class="metric-value">0.750</span></div>
+              <div class="metric-card">NPV<span class="metric-value">0.807</span></div>
+            </div>
+
+            <div class="clinical-box">
+              <h3>Clinical interpretation</h3>
+              <p>
+                At the 0.50 threshold, the model is better at identifying diabetes-negative patients than diabetes-positive patients.
+                Specificity is high at 0.902, but sensitivity is lower at 0.577.
+              </p>
+              <p>
+                For a screening use case, this may be a problem because the model would miss a meaningful number of diabetes-positive patients.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="roc">
+            <p class="kicker">Step 7</p>
+            <h2>ROC curve and AUC</h2>
+
+            <p>
+              The ROC curve shows the trade-off between sensitivity and specificity across different thresholds.
+              AUC measures discrimination: whether the model tends to assign higher predicted risks to patients with diabetes
+              than to patients without diabetes.
+            </p>
+
+            <figure class="figure-card">
+              <h3>ROC curve for diabetes prediction</h3>
+              <img
+                src="../figures/diabetes_roc_curve.png"
+                alt="ROC curve for logistic regression diabetes prediction model"
+              />
+              <figcaption>
+                Figure 2. The test-set AUC was 0.851, suggesting useful discrimination in this teaching example.
+              </figcaption>
+            </figure>
+
+            <div class="metric-grid">
+              <div class="metric-card">AUC<span class="metric-value">0.851</span></div>
+              <div class="metric-card">Brier score<span class="metric-value">0.149</span></div>
+            </div>
+
+            <div class="clinical-box">
+              <h3>Interpretation</h3>
+              <p>
+                The model is reasonably good at ranking patients by diabetes risk. However, AUC does not tell us whether predicted
+                probabilities are accurate, and it does not tell us which threshold should be used in practice.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="calibration">
+            <p class="kicker">Steps 8–9</p>
+            <h2>Brier score and calibration</h2>
+
+            <p>
+              The Brier score measures the average squared difference between predicted probabilities and observed outcomes.
+              Calibration assesses whether predicted probabilities agree with observed risks.
+            </p>
+
+            <figure class="figure-card">
+              <h3>Calibration plot for diabetes prediction</h3>
+              <img
+                src="../figures/diabetes_calibration_plot.png"
+                alt="Calibration plot comparing mean predicted risk and observed diabetes risk"
+              />
+              <figcaption>
+                Figure 3. Calibration compares predicted risk with observed risk across groups of patients.
+              </figcaption>
+            </figure>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Risk group</th>
+                    <th>Mean predicted risk</th>
+                    <th>Observed risk</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>5</td><td>0.235</td><td>0.400</td></tr>
+                  <tr><td>6</td><td>0.323</td><td>0.200</td></tr>
+                  <tr><td>7</td><td>0.409</td><td>0.600</td></tr>
+                  <tr><td>8</td><td>0.531</td><td>0.400</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="clinical-box">
+              <h3>Calibration interpretation</h3>
+              <p>
+                A well-calibrated model should have points close to the diagonal line. In this case, the overall trend follows the
+                diagonal reasonably, but some middle-risk groups move away from the line. This suggests calibration is somewhat
+                unstable in the middle risk range.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="thresholds">
+            <p class="kicker">Step 10</p>
+            <h2>Threshold interpretation</h2>
+
+            <p>
+              A threshold converts predicted probabilities into predicted classes. The threshold should be chosen based on clinical
+              purpose, not automatically set to 0.50.
+            </p>
+
+            <div class="threshold-lab">
+              <h3>Interactive threshold comparison</h3>
+              <p>
+                Move the slider to see how threshold choice changes accuracy, sensitivity and specificity.
+              </p>
+
+              <label for="thresholdSlider">
+                <strong>Threshold:</strong> <span id="thresholdText">0.50</span>
+              </label>
+              <input id="thresholdSlider" type="range" min="20" max="70" value="50" step="10" />
+
+              <div class="threshold-output">
+                <div class="threshold-pill">
+                  <span>Accuracy</span>
+                  <strong id="accuracyText">0.792</strong>
+                </div>
+                <div class="threshold-pill">
+                  <span>Sensitivity</span>
+                  <strong id="sensitivityText">0.577</strong>
+                </div>
+                <div class="threshold-pill">
+                  <span>Specificity</span>
+                  <strong id="specificityText">0.902</strong>
+                </div>
+                <div class="threshold-pill">
+                  <span>Clinical behaviour</span>
+                  <strong id="thresholdInterpretation">Conservative</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Threshold</th>
+                    <th>Accuracy</th>
+                    <th>Sensitivity</th>
+                    <th>Specificity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>0.20</td><td>0.701</td><td>0.962</td><td>0.569</td></tr>
+                  <tr><td>0.30</td><td>0.714</td><td>0.788</td><td>0.676</td></tr>
+                  <tr><td>0.40</td><td>0.766</td><td>0.673</td><td>0.814</td></tr>
+                  <tr><td>0.50</td><td>0.792</td><td>0.577</td><td>0.902</td></tr>
+                  <tr><td>0.60</td><td>0.786</td><td>0.481</td><td>0.941</td></tr>
+                  <tr><td>0.70</td><td>0.773</td><td>0.404</td><td>0.961</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="clinical-box">
+              <h3>Clinical interpretation</h3>
+              <p>
+                Lower thresholds detect more diabetes-positive patients but create more false positives.
+                Higher thresholds reduce false positives but miss more diabetes-positive patients.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="limitations">
+            <p class="kicker">Critical appraisal</p>
+            <h2>What could go wrong?</h2>
+
+            <div class="limitation-grid">
+              <div class="limitation-card warning">
+                <h3>1. Accuracy can be misleading</h3>
+                <p>
+                  Accuracy is 0.792 at threshold 0.50, but sensitivity is only 0.577. A model can seem accurate while missing many positive cases.
+                </p>
+              </div>
+
+              <div class="limitation-card warning">
+                <h3>2. Threshold may not match purpose</h3>
+                <p>
+                  For screening, threshold 0.50 may be too conservative. Thresholds should reflect clinical consequences.
+                </p>
+              </div>
+
+              <div class="limitation-card warning">
+                <h3>3. Generalisation is uncertain</h3>
+                <p>
+                  Performance in one teaching dataset does not guarantee performance in another population or healthcare setting.
+                </p>
+              </div>
+
+              <div class="limitation-card warning">
+                <h3>4. Calibration may be unstable</h3>
+                <p>
+                  Some middle-risk groups deviate from the diagonal, so predicted probabilities should be interpreted cautiously.
+                </p>
+              </div>
+
+              <div class="limitation-card warning">
+                <h3>5. Predictors may not be practical</h3>
+                <p>
+                  A model is useful only if predictors are available, reliable and affordable at the prediction time point.
+                </p>
+              </div>
+
+              <div class="limitation-card warning">
+                <h3>6. Dataset is educational</h3>
+                <p>
+                  The Pima dataset is useful for teaching, but it should not be treated as a modern deployable clinical dataset.
+                </p>
+              </div>
+            </div>
+
+            <h3>Before real-world use</h3>
+            <p>A diabetes risk model would require:</p>
+            <ul>
+              <li>careful data quality assessment;</li>
+              <li>clinically justified predictor selection;</li>
+              <li>internal validation;</li>
+              <li>external validation;</li>
+              <li>calibration assessment;</li>
+              <li>threshold selection based on clinical consequences;</li>
+              <li>decision curve analysis;</li>
+              <li>fairness and subgroup performance checks;</li>
+              <li>transparent reporting.</li>
+            </ul>
+          </section>
+
+          <section class="lesson-section" id="reflection">
+            <p class="kicker">Reflection questions</p>
+            <h2>Check your understanding</h2>
+
+            <div class="exercise-card">
+              <h3>Questions</h3>
+              <ol>
+                <li>What is the outcome in this case study?</li>
+                <li>What is the positive class?</li>
+                <li>Which predictors are most clinically meaningful?</li>
+                <li>Why is accuracy alone not enough?</li>
+                <li>Why is sensitivity important for screening?</li>
+                <li>Why might specificity matter in clinical follow-up?</li>
+                <li>What does ROC AUC measure?</li>
+                <li>What does the Brier score measure?</li>
+                <li>What does calibration measure?</li>
+                <li>Why might threshold 0.50 not be appropriate for screening?</li>
+                <li>Why might a model work poorly in a new population?</li>
+                <li>What additional validation would be needed before clinical use?</li>
+              </ol>
+
+              <details class="answer-box">
+                <summary>Show suggested answers</summary>
+                <div class="answer-content">
+                  <p>
+                    The outcome is diabetes status, with diabetes positive as the event. Clinically meaningful predictors include glucose,
+                    BMI, age and pedigree, although all predictors need careful interpretation. Accuracy alone is not enough because it
+                    hides the balance between missed positive cases and false positives. A screening model usually needs high sensitivity.
+                    ROC AUC measures discrimination, Brier score measures probability prediction error, and calibration measures agreement
+                    between predicted and observed risk. Threshold 0.50 may be too conservative for screening. External validation would
+                    be needed before clinical use.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <h3>Related course material</h3>
+            <div class="lesson-list">
+              <a class="lesson-link" href="../module-2/2-1-supervised-learning-medical-data.html">Lesson 3: Supervised Learning for Medical Data</a>
+              <a class="lesson-link" href="../module-2/2-2-logistic-regression-clinical-prediction.html">Lesson 4: Logistic Regression for Clinical Prediction</a>
+              <a class="lesson-link" href="../module-2/2-3-classification-metrics-medicine.html">Lesson 5: Classification Metrics in Medicine</a>
+              <a class="lesson-link" href="../module-3/3-3-calibration-brier-score.html">Lesson 8: Calibration and Brier Score</a>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="code">
+            <p class="kicker">Code and figures</p>
+            <h2>Reproducible R workflow</h2>
+
+            <p>The R code for this case study is:</p>
+
+            <p><span class="code-path">r/C1_diabetes_risk_prediction_case_study.R</span></p>
+
+            <p>After running the script from the course folder, the figures should be saved in:</p>
+
+            <p><span class="code-path">figures/</span></p>
+
+            <p>Expected output files:</p>
+            <ul>
+              <li><span class="code-path">figures/diabetes_outcome_distribution.png</span></li>
+              <li><span class="code-path">figures/diabetes_roc_curve.png</span></li>
+              <li><span class="code-path">figures/diabetes_calibration_plot.png</span></li>
+            </ul>
+
+            <p>
+              <a class="btn btn-primary" href="../r/C1_diabetes_risk_prediction_case_study.R" download>
+                Download R script
+              </a>
+              <a class="btn btn-secondary" href="./index.html">
+                Back to case studies
+              </a>
+            </p>
+
+            <div class="key-takeaway">
+              <p>
+                This logistic regression model has useful discrimination in the test set, with AUC 0.851.
+                However, the default 0.50 threshold gives sensitivity 0.577 and specificity 0.902, meaning the model is
+                more conservative and misses some diabetes-positive patients. This case study shows why medical prediction
+                models must be interpreted using discrimination, calibration, threshold-specific metrics and clinical context.
+              </p>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <img
+        src="../assets/my-academic-tutor-logo.png"
+        alt="My Academic Tutor logo"
+        class="footer-logo"
+      />
+
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+
+  <script>
+    const thresholdData = {
+      20: { threshold: "0.20", accuracy: "0.701", sensitivity: "0.962", specificity: "0.569", interpretation: "Screening-focused" },
+      30: { threshold: "0.30", accuracy: "0.714", sensitivity: "0.788", specificity: "0.676", interpretation: "Sensitive" },
+      40: { threshold: "0.40", accuracy: "0.766", sensitivity: "0.673", specificity: "0.814", interpretation: "Balanced" },
+      50: { threshold: "0.50", accuracy: "0.792", sensitivity: "0.577", specificity: "0.902", interpretation: "Conservative" },
+      60: { threshold: "0.60", accuracy: "0.786", sensitivity: "0.481", specificity: "0.941", interpretation: "Highly specific" },
+      70: { threshold: "0.70", accuracy: "0.773", sensitivity: "0.404", specificity: "0.961", interpretation: "Very conservative" }
+    };
+
+    const thresholdSlider = document.getElementById("thresholdSlider");
+    const thresholdText = document.getElementById("thresholdText");
+    const accuracyText = document.getElementById("accuracyText");
+    const sensitivityText = document.getElementById("sensitivityText");
+    const specificityText = document.getElementById("specificityText");
+    const thresholdInterpretation = document.getElementById("thresholdInterpretation");
+
+    function updateThresholdLab() {
+      if (!thresholdSlider) return;
+      const selected = thresholdData[thresholdSlider.value];
+
+      thresholdText.textContent = selected.threshold;
+      accuracyText.textContent = selected.accuracy;
+      sensitivityText.textContent = selected.sensitivity;
+      specificityText.textContent = selected.specificity;
+      thresholdInterpretation.textContent = selected.interpretation;
+    }
+
+    if (thresholdSlider) {
+      thresholdSlider.addEventListener("input", updateThresholdLab);
+      updateThresholdLab();
+    }
+  </script>
+</body>
+</html>

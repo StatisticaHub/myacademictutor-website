@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Lesson 19: Gradient Boosting | Machine Learning in Biostatistics</title>
+
+  <meta
+    name="description"
+    content="Lesson 19 of Machine Learning in Biostatistics: interactive gradient boosting for clinical prediction, sequential trees, learning rate, number of trees, overfitting, calibration and R implementation."
+  />
+
+  <link rel="stylesheet" href="../assets/course.css" />
+
+  <style>
+    .boosting-timeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.8rem;
+      align-items: stretch;
+      margin: 1.4rem 0;
+    }
+
+    .timeline-card {
+      position: relative;
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fffaf2;
+      padding: 1rem;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+      min-height: 160px;
+    }
+
+    .timeline-card::after {
+      content: "→";
+      position: absolute;
+      right: -0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8C1515;
+      font-weight: 900;
+      font-size: 1.4rem;
+      z-index: 2;
+    }
+
+    .timeline-card:last-child::after {
+      content: "";
+    }
+
+    .timeline-number {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #8C1515;
+      color: #fff;
+      font-weight: 900;
+      margin-bottom: 0.6rem;
+    }
+
+    .mini-tree {
+      margin-top: 0.8rem;
+      display: grid;
+      gap: 0.35rem;
+      justify-items: center;
+      font-size: 0.8rem;
+    }
+
+    .mini-node {
+      border: 1px solid #ddcfb8;
+      background: #ffffff;
+      border-radius: 999px;
+      padding: 0.25rem 0.5rem;
+      color: #6f1d1b;
+      font-weight: 700;
+    }
+
+    .risk-builder {
+      border: 1px solid #ddcfb8;
+      border-radius: 22px;
+      padding: 1.2rem;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+      margin: 1.3rem 0;
+    }
+
+    .risk-bar-wrap {
+      width: 100%;
+      background: #f3eadc;
+      border: 1px solid #ddcfb8;
+      border-radius: 999px;
+      height: 24px;
+      overflow: hidden;
+      margin: 0.8rem 0;
+    }
+
+    .risk-bar {
+      height: 100%;
+      width: 30%;
+      background: #8C1515;
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .boost-controls {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .boost-controls label {
+      display: grid;
+      gap: 0.5rem;
+      border: 1px solid #ddcfb8;
+      background: #fffaf2;
+      border-radius: 16px;
+      padding: 0.9rem;
+      font-weight: 700;
+    }
+
+    .boost-controls input[type="range"] {
+      width: 100%;
+    }
+
+    .tune-output {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .tune-pill {
+      border: 1px solid #ddcfb8;
+      border-radius: 16px;
+      background: #f8f6f2;
+      padding: 0.8rem;
+      display: grid;
+      gap: 0.25rem;
+    }
+
+    .tune-pill strong {
+      color: #8C1515;
+    }
+
+    .graph-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 22px;
+      background: #fff;
+      padding: 1.2rem;
+      margin: 1.3rem 0;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+    }
+
+    .boosting-error-figure {
+      margin: 1rem 0 0.5rem 0;
+      overflow-x: auto;
+    }
+
+    .boosting-error-figure svg {
+      width: 100%;
+      min-width: 640px;
+      height: auto;
+      display: block;
+    }
+
+    .axis-line {
+      stroke: #5b4636;
+      stroke-width: 2.5;
+    }
+
+    .grid-line {
+      stroke: rgba(91, 70, 54, 0.15);
+      stroke-width: 1;
+    }
+
+    .train-error-line {
+      fill: none;
+      stroke: #8C1515;
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .test-error-line {
+      fill: none;
+      stroke: #166534;
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .early-stop-marker {
+      stroke: #111827;
+      stroke-width: 3;
+      stroke-dasharray: 7 6;
+    }
+
+    .minimum-point {
+      fill: #166534;
+      stroke: #ffffff;
+      stroke-width: 3;
+    }
+
+    .axis-label,
+    .curve-label,
+    .annotation-label {
+      font-size: 14px;
+      font-weight: 700;
+      fill: #2f211a;
+    }
+
+    .curve-label.train {
+      fill: #8C1515;
+    }
+
+    .curve-label.test {
+      fill: #166534;
+    }
+
+    .annotation-box {
+      fill: #ffffff;
+      stroke: #ddcfb8;
+      stroke-width: 1.5;
+      rx: 10;
+    }
+
+    .plot-label {
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-right: 1rem;
+    }
+
+    .swatch {
+      width: 22px;
+      height: 5px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .swatch.train {
+      background: #8C1515;
+    }
+
+    .swatch.test {
+      background: #166534;
+    }
+
+    .swatch.stop {
+      background: #111827;
+    }
+
+    .calibration-visual {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.3rem 0;
+    }
+
+    .cal-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      padding: 1.1rem;
+      background: #fff;
+    }
+
+    .cal-card.warning {
+      border-left: 6px solid #991b1b;
+      background: #fff5f5;
+    }
+
+    .cal-card.good {
+      border-left: 6px solid #166534;
+      background: #f0fdf4;
+    }
+
+    .importance-bars {
+      display: grid;
+      gap: 0.7rem;
+      margin: 1rem 0;
+    }
+
+    .importance-row {
+      display: grid;
+      grid-template-columns: 110px 1fr 60px;
+      gap: 0.7rem;
+      align-items: center;
+      font-size: 0.92rem;
+    }
+
+    .importance-track {
+      height: 14px;
+      border: 1px solid #ddcfb8;
+      background: #f3eadc;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .importance-fill {
+      height: 100%;
+      background: #8C1515;
+      border-radius: 999px;
+    }
+
+    @media (max-width: 950px) {
+      .boosting-timeline,
+      .boost-controls,
+      .tune-output,
+      .calibration-visual {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline-card::after {
+        content: "↓";
+        right: 50%;
+        top: auto;
+        bottom: -1.1rem;
+        transform: translateX(50%);
+      }
+
+      .timeline-card:last-child::after {
+        content: "";
+      }
+
+      .importance-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="brand-logo" />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Module 5 · Lesson 19</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="../module-2/index.html">Module 2</a>
+          <a href="../module-3/index.html">Module 3</a>
+          <a href="../module-4/index.html">Module 4</a>
+          <a href="./index.html">Module 5</a>
+          <a href="../case-studies/index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Module 5 · Tree-Based Methods</p>
+        <h1>Lesson 19: Gradient Boosting</h1>
+
+        <p class="hero-intro">
+          Gradient boosting builds trees sequentially. Each new tree makes a small correction to the current model.
+          This can produce strong clinical prediction models, but tuning, calibration and validation are essential.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#lecture">Start lesson</a>
+          <a class="btn btn-secondary" href="./5-3-random-forests.html">Previous lesson</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <div class="lesson-layout">
+        <aside class="lesson-sidebar" aria-label="Lesson sections">
+          <h3>Lesson sections</h3>
+          <a class="active" href="#lecture">Lecture</a>
+          <a href="#visual-flow">Visual flow</a>
+          <a href="#interactive-builder">Interactive builder</a>
+          <a href="#tuning">Tuning</a>
+          <a href="#overfitting-graph">Overfitting graph</a>
+          <a href="#importance">Importance</a>
+          <a href="#notes">Detailed notes</a>
+          <a href="#r-code">R code</a>
+          <a href="#exercises">Exercises</a>
+          <a href="#quiz">Quiz</a>
+        </aside>
+
+        <article class="lesson-content">
+          <section class="lesson-section" id="lecture">
+            <p class="kicker">Lecture</p>
+            <h2>Lecture 19: Gradient Boosting</h2>
+
+            <div class="scene-card">
+              <div class="scene-title">Opening scene: Learning from mistakes</div>
+              <div class="dialogue-box">
+                <div class="dialogue-line learner">
+      <p><span class="character">Curious Learner:</span><br />“Random forests build many trees and average them. Is boosting the same?”</p>
+    </div>
+                <div class="dialogue-line prof-stat">
+      <p><span class="character">Prof Stat:</span><br />“Not quite. Boosting builds trees sequentially. Each tree improves the current model.”</p>
+    </div>
+                <div class="dialogue-line dr-clinic">
+      <p><span class="character">Dr Clinic:</span><br />“So the model learns step by step?”</p>
+    </div>
+                <div class="dialogue-line prof-stat">
+      <p><span class="character">Prof Stat:</span><br />“Exactly. It starts rough and becomes better through small corrections.”</p>
+    </div>
+                <div class="dialogue-line captain-overfit">
+      <p><span class="character">Captain Overfit:</span><br />“And if you keep correcting forever, I can make it chase noise.”</p>
+    </div>
+                <div class="dialogue-line ms-calibration">
+      <p><span class="character">Ms Calibration:</span><br />“Even if AUC improves, predicted probabilities still need checking.”</p>
+    </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="big-question">
+            <p class="kicker">Today’s big question</p>
+            <h2>How does gradient boosting build a strong model from many small trees?</h2>
+
+            <div class="big-question">
+              <p>
+                Gradient boosting creates a strong prediction model by adding weak learners one at a time,
+                with each learner correcting the current model.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="visual-flow">
+            <p class="kicker">Visual flow</p>
+            <h2>Boosting adds corrections step by step</h2>
+
+            <p>
+              The first prediction may be crude. The next tree corrects part of the remaining error.
+              The next tree corrects what is still wrong. Many small corrections can become a strong model.
+            </p>
+
+            <div class="boosting-timeline">
+              <div class="timeline-card">
+                <span class="timeline-number">0</span>
+                <h3>Start</h3>
+                <p>Begin with a basic prediction for all patients.</p>
+                <div class="mini-tree"><span class="mini-node">Risk ≈ baseline</span></div>
+              </div>
+
+              <div class="timeline-card">
+                <span class="timeline-number">1</span>
+                <h3>Tree 1</h3>
+                <p>Corrects large errors using a simple split.</p>
+                <div class="mini-tree"><span class="mini-node">Glucose</span><span class="mini-node">BMI</span></div>
+              </div>
+
+              <div class="timeline-card">
+                <span class="timeline-number">2</span>
+                <h3>Tree 2</h3>
+                <p>Targets remaining mistakes from the current model.</p>
+                <div class="mini-tree"><span class="mini-node">Age</span><span class="mini-node">Pedigree</span></div>
+              </div>
+
+              <div class="timeline-card">
+                <span class="timeline-number">3</span>
+                <h3>Tree 3</h3>
+                <p>Adds another small correction.</p>
+                <div class="mini-tree"><span class="mini-node">Insulin</span><span class="mini-node">Mass</span></div>
+              </div>
+
+              <div class="timeline-card">
+                <span class="timeline-number">+</span>
+                <h3>Final model</h3>
+                <p>Many small corrections form one prediction model.</p>
+                <div class="mini-tree"><span class="mini-node">Average risk</span></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="interactive-builder">
+            <p class="kicker">Interactive risk builder</p>
+            <h2>See how boosted corrections change a predicted risk</h2>
+
+            <p>
+              This simplified demo shows the idea of boosting. Each new tree adds a small correction.
+              In real gradient boosting, the corrections are learned from the loss function.
+            </p>
+
+            <div class="risk-builder">
+              <h3>Predicted diabetes risk builder</h3>
+              <p><strong>Current predicted risk:</strong> <span id="riskText">30%</span></p>
+              <div class="risk-bar-wrap"><div class="risk-bar" id="riskBar"></div></div>
+
+              <div class="boost-controls">
+                <label>
+                  Tree 1 correction
+                  <input id="treeOne" type="range" min="-10" max="20" value="8" />
+                  <span><span id="treeOneText">+8</span> percentage points</span>
+                </label>
+
+                <label>
+                  Tree 2 correction
+                  <input id="treeTwo" type="range" min="-10" max="20" value="5" />
+                  <span><span id="treeTwoText">+5</span> percentage points</span>
+                </label>
+
+                <label>
+                  Tree 3 correction
+                  <input id="treeThree" type="range" min="-10" max="20" value="-3" />
+                  <span><span id="treeThreeText">-3</span> percentage points</span>
+                </label>
+              </div>
+
+              <div class="tune-output">
+                <div class="tune-pill">
+                  <span>Starting risk</span>
+                  <strong>30%</strong>
+                </div>
+                <div class="tune-pill">
+                  <span>Total correction</span>
+                  <strong id="correctionText">+10 points</strong>
+                </div>
+                <div class="tune-pill">
+                  <span>Final risk</span>
+                  <strong id="finalRiskText">40%</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="tuning">
+            <p class="kicker">Tuning</p>
+            <h2>Boosting is powerful because it is tunable</h2>
+
+            <p>
+              Gradient boosting has several tuning choices. These choices determine whether the model is too simple,
+              appropriately flexible, or overfitted.
+            </p>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Tuning parameter</th>
+                    <th>What it controls</th>
+                    <th>Clinical modelling risk</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Number of trees</strong></td>
+                    <td>How many sequential corrections are added.</td>
+                    <td>Too many trees may chase noise.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Learning rate</strong></td>
+                    <td>How strongly each tree contributes.</td>
+                    <td>Too large may overfit quickly.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Tree depth</strong></td>
+                    <td>How complex each small tree is.</td>
+                    <td>Too deep may learn unstable interactions.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Minimum node size</strong></td>
+                    <td>How small terminal nodes can become.</td>
+                    <td>Too small may create unstable subgroups.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="risk-builder">
+              <h3>Interactive tuning simulator</h3>
+
+              <div class="boost-controls">
+                <label>
+                  Learning rate
+                  <input id="rateSlider" type="range" min="1" max="30" value="5" />
+                  <span id="rateText">0.05</span>
+                </label>
+
+                <label>
+                  Number of trees
+                  <input id="treesSlider" type="range" min="50" max="1500" value="500" step="50" />
+                  <span id="treesText">500</span>
+                </label>
+
+                <label>
+                  Tree depth
+                  <input id="depthSlider" type="range" min="1" max="6" value="2" />
+                  <span id="depthText">2</span>
+                </label>
+              </div>
+
+              <div class="tune-output">
+                <div class="tune-pill">
+                  <span>Learning behaviour</span>
+                  <strong id="learningBehaviour">gradual</strong>
+                </div>
+                <div class="tune-pill">
+                  <span>Complexity</span>
+                  <strong id="complexityText">moderate</strong>
+                </div>
+                <div class="tune-pill">
+                  <span>Overfitting risk</span>
+                  <strong id="overfitRisk">needs validation</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="overfitting-graph">
+            <p class="kicker">Graphical intuition</p>
+            <h2>Training error may keep falling while test error rises</h2>
+
+            <p>
+              A boosted model can keep improving on the training data. But after a point, additional trees may reduce training error
+              while increasing validation or test error.
+            </p>
+
+            <div class="graph-card">
+              <h3>Conceptual performance curve</h3>
+              <div>
+                <span class="plot-label"><span class="swatch train"></span>Training error</span>
+                <span class="plot-label"><span class="swatch test"></span>Validation/Test error</span>
+                <span class="plot-label"><span class="swatch stop"></span>Early stopping region</span>
+              </div>
+
+              <div class="boosting-error-figure" aria-label="Correct conceptual boosting error curve">
+                <svg viewBox="0 0 760 420" role="img" aria-labelledby="boostingCurveTitle boostingCurveDesc">
+                  <title id="boostingCurveTitle">Training and validation error as boosting trees are added</title>
+                  <desc id="boostingCurveDesc">
+                    Training error decreases as the number of boosting trees increases. Validation or test error decreases first, reaches a minimum, and then rises when overfitting begins.
+                  </desc>
+
+                  <line class="grid-line" x1="90" y1="70" x2="690" y2="70" />
+                  <line class="grid-line" x1="90" y1="135" x2="690" y2="135" />
+                  <line class="grid-line" x1="90" y1="200" x2="690" y2="200" />
+                  <line class="grid-line" x1="90" y1="265" x2="690" y2="265" />
+                  <line class="grid-line" x1="90" y1="330" x2="690" y2="330" />
+
+                  <line class="grid-line" x1="210" y1="55" x2="210" y2="340" />
+                  <line class="grid-line" x1="330" y1="55" x2="330" y2="340" />
+                  <line class="grid-line" x1="450" y1="55" x2="450" y2="340" />
+                  <line class="grid-line" x1="570" y1="55" x2="570" y2="340" />
+
+                  <line class="axis-line" x1="90" y1="340" x2="700" y2="340" />
+                  <line class="axis-line" x1="90" y1="340" x2="90" y2="50" />
+
+                  <text class="axis-label" x="345" y="392">Number of boosting trees / iterations</text>
+                  <text class="axis-label" transform="translate(30 245) rotate(-90)">Prediction error / loss</text>
+
+                  <path class="train-error-line"
+                    d="M 110 105
+                       C 190 145, 245 178, 315 205
+                       C 395 235, 475 265, 560 288
+                       C 615 303, 655 313, 680 320" />
+
+                  <path class="test-error-line"
+                    d="M 110 120
+                       C 190 160, 255 205, 330 247
+                       C 390 280, 445 292, 500 278
+                       C 560 262, 620 225, 680 188" />
+
+                  <line class="early-stop-marker" x1="455" y1="55" x2="455" y2="340" />
+                  <circle class="minimum-point" cx="455" cy="288" r="8" />
+
+                  <rect class="annotation-box" x="470" y="250" width="205" height="44" />
+                  <text class="annotation-label" x="482" y="276">Best validation region</text>
+
+                  <text class="curve-label train" x="510" y="315">Training error keeps decreasing</text>
+                  <text class="curve-label test" x="485" y="205">Validation/test error rises after overfitting</text>
+
+                  <text class="axis-label" x="96" y="360">few</text>
+                  <text class="axis-label" x="640" y="360">many</text>
+                  <text class="axis-label" x="48" y="75">high</text>
+                  <text class="axis-label" x="50" y="336">low</text>
+                </svg>
+              </div>
+
+              <p>
+                The best number of trees is usually near the minimum validation or test error.
+                Training error alone is not enough because it can continue decreasing even after the model has begun to overfit.
+              </p>
+            </div>
+
+            <div class="common-mistake">
+              <h3>Common mistake</h3>
+              <p>
+                Do not choose the model with the lowest training error. Choose tuning values using validation inside the training data,
+                then evaluate once on the untouched test set.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="importance">
+            <p class="kicker">Variable influence</p>
+            <h2>Boosting can rank predictors, but importance is not causality</h2>
+
+            <p>
+              Boosting methods often report relative influence or feature importance. These values describe how strongly the model used each predictor.
+            </p>
+
+            <div class="importance-bars">
+              <div class="importance-row">
+                <strong>Glucose</strong>
+                <div class="importance-track"><div class="importance-fill" style="width: 92%;"></div></div>
+                <span>High</span>
+              </div>
+              <div class="importance-row">
+                <strong>BMI</strong>
+                <div class="importance-track"><div class="importance-fill" style="width: 65%;"></div></div>
+                <span>Medium</span>
+              </div>
+              <div class="importance-row">
+                <strong>Age</strong>
+                <div class="importance-track"><div class="importance-fill" style="width: 48%;"></div></div>
+                <span>Medium</span>
+              </div>
+              <div class="importance-row">
+                <strong>Insulin</strong>
+                <div class="importance-track"><div class="importance-fill" style="width: 31%;"></div></div>
+                <span>Lower</span>
+              </div>
+            </div>
+
+            <div class="calibration-visual">
+              <div class="cal-card good">
+                <h3>Good interpretation</h3>
+                <p>Glucose was strongly used by the model for prediction in this dataset.</p>
+              </div>
+
+              <div class="cal-card warning">
+                <h3>Overinterpretation</h3>
+                <p>Glucose importance proves a causal mechanism from this prediction model alone.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="calibration">
+            <p class="kicker">Calibration</p>
+            <h2>Boosted probabilities still need clinical checking</h2>
+
+            <p>
+              Strong discrimination does not guarantee good probability estimates. A model may rank patients correctly
+              but systematically overestimate or underestimate absolute risk.
+            </p>
+
+            <div class="calibration-visual">
+              <div class="cal-card good">
+                <h3>Well-calibrated</h3>
+                <p>Among patients predicted near 30% risk, about 30% have the event.</p>
+              </div>
+
+              <div class="cal-card warning">
+                <h3>Miscalibrated</h3>
+                <p>Patients predicted near 30% risk may actually have 15% or 50% observed risk.</p>
+              </div>
+            </div>
+
+            <p>
+              For clinical prediction, calibration is essential because decisions often depend on absolute risk thresholds.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="notes">
+            <p class="kicker">Detailed notes</p>
+            <h2>Note 19: Gradient Boosting</h2>
+
+            <div class="key-takeaway">
+              <p>
+                Gradient boosting builds a strong prediction model by adding small trees sequentially.
+                It can be powerful, but it requires careful tuning, validation and calibration assessment.
+              </p>
+            </div>
+
+            <h3>Learning objectives</h3>
+            <ul>
+              <li>Explain the main idea of boosting.</li>
+              <li>Distinguish boosting from random forests.</li>
+              <li>Describe how sequential trees improve a model.</li>
+              <li>Explain weak learners and additive modelling.</li>
+              <li>Understand learning rate, tree depth and number of trees.</li>
+              <li>Explain why boosting can overfit.</li>
+              <li>Understand why early stopping and cross-validation are useful.</li>
+              <li>Interpret variable influence cautiously.</li>
+              <li>Explain why boosted models still need calibration and external validation.</li>
+            </ul>
+
+            <h3>1. Why this note matters</h3>
+            <p>
+              Gradient boosting is one of the most important machine learning methods for prediction. It is popular because it can learn complex relationships, handle non-linear effects and capture interactions between predictors.
+            </p>
+            <p>
+              In biomedical data, relationships are rarely perfectly linear. For example, diabetes risk may change sharply at high glucose values, and the effect of BMI may differ by age or glucose level. Boosting can learn such patterns without the analyst specifying every interaction in advance.
+            </p>
+            <p>
+              However, this flexibility also creates risk. A boosted model can adapt strongly to the development dataset. Without careful tuning and validation, it may learn noise rather than stable clinical signal.
+            </p>
+
+            <h3>2. Boosting versus random forests</h3>
+            <p>
+              Random forests build many trees mostly independently and then average their predictions. Gradient boosting is different because trees are built sequentially.
+            </p>
+            <p>
+              In a random forest, each tree is like a separate opinion. In boosting, each tree is like a correction to the previous opinion. This makes boosting more directed and often more powerful, but also more sensitive to tuning choices.
+            </p>
+
+            <h3>3. The additive model idea</h3>
+            <p>
+              A boosted model is additive. It starts with an initial prediction and then adds many small trees. Each tree contributes a small adjustment.
+            </p>
+            <p>
+              The final model can be understood as a sum of many small corrections. This is why a single tree in a boosting model is usually not interpreted on its own. The whole ensemble produces the prediction.
+            </p>
+
+            <h3>4. Weak learners</h3>
+            <p>
+              A weak learner is a simple model that captures limited structure. In gradient boosting, weak learners are often shallow trees.
+            </p>
+            <p>
+              One shallow tree may not be very accurate. But many shallow trees, added carefully, can create a strong model. This is the central strength of boosting.
+            </p>
+
+            <h3>5. Loss function intuition</h3>
+            <p>
+              A loss function measures how wrong predictions are. For binary outcomes, the loss function penalises predicted probabilities that do not match the observed outcome.
+            </p>
+            <p>
+              Gradient boosting adds a new tree in a direction that reduces the loss. You do not need to focus on the technical calculus here. The practical idea is that each tree tries to improve the current model.
+            </p>
+
+            <h3>6. Learning rate</h3>
+            <p>
+              The learning rate controls the size of each correction. A smaller learning rate means each tree has a smaller effect. This usually requires more trees, but can produce smoother learning.
+            </p>
+            <p>
+              A larger learning rate makes each tree more influential. This can learn quickly, but may overfit quickly or skip over better solutions.
+            </p>
+
+            <h3>7. Number of trees</h3>
+            <p>
+              The number of trees controls how many corrections are added. Too few trees may underfit because the model has not learned enough. Too many trees may overfit because the model begins to learn random noise.
+            </p>
+            <p>
+              In practice, the number of trees is usually chosen using cross-validation or a validation set. The final test set should not be used repeatedly to decide this value.
+            </p>
+
+            <h3>8. Tree depth</h3>
+            <p>
+              Tree depth controls how complex each individual tree can be. A depth of 1 allows simple split-based corrections. Larger depths allow interactions.
+            </p>
+            <p>
+              In clinical prediction, deeper trees may learn complex patient subgroups. Some of these may be real, but some may be unstable. This is why depth should be tuned carefully.
+            </p>
+
+            <h3>9. Minimum node size</h3>
+            <p>
+              Minimum node size controls how small terminal nodes can become. If node sizes are too small, the model may learn very specific subgroup patterns based on few patients.
+            </p>
+            <p>
+              In medical data, small unstable subgroups are risky because they may not appear in future patients.
+            </p>
+
+            <h3>10. Overfitting in boosting</h3>
+            <p>
+              Boosting can overfit when the model continues adding corrections after the stable signal has been captured. The training error may keep decreasing, but test error may start increasing.
+            </p>
+            <p>
+              This is why a performance curve is useful. The best model is not necessarily the model with the lowest training error. It is the model that performs best on validation data and generalises to new patients.
+            </p>
+
+            <h3>11. Early stopping</h3>
+            <p>
+              Early stopping means stopping the boosting process when validation performance no longer improves.
+            </p>
+            <p>
+              Early stopping is a practical way to prevent too many trees from being added. It should be based on appropriate validation data, not repeated use of the final test set.
+            </p>
+
+            <h3>12. Internal cross-validation</h3>
+            <p>
+              Internal cross-validation can be used to choose the number of trees and other tuning values inside the training data.
+            </p>
+            <p>
+              This keeps the final test set untouched. The test set should only be used once at the end for a more honest performance estimate.
+            </p>
+
+            <h3>13. Boosting and clinical interpretation</h3>
+            <p>
+              Boosted models are usually less interpretable than single decision trees. The final prediction comes from many trees, not one simple pathway.
+            </p>
+            <p>
+              Interpretation tools such as variable influence, partial dependence and calibration plots can help, but they do not make the model automatically clinically valid.
+            </p>
+
+            <h3>14. Variable influence</h3>
+            <p>
+              Boosting algorithms often provide relative influence measures. These indicate which predictors contributed strongly to the model’s prediction process.
+            </p>
+            <p>
+              Variable influence should not be interpreted as causality. A variable may be influential because it is a proxy, correlated with another variable, affected by measurement practices or specific to the development dataset.
+            </p>
+
+            <h3>15. Calibration</h3>
+            <p>
+              Boosted models can produce predicted probabilities. These probabilities must be checked. A model can have strong AUC but still give probabilities that are too high or too low.
+            </p>
+            <p>
+              Calibration matters because clinical decisions often use absolute risk thresholds. For example, a patient predicted to have 30% risk may be treated differently from a patient predicted to have 5% risk.
+            </p>
+
+            <h3>16. Brier score</h3>
+            <p>
+              The Brier score measures the average squared difference between predicted probabilities and observed outcomes.
+            </p>
+            <p>
+              It complements AUC because AUC measures ranking, while Brier score reflects probability prediction accuracy.
+            </p>
+
+            <h3>17. Decision curve analysis</h3>
+            <p>
+              If a boosted model is intended to support a clinical action, decision curve analysis can be used to examine clinical usefulness across threshold probabilities.
+            </p>
+            <p>
+              A boosted model should not be called clinically useful only because its AUC is high. Usefulness depends on the consequences of decisions.
+            </p>
+
+            <h3>18. External validation</h3>
+            <p>
+              External validation is especially important for flexible models. A boosted model may adapt to local measurement practices, patient mix or coding patterns.
+            </p>
+            <p>
+              External validation tests whether performance holds in another setting.
+            </p>
+
+            <h3>19. Strengths of gradient boosting</h3>
+            <ul>
+              <li>It can model non-linear relationships.</li>
+              <li>It can capture interactions.</li>
+              <li>It often gives strong predictive performance.</li>
+              <li>It can use many predictors.</li>
+              <li>It provides variable influence summaries.</li>
+            </ul>
+
+            <h3>20. Limitations of gradient boosting</h3>
+            <ul>
+              <li>It requires careful tuning.</li>
+              <li>It can overfit.</li>
+              <li>It is less transparent than a single tree.</li>
+              <li>Variable influence does not prove causality.</li>
+              <li>Calibration may be imperfect.</li>
+              <li>External validation is still needed.</li>
+            </ul>
+
+            <h3>21. Reporting gradient boosting models</h3>
+            <p>A clear report should describe:</p>
+            <ul>
+              <li>outcome definition;</li>
+              <li>prediction time point;</li>
+              <li>candidate predictors;</li>
+              <li>number of trees;</li>
+              <li>learning rate;</li>
+              <li>tree depth;</li>
+              <li>minimum node size;</li>
+              <li>tuning procedure;</li>
+              <li>validation design;</li>
+              <li>discrimination;</li>
+              <li>calibration;</li>
+              <li>Brier score;</li>
+              <li>clinical usefulness if relevant;</li>
+              <li>external validation if available;</li>
+              <li>limitations.</li>
+            </ul>
+
+            <h3>22. Common mistakes</h3>
+            <ul>
+              <li>Assuming boosting is automatically better than simpler models.</li>
+              <li>Tuning repeatedly on the final test set.</li>
+              <li>Reporting only AUC.</li>
+              <li>Ignoring calibration.</li>
+              <li>Using too many trees without validation.</li>
+              <li>Interpreting variable influence as causality.</li>
+              <li>Claiming clinical usefulness without decision-based evaluation.</li>
+            </ul>
+
+            <h3>23. Summary</h3>
+            <p>
+              Gradient boosting builds a prediction model sequentially. Each new tree improves the current model by targeting remaining errors.
+            </p>
+            <p>
+              This makes boosting powerful, but also sensitive to tuning choices. In clinical prediction, boosted models require honest validation, calibration assessment and cautious interpretation.
+            </p>
+
+            <h3>Revision questions</h3>
+            <ul>
+              <li>How is boosting different from random forests?</li>
+              <li>What is a weak learner?</li>
+              <li>What does the learning rate control?</li>
+              <li>Why can too many trees cause overfitting?</li>
+              <li>What is early stopping?</li>
+              <li>Why should the final test set not be used for tuning?</li>
+              <li>Why does boosting still need calibration assessment?</li>
+              <li>Why is variable influence not causal evidence?</li>
+            </ul>
+
+            <h3>Key terms</h3>
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Boosting</strong></td><td>Sequentially adding models to improve current predictions.</td></tr>
+                  <tr><td><strong>Gradient boosting</strong></td><td>Boosting method that improves predictions by reducing a loss function.</td></tr>
+                  <tr><td><strong>Weak learner</strong></td><td>A simple model that contributes a small amount of predictive information.</td></tr>
+                  <tr><td><strong>Learning rate</strong></td><td>Controls how strongly each new tree contributes.</td></tr>
+                  <tr><td><strong>Number of trees</strong></td><td>How many sequential trees are added to the model.</td></tr>
+                  <tr><td><strong>Tree depth</strong></td><td>How complex each individual tree can be.</td></tr>
+                  <tr><td><strong>Early stopping</strong></td><td>Stopping model training when validation performance no longer improves.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>References</h3>
+            <p class="reference-item">Friedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. Annals of Statistics.</p>
+            <p class="reference-item">Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning.</p>
+            <p class="reference-item">James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An Introduction to Statistical Learning.</p>
+            <p class="reference-item">Steyerberg, E. W. (2019). Clinical Prediction Models.</p>
+          </section>
+
+          <section class="lesson-section" id="r-code">
+            <p class="kicker">R code</p>
+            <h2>R practical: gradient boosting for diabetes prediction</h2>
+
+            <div class="practice-note">
+              <p>
+                This script fits a gradient boosting model, chooses the number of trees using internal cross-validation,
+                compares performance with logistic regression, and checks calibration.
+              </p>
+            </div>
+
+            <div class="grid grid-3">
+              <div class="card">
+                <h3>Sequential trees</h3>
+                <p>Uses boosting to add trees one after another.</p>
+              </div>
+              <div class="card">
+                <h3>Tuning</h3>
+                <p>Uses cross-validation to choose the number of trees.</p>
+              </div>
+              <div class="card">
+                <h3>Evaluation</h3>
+                <p>Reports AUC, Brier score, relative influence and grouped calibration.</p>
+              </div>
+            </div>
+
+            <p style="margin-top: 1.2rem;">
+              <a class="btn btn-primary" href="../r/19_gradient_boosting.R" download>
+                Download R script
+              </a>
+              <button class="btn btn-secondary" data-copy-target="r-code-19" type="button">
+                Copy code
+              </button>
+            </p>
+
+            <pre class="code-block"><code id="r-code-19"># Machine Learning in Biostatistics
+# Script 19: Gradient Boosting
+#
+# This script fits a gradient boosting model for diabetes prediction.
+# It compares gradient boosting with logistic regression and shows
+# AUC, Brier score, relative influence and grouped calibration.
+#
+# Main ideas:
+# 1. Gradient boosting builds trees sequentially.
+# 2. Each new tree tries to improve the current model.
+# 3. Learning rate controls how strongly each new tree contributes.
+# 4. Tree depth controls how complex each tree can be.
+# 5. Boosting can overfit if tuning is careless.
+
+library(tidyverse)
+library(mlbench)
+library(pROC)
+library(gbm)
+
+set.seed(123)
+
+data("PimaIndiansDiabetes")
+
+diabetes_data &lt;- PimaIndiansDiabetes %&gt;%
+  mutate(
+    diabetes = factor(diabetes, levels = c("neg", "pos")),
+    diabetes_numeric = ifelse(diabetes == "pos", 1, 0)
+  )
+
+cat("\nDataset summary:\n")
+cat("Number of patients:", nrow(diabetes_data), "\n")
+cat("Outcome distribution:\n")
+print(table(diabetes_data$diabetes))
+
+train_index &lt;- sample(
+  seq_len(nrow(diabetes_data)),
+  size = round(0.80 * nrow(diabetes_data))
+)
+
+train_data &lt;- diabetes_data[train_index, ]
+test_data &lt;- diabetes_data[-train_index, ]
+
+cat("\nTraining patients:", nrow(train_data), "\n")
+cat("Test patients:", nrow(test_data), "\n")
+
+calculate_auc &lt;- function(actual, risk) {
+  roc_object &lt;- roc(
+    response = actual,
+    predictor = risk,
+    levels = c("neg", "pos"),
+    quiet = TRUE
+  )
+
+  as.numeric(auc(roc_object))
+}
+
+calculate_brier &lt;- function(actual, risk) {
+  observed &lt;- as.numeric(actual == "pos")
+  mean((risk - observed)^2)
+}
+
+boost_model &lt;- gbm(
+  diabetes_numeric ~ pregnant + glucose + pressure + triceps +
+    insulin + mass + pedigree + age,
+  data = train_data,
+  distribution = "bernoulli",
+  n.trees = 1500,
+  interaction.depth = 2,
+  shrinkage = 0.01,
+  n.minobsinnode = 10,
+  cv.folds = 5,
+  verbose = FALSE
+)
+
+best_trees &lt;- gbm.perf(
+  boost_model,
+  method = "cv",
+  plot.it = TRUE
+)
+
+cat("\nBest number of trees selected using internal cross-validation:\n")
+print(best_trees)
+
+boost_risk &lt;- predict(
+  boost_model,
+  newdata = test_data,
+  n.trees = best_trees,
+  type = "response"
+)
+
+logistic_model &lt;- glm(
+  diabetes ~ pregnant + glucose + pressure + triceps +
+    insulin + mass + pedigree + age,
+  data = train_data,
+  family = binomial
+)
+
+logistic_risk &lt;- predict(
+  logistic_model,
+  newdata = test_data,
+  type = "response"
+)
+
+model_comparison &lt;- tibble(
+  model = c("Gradient boosting", "Logistic regression"),
+  test_auc = c(
+    calculate_auc(test_data$diabetes, boost_risk),
+    calculate_auc(test_data$diabetes, logistic_risk)
+  ),
+  test_brier = c(
+    calculate_brier(test_data$diabetes, boost_risk),
+    calculate_brier(test_data$diabetes, logistic_risk)
+  )
+)
+
+cat("\nModel comparison:\n")
+print(model_comparison)
+
+relative_influence &lt;- summary(
+  boost_model,
+  n.trees = best_trees,
+  plotit = FALSE
+)
+
+cat("\nRelative influence table:\n")
+print(relative_influence)
+
+boost_predictions &lt;- test_data %&gt;%
+  mutate(
+    predicted_risk = boost_risk,
+    observed_numeric = as.numeric(diabetes == "pos")
+  )
+
+calibration_table &lt;- boost_predictions %&gt;%
+  mutate(risk_group = ntile(predicted_risk, 5)) %&gt;%
+  group_by(risk_group) %&gt;%
+  summarise(
+    mean_predicted_risk = mean(predicted_risk),
+    observed_risk = mean(observed_numeric),
+    n = n(),
+    .groups = "drop"
+  )
+
+cat("\nGrouped calibration summary for gradient boosting:\n")
+print(calibration_table)
+
+plot(
+  calibration_table$mean_predicted_risk,
+  calibration_table$observed_risk,
+  xlim = c(0, 1),
+  ylim = c(0, 1),
+  xlab = "Mean predicted risk",
+  ylab = "Observed risk",
+  main = "Grouped Calibration: Gradient Boosting"
+)
+
+abline(0, 1, lty = 2)
+
+boost_roc &lt;- roc(
+  response = test_data$diabetes,
+  predictor = boost_risk,
+  levels = c("neg", "pos"),
+  quiet = TRUE
+)
+
+plot(
+  boost_roc,
+  main = "Gradient Boosting ROC Curve",
+  legacy.axes = TRUE
+)
+
+cat("\nLearning points:\n")
+cat("1. Gradient boosting builds trees sequentially rather than independently.\n")
+cat("2. Each new tree improves the current model by focusing on remaining errors.\n")
+cat("3. Important tuning choices include number of trees, tree depth and learning rate.\n")
+cat("4. Internal cross-validation can help choose the number of trees.\n")
+cat("5. Boosting can overfit if too many trees or too much complexity are used.\n")
+cat("6. A boosted model still needs calibration and clinical usefulness assessment.\n")
+</code></pre>
+          </section>
+
+          <section class="lesson-section" id="exercises">
+            <p class="kicker">Exercises</p>
+            <h2>Exercise 19: Gradient Boosting</h2>
+
+            <div class="practice-note">
+              <p>
+                Try the questions first, then open the suggested answers.
+              </p>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part A: Concepts</h3>
+
+              <h4>Question 1</h4>
+              <p>What is the main idea of gradient boosting?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Gradient boosting builds a model sequentially by adding small trees that improve the errors of the current model.</p>
+              </div></details>
+
+              <h4>Question 2</h4>
+              <p>How is boosting different from random forests?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Random forests build many trees mostly independently and average them. Boosting builds trees sequentially, with each new tree improving the current model.</p>
+              </div></details>
+
+              <h4>Question 3</h4>
+              <p>What is a weak learner?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>A weak learner is a simple model that captures a small part of the signal. In boosting, many weak learners are combined into a stronger model.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part B: Tuning</h3>
+
+              <h4>Question 4</h4>
+              <p>What does the learning rate control?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>The learning rate controls how strongly each new tree contributes to the final model.</p>
+              </div></details>
+
+              <h4>Question 5</h4>
+              <p>Why can too many trees cause overfitting?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>If trees continue to be added after the useful signal has been captured, the model may start fitting noise in the training data.</p>
+              </div></details>
+
+              <h4>Question 6</h4>
+              <p>Why should tuning not be done repeatedly on the final test set?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>The final test set would become part of model development, making the reported test performance optimistic.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part C: Medical interpretation</h3>
+
+              <h4>Question 7</h4>
+              <p>Why might gradient boosting be useful in clinical prediction?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>It can capture non-linear relationships and interactions between clinical predictors, which may improve prediction.</p>
+              </div></details>
+
+              <h4>Question 8</h4>
+              <p>Why does high AUC not prove clinical usefulness?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>AUC measures ranking but not calibration or decision usefulness. A model may rank patients well but still give poorly calibrated probabilities or not improve clinical decisions.</p>
+              </div></details>
+
+              <h4>Question 9</h4>
+              <p>Why should variable influence be interpreted cautiously?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Variable influence shows predictive use in the fitted model. It may reflect correlation, proxy variables, measurement artefacts or dataset-specific patterns, not causality.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part D: True or false</h3>
+
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Statement</th><th>True / False</th></tr></thead>
+                  <tbody>
+                    <tr><td>Gradient boosting builds trees sequentially.</td><td></td></tr>
+                    <tr><td>Learning rate controls how strongly each tree contributes.</td><td></td></tr>
+                    <tr><td>Boosting cannot overfit.</td><td></td></tr>
+                    <tr><td>Boosted models still need calibration assessment.</td><td></td></tr>
+                    <tr><td>The final test set should be used repeatedly for tuning.</td><td></td></tr>
+                    <tr><td>Variable influence proves causality.</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <ul>
+                  <li>Builds trees sequentially: <strong>True</strong>.</li>
+                  <li>Learning rate controls tree contribution: <strong>True</strong>.</li>
+                  <li>Boosting cannot overfit: <strong>False</strong>.</li>
+                  <li>Calibration is still needed: <strong>True</strong>.</li>
+                  <li>Use final test set repeatedly for tuning: <strong>False</strong>.</li>
+                  <li>Variable influence proves causality: <strong>False</strong>.</li>
+                </ul>
+              </div></details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="quiz">
+            <p class="kicker">Quick quiz</p>
+            <h2>Final checks</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Gradient boosting differs from random forests because boosting:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">Builds trees sequentially to improve the current model.</button>
+                <button class="option-btn" data-answer="incorrect">Builds all trees independently and only averages them.</button>
+                <button class="option-btn" data-answer="incorrect">Removes the need for calibration.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Boosting is sequential."
+                data-incorrect="<strong>Not quite.</strong> The key difference is sequential improvement."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">A boosted model with high AUC should still be checked for:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">Calibration and clinical usefulness.</button>
+                <button class="option-btn" data-answer="incorrect">Nothing else.</button>
+                <button class="option-btn" data-answer="incorrect">Only training accuracy.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Medical prediction requires more than discrimination."
+                data-incorrect="<strong>Not quite.</strong> AUC alone is not enough for clinical prediction."
+              ></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="next-lesson-card">
+              <div>
+                <p class="kicker">Next lesson</p>
+                <h2 style="margin: 0;">XGBoost for Clinical Prediction</h2>
+                <p style="margin-bottom: 0;">
+                  Learn how XGBoost extends gradient boosting with efficient and regularised boosted trees.
+                </p>
+              </div>
+
+              <a class="btn btn-primary" href="./5-5-xgboost-clinical-prediction.html">
+                Continue
+              </a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="footer-logo" />
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+
+  <script>
+    const treeOne = document.getElementById("treeOne");
+    const treeTwo = document.getElementById("treeTwo");
+    const treeThree = document.getElementById("treeThree");
+    const riskText = document.getElementById("riskText");
+    const riskBar = document.getElementById("riskBar");
+    const treeOneText = document.getElementById("treeOneText");
+    const treeTwoText = document.getElementById("treeTwoText");
+    const treeThreeText = document.getElementById("treeThreeText");
+    const correctionText = document.getElementById("correctionText");
+    const finalRiskText = document.getElementById("finalRiskText");
+
+    function signed(value) {
+      return value >= 0 ? "+" + value : String(value);
+    }
+
+    function updateRiskBuilder() {
+      if (!treeOne || !treeTwo || !treeThree) return;
+      const baseRisk = 30;
+      const c1 = Number(treeOne.value);
+      const c2 = Number(treeTwo.value);
+      const c3 = Number(treeThree.value);
+      const total = c1 + c2 + c3;
+      const risk = Math.max(1, Math.min(99, baseRisk + total));
+
+      treeOneText.textContent = signed(c1);
+      treeTwoText.textContent = signed(c2);
+      treeThreeText.textContent = signed(c3);
+      correctionText.textContent = signed(total) + " points";
+      finalRiskText.textContent = risk + "%";
+      riskText.textContent = risk + "%";
+      riskBar.style.width = risk + "%";
+    }
+
+    [treeOne, treeTwo, treeThree].forEach(el => {
+      if (el) el.addEventListener("input", updateRiskBuilder);
+    });
+    updateRiskBuilder();
+
+    const rateSlider = document.getElementById("rateSlider");
+    const treesSlider = document.getElementById("treesSlider");
+    const depthSlider = document.getElementById("depthSlider");
+    const rateText = document.getElementById("rateText");
+    const treesText = document.getElementById("treesText");
+    const depthText = document.getElementById("depthText");
+    const learningBehaviour = document.getElementById("learningBehaviour");
+    const complexityText = document.getElementById("complexityText");
+    const overfitRisk = document.getElementById("overfitRisk");
+
+    function updateTuningSimulator() {
+      if (!rateSlider || !treesSlider || !depthSlider) return;
+
+      const rate = Number(rateSlider.value) / 100;
+      const trees = Number(treesSlider.value);
+      const depth = Number(depthSlider.value);
+
+      rateText.textContent = rate.toFixed(2);
+      treesText.textContent = trees;
+      depthText.textContent = depth;
+
+      if (rate <= 0.05) {
+        learningBehaviour.textContent = "slow and gradual";
+      } else if (rate <= 0.15) {
+        learningBehaviour.textContent = "moderate";
+      } else {
+        learningBehaviour.textContent = "fast and aggressive";
+      }
+
+      if (depth <= 2 && trees <= 600) {
+        complexityText.textContent = "low to moderate";
+      } else if (depth <= 3 && trees <= 1000) {
+        complexityText.textContent = "moderate";
+      } else {
+        complexityText.textContent = "high";
+      }
+
+      const riskScore = rate * 10 + depth * 0.8 + trees / 500;
+      if (riskScore < 4) {
+        overfitRisk.textContent = "lower, but check underfitting";
+      } else if (riskScore < 7) {
+        overfitRisk.textContent = "needs validation";
+      } else {
+        overfitRisk.textContent = "higher; use careful validation";
+      }
+    }
+
+    [rateSlider, treesSlider, depthSlider].forEach(el => {
+      if (el) el.addEventListener("input", updateTuningSimulator);
+    });
+    updateTuningSimulator();
+  </script>
+</body>
+</html>

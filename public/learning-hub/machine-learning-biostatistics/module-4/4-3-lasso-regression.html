@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Lesson 12: Lasso Regression | Machine Learning in Biostatistics</title>
+
+  <meta
+    name="description"
+    content="Lesson 12 of Machine Learning in Biostatistics: lasso regression, coefficient shrinkage, feature selection, sparse models, lambda, correlated predictors, leakage and biomedical prediction."
+  />
+
+  <link rel="stylesheet" href="../assets/course.css" />
+
+  <style>
+    .mini-plot {
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .plot-row {
+      display: grid;
+      grid-template-columns: 130px 1fr 70px;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.95rem;
+    }
+
+    .plot-track {
+      height: 14px;
+      background: #f3eadc;
+      border: 1px solid #ddcfb8;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .plot-bar {
+      height: 100%;
+      background: #8C1515;
+      border-radius: 999px;
+    }
+
+    .lambda-demo {
+      margin-top: 1rem;
+      padding: 1.2rem;
+      border: 1px solid #ddcfb8;
+      border-radius: 16px;
+      background: #fffaf2;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+    }
+
+    .lambda-demo input[type="range"] {
+      width: 100%;
+      margin: 1rem 0;
+    }
+
+    .lambda-output {
+      display: grid;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+
+    .lambda-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border: 1px solid #ddcfb8;
+      background: #f8f6f2;
+      border-radius: 999px;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.9rem;
+    }
+
+    .removed {
+      opacity: 0.55;
+      text-decoration: line-through;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="brand-logo" />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Module 4 · Lesson 12</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="../module-2/index.html">Module 2</a>
+          <a href="../module-3/index.html">Module 3</a>
+          <a href="./index.html">Module 4</a>
+          <a href="../case-studies/index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Module 4 · Regularisation and Feature Selection</p>
+        <h1>Lesson 12: Lasso Regression</h1>
+
+        <p class="hero-intro">
+          Lasso regression is a regularisation method that can shrink some coefficients exactly to zero.
+          This makes it useful for feature selection and sparse clinical prediction models, but selected features
+          must be validated and interpreted cautiously.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#lecture">Start lesson</a>
+          <a class="btn btn-secondary" href="./4-2-ridge-regression.html">Previous lesson</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <div class="lesson-layout">
+        <aside class="lesson-sidebar" aria-label="Lesson sections">
+          <h3>Lesson sections</h3>
+          <a class="active" href="#lecture">Lecture</a>
+          <a href="#selection">Feature selection</a>
+          <a href="#lambda">Lambda demo</a>
+          <a href="#interactive">Interactive checks</a>
+          <a href="#notes">Detailed notes</a>
+          <a href="#r-code">R code</a>
+          <a href="#exercises">Exercises</a>
+          <a href="#quiz">Quiz</a>
+        </aside>
+
+        <article class="lesson-content">
+          <section class="lesson-section" id="lecture">
+            <p class="kicker">Lecture</p>
+            <h2>Lecture 12: Lasso Regression</h2>
+
+            <div class="scene-card">
+              <div class="scene-title">Opening scene: Too many predictors, too little clinical time</div>
+              <div class="dialogue-box">
+                
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“I have 60 possible predictors for a clinical prediction model. Ordinary logistic regression feels too crowded.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“Also, collecting 60 predictors for every patient may not be realistic.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“This is where lasso can help. It can shrink some coefficients to zero and produce a smaller model.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“So lasso chooses the important predictors?”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“It chooses predictors useful for prediction in the data. That is not the same as proving clinical or causal importance.”</p>
+      </div>
+    
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="big-idea">
+            <p class="kicker">Big idea</p>
+            <h2>Lasso can shrink coefficients exactly to zero</h2>
+
+            <p>
+              Lasso regression adds a penalty to the model-fitting process. Like ridge regression, it shrinks coefficients.
+              But lasso has one special feature: some coefficients can become exactly zero.
+            </p>
+
+            <div class="big-question">
+              <p>If a coefficient becomes zero, that predictor is effectively removed from the model.</p>
+            </div>
+
+            <p>
+              This means lasso can perform feature selection while building a prediction model.
+              In medical prediction, this can be attractive when we have many candidate predictors and want a smaller model.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="selection">
+            <p class="kicker">A simple example</p>
+            <h2>From crowded model to sparse model</h2>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Predictor</th>
+                    <th>Ordinary coefficient</th>
+                    <th>Lasso coefficient</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Glucose</td><td>1.10</td><td>0.90</td><td>Retained</td></tr>
+                  <tr><td>BMI</td><td>0.70</td><td>0.55</td><td>Retained</td></tr>
+                  <tr><td>Age</td><td>0.40</td><td>0.30</td><td>Retained</td></tr>
+                  <tr><td>Pressure</td><td>0.12</td><td>0</td><td>Removed</td></tr>
+                  <tr><td>Triceps</td><td>0.05</td><td>0</td><td>Removed</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mini-plot" aria-label="Coefficient shrinkage visual">
+              <div class="plot-row"><strong>Glucose</strong><div class="plot-track"><div class="plot-bar" style="width: 90%;"></div></div><span>0.90</span></div>
+              <div class="plot-row"><strong>BMI</strong><div class="plot-track"><div class="plot-bar" style="width: 55%;"></div></div><span>0.55</span></div>
+              <div class="plot-row"><strong>Age</strong><div class="plot-track"><div class="plot-bar" style="width: 30%;"></div></div><span>0.30</span></div>
+              <div class="plot-row"><strong>Pressure</strong><div class="plot-track"><div class="plot-bar" style="width: 0%;"></div></div><span>0.00</span></div>
+              <div class="plot-row"><strong>Triceps</strong><div class="plot-track"><div class="plot-bar" style="width: 0%;"></div></div><span>0.00</span></div>
+            </div>
+
+            <p>
+              In this example, the final model is smaller. This is called a <strong>sparse model</strong>:
+              a model that uses only a subset of available predictors.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="why-useful">
+            <p class="kicker">Why lasso is attractive</p>
+            <h2>Smaller models can be easier to use</h2>
+
+            <p>Lasso can be useful when:</p>
+            <ul>
+              <li>there are many candidate predictors;</li>
+              <li>some predictors may be weak or redundant;</li>
+              <li>a simpler model is preferred;</li>
+              <li>clinical measurement burden matters;</li>
+              <li>the dataset is too small for ordinary regression with all predictors;</li>
+              <li>the goal is prediction, not causal explanation.</li>
+            </ul>
+
+            <div class="clinical-check">
+              <h3>Clinical interpretation</h3>
+              <p>
+                A smaller model may be easier to measure, explain and implement.
+                But smaller does not automatically mean better. A sparse model can still be poorly validated,
+                miscalibrated or clinically unhelpful.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="selected-not-causal">
+            <p class="kicker">Mini conversation</p>
+            <h2>Selected does not mean causal</h2>
+
+            <div class="dialogue-box">
+              
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“Lasso selected biomarker A. Can we say biomarker A causes the disease?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“No. Lasso selection means the biomarker helped prediction in this dataset.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“It could be correlated with something else?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Exactly. It may be a proxy, a correlated marker, or even a dataset-specific signal.”</p>
+      </div>
+    
+            </div>
+          </section>
+
+          <section class="lesson-section" id="lambda">
+            <p class="kicker">Lambda and sparsity</p>
+            <h2>The penalty controls how many predictors remain</h2>
+
+            <p>
+              Lasso uses a tuning parameter called <strong>lambda</strong>. Lambda controls the amount of shrinkage.
+            </p>
+
+            <div class="grid grid-2">
+              <div class="model-card">
+                <p class="model-label">Small lambda</p>
+                <h3>Less shrinkage</h3>
+                <p>More predictors are retained. The model may still overfit if shrinkage is too weak.</p>
+              </div>
+              <div class="model-card">
+                <p class="model-label">Large lambda</p>
+                <h3>More shrinkage</h3>
+                <p>Fewer predictors are retained. The model may underfit if shrinkage is too strong.</p>
+              </div>
+            </div>
+
+            <div class="lambda-demo">
+              <h3>Interactive lambda demo</h3>
+              <p>Move the slider to see the basic idea. This is an educational illustration, not a fitted model.</p>
+
+              <label for="lambdaSlider"><strong>Lambda strength:</strong> <span id="lambdaValue">Medium</span></label>
+              <input id="lambdaSlider" type="range" min="1" max="3" value="2" />
+
+              <div class="lambda-output" id="lambdaOutput">
+                <span class="lambda-pill">Glucose <strong>retained</strong></span>
+                <span class="lambda-pill">BMI <strong>retained</strong></span>
+                <span class="lambda-pill">Age <strong>retained</strong></span>
+                <span class="lambda-pill removed">Pressure <strong>removed</strong></span>
+                <span class="lambda-pill removed">Triceps <strong>removed</strong></span>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="ridge-vs-lasso">
+            <p class="kicker">Lasso versus ridge</p>
+            <h2>Both shrink, but they behave differently</h2>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>What it does</th>
+                    <th>Feature selection?</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>Ridge</strong></td><td>Shrinks coefficients but usually keeps all predictors</td><td>Usually no</td></tr>
+                  <tr><td><strong>Lasso</strong></td><td>Shrinks some coefficients to zero and selects predictors</td><td>Yes</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              Ridge is useful when many predictors may each contain useful information.
+              Lasso is useful when we want a smaller selected predictor set.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="correlation">
+            <p class="kicker">Correlated predictors</p>
+            <h2>Lasso selection can be unstable</h2>
+
+            <p>
+              Suppose two biomarkers carry very similar information.
+              Lasso may select biomarker A and remove biomarker B.
+              In another sample, it may select biomarker B and remove biomarker A.
+            </p>
+
+            <div class="common-mistake">
+              <h3>Common mistake: assuming selected means biologically superior</h3>
+              <p>
+                If predictors are highly correlated, lasso may choose one somewhat arbitrarily.
+                This does not prove that the selected predictor is biologically more important.
+              </p>
+            </div>
+
+            <p>
+              When correlated predictors are common and feature stability matters, elastic net may be considered
+              because it combines lasso and ridge behaviour.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="leakage">
+            <p class="kicker">Feature-selection leakage</p>
+            <h2>Lasso must be inside the validation process</h2>
+
+            <div class="dialogue-box">
+              
+      <div class="dialogue-line leakage-monster">
+        <p><span class="character">Leakage Monster:</span><br />“Select features using the full dataset first. The AUC will look amazing.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“That sounds tempting.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“And biased. The validation data would already have influenced the model.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“So the model may fail on real patients?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Exactly.”</p>
+      </div>
+    
+            </div>
+
+            <div class="grid grid-2">
+              <div class="common-mistake">
+                <h3>Incorrect workflow</h3>
+                <p>Run lasso on the full dataset, keep selected predictors, then cross-validate the reduced model.</p>
+                <p>This leaks information from validation folds into feature selection.</p>
+              </div>
+
+              <div class="clinical-check">
+                <h3>Correct principle</h3>
+                <p>For each fold, run lasso inside the training fold only, then evaluate on the validation fold.</p>
+                <p>The validation fold must remain unseen during feature selection.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="biomedical-example">
+            <p class="kicker">Biomedical example</p>
+            <h2>Cancer biomarker prediction</h2>
+
+            <div class="formula-box">
+              300 patients<br />
+              80 recurrence events<br />
+              150 candidate biomarkers<br />
+              Lasso selects 12 biomarkers
+            </div>
+
+            <p>Before trusting the selected biomarkers, ask:</p>
+            <ul>
+              <li>Were they selected inside validation?</li>
+              <li>Are they stable across resamples?</li>
+              <li>Are they biologically plausible?</li>
+              <li>Are they measured reliably?</li>
+              <li>Do they validate externally?</li>
+              <li>Could batch effects explain the selection?</li>
+            </ul>
+          </section>
+
+          <section class="lesson-section" id="interactive">
+            <p class="kicker">Interactive checks</p>
+            <h2>Practise lasso reasoning</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Which statement best describes lasso regression?</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">It always keeps all predictors in the model.</button>
+                <button class="option-btn" data-answer="correct">It can shrink some coefficients exactly to zero.</button>
+                <button class="option-btn" data-answer="incorrect">It removes the need for cross-validation.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Lasso can set coefficients to zero, which removes predictors from the model."
+                data-incorrect="<strong>Not quite.</strong> Lasso is special because some coefficients can become exactly zero."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">If lasso selects Biomarker A over two highly correlated biomarkers, we can conclude:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">Biomarker A is definitely causal.</button>
+                <button class="option-btn" data-answer="correct">Biomarker A helped prediction, but biological importance needs more evidence.</button>
+                <button class="option-btn" data-answer="incorrect">The model no longer needs external validation.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Lasso selection is predictive evidence, not automatic causal or biological proof."
+                data-incorrect="<strong>Not quite.</strong> Selected features need cautious interpretation and validation."
+              ></div>
+            </div>
+
+            <div class="interactive-panel">
+              <h3>Flashcards: lasso concepts</h3>
+              <p>Click each card to reveal the explanation.</p>
+
+              <div class="flashcard-grid">
+                <div class="flashcard">
+                  <div class="flashcard-front">Lasso regression</div>
+                  <div class="flashcard-back">A regularisation method that can shrink some coefficients exactly to zero.</div>
+                </div>
+                <div class="flashcard">
+                  <div class="flashcard-front">Sparse model</div>
+                  <div class="flashcard-back">A model that uses a relatively small number of predictors.</div>
+                </div>
+                <div class="flashcard">
+                  <div class="flashcard-front">Feature-selection leakage</div>
+                  <div class="flashcard-back">Leakage caused by selecting predictors before validation.</div>
+                </div>
+                <div class="flashcard">
+                  <div class="flashcard-front">Selected feature</div>
+                  <div class="flashcard-back">A prediction feature needing validation, not automatic causal proof.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="lecture-key">
+            <p class="kicker">Key takeaway</p>
+            <h2>Lasso creates smaller models, but selected features need caution</h2>
+
+            <div class="key-takeaway">
+              <p>
+                Lasso regression can shrink coefficients and select predictors, but feature selection must happen inside validation
+                and selected features should be interpreted as prediction features first.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="notes">
+            <p class="kicker">Detailed notes</p>
+            <h2>Note 12: Lasso Regression</h2>
+
+            <div class="key-takeaway">
+              <p>Lasso regression can perform feature selection, but selected features must be validated and interpreted cautiously.</p>
+            </div>
+
+            <h3>Learning objectives</h3>
+            <ul>
+              <li>Explain what lasso regression does.</li>
+              <li>Describe how lasso performs feature selection.</li>
+              <li>Explain how lasso differs from ridge regression.</li>
+              <li>Understand the role of the tuning parameter lambda.</li>
+              <li>Explain why lasso-selected predictors should not automatically be interpreted as causal.</li>
+              <li>Recognise why lasso can be unstable when predictors are correlated.</li>
+              <li>Explain why lasso feature selection must happen inside validation.</li>
+              <li>Describe how lasso can be used in biomedical prediction.</li>
+            </ul>
+
+            <h3>1. Why this note matters</h3>
+            <p>
+              Medical and biomedical datasets often contain many candidate predictors. Some predictors may be useful,
+              while others may be weak, redundant, noisy, unavailable in practice, or not clinically meaningful.
+            </p>
+
+            <p>
+              Lasso regression is attractive because it can shrink some coefficients exactly to zero.
+              This means lasso can produce a smaller prediction model.
+            </p>
+
+            <h3>2. What lasso regression does</h3>
+            <p>
+              Lasso regression is a regularisation method. It adds a penalty to the model-fitting process.
+              This penalty encourages some coefficients to become exactly zero.
+              If a predictor has a coefficient of zero, it is effectively removed from the model.
+            </p>
+
+            <h3>3. Lasso and coefficient shrinkage</h3>
+            <p>
+              Like ridge regression, lasso shrinks coefficients.
+              However, lasso can shrink some coefficients all the way to zero.
+            </p>
+
+            <p>
+              This can create a smaller and more practical model, but the selected predictors must not be over-interpreted.
+            </p>
+
+            <h3>4. Why lasso is useful</h3>
+            <p>Lasso can be useful when:</p>
+            <ul>
+              <li>there are many candidate predictors;</li>
+              <li>only some predictors are expected to be useful;</li>
+              <li>a simpler model is desired;</li>
+              <li>clinical measurement burden matters;</li>
+              <li>the model needs to be easier to explain;</li>
+              <li>the dataset is too small for ordinary regression with all predictors.</li>
+            </ul>
+
+            <h3>5. Lasso as feature selection</h3>
+            <p>
+              Feature selection means choosing a subset of predictors.
+              Lasso performs feature selection automatically by shrinking some coefficients to zero.
+              This can help create a sparse model.
+            </p>
+
+            <p>
+              However, sparse does not automatically mean better.
+              A smaller model still needs validation, calibration assessment and clinical usefulness assessment.
+            </p>
+
+            <h3>6. The tuning parameter lambda</h3>
+            <p>Lambda controls how much shrinkage is applied.</p>
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Lambda</th><th>Shrinkage</th><th>Predictors retained</th><th>Main risk</th></tr></thead>
+                <tbody>
+                  <tr><td>Small lambda</td><td>Less</td><td>More</td><td>May still overfit</td></tr>
+                  <tr><td>Large lambda</td><td>More</td><td>Fewer</td><td>May underfit</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              Different lambda values can lead to different selected predictors.
+              Cross-validation is commonly used to choose lambda.
+            </p>
+
+            <h3>7. Choosing lambda carefully</h3>
+            <p>An honest workflow is:</p>
+            <div class="formula-box">
+              1. Split data into training and test sets.<br />
+              2. Use cross-validation within the training set to choose lambda.<br />
+              3. Fit the lasso model using the chosen lambda.<br />
+              4. Evaluate once on the untouched test set.
+            </div>
+
+            <p>This keeps the test set honest.</p>
+
+            <h3>8. Lasso versus ridge</h3>
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Method</th><th>Main behaviour</th><th>Feature selection?</th></tr></thead>
+                <tbody>
+                  <tr><td>Ridge</td><td>Shrinks coefficients towards zero</td><td>Usually no</td></tr>
+                  <tr><td>Lasso</td><td>Shrinks some coefficients exactly to zero</td><td>Yes</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              Ridge is often useful when many predictors each contribute small information.
+              Lasso is often useful when we want a smaller predictor set.
+            </p>
+
+            <h3>9. Lasso and correlated predictors</h3>
+            <p>
+              Lasso can be unstable when predictors are strongly correlated.
+              If two biomarkers measure a similar process, lasso may select one in one sample and the other in another sample.
+            </p>
+
+            <p>
+              This does not necessarily mean one is truly more important.
+              It may simply reflect instability due to correlation.
+            </p>
+
+            <h3>10. Stability of selected predictors</h3>
+            <p>Because lasso selection can be unstable, check whether selected predictors are stable across:</p>
+            <ul>
+              <li>cross-validation folds;</li>
+              <li>bootstrap samples;</li>
+              <li>repeated analyses;</li>
+              <li>external datasets.</li>
+            </ul>
+
+            <h3>11. Prediction versus causation</h3>
+            <p>Lasso is a prediction tool. A selected predictor may be:</p>
+            <ul>
+              <li>causally related to the outcome;</li>
+              <li>correlated with a causal variable;</li>
+              <li>a proxy for disease severity;</li>
+              <li>a technical artefact;</li>
+              <li>selected by chance;</li>
+              <li>specific to one dataset.</li>
+            </ul>
+
+            <p>Therefore, lasso selection does not prove causality.</p>
+
+            <h3>12. Feature-selection leakage</h3>
+            <p>An incorrect workflow is:</p>
+            <div class="formula-box">
+              1. Run lasso on the full dataset.<br />
+              2. Keep the selected predictors.<br />
+              3. Perform cross-validation using only those predictors.<br />
+              4. Report cross-validated performance.
+            </div>
+
+            <p>
+              This is biased because the validation folds helped select predictors.
+              The performance estimate may be too optimistic.
+            </p>
+
+            <h3>13. Correct lasso validation workflow</h3>
+            <p>A correct cross-validation workflow is:</p>
+            <div class="formula-box">
+              For each fold:<br />
+              1. Use only the training fold.<br />
+              2. Select lambda using only the training fold.<br />
+              3. Fit the lasso model using only the training fold.<br />
+              4. Predict the validation fold.<br />
+              5. Store validation performance.
+            </div>
+
+            <p>Feature selection must happen inside the validation process.</p>
+
+            <h3>14. Lasso in omics</h3>
+            <p>
+              Lasso is often used in gene expression prediction, methylation-based prediction,
+              proteomic biomarker panels and metabolomic risk prediction.
+            </p>
+
+            <p>
+              For example, with 300 participants and 20,000 gene expression features, lasso may select a smaller set of genes.
+              But selected genes should not automatically be treated as biological discoveries.
+            </p>
+
+            <h3>15. Medical examples</h3>
+            <p>
+              In diabetes prediction, lasso may remove weak predictors and keep variables such as glucose, BMI, age and pedigree.
+              This can produce a simpler model, but AUC, calibration, Brier score, clinical usefulness and external validation are still needed.
+            </p>
+
+            <p>
+              In cancer biomarker prediction, lasso may select a small biomarker panel.
+              Before claiming importance, check stability, biological plausibility, routine measurability,
+              external validation, batch effects, calibration and clinical usefulness.
+            </p>
+
+            <h3>16. Limitations of lasso</h3>
+            <ul>
+              <li>Selected features may be unstable.</li>
+              <li>Correlated predictors can cause arbitrary selection.</li>
+              <li>Selected features are not automatically causal.</li>
+              <li>Performance may be optimistic if validation is incorrect.</li>
+              <li>A sparse model may underfit if many predictors each have small effects.</li>
+            </ul>
+
+            <p>Elastic net may be useful when correlated predictors are common.</p>
+
+            <h3>17. Reporting lasso regression</h3>
+            <p>A clear report should describe:</p>
+            <ul>
+              <li>outcome definition;</li>
+              <li>candidate predictors;</li>
+              <li>preprocessing steps;</li>
+              <li>missing data handling;</li>
+              <li>lambda selection method;</li>
+              <li>whether feature selection was inside validation;</li>
+              <li>selected predictors;</li>
+              <li>discrimination;</li>
+              <li>calibration;</li>
+              <li>external validation if available;</li>
+              <li>limitations of selected feature interpretation.</li>
+            </ul>
+
+            <h3>18. Summary</h3>
+            <p>
+              Lasso regression is a regularisation method that can perform feature selection.
+              It creates sparse models by shrinking some coefficients to zero.
+              This can be useful in medical prediction when we want a smaller model.
+            </p>
+
+            <div class="key-takeaway">
+              <p>
+                Lasso is a prediction method, not automatic causal discovery.
+                Selected predictors must be validated and interpreted carefully.
+              </p>
+            </div>
+
+            <h3>Revision questions</h3>
+            <ul>
+              <li>What does lasso regression do?</li>
+              <li>How does lasso perform feature selection?</li>
+              <li>What does lambda control?</li>
+              <li>How is lasso different from ridge regression?</li>
+              <li>What is a sparse model?</li>
+              <li>Why can lasso be unstable with correlated predictors?</li>
+              <li>Why should lasso-selected features not automatically be interpreted as causal?</li>
+              <li>What is feature-selection leakage?</li>
+              <li>Why must lasso selection happen inside cross-validation?</li>
+              <li>Why does lasso still need calibration assessment?</li>
+            </ul>
+
+            <h3>Key terms</h3>
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Lasso regression</strong></td><td>Regularisation method that can shrink coefficients to zero.</td></tr>
+                  <tr><td><strong>Sparse model</strong></td><td>Model using a relatively small number of predictors.</td></tr>
+                  <tr><td><strong>Feature selection</strong></td><td>Choosing predictors for a model.</td></tr>
+                  <tr><td><strong>Lambda</strong></td><td>Tuning parameter controlling shrinkage.</td></tr>
+                  <tr><td><strong>Correlated predictors</strong></td><td>Predictors that contain overlapping information.</td></tr>
+                  <tr><td><strong>Feature-selection leakage</strong></td><td>Leakage caused by selecting predictors before validation.</td></tr>
+                  <tr><td><strong>Stability</strong></td><td>Consistency of selected predictors across resamples.</td></tr>
+                  <tr><td><strong>Omics</strong></td><td>High-dimensional molecular data such as genomics, methylation, proteomics or metabolomics.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>References</h3>
+            <p class="reference-item">Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. Journal of the Royal Statistical Society: Series B.</p>
+            <p class="reference-item">Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning: Data Mining, Inference, and Prediction.</p>
+            <p class="reference-item">James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An Introduction to Statistical Learning: With Applications in R.</p>
+            <p class="reference-item">Friedman, J., Hastie, T., & Tibshirani, R. glmnet: Lasso and elastic-net regularized generalized linear models.</p>
+            <p class="reference-item">Steyerberg, E. W. (2019). Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating.</p>
+          </section>
+
+          <section class="lesson-section" id="r-code">
+            <p class="kicker">R code</p>
+            <h2>R practical: lasso regression for diabetes prediction</h2>
+
+            <div class="practice-note">
+              <p>
+                This script fits lasso regression for diabetes prediction, calculates test AUC,
+                prints all lasso coefficients and shows which predictors are selected.
+              </p>
+            </div>
+
+            <div class="grid grid-3">
+              <div class="card">
+                <h3>alpha = 1</h3>
+                <p>In <code>glmnet</code>, alpha = 1 fits lasso regression.</p>
+              </div>
+              <div class="card">
+                <h3>lambda.min</h3>
+                <p>Cross-validation chooses the lambda value with minimum cross-validated error.</p>
+              </div>
+              <div class="card">
+                <h3>Selected features</h3>
+                <p>Predictors with non-zero coefficients are retained.</p>
+              </div>
+            </div>
+
+            <p style="margin-top: 1.2rem;">
+              <a class="btn btn-primary" href="../r/12_lasso_regression.R" download>
+                Download R script
+              </a>
+              <button class="btn btn-secondary" data-copy-target="r-code-12" type="button">
+                Copy code
+              </button>
+            </p>
+
+            <pre class="code-block"><code id="r-code-12"># Machine Learning in Biostatistics
+# Script 12: Lasso Regression
+#
+# This script fits lasso regression for diabetes prediction
+# and shows which predictors are selected.
+
+library(tidyverse)
+library(mlbench)
+library(pROC)
+library(glmnet)
+
+set.seed(123)
+
+data("PimaIndiansDiabetes")
+
+diabetes_data &lt;- PimaIndiansDiabetes %&gt;%
+  mutate(
+    diabetes = factor(diabetes, levels = c("neg", "pos"))
+  )
+
+train_index &lt;- sample(seq_len(nrow(diabetes_data)), size = round(0.80 * nrow(diabetes_data)))
+
+train_data &lt;- diabetes_data[train_index, ]
+test_data &lt;- diabetes_data[-train_index, ]
+
+x_train &lt;- model.matrix(
+  diabetes ~ pregnant + glucose + pressure + triceps +
+    insulin + mass + pedigree + age,
+  data = train_data
+)[, -1]
+
+x_test &lt;- model.matrix(
+  diabetes ~ pregnant + glucose + pressure + triceps +
+    insulin + mass + pedigree + age,
+  data = test_data
+)[, -1]
+
+y_train &lt;- ifelse(train_data$diabetes == "pos", 1, 0)
+y_test_factor &lt;- test_data$diabetes
+
+lasso_model &lt;- cv.glmnet(
+  x = x_train,
+  y = y_train,
+  family = "binomial",
+  alpha = 1
+)
+
+lasso_risk &lt;- as.numeric(
+  predict(
+    lasso_model,
+    newx = x_test,
+    s = "lambda.min",
+    type = "response"
+  )
+)
+
+calculate_auc &lt;- function(actual, risk) {
+  roc_object &lt;- roc(
+    response = actual,
+    predictor = risk,
+    levels = c("neg", "pos"),
+    quiet = TRUE
+  )
+
+  as.numeric(auc(roc_object))
+}
+
+lasso_auc &lt;- calculate_auc(y_test_factor, lasso_risk)
+
+cat("\nLasso model test AUC:\n")
+print(lasso_auc)
+
+lasso_coefficients &lt;- coef(lasso_model, s = "lambda.min")
+
+lasso_coefficients_table &lt;- tibble(
+  term = rownames(lasso_coefficients),
+  coefficient = as.numeric(lasso_coefficients)
+)
+
+cat("\nAll lasso coefficients:\n")
+print(lasso_coefficients_table)
+
+lasso_selected &lt;- lasso_coefficients_table %&gt;%
+  filter(coefficient != 0)
+
+cat("\nFeatures selected by lasso:\n")
+print(lasso_selected)
+
+cat("\nNumber of selected terms including intercept:\n")
+print(nrow(lasso_selected))
+
+plot(lasso_model, main = "Lasso Cross-Validation")
+
+cat("\nLearning points:\n")
+cat("1. Lasso regression shrinks coefficients towards zero.\n")
+cat("2. Lasso can shrink some coefficients exactly to zero.\n")
+cat("3. Predictors with zero coefficients are removed from the model.\n")
+cat("4. Lasso-selected features are prediction features, not automatically causal factors.\n")
+cat("5. Feature selection must be included inside validation to avoid leakage.\n")</code></pre>
+          </section>
+
+          <section class="lesson-section" id="exercises">
+            <p class="kicker">Exercises</p>
+            <h2>Exercise 12: Lasso Regression</h2>
+
+            <div class="practice-note">
+              <p>
+                This exercise helps you understand lasso regression as a regularisation and feature selection method.
+              </p>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part A: Conceptual understanding</h3>
+
+              <h4>Question 1</h4>
+              <p>In your own words, explain what lasso regression does using shrinkage, zero, feature selection and prediction.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Lasso regression is a regularisation method that shrinks coefficients. Some coefficients can be shrunk exactly to zero, which removes those predictors from the model. This means lasso can perform feature selection while building a prediction model.</p>
+              </div></details>
+
+              <h4>Question 2</h4>
+              <p>Which statement best describes lasso regression?</p>
+              <ol type="A">
+                <li>It always keeps all predictors in the model.</li>
+                <li>It can shrink some coefficients exactly to zero.</li>
+                <li>It removes the need for cross-validation.</li>
+                <li>It proves which predictors cause the outcome.</li>
+              </ol>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content"><p><strong>B.</strong> It can shrink some coefficients exactly to zero.</p></div></details>
+
+              <h4>Question 3</h4>
+              <p>What is a sparse model, and why might it be attractive in clinical prediction?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>A sparse model uses a smaller number of predictors. It may be attractive in clinical prediction because it can be easier to measure, explain, implement and use in practice.</p>
+              </div></details>
+
+              <h4>Question 4</h4>
+              <p>Lasso selected glucose and BMI, so these are the only clinically important predictors. Explain why this conclusion may be too strong.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Lasso selected those predictors because they helped prediction in that dataset and modelling workflow. This does not prove that they are the only clinically important predictors or that they cause the outcome.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part B: Coefficient selection</h3>
+
+              <h4>Question 5</h4>
+              <p>Compare ordinary and lasso coefficients.</p>
+
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Predictor</th><th>Ordinary coefficient</th><th>Lasso coefficient</th></tr></thead>
+                  <tbody>
+                    <tr><td>Glucose</td><td>1.10</td><td>0.90</td></tr>
+                    <tr><td>BMI</td><td>0.70</td><td>0.55</td></tr>
+                    <tr><td>Age</td><td>0.40</td><td>0.28</td></tr>
+                    <tr><td>Blood pressure</td><td>0.15</td><td>0</td></tr>
+                    <tr><td>Triceps thickness</td><td>0.08</td><td>0</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Retained predictors: glucose, BMI and age. Removed predictors: blood pressure and triceps thickness. This may create a smaller and more practical model. We should still be cautious because selected predictors may be unstable, dataset-specific or not externally validated.</p>
+              </div></details>
+
+              <h4>Question 6</h4>
+              <p>Explain the difference between ridge and lasso in terms of feature selection.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Ridge shrinks coefficients but usually keeps all predictors. Lasso can shrink some coefficients exactly to zero, so it can remove predictors and perform feature selection.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part C: Lambda and sparsity</h3>
+
+              <h4>Question 7</h4>
+              <p>Complete: small lambda → less shrinkage → ____ predictors retained. Large lambda → more shrinkage → ____ predictors retained.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content"><p>Small lambda → less shrinkage → more predictors retained. Large lambda → more shrinkage → fewer predictors retained.</p></div></details>
+
+              <h4>Question 8</h4>
+              <p>What might happen if lambda is too large in lasso regression?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content"><p>If lambda is too large, lasso may remove too many predictors and underfit the data.</p></div></details>
+
+              <h4>Question 9</h4>
+              <p>What might happen if lambda is too small?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content"><p>If lambda is too small, lasso may keep too many predictors and may not sufficiently reduce overfitting.</p></div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part D: Correlated predictors</h3>
+
+              <h4>Question 10</h4>
+              <p>Lasso selects Biomarker A and removes highly correlated Biomarkers B and C. Can we conclude A is biologically more important?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>No. If the biomarkers are highly correlated, lasso may choose one of them somewhat arbitrarily. Biomarker A may be useful for prediction, but this does not prove it is biologically more important.</p>
+              </div></details>
+
+              <h4>Question 11</h4>
+              <p>Why can lasso be unstable when predictors are strongly correlated?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>When predictors are strongly correlated, several predictors may contain similar information. Lasso may choose one and remove others, but small changes in the data may change which predictor is selected.</p>
+              </div></details>
+
+              <h4>Question 12</h4>
+              <p>What method might be considered if lasso is unstable because predictors are highly correlated?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content"><p>Elastic net may be considered because it combines lasso and ridge behaviour and can handle correlated predictors more smoothly.</p></div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part E: Feature-selection leakage</h3>
+
+              <h4>Question 13</h4>
+              <p>A researcher runs lasso on the full dataset, keeps selected predictors, then performs 10-fold cross-validation. What is wrong?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>The full dataset was used to select predictors before cross-validation. This means the validation folds influenced feature selection. The reported cross-validated AUC may be optimistic.</p>
+              </div></details>
+
+              <h4>Question 14</h4>
+              <p>Rewrite the workflow correctly.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>For each cross-validation fold: use only the training fold, run lasso inside the training fold, select predictors inside the training fold, fit the model inside the training fold, and evaluate on the validation fold.</p>
+              </div></details>
+
+              <h4>Question 15</h4>
+              <p>Why is feature-selection leakage especially dangerous in biomedical datasets with many predictors?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>With many predictors, some will appear related to the outcome by chance. If the full dataset is used to select features, random signals from validation data can enter model development and inflate performance.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part F: Biomedical prediction scenario</h3>
+              <p>A team has 300 patients, 80 recurrence events and 150 candidate biomarkers. Lasso selects 12 biomarkers.</p>
+
+              <h4>Question 16</h4>
+              <p>List three questions the team should ask before trusting the selected biomarkers.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Were biomarkers selected inside validation? Are selected biomarkers stable across resamples? Are they biologically plausible? Do they validate externally? Could batch effects explain the selection? Are they clinically measurable?</p>
+              </div></details>
+
+              <h4>Question 17</h4>
+              <p>What model performance measures should they report besides AUC?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>They should report calibration, Brier score, calibration slope/intercept, decision curve analysis if relevant, and external validation if available.</p>
+              </div></details>
+
+              <h4>Question 18</h4>
+              <p>Why should selected biomarkers be externally validated?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>External validation tests whether the selected biomarkers and model performance generalise to new patients, settings, platforms or populations.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part G: True or false</h3>
+
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Statement</th><th>True / False</th></tr></thead>
+                  <tbody>
+                    <tr><td>Lasso can set some coefficients exactly to zero.</td><td></td></tr>
+                    <tr><td>Lasso-selected predictors are automatically causal.</td><td></td></tr>
+                    <tr><td>Lasso can be used for feature selection.</td><td></td></tr>
+                    <tr><td>Lasso can be unstable with correlated predictors.</td><td></td></tr>
+                    <tr><td>Feature selection can be done before cross-validation without bias.</td><td></td></tr>
+                    <tr><td>A lasso model still requires calibration assessment.</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <ul>
+                  <li>Can set coefficients to zero: <strong>True</strong>.</li>
+                  <li>Selected predictors are automatically causal: <strong>False</strong>.</li>
+                  <li>Can be used for feature selection: <strong>True</strong>.</li>
+                  <li>Can be unstable with correlated predictors: <strong>True</strong>.</li>
+                  <li>Feature selection before cross-validation without bias: <strong>False</strong>.</li>
+                  <li>Still requires calibration assessment: <strong>True</strong>.</li>
+                </ul>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part H: Short written answer</h3>
+              <p>Write a short explanation of lasso regression for a clinician who wants a smaller prediction model.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>
+                  Lasso regression builds a prediction model while also reducing the number of predictors.
+                  It shrinks weak coefficients to zero, so some variables are removed.
+                  This can make the model smaller and more practical, but the selected predictors still need validation before clinical use.
+                </p>
+              </div></details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="quiz">
+            <p class="kicker">Quick quiz</p>
+            <h2>Final checks</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">A sparse model is:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">A model using a smaller subset of predictors</button>
+                <button class="option-btn" data-answer="incorrect">A model with no validation</button>
+                <button class="option-btn" data-answer="incorrect">A model proving causality</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Sparse models use fewer predictors."
+                data-incorrect="<strong>Not quite.</strong> Sparse means fewer predictors, not automatically causal or validated."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Feature selection with lasso should happen:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">Before cross-validation using the full dataset</button>
+                <button class="option-btn" data-answer="correct">Inside the training part of each validation split</button>
+                <button class="option-btn" data-answer="incorrect">After external validation only</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Feature selection must be part of the validation workflow."
+                data-incorrect="<strong>Not quite.</strong> Selecting features before validation causes leakage."
+              ></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="next-lesson-card">
+              <div>
+                <p class="kicker">Next lesson</p>
+                <h2 style="margin: 0;">Elastic Net</h2>
+                <p style="margin-bottom: 0;">
+                  Learn how elastic net combines ridge and lasso behaviour for correlated biomedical predictors.
+                </p>
+              </div>
+
+              <a class="btn btn-primary" href="./4-4-elastic-net.html">
+                Continue
+              </a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="footer-logo" />
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+
+  <script>
+    const slider = document.getElementById("lambdaSlider");
+    const lambdaValue = document.getElementById("lambdaValue");
+    const lambdaOutput = document.getElementById("lambdaOutput");
+
+    const states = {
+      "1": {
+        label: "Small",
+        items: [
+          ["Glucose", "retained", false],
+          ["BMI", "retained", false],
+          ["Age", "retained", false],
+          ["Pressure", "retained", false],
+          ["Triceps", "retained", false]
+        ]
+      },
+      "2": {
+        label: "Medium",
+        items: [
+          ["Glucose", "retained", false],
+          ["BMI", "retained", false],
+          ["Age", "retained", false],
+          ["Pressure", "removed", true],
+          ["Triceps", "removed", true]
+        ]
+      },
+      "3": {
+        label: "Large",
+        items: [
+          ["Glucose", "retained", false],
+          ["BMI", "retained", false],
+          ["Age", "removed", true],
+          ["Pressure", "removed", true],
+          ["Triceps", "removed", true]
+        ]
+      }
+    };
+
+    function updateLambdaDemo() {
+      if (!slider || !lambdaValue || !lambdaOutput) return;
+      const state = states[slider.value];
+      lambdaValue.textContent = state.label;
+      lambdaOutput.innerHTML = state.items.map(([name, status, removed]) => (
+        `<span class="lambda-pill ${removed ? "removed" : ""}">${name} <strong>${status}</strong></span>`
+      )).join("");
+    }
+
+    if (slider) {
+      slider.addEventListener("input", updateLambdaDemo);
+      updateLambdaDemo();
+    }
+  </script>
+</body>
+</html>

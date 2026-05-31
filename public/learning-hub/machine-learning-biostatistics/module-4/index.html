@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Module 4: Regularisation and Feature Selection | Machine Learning in Biostatistics</title>
+
+  <link rel="stylesheet" href="../assets/course.css" />
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="brand-logo" />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Module 4 · Regularisation and Feature Selection</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="../module-2/index.html">Module 2</a>
+          <a href="../module-3/index.html">Module 3</a>
+          <a href="./index.html">Module 4</a>
+          <a href="../case-studies/index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Module 4</p>
+        <h1>Regularisation and Feature Selection</h1>
+
+        <p class="hero-intro">
+          This module explains how to build more stable medical prediction models when there are many predictors,
+          correlated variables, limited events, or high-dimensional biomedical data.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="./4-1-regularisation-feature-selection.html">Start Module 4</a>
+          <a class="btn btn-secondary" href="../module-5/index.html">Next Module</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <section class="section">
+        <div class="section-heading">
+          <p class="kicker">Module aim</p>
+          <h2>Control overfitting when predictors are many.</h2>
+          <p>
+            Biomedical prediction often involves more candidate predictors than the data can safely support.
+            This module focuses on shrinkage, feature selection, correlated predictors, high-dimensional data,
+            and why selected features should be interpreted carefully.
+          </p>
+        </div>
+
+        <div class="grid grid-2">
+          <article class="module-card">
+            <span class="badge">Lesson 10</span>
+            <h3>Regularisation and Feature Selection</h3>
+            <p>Understand why regularisation is useful when there are many predictors and overfitting risk is high.</p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./4-1-regularisation-feature-selection.html">Open Lesson 10</a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Lesson 11</span>
+            <h3>Ridge Regression</h3>
+            <p>Learn how ridge regression shrinks coefficients and stabilises models with correlated predictors.</p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./4-2-ridge-regression.html">Open Lesson 11</a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Lesson 12</span>
+            <h3>Lasso Regression</h3>
+            <p>Learn how lasso can shrink some coefficients to zero and create sparse prediction models.</p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./4-3-lasso-regression.html">Open Lesson 12</a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Lesson 13</span>
+            <h3>Elastic Net</h3>
+            <p>Combine ridge and lasso behaviour for biomedical predictors that are numerous and correlated.</p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./4-4-elastic-net.html">Open Lesson 13</a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Lesson 14</span>
+            <h3>Feature Selection in Biomedical Data</h3>
+            <p>Interpret selected biomarkers carefully and avoid leakage in statistical feature selection workflows.</p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./4-5-feature-selection-biomedical-data.html">Open Lesson 14</a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Lesson 15</span>
+            <h3>Penalised Regression for High-Dimensional Data</h3>
+            <p>Apply penalised regression ideas when predictors greatly outnumber patients, such as in omics data.</p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./4-6-penalised-regression-high-dimensional-data.html">Open Lesson 15</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="kicker">Key ideas</p>
+          <h2>What you will learn to control.</h2>
+        </div>
+
+        <div class="grid grid-3">
+          <div class="card">
+            <h3>Shrinkage</h3>
+            <p>How coefficient penalties can reduce overfitting and make predictions more stable.</p>
+          </div>
+
+          <div class="card">
+            <h3>Feature selection</h3>
+            <p>How lasso and elastic net can create smaller models, and why selected features need validation.</p>
+          </div>
+
+          <div class="card">
+            <h3>Biomedical interpretation</h3>
+            <p>Why prediction features should not automatically be treated as causal or clinically proven biomarkers.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="footer-logo" />
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+</body>
+</html>

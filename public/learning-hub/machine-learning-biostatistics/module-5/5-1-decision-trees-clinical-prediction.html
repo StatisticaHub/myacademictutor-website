@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Lesson 16: Decision Trees for Clinical Prediction | Machine Learning in Biostatistics</title>
+
+  <meta
+    name="description"
+    content="Lesson 16 of Machine Learning in Biostatistics: detailed decision trees for clinical prediction, tree splits, nodes, risk groups, overfitting, validation, calibration and R implementation."
+  />
+
+  <link rel="stylesheet" href="../assets/course.css" />
+
+  <style>
+    .tree-visual {
+      margin: 1.4rem 0;
+      display: grid;
+      gap: 1rem;
+      justify-items: center;
+    }
+
+    .tree-node {
+      border: 1px solid #ddcfb8;
+      background: #fffaf2;
+      border-radius: 16px;
+      padding: 0.9rem 1rem;
+      max-width: 340px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(16, 32, 51, 0.06);
+    }
+
+    .tree-node strong {
+      color: #8C1515;
+    }
+
+    .tree-branches {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      position: relative;
+    }
+
+    .branch-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #6f1d1b;
+      margin-bottom: 0.3rem;
+    }
+
+    .risk-low {
+      border-left: 6px solid #166534;
+    }
+
+    .risk-high {
+      border-left: 6px solid #991b1b;
+    }
+
+    .split-demo {
+      margin-top: 1rem;
+      padding: 1.2rem;
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fffaf2;
+    }
+
+    .split-demo input[type="range"] {
+      width: 100%;
+      margin: 1rem 0;
+    }
+
+    .route-box {
+      border-radius: 14px;
+      padding: 1rem;
+      background: #ffffff;
+      border: 1px solid #ddcfb8;
+      font-weight: 700;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .mini-table td, .mini-table th {
+      text-align: left;
+    }
+
+    @media (max-width: 850px) {
+      .tree-branches,
+      .compare-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="brand-logo" />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Module 5 · Lesson 16</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="../module-2/index.html">Module 2</a>
+          <a href="../module-3/index.html">Module 3</a>
+          <a href="../module-4/index.html">Module 4</a>
+          <a href="./index.html">Module 5</a>
+          <a href="../case-studies/index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Module 5 · Tree-Based Methods</p>
+        <h1>Lesson 16: Decision Trees for Clinical Prediction</h1>
+
+        <p class="hero-intro">
+          Decision trees split patients into clinically interpretable groups using predictor values.
+          They are easy to visualise, but a single tree can be unstable and can overfit if it is allowed to grow too deeply.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#lecture">Start lesson</a>
+          <a class="btn btn-secondary" href="./index.html">Module 5 home</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <div class="lesson-layout">
+        <aside class="lesson-sidebar" aria-label="Lesson sections">
+          <h3>Lesson sections</h3>
+          <a class="active" href="#lecture">Lecture</a>
+          <a href="#intuition">Intuition</a>
+          <a href="#tree-anatomy">Tree anatomy</a>
+          <a href="#splitting">Splitting</a>
+          <a href="#clinical-example">Clinical example</a>
+          <a href="#overfitting">Overfitting</a>
+          <a href="#interactive">Interactive checks</a>
+          <a href="#notes">Detailed notes</a>
+          <a href="#r-code">R code</a>
+          <a href="#exercises">Exercises</a>
+          <a href="#quiz">Quiz</a>
+        </aside>
+
+        <article class="lesson-content">
+          <section class="lesson-section" id="lecture">
+            <p class="kicker">Lecture</p>
+            <h2>Lecture 16: Decision Trees for Clinical Prediction</h2>
+
+            <div class="scene-card">
+              <div class="scene-title">Opening scene: A model that looks like a clinical pathway</div>
+              <div class="dialogue-box">
+                <div class="dialogue-line learner">
+      <p><span class="character">Curious Learner:</span><br />“This model looks like a flowchart. Is this machine learning?”</p>
+    </div>
+                <div class="dialogue-line prof-stat">
+      <p><span class="character">Prof Stat:</span><br />“Yes. It is a decision tree. It predicts by asking a sequence of questions.”</p>
+    </div>
+                <div class="dialogue-line dr-clinic">
+      <p><span class="character">Dr Clinic:</span><br />“That feels familiar. In clinic, we often ask: is glucose high, is BMI high, is the patient older?”</p>
+    </div>
+                <div class="dialogue-line captain-overfit">
+      <p><span class="character">Captain Overfit:</span><br />“And if you allow enough questions, I can create a separate rule for almost every patient.”</p>
+    </div>
+                <div class="dialogue-line prof-stat">
+      <p><span class="character">Prof Stat:</span><br />“Exactly. Decision trees are intuitive, but they must be controlled and validated.”</p>
+    </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="big-question">
+            <p class="kicker">Today’s big question</p>
+            <h2>How can a decision tree split patients into clinically meaningful risk groups?</h2>
+
+            <div class="big-question">
+              <p>
+                A decision tree predicts outcomes by repeatedly splitting patients into groups using predictor values.
+              </p>
+            </div>
+
+            <p>
+              A tree may start with all patients together. It then asks a question such as:
+              <strong>is glucose above a certain value?</strong> The answer sends each patient down a branch.
+              The tree keeps splitting until it reaches final groups called terminal nodes or leaves.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="intuition">
+            <p class="kicker">Intuition first</p>
+            <h2>A decision tree is a sequence of questions</h2>
+
+            <p>
+              Decision trees are attractive in medical prediction because they can look like clinical reasoning.
+              They do not require the relationship between predictors and outcome to be a straight line.
+              They can also represent interactions naturally.
+            </p>
+
+            <div class="tree-visual">
+              <div class="tree-node">
+                <strong>Root node</strong><br />
+                Is glucose high?
+              </div>
+
+              <div class="tree-branches">
+                <div>
+                  <div class="branch-label">No</div>
+                  <div class="tree-node risk-low">
+                    Check BMI and age<br />
+                    Lower estimated risk group
+                  </div>
+                </div>
+
+                <div>
+                  <div class="branch-label">Yes</div>
+                  <div class="tree-node risk-high">
+                    Check BMI and insulin<br />
+                    Higher estimated risk group
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p>
+              The exact split values are learned from the development data.
+              That is useful, but it also creates risk: the tree may learn random patterns that do not generalise.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="tree-anatomy">
+            <p class="kicker">Tree anatomy</p>
+            <h2>The main parts of a decision tree</h2>
+
+            <div class="table-scroll">
+              <table class="lesson-table mini-table">
+                <thead>
+                  <tr>
+                    <th>Term</th>
+                    <th>Meaning</th>
+                    <th>Clinical interpretation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Root node</strong></td>
+                    <td>The first node containing all patients.</td>
+                    <td>The starting point of the prediction rule.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Decision node</strong></td>
+                    <td>A node where a split is made.</td>
+                    <td>A clinical question such as glucose above a threshold.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Branch</strong></td>
+                    <td>The path after a split.</td>
+                    <td>The route followed by a patient.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Terminal node</strong></td>
+                    <td>The final node where prediction is made.</td>
+                    <td>A final risk group.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Tree depth</strong></td>
+                    <td>How many levels of splitting the tree has.</td>
+                    <td>How complex the rule becomes.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="clinical-check">
+              <h3>Clinical reality check</h3>
+              <p>
+                A tree can be easy to explain, but explanation is not the same as validity.
+                A tree still needs internal validation, calibration assessment and preferably external validation.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="splitting">
+            <p class="kicker">How splitting works</p>
+            <h2>The tree looks for useful patient groups</h2>
+
+            <p>
+              At each node, the algorithm searches across predictors and possible cut-points.
+              It chooses a split that makes the resulting groups more different in outcome risk.
+            </p>
+
+            <p>
+              For a binary outcome, the split may try to make one child node contain a higher proportion of patients with the outcome
+              and the other child node contain a lower proportion.
+            </p>
+
+            <div class="formula-box">
+              Parent node → split → child node 1 + child node 2
+            </div>
+
+            <p>
+              The model repeats this process. Each split is locally chosen to improve separation.
+              This is powerful, but it also means the model can chase noise if it is not constrained.
+            </p>
+
+            <div class="split-demo">
+              <h3>Interactive split idea</h3>
+              <p>Move the glucose slider and imagine how a patient might move through a tree.</p>
+
+              <label for="glucoseSlider"><strong>Glucose:</strong> <span id="glucoseValue">120</span></label>
+              <input id="glucoseSlider" type="range" min="60" max="220" value="120" />
+
+              <div class="route-box" id="routeBox">
+                Route: moderate glucose group. The tree may next check BMI or age.
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="clinical-example">
+            <p class="kicker">Medical example</p>
+            <h2>Diabetes prediction using a decision tree</h2>
+
+            <p>
+              Suppose we want to predict whether a patient has diabetes using:
+            </p>
+
+            <ul>
+              <li>glucose;</li>
+              <li>BMI;</li>
+              <li>age;</li>
+              <li>blood pressure;</li>
+              <li>insulin;</li>
+              <li>family diabetes pedigree.</li>
+            </ul>
+
+            <p>
+              A simple tree may first split on glucose. Among patients with high glucose, it may then split on BMI.
+              Among patients with lower glucose, it may split on age or pedigree.
+            </p>
+
+            <div class="compare-grid">
+              <div class="model-card">
+                <p class="model-label">Why this is useful</p>
+                <h3>Interpretability</h3>
+                <p>
+                  Clinicians can follow the sequence of splits and understand how a patient reaches a risk group.
+                </p>
+              </div>
+
+              <div class="model-card">
+                <p class="model-label">Why this is risky</p>
+                <h3>Instability</h3>
+                <p>
+                  A slightly different dataset may produce a different first split or different risk groups.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="overfitting">
+            <p class="kicker">Overfitting</p>
+            <h2>A tree can become too specific</h2>
+
+            <p>
+              If a tree is allowed to keep splitting, it may create many small terminal nodes.
+              Some leaves may contain only a few patients. These tiny groups may reflect noise rather than real clinical structure.
+            </p>
+
+            <div class="dialogue-box">
+              <div class="dialogue-line captain-overfit">
+      <p><span class="character">Captain Overfit:</span><br />“Give me unlimited depth and I will make the training accuracy look amazing.”</p>
+    </div>
+              <div class="dialogue-line learner">
+      <p><span class="character">Curious Learner:</span><br />“But will that help future patients?”</p>
+    </div>
+              <div class="dialogue-line prof-stat">
+      <p><span class="character">Prof Stat:</span><br />“Not necessarily. A very deep tree may memorise the development dataset.”</p>
+    </div>
+              <div class="dialogue-line dr-clinic">
+      <p><span class="character">Dr Clinic:</span><br />“So we need to control depth and test the model honestly.”</p>
+    </div>
+            </div>
+
+            <p>Common ways to control overfitting include:</p>
+            <ul>
+              <li>limiting maximum depth;</li>
+              <li>requiring a minimum number of patients before a split;</li>
+              <li>requiring a minimum number of patients in terminal nodes;</li>
+              <li>using a complexity penalty;</li>
+              <li>pruning the tree;</li>
+              <li>validating the model on unseen data.</li>
+            </ul>
+          </section>
+
+          <section class="lesson-section" id="performance">
+            <p class="kicker">Performance assessment</p>
+            <h2>A tree needs the same clinical evaluation as other models</h2>
+
+            <p>
+              A decision tree should not be judged only by how simple it looks or how high its training accuracy is.
+              It should be evaluated using:
+            </p>
+
+            <ul>
+              <li>test or cross-validated discrimination such as AUC;</li>
+              <li>confusion matrix at clinically meaningful thresholds;</li>
+              <li>sensitivity and specificity;</li>
+              <li>calibration plot;</li>
+              <li>Brier score;</li>
+              <li>clinical usefulness if linked to a decision;</li>
+              <li>external validation if possible.</li>
+            </ul>
+
+            <div class="key-takeaway">
+              <p>
+                A clinically interpretable tree is not automatically a clinically reliable tree.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="interactive">
+            <p class="kicker">Interactive checks</p>
+            <h2>Practise decision-tree reasoning</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">What is a terminal node in a decision tree?</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">The first split in the tree.</button>
+                <button class="option-btn" data-answer="correct">A final node where the model gives a prediction.</button>
+                <button class="option-btn" data-answer="incorrect">A variable importance plot.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> A terminal node is a final leaf where the prediction is made."
+                data-incorrect="<strong>Not quite.</strong> A terminal node is the final point reached after following the splits."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Why can a very deep decision tree overfit?</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">It may create tiny patient groups that capture noise.</button>
+                <button class="option-btn" data-answer="incorrect">It cannot model interactions.</button>
+                <button class="option-btn" data-answer="incorrect">It always has perfect calibration.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Deep trees can create very specific rules that do not generalise."
+                data-incorrect="<strong>Not quite.</strong> The key risk is memorising noise in small subgroups."
+              ></div>
+            </div>
+
+            <div class="interactive-panel">
+              <h3>Flashcards</h3>
+              <p>Click each card to reveal the explanation.</p>
+
+              <div class="flashcard-grid">
+                <div class="flashcard">
+                  <div class="flashcard-front">Root node</div>
+                  <div class="flashcard-back">The starting node containing all patients before the first split.</div>
+                </div>
+                <div class="flashcard">
+                  <div class="flashcard-front">Split</div>
+                  <div class="flashcard-back">A rule that divides patients into two or more groups based on a predictor.</div>
+                </div>
+                <div class="flashcard">
+                  <div class="flashcard-front">Terminal node</div>
+                  <div class="flashcard-back">The final leaf where the predicted class or risk is assigned.</div>
+                </div>
+                <div class="flashcard">
+                  <div class="flashcard-front">Tree depth</div>
+                  <div class="flashcard-back">The number of splitting levels; deeper trees are more complex and may overfit.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="notes">
+            <p class="kicker">Detailed notes</p>
+            <h2>Note 16: Decision Trees for Clinical Prediction</h2>
+
+            <div class="key-takeaway">
+              <p>
+                Decision trees are intuitive prediction models that split patients into risk groups,
+                but they are unstable unless their complexity is controlled and their performance is validated.
+              </p>
+            </div>
+
+            <h3>Learning objectives</h3>
+            <ul>
+              <li>Explain how a decision tree makes predictions.</li>
+              <li>Define root node, decision node, branch and terminal node.</li>
+              <li>Explain how trees split patients into risk groups.</li>
+              <li>Understand why trees can model non-linear relationships and interactions.</li>
+              <li>Explain why single trees can be unstable.</li>
+              <li>Recognise why tree depth can lead to overfitting.</li>
+              <li>Describe how decision trees should be evaluated in clinical prediction.</li>
+            </ul>
+
+            <h3>1. Why this note matters</h3>
+            <p>
+              Decision trees are often one of the first machine learning methods that learners find intuitive.
+              They produce rules that can be drawn as a flowchart, which makes them attractive in clinical settings.
+            </p>
+
+            <p>
+              However, the simplicity of the diagram can be misleading.
+              A tree can still overfit, behave unstably, and produce poorly calibrated predictions.
+            </p>
+
+            <h3>2. What a decision tree does</h3>
+            <p>
+              A decision tree recursively partitions the data. It starts with all patients in one group.
+              It then chooses a predictor and cut-point that separates patients into groups with different outcome risks.
+              This process continues until stopping rules are reached.
+            </p>
+
+            <h3>3. Classification trees and regression trees</h3>
+            <p>
+              A classification tree predicts a categorical outcome, such as diabetes present versus absent.
+              A regression tree predicts a continuous outcome, such as blood pressure or hospital length of stay.
+            </p>
+
+            <h3>4. Splits and risk groups</h3>
+            <p>
+              Each split divides patients according to a rule such as glucose less than a threshold or BMI above a threshold.
+              The final terminal nodes define risk groups. In a binary prediction problem, each terminal node can estimate the probability of the outcome.
+            </p>
+
+            <h3>5. Why trees can capture interactions</h3>
+            <p>
+              Trees naturally represent interactions because later splits depend on earlier splits.
+              For example, BMI may matter differently among patients with high glucose than among patients with low glucose.
+            </p>
+
+            <h3>6. Why trees can capture non-linearity</h3>
+            <p>
+              A tree does not assume a straight-line relationship between a predictor and risk.
+              It can split glucose into ranges and assign different risks to those ranges.
+            </p>
+
+            <h3>7. Instability of single trees</h3>
+            <p>
+              A single decision tree can be unstable. A small change in the data may change the first split,
+              which then changes many later splits. This is one reason random forests are used later in this module.
+            </p>
+
+            <h3>8. Overfitting in decision trees</h3>
+            <p>
+              If a tree grows too deep, it can create many small patient groups.
+              These groups may fit the development data well but fail in future patients.
+              Controlling maximum depth, minimum split size and pruning can reduce this risk.
+            </p>
+
+            <h3>9. Clinical interpretation</h3>
+            <p>
+              A tree may be clinically appealing because it shows a clear pathway.
+              But the splits are selected by an algorithm, not by clinical truth.
+              Therefore, each split should be checked for clinical plausibility and prediction-time availability.
+            </p>
+
+            <h3>10. Evaluation</h3>
+            <p>
+              Decision trees should be evaluated using discrimination, calibration, Brier score, threshold-based performance
+              and clinical usefulness. External validation is important before strong clinical claims are made.
+            </p>
+
+            <h3>Common mistakes</h3>
+            <ul>
+              <li>Assuming a simple-looking tree is automatically valid.</li>
+              <li>Reporting training accuracy only.</li>
+              <li>Letting a tree grow too deep without validation.</li>
+              <li>Interpreting a split as causal evidence.</li>
+              <li>Ignoring calibration because the tree is easy to visualise.</li>
+            </ul>
+
+            <h3>Summary</h3>
+            <p>
+              Decision trees are useful for building intuition about machine learning.
+              They can create clear patient risk groups and model non-linear patterns.
+              Their main weaknesses are instability and overfitting.
+            </p>
+
+            <h3>Key terms</h3>
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Decision tree</strong></td><td>A prediction model that uses sequential splits.</td></tr>
+                  <tr><td><strong>Root node</strong></td><td>The starting node containing all patients.</td></tr>
+                  <tr><td><strong>Decision node</strong></td><td>A node where a split is made.</td></tr>
+                  <tr><td><strong>Terminal node</strong></td><td>A final node where prediction is assigned.</td></tr>
+                  <tr><td><strong>Tree depth</strong></td><td>The number of splitting levels in the tree.</td></tr>
+                  <tr><td><strong>Pruning</strong></td><td>Removing unnecessary branches to reduce complexity.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>References</h3>
+            <p class="reference-item">Breiman, L., Friedman, J., Olshen, R., & Stone, C. (1984). Classification and Regression Trees.</p>
+            <p class="reference-item">Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning.</p>
+            <p class="reference-item">James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An Introduction to Statistical Learning.</p>
+            <p class="reference-item">Steyerberg, E. W. (2019). Clinical Prediction Models.</p>
+          </section>
+
+          <section class="lesson-section" id="r-code">
+            <p class="kicker">R code</p>
+            <h2>R practical: Decision tree for diabetes prediction</h2>
+
+            <div class="practice-note">
+              <p>
+                This script fits a decision tree, plots it, compares it with logistic regression,
+                and assesses AUC, sensitivity, specificity and grouped calibration.
+              </p>
+            </div>
+
+            <div class="grid grid-3">
+              <div class="card">
+                <h3>Tree fitting</h3>
+                <p>Uses <code>rpart</code> to fit a classification tree.</p>
+              </div>
+              <div class="card">
+                <h3>Tree visualisation</h3>
+                <p>Uses <code>rpart.plot</code> to show the clinical rule structure.</p>
+              </div>
+              <div class="card">
+                <h3>Model evaluation</h3>
+                <p>Calculates AUC, threshold metrics, Brier score and calibration summary.</p>
+              </div>
+            </div>
+
+            <p style="margin-top: 1.2rem;">
+              <a class="btn btn-primary" href="../r/16_decision_trees_clinical_prediction.R" download>
+                Download R script
+              </a>
+              <button class="btn btn-secondary" data-copy-target="r-code-16" type="button">
+                Copy code
+              </button>
+            </p>
+
+            <pre class="code-block"><code id="r-code-16"># Machine Learning in Biostatistics
+# Script 16: Decision Trees for Clinical Prediction
+#
+# This script fits a decision tree for diabetes prediction.
+# It also compares the tree with logistic regression and checks
+# discrimination, calibration and simple threshold-based classification.
+
+library(tidyverse)
+library(mlbench)
+library(pROC)
+library(rpart)
+library(rpart.plot)
+
+set.seed(123)
+
+# 1. Load and prepare data
+
+data("PimaIndiansDiabetes")
+
+diabetes_data &lt;- PimaIndiansDiabetes %&gt;%
+  mutate(
+    diabetes = factor(diabetes, levels = c("neg", "pos"))
+  )
+
+candidate_predictors &lt;- c(
+  "pregnant",
+  "glucose",
+  "pressure",
+  "triceps",
+  "insulin",
+  "mass",
+  "pedigree",
+  "age"
+)
+
+cat("\nDataset summary:\n")
+cat("Number of patients:", nrow(diabetes_data), "\n")
+cat("Outcome distribution:\n")
+print(table(diabetes_data$diabetes))
+
+# 2. Training/test split
+
+train_index &lt;- sample(
+  seq_len(nrow(diabetes_data)),
+  size = round(0.80 * nrow(diabetes_data))
+)
+
+train_data &lt;- diabetes_data[train_index, ]
+test_data &lt;- diabetes_data[-train_index, ]
+
+cat("\nTraining patients:", nrow(train_data), "\n")
+cat("Test patients:", nrow(test_data), "\n")
+
+# 3. Fit a decision tree
+
+tree_model &lt;- rpart(
+  diabetes ~ pregnant + glucose + pressure + triceps +
+    insulin + mass + pedigree + age,
+  data = train_data,
+  method = "class",
+  control = rpart.control(
+    cp = 0.01,
+    minsplit = 20,
+    minbucket = 7,
+    maxdepth = 4
+  )
+)
+
+cat("\nDecision tree complexity table:\n")
+printcp(tree_model)
+
+cat("\nDecision tree variable importance:\n")
+print(tree_model$variable.importance)
+
+# 4. Plot the tree
+
+rpart.plot(
+  tree_model,
+  type = 2,
+  extra = 104,
+  fallen.leaves = TRUE,
+  main = "Decision Tree for Diabetes Prediction"
+)
+
+# 5. Predict risk on test data
+
+tree_risk &lt;- predict(
+  tree_model,
+  newdata = test_data,
+  type = "prob"
+)[, "pos"]
+
+test_predictions &lt;- test_data %&gt;%
+  mutate(
+    predicted_risk_tree = tree_risk,
+    predicted_class_tree = factor(
+      ifelse(predicted_risk_tree &gt;= 0.50, "pos", "neg"),
+      levels = c("neg", "pos")
+    )
+  )
+
+cat("\nFirst few tree predictions:\n")
+print(
+  test_predictions %&gt;%
+    select(diabetes, predicted_risk_tree, predicted_class_tree) %&gt;%
+    head()
+)
+
+# 6. Confusion matrix at threshold 0.50
+
+confusion_matrix &lt;- table(
+  observed = test_predictions$diabetes,
+  predicted = test_predictions$predicted_class_tree
+)
+
+cat("\nConfusion matrix at threshold 0.50:\n")
+print(confusion_matrix)
+
+sensitivity &lt;- confusion_matrix["pos", "pos"] /
+  sum(confusion_matrix["pos", ])
+
+specificity &lt;- confusion_matrix["neg", "neg"] /
+  sum(confusion_matrix["neg", ])
+
+cat("\nSensitivity at threshold 0.50:", round(sensitivity, 3), "\n")
+cat("Specificity at threshold 0.50:", round(specificity, 3), "\n")
+
+# 7. ROC curve and AUC
+
+tree_roc &lt;- roc(
+  response = test_predictions$diabetes,
+  predictor = test_predictions$predicted_risk_tree,
+  levels = c("neg", "pos"),
+  quiet = TRUE
+)
+
+tree_auc &lt;- as.numeric(auc(tree_roc))
+
+cat("\nDecision tree test AUC:\n")
+print(tree_auc)
+
+plot(
+  tree_roc,
+  main = "Decision Tree ROC Curve",
+  legacy.axes = TRUE
+)
+
+# 8. Calibration-style grouped risk summary
+
+calibration_table &lt;- test_predictions %&gt;%
+  mutate(risk_group = ntile(predicted_risk_tree, 5)) %&gt;%
+  group_by(risk_group) %&gt;%
+  summarise(
+    mean_predicted_risk = mean(predicted_risk_tree),
+    observed_risk = mean(diabetes == "pos"),
+    n = n(),
+    .groups = "drop"
+  )
+
+cat("\nGrouped calibration summary:\n")
+print(calibration_table)
+
+plot(
+  calibration_table$mean_predicted_risk,
+  calibration_table$observed_risk,
+  xlim = c(0, 1),
+  ylim = c(0, 1),
+  xlab = "Mean predicted risk",
+  ylab = "Observed risk",
+  main = "Grouped Calibration: Decision Tree"
+)
+
+abline(0, 1, lty = 2)
+
+# 9. Compare with logistic regression
+
+logistic_model &lt;- glm(
+  diabetes ~ pregnant + glucose + pressure + triceps +
+    insulin + mass + pedigree + age,
+  data = train_data,
+  family = binomial
+)
+
+logistic_risk &lt;- predict(
+  logistic_model,
+  newdata = test_data,
+  type = "response"
+)
+
+logistic_roc &lt;- roc(
+  response = test_data$diabetes,
+  predictor = logistic_risk,
+  levels = c("neg", "pos"),
+  quiet = TRUE
+)
+
+model_comparison &lt;- tibble(
+  model = c("Decision tree", "Logistic regression"),
+  test_auc = c(
+    as.numeric(auc(tree_roc)),
+    as.numeric(auc(logistic_roc))
+  ),
+  brier_score = c(
+    mean((tree_risk - as.numeric(test_data$diabetes == "pos"))^2),
+    mean((logistic_risk - as.numeric(test_data$diabetes == "pos"))^2)
+  )
+)
+
+cat("\nModel comparison:\n")
+print(model_comparison)
+
+# 10. Learning points
+
+cat("\nLearning points:\n")
+cat("1. A decision tree splits patients into risk groups using predictor values.\n")
+cat("2. Tree splits are easy to visualise and can resemble clinical decision rules.\n")
+cat("3. A single tree can be unstable and may overfit if it grows too deep.\n")
+cat("4. Test AUC assesses discrimination, but calibration should also be checked.\n")
+cat("5. A clinically interpretable model is not automatically a clinically valid model.\n")
+</code></pre>
+          </section>
+
+          <section class="lesson-section" id="exercises">
+            <p class="kicker">Exercises</p>
+            <h2>Exercise 16: Decision Trees for Clinical Prediction</h2>
+
+            <div class="practice-note">
+              <p>
+                Try these questions before checking the suggested answers.
+              </p>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part A: Conceptual understanding</h3>
+
+              <h4>Question 1</h4>
+              <p>Explain what a decision tree does in your own words.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>A decision tree predicts an outcome by asking a sequence of questions about predictor values and sending patients down branches until they reach a terminal node where a prediction is made.</p>
+              </div></details>
+
+              <h4>Question 2</h4>
+              <p>Define root node, decision node and terminal node.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>The root node is the starting point containing all patients. A decision node is a point where the tree makes a split. A terminal node is a final node where the predicted class or risk is assigned.</p>
+              </div></details>
+
+              <h4>Question 3</h4>
+              <p>Why might decision trees be attractive in clinical prediction?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>They are visual, intuitive and can resemble clinical decision pathways. They can also show how patients are split into risk groups.</p>
+              </div></details>
+
+              <h4>Question 4</h4>
+              <p>Why can a decision tree capture interactions?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Later splits depend on earlier splits, so the effect of a predictor can differ across patient subgroups created by previous splits.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part B: Clinical interpretation</h3>
+
+              <h4>Question 5</h4>
+              <p>A diabetes tree first splits on glucose and then on BMI. How would you explain this to a clinician?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>The model first uses glucose because it separates patients into groups with different diabetes risk. Within those groups, BMI provides additional information for refining the risk estimate.</p>
+              </div></details>
+
+              <h4>Question 6</h4>
+              <p>If a tree uses hospital site as the first split, what concern might you have?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Hospital site may reflect differences in data collection, case mix or practice patterns rather than patient biology. It could also indicate site-related leakage or poor generalisability.</p>
+              </div></details>
+
+              <h4>Question 7</h4>
+              <p>Does a split on glucose prove that glucose causes the outcome?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>No. A split shows that glucose helped prediction in this model and dataset. It does not by itself prove causality.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part C: Overfitting and validation</h3>
+
+              <h4>Question 8</h4>
+              <p>Why can a very deep tree overfit?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>A very deep tree can create many tiny patient groups that fit noise in the training data. These rules may not work for new patients.</p>
+              </div></details>
+
+              <h4>Question 9</h4>
+              <p>Give three ways to control tree complexity.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Limit maximum depth, require a minimum number of patients for a split, require a minimum terminal node size, use a complexity penalty or prune the tree.</p>
+              </div></details>
+
+              <h4>Question 10</h4>
+              <p>Why is training accuracy not enough?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Training accuracy can be optimistic because the tree was built using the training data. We need validation or test performance to estimate how it may work for new patients.</p>
+              </div></details>
+
+              <h4>Question 11</h4>
+              <p>What else should be assessed besides AUC?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Calibration, Brier score, sensitivity, specificity, threshold-specific performance, clinical usefulness and external validation should be considered.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part D: True or false</h3>
+
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Statement</th><th>True / False</th></tr></thead>
+                  <tbody>
+                    <tr><td>A decision tree splits patients into groups using predictor values.</td><td></td></tr>
+                    <tr><td>A single decision tree is always stable.</td><td></td></tr>
+                    <tr><td>A deep tree can overfit.</td><td></td></tr>
+                    <tr><td>A terminal node is where the final prediction is made.</td><td></td></tr>
+                    <tr><td>A tree split automatically proves causality.</td><td></td></tr>
+                    <tr><td>Decision trees still need calibration assessment.</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <ul>
+                  <li>Splits patients using predictors: <strong>True</strong>.</li>
+                  <li>Single tree always stable: <strong>False</strong>.</li>
+                  <li>Deep tree can overfit: <strong>True</strong>.</li>
+                  <li>Terminal node gives final prediction: <strong>True</strong>.</li>
+                  <li>Split proves causality: <strong>False</strong>.</li>
+                  <li>Calibration still needed: <strong>True</strong>.</li>
+                </ul>
+              </div></details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="quiz">
+            <p class="kicker">Quick quiz</p>
+            <h2>Final checks</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">A decision tree is especially good for showing:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">A sequence of patient-splitting rules.</button>
+                <button class="option-btn" data-answer="incorrect">Only straight-line associations.</button>
+                <button class="option-btn" data-answer="incorrect">Automatic causal mechanisms.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Trees show sequential splitting rules."
+                data-incorrect="<strong>Not quite.</strong> Trees are rule-based prediction models, not automatic causal tools."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">A clinically interpretable tree:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">Does not need validation.</button>
+                <button class="option-btn" data-answer="correct">Still needs validation and calibration assessment.</button>
+                <button class="option-btn" data-answer="incorrect">Always outperforms logistic regression.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Interpretability is helpful, but validity still needs evidence."
+                data-incorrect="<strong>Not quite.</strong> Interpretability does not replace proper model evaluation."
+              ></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="next-lesson-card">
+              <div>
+                <p class="kicker">Next lesson</p>
+                <h2 style="margin: 0;">Overfitting, Tree Depth and Pruning</h2>
+                <p style="margin-bottom: 0;">
+                  Learn why trees can overfit and how pruning controls tree complexity.
+                </p>
+              </div>
+
+              <a class="btn btn-primary" href="./5-2-tree-overfitting-pruning.html">
+                Continue
+              </a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="footer-logo" />
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+
+  <script>
+    const glucoseSlider = document.getElementById("glucoseSlider");
+    const glucoseValue = document.getElementById("glucoseValue");
+    const routeBox = document.getElementById("routeBox");
+
+    function updateRoute() {
+      if (!glucoseSlider || !glucoseValue || !routeBox) return;
+      const value = Number(glucoseSlider.value);
+      glucoseValue.textContent = value;
+
+      if (value < 100) {
+        routeBox.textContent = "Route: lower glucose group. The tree may next check age, BMI or pedigree.";
+      } else if (value < 140) {
+        routeBox.textContent = "Route: moderate glucose group. The tree may next check BMI or age.";
+      } else {
+        routeBox.textContent = "Route: high glucose group. The tree may assign higher risk or check BMI/insulin next.";
+      }
+    }
+
+    if (glucoseSlider) {
+      glucoseSlider.addEventListener("input", updateRoute);
+      updateRoute();
+    }
+  </script>
+</body>
+</html>

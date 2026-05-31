@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Module 5: Tree-Based Methods | Machine Learning in Biostatistics</title>
+
+  <link rel="stylesheet" href="../assets/course.css" />
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="brand-logo" />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Module 5 · Tree-Based Methods</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="../module-2/index.html">Module 2</a>
+          <a href="../module-3/index.html">Module 3</a>
+          <a href="../module-4/index.html">Module 4</a>
+          <a href="./index.html">Module 5</a>
+          <a href="../case-studies/index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Module 5</p>
+        <h1>Tree-Based Methods</h1>
+
+        <p class="hero-intro">
+          This module explains decision trees, random forests, gradient boosting, XGBoost,
+          variable importance and partial dependence for medical prediction.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="./5-1-decision-trees-clinical-prediction.html">Start Module 5</a>
+          <a class="btn btn-secondary" href="../module-4/index.html">Back to Module 4</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <section class="section">
+        <div class="section-heading">
+          <p class="kicker">Module aim</p>
+          <h2>Understand flexible prediction without losing clinical caution.</h2>
+          <p>
+            Tree-based methods can model non-linear effects and interactions without requiring the analyst
+            to specify them manually. They are powerful, but they can also overfit, hide important modelling choices,
+            and produce misleading interpretations if they are not validated carefully.
+          </p>
+        </div>
+
+        <div class="grid grid-2">
+          <article class="module-card">
+            <span class="badge">Lesson 16</span>
+            <h3>Decision Trees for Clinical Prediction</h3>
+            <p>Learn how trees split patients into interpretable risk groups using clinical predictor values.</p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./5-1-decision-trees-clinical-prediction.html">Open Lesson 16</a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Lesson 17</span>
+            <h3>Overfitting, Tree Depth and Pruning</h3>
+            <p>Understand why deep trees overfit and how pruning controls unnecessary complexity.</p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./5-2-tree-overfitting-pruning.html">Open Lesson 17</a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Lesson 18</span>
+            <h3>Random Forests</h3>
+            <p>Learn how many trees are averaged to produce more stable predictions.</p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./5-3-random-forests.html">Open Lesson 18</a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Lesson 19</span>
+            <h3>Gradient Boosting</h3>
+            <p>Study sequential tree-building, learning rate, number of trees and tuning.</p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./5-4-gradient-boosting.html">Open Lesson 19</a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Lesson 20</span>
+            <h3>XGBoost for Clinical Prediction</h3>
+            <p>Learn how XGBoost extends boosting and why high AUC still requires calibration and validation.</p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./5-5-xgboost-clinical-prediction.html">Open Lesson 20</a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Lesson 21</span>
+            <h3>Variable Importance and Partial Dependence</h3>
+            <p>Interpret complex models cautiously using importance measures and partial dependence plots.</p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./5-6-variable-importance-partial-dependence.html">Open Lesson 21</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="kicker">Key ideas</p>
+          <h2>What you will learn to judge.</h2>
+        </div>
+
+        <div class="grid grid-3">
+          <div class="card">
+            <h3>Non-linearity and interactions</h3>
+            <p>Tree-based methods can learn patterns that ordinary linear models may miss.</p>
+          </div>
+
+          <div class="card">
+            <h3>Overfitting and tuning</h3>
+            <p>Flexible models require careful control of depth, number of trees, learning rate and validation design.</p>
+          </div>
+
+          <div class="card">
+            <h3>Interpretation with caution</h3>
+            <p>Variable importance and partial dependence help interpretation, but they do not prove causality.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="footer-logo" />
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+</body>
+</html>

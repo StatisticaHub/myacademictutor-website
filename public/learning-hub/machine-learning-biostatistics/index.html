@@ -8,7 +8,7 @@
 
   <meta
     name="description"
-    content="A structured R-based course on machine learning for medical statistics, clinical prediction modelling, survival analysis, and biomedical data science."
+    content="A structured R-based course on machine learning for medical statistics, clinical prediction modelling, regularisation, tree-based methods, high-dimensional biomedical prediction, survival analysis, and biomedical data science."
   />
 
   <link rel="stylesheet" href="assets/course.css" />
@@ -32,7 +32,11 @@
 
         <nav class="top-nav" aria-label="Course navigation">
           <a href="./index.html">Home</a>
-          <a href="./module-1/index.html">Modules</a>
+          <a href="./module-1/index.html">Module 1</a>
+          <a href="./module-2/index.html">Module 2</a>
+          <a href="./module-3/index.html">Module 3</a>
+          <a href="./module-4/index.html">Module 4</a>
+          <a href="./module-5/index.html">Module 5</a>
           <a href="./r/">R Code</a>
           <a href="./case-studies/index.html">Case Studies</a>
           <a href="../">Learning Hub</a>
@@ -48,7 +52,8 @@
 
         <p class="hero-intro">
           A structured course on machine learning for medical statistics,
-          clinical prediction modelling, survival analysis, and biomedical data science.
+          clinical prediction modelling, regularisation, tree-based methods,
+          high-dimensional biomedical prediction, survival analysis, and biomedical data science.
         </p>
 
         <p class="hero-intro">
@@ -59,7 +64,7 @@
 
         <div class="hero-actions">
           <a class="btn btn-primary" href="./module-1/index.html">Start learning</a>
-          <a class="btn btn-secondary" href="./case-studies/index.html">View case studies</a>
+          <a class="btn btn-secondary" href="./module-5/index.html">Latest module</a>
         </div>
       </div>
     </section>
@@ -67,12 +72,13 @@
     <main class="main">
       <section class="section">
         <div class="section-heading">
-          <p class="kicker">Course overview</p>
-          <h2>Machine learning through a medical statistics lens.</h2>
+          <p class="kicker">Course progress</p>
+          <h2>Modules 1–5 are now available.</h2>
           <p>
-            This course is designed for learners who want to understand machine
-            learning through a biostatistics, clinical prediction and biomedical
-            data science perspective.
+            The course currently covers foundations, supervised learning, model evaluation,
+            validation, calibration, clinical usefulness, regularisation, feature selection,
+            high-dimensional penalised regression, decision trees, random forests,
+            gradient boosting, XGBoost, variable importance and partial dependence.
           </p>
         </div>
 
@@ -101,10 +107,10 @@
           </div>
 
           <div class="card">
-            <h3>Reproducible R workflows</h3>
+            <h3>Regularisation and tree-based ML</h3>
             <p>
-              Use R scripts and applied case studies to connect modelling methods
-              to practical medical prediction workflows.
+              Study ridge, lasso, elastic net, feature selection, decision trees,
+              random forests, boosting, XGBoost and model interpretation.
             </p>
           </div>
         </div>
@@ -117,11 +123,11 @@
         </div>
 
         <div class="quick-nav">
-          <a href="./module-1/index.html">Lectures</a>
-          <a href="./module-1/index.html">Notes</a>
-          <a href="./module-1/index.html">Exercises</a>
-          <a href="./r/">R Code</a>
-          <a href="./case-studies/index.html">Case Studies</a>
+          <a href="#modules">Modules</a>
+          <a href="#r-code">R Code</a>
+          <a href="#case-studies">Case Studies</a>
+          <a href="#current-content">Current Content</a>
+          <a href="#planned-content">Planned Content</a>
           <a href="#about">About</a>
         </div>
       </section>
@@ -141,30 +147,26 @@
           </thead>
           <tbody>
             <tr>
-              <td><strong>Lectures</strong></td>
-              <td>Story-based introductions with doubts, examples, and clinical conversations.</td>
-            </tr>
-            <tr>
-              <td><strong>Notes</strong></td>
-              <td>Detailed theory, statistical explanation, interpretation and modelling principles.</td>
-            </tr>
-            <tr>
-              <td><strong>Exercises</strong></td>
-              <td>Practice questions for conceptual understanding and applied reasoning.</td>
+              <td><strong>Lessons</strong></td>
+              <td>Each lesson contains the lecture, detailed notes, R code, exercises and quiz in one page.</td>
             </tr>
             <tr>
               <td><strong>R Code</strong></td>
-              <td>Reproducible R scripts for implementation and model evaluation.</td>
+              <td>Reproducible R scripts for implementation, model evaluation, regularisation, tree-based methods and case studies.</td>
             </tr>
             <tr>
               <td><strong>Case Studies</strong></td>
-              <td>Applied medical machine learning examples with figures and interpretation.</td>
+              <td>Applied medical machine learning examples with complete workflows, figures and interpretation.</td>
+            </tr>
+            <tr>
+              <td><strong>Clinical interpretation</strong></td>
+              <td>Every topic is connected to prediction questions, validation, calibration, usefulness and limitations.</td>
             </tr>
           </tbody>
         </table>
       </section>
 
-      <section class="section">
+      <section class="section" id="modules">
         <div class="section-heading">
           <p class="kicker">Start learning</p>
           <h2>Available modules.</h2>
@@ -174,12 +176,13 @@
           <article class="module-card">
             <span class="badge">Module 1</span>
             <h3>Foundations</h3>
+            <p>Prediction versus inference, validation, overfitting and data leakage.</p>
             <div class="lesson-list">
               <a class="lesson-link" href="./module-1/1-1-what-is-machine-learning-in-biostatistics.html">
-                Lecture 1: What is Machine Learning in Biostatistics?
+                Lesson 1: What is Machine Learning in Biostatistics?
               </a>
               <a class="lesson-link" href="./module-1/1-2-validation-overfitting-data-leakage.html">
-                Lecture 2: Validation, Overfitting and Data Leakage
+                Lesson 2: Validation, Overfitting and Data Leakage
               </a>
             </div>
           </article>
@@ -187,15 +190,16 @@
           <article class="module-card">
             <span class="badge">Module 2</span>
             <h3>Supervised Learning for Medical Data</h3>
+            <p>Supervised learning, logistic regression and classification metrics for clinical prediction.</p>
             <div class="lesson-list">
               <a class="lesson-link" href="./module-2/2-1-supervised-learning-medical-data.html">
-                Lecture 3: Supervised Learning for Medical Data
+                Lesson 3: Supervised Learning for Medical Data
               </a>
               <a class="lesson-link" href="./module-2/2-2-logistic-regression-clinical-prediction.html">
-                Lecture 4: Logistic Regression for Clinical Prediction
+                Lesson 4: Logistic Regression for Clinical Prediction
               </a>
               <a class="lesson-link" href="./module-2/2-3-classification-metrics-medicine.html">
-                Lecture 5: Classification Metrics in Medicine
+                Lesson 5: Classification Metrics in Medicine
               </a>
             </div>
           </article>
@@ -203,69 +207,162 @@
           <article class="module-card">
             <span class="badge">Module 3</span>
             <h3>Model Evaluation, Validation and Clinical Usefulness</h3>
+            <p>Cross-validation, bootstrap validation, calibration, Brier score and decision curve analysis.</p>
             <div class="lesson-list">
-              <a class="lesson-link" href="./module-3/3-1-cross-validation.html">Lecture 6: Cross-Validation</a>
-              <a class="lesson-link" href="./module-3/3-2-bootstrap-validation.html">Lecture 7: Bootstrap Validation</a>
-              <a class="lesson-link" href="./module-3/3-3-calibration-brier-score.html">Lecture 8: Calibration and Brier Score</a>
-              <a class="lesson-link" href="./module-3/3-4-decision-curve-analysis.html">Lecture 9: Decision Curve Analysis</a>
+              <a class="lesson-link" href="./module-3/3-1-cross-validation.html">Lesson 6: Cross-Validation</a>
+              <a class="lesson-link" href="./module-3/3-2-bootstrap-validation.html">Lesson 7: Bootstrap Validation</a>
+              <a class="lesson-link" href="./module-3/3-3-calibration-brier-score.html">Lesson 8: Calibration and Brier Score</a>
+              <a class="lesson-link" href="./module-3/3-4-decision-curve-analysis.html">Lesson 9: Decision Curve Analysis</a>
             </div>
           </article>
 
           <article class="module-card">
             <span class="badge">Module 4</span>
             <h3>Regularisation and Feature Selection</h3>
+            <p>Ridge, lasso, elastic net, feature selection, batch effects and high-dimensional penalised regression.</p>
             <div class="lesson-list">
-              <a class="lesson-link" href="./module-4/4-1-regularisation-feature-selection.html">Lecture 10: Regularisation and Feature Selection</a>
-              <a class="lesson-link" href="./module-4/4-2-ridge-regression.html">Lecture 11: Ridge Regression</a>
-              <a class="lesson-link" href="./module-4/4-3-lasso-regression.html">Lecture 12: Lasso Regression</a>
-              <a class="lesson-link" href="./module-4/4-4-elastic-net.html">Lecture 13: Elastic Net</a>
-              <a class="lesson-link" href="./module-4/4-5-feature-selection-biomedical-data.html">Lecture 14: Feature Selection in Biomedical Data</a>
-              <a class="lesson-link" href="./module-4/4-6-penalised-regression-high-dimensional-data.html">Lecture 15: Penalised Regression for High-Dimensional Data</a>
+              <a class="lesson-link" href="./module-4/4-1-regularisation-feature-selection.html">Lesson 10: Regularisation and Feature Selection</a>
+              <a class="lesson-link" href="./module-4/4-2-ridge-regression.html">Lesson 11: Ridge Regression</a>
+              <a class="lesson-link" href="./module-4/4-3-lasso-regression.html">Lesson 12: Lasso Regression</a>
+              <a class="lesson-link" href="./module-4/4-4-elastic-net.html">Lesson 13: Elastic Net</a>
+              <a class="lesson-link" href="./module-4/4-5-feature-selection-biomedical-data.html">Lesson 14: Feature Selection in Biomedical Data</a>
+              <a class="lesson-link" href="./module-4/4-6-penalised-regression-high-dimensional-data.html">Lesson 15: Penalised Regression for High-Dimensional Data</a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Module 5</span>
+            <h3>Tree-Based Methods</h3>
+            <p>
+              Decision trees, tree depth, pruning, random forests, gradient boosting,
+              XGBoost, variable importance and partial dependence.
+            </p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./module-5/5-1-decision-trees-clinical-prediction.html">Lesson 16: Decision Trees for Clinical Prediction</a>
+              <a class="lesson-link" href="./module-5/5-2-tree-overfitting-pruning.html">Lesson 17: Overfitting, Tree Depth and Pruning</a>
+              <a class="lesson-link" href="./module-5/5-3-random-forests.html">Lesson 18: Random Forests</a>
+              <a class="lesson-link" href="./module-5/5-4-gradient-boosting.html">Lesson 19: Gradient Boosting</a>
+              <a class="lesson-link" href="./module-5/5-5-xgboost-clinical-prediction.html">Lesson 20: XGBoost for Clinical Prediction</a>
+              <a class="lesson-link" href="./module-5/5-6-variable-importance-partial-dependence.html">Lesson 21: Variable Importance and Partial Dependence</a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Planned</span>
+            <h3>Modules 6–8</h3>
+            <p>
+              Survival machine learning, high-dimensional biomedical ML, reporting,
+              bias assessment and reproducibility will remain planned for now.
+            </p>
+            <div class="lesson-list">
+              <span class="lesson-link">Module 6: Survival Machine Learning</span>
+              <span class="lesson-link">Module 7: High-Dimensional Biomedical ML</span>
+              <span class="lesson-link">Module 8: Reporting, Bias and Reproducibility</span>
             </div>
           </article>
         </div>
       </section>
 
-      <section class="section">
+      <section class="section" id="r-code">
         <div class="section-heading">
-          <p class="kicker">Applied case study</p>
-          <h2>Case Study 1: Diabetes Risk Prediction</h2>
+          <p class="kicker">Reproducible practice</p>
+          <h2>R scripts now cover Lessons 2–21.</h2>
           <p>
-            This case study applies supervised learning and logistic regression
-            to a diabetes risk prediction problem.
+            The R code section contains scripts for validation, logistic regression,
+            classification metrics, cross-validation, bootstrap validation, calibration,
+            decision curve analysis, ridge, lasso, elastic net, feature selection,
+            high-dimensional penalised regression, decision trees, random forests,
+            gradient boosting, XGBoost, variable importance and partial dependence.
           </p>
         </div>
 
         <div class="card">
-          <h3>What the case study includes</h3>
-
+          <h3>Latest scripts</h3>
           <div class="topic-list">
-            <div class="topic-item">Clinical prediction question</div>
-            <div class="topic-item">Outcome and predictor definition</div>
-            <div class="topic-item">Train/test split</div>
-            <div class="topic-item">Logistic regression in R</div>
-            <div class="topic-item">ROC curve and AUC</div>
-            <div class="topic-item">Calibration plot and Brier score</div>
-            <div class="topic-item">Clinical interpretation and limitations</div>
+            <div class="topic-item">r/16_decision_trees_clinical_prediction.R</div>
+            <div class="topic-item">r/17_tree_overfitting_pruning.R</div>
+            <div class="topic-item">r/18_random_forests.R</div>
+            <div class="topic-item">r/19_gradient_boosting.R</div>
+            <div class="topic-item">r/20_xgboost_clinical_prediction.R</div>
+            <div class="topic-item">r/21_variable_importance_partial_dependence.R</div>
           </div>
 
           <div style="margin-top: 1.5rem;">
-            <a class="btn btn-primary" href="./case-studies/case-study-1-diabetes-risk-prediction.html">
-              Open Case Study 1
-            </a>
+            <a class="btn btn-primary" href="./r/">Open R Code</a>
           </div>
         </div>
       </section>
 
-      <section class="section">
+      <section class="section" id="case-studies">
+        <div class="section-heading">
+          <p class="kicker">Applied case studies</p>
+          <h2>Case studies will be expanded next.</h2>
+          <p>
+            Case studies show that medical machine learning is not only about fitting models.
+            A useful workflow defines the prediction question clearly, avoids leakage,
+            evaluates discrimination and calibration, interprets thresholds carefully,
+            and explains limitations honestly.
+          </p>
+        </div>
+
+        <div class="grid grid-2">
+          <article class="module-card">
+            <span class="badge">Case Study 1</span>
+            <h3>Diabetes Risk Prediction</h3>
+            <p>
+              A complete clinical prediction workflow using logistic regression,
+              predicted probabilities, ROC/AUC, calibration plot and Brier score.
+            </p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./case-studies/case-study-1-diabetes-risk-prediction.html">
+                Open Case Study 1
+              </a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Case Study 2</span>
+            <h3>Regularised Diabetes Risk Prediction</h3>
+            <p>
+              Compare ordinary logistic regression with ridge, lasso and elastic net,
+              including coefficient shrinkage, feature selection and interpretation.
+            </p>
+            <div class="lesson-list">
+              <a class="lesson-link" href="./case-studies/case-study-2-regularised-diabetes-risk-prediction.html">
+                Open Case Study 2
+              </a>
+            </div>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Coming next</span>
+            <h3>Tree-Based Diabetes Prediction</h3>
+            <p>
+              Planned case studies will extend the diabetes workflow using decision trees,
+              random forests, gradient boosting, XGBoost, variable importance and partial dependence.
+            </p>
+          </article>
+
+          <article class="module-card">
+            <span class="badge">Coming next</span>
+            <h3>Reporting and Interpretation</h3>
+            <p>
+              Future case studies will focus on model cards, reproducible GitHub workflows,
+              TRIPOD+AI-style reporting and PROBAST+AI-style risk-of-bias thinking.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="current-content">
         <div class="section-heading">
           <p class="kicker">What this course covers</p>
-          <h2>Current and planned content.</h2>
+          <h2>Current content.</h2>
         </div>
 
         <div class="grid grid-2">
           <div class="card">
-            <h3>Current content</h3>
+            <h3>Available now</h3>
             <div class="topic-list">
               <div class="topic-item">Prediction versus inference</div>
               <div class="topic-item">Validation, overfitting and data leakage</div>
@@ -273,21 +370,29 @@
               <div class="topic-item">Logistic regression for clinical prediction</div>
               <div class="topic-item">Classification metrics in medicine</div>
               <div class="topic-item">Cross-validation and bootstrap validation</div>
-              <div class="topic-item">Calibration, Brier score and decision curves</div>
-              <div class="topic-item">Ridge, lasso, elastic net and feature selection</div>
+              <div class="topic-item">Calibration, Brier score and decision curve analysis</div>
+              <div class="topic-item">Regularisation and feature selection</div>
+              <div class="topic-item">Ridge, lasso and elastic net</div>
+              <div class="topic-item">Feature-selection leakage and batch effects</div>
+              <div class="topic-item">High-dimensional penalised regression</div>
+              <div class="topic-item">Decision trees, pruning and tree depth</div>
+              <div class="topic-item">Random forests</div>
+              <div class="topic-item">Gradient boosting and XGBoost</div>
+              <div class="topic-item">Variable importance and partial dependence</div>
             </div>
           </div>
 
-          <div class="card">
-            <h3>Planned content</h3>
+          <div class="card" id="planned-content">
+            <h3>Planned for later</h3>
             <div class="topic-list">
-              <div class="topic-item">Decision trees and random forests</div>
-              <div class="topic-item">Gradient boosting and XGBoost</div>
-              <div class="topic-item">Survival prediction modelling</div>
+              <div class="topic-item">Module 6: Survival Machine Learning</div>
+              <div class="topic-item">Survival analysis recap and Cox prediction models</div>
               <div class="topic-item">Penalised Cox models and random survival forests</div>
-              <div class="topic-item">High-dimensional biomedical prediction</div>
-              <div class="topic-item">Omics and EWAS-style workflows</div>
-              <div class="topic-item">TRIPOD and PROBAST reporting principles</div>
+              <div class="topic-item">Time-dependent AUC, survival Brier score and survival calibration</div>
+              <div class="topic-item">Module 7: High-Dimensional Biomedical ML</div>
+              <div class="topic-item">Omics, PCA, nested cross-validation, batch effects and EWAS-style workflows</div>
+              <div class="topic-item">Module 8: TRIPOD+AI, PROBAST+AI and reproducible reporting</div>
+              <div class="topic-item">Model cards and transparent GitHub workflows</div>
             </div>
           </div>
         </div>
@@ -307,7 +412,7 @@
 
           <div class="card">
             <h3>2. Study the notes</h3>
-            <p>Use the notes for deeper theory, statistical explanation and interpretation.</p>
+            <p>Use the notes section inside each lesson for deeper theory, statistical explanation and interpretation.</p>
           </div>
 
           <div class="card">

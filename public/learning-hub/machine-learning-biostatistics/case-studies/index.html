@@ -6,6 +6,11 @@
 
   <title>Case Studies | Machine Learning in Biostatistics</title>
 
+  <meta
+    name="description"
+    content="Applied medical machine learning case studies for clinical prediction modelling, validation, calibration, interpretation and reproducible R workflows."
+  />
+
   <link rel="stylesheet" href="../assets/course.css" />
 </head>
 
@@ -14,10 +19,14 @@
     <header class="course-header">
       <div class="course-header-inner">
         <a class="brand" href="../index.html">
-          <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="brand-logo" />
+          <img
+            src="../assets/my-academic-tutor-logo.png"
+            alt="My Academic Tutor logo"
+            class="brand-logo"
+          />
           <span class="brand-text">
             <span class="brand-title">Machine Learning in Biostatistics</span>
-            <span class="brand-subtitle">Applied case studies</span>
+            <span class="brand-subtitle">Applied Case Studies</span>
           </span>
         </a>
 
@@ -27,6 +36,7 @@
           <a href="../module-2/index.html">Module 2</a>
           <a href="../module-3/index.html">Module 3</a>
           <a href="../module-4/index.html">Module 4</a>
+          <a href="../module-5/index.html">Module 5</a>
           <a href="./index.html">Case Studies</a>
           <a href="../../">Learning Hub</a>
         </nav>
@@ -35,17 +45,18 @@
 
     <section class="hero">
       <div class="hero-inner">
-        <p class="kicker">Case studies</p>
-        <h1>Applied medical machine learning case studies</h1>
+        <p class="kicker">Applied medical machine learning</p>
+        <h1>Case Studies</h1>
 
         <p class="hero-intro">
-          Case studies connect course ideas with realistic modelling workflows,
-          clinical interpretation, figures and common problems in biomedical data analysis.
+          Case studies connect the course methods to full medical prediction workflows:
+          clinical question definition, outcome and predictor choice, model fitting, validation,
+          calibration, threshold interpretation, figures, limitations and reproducible R code.
         </p>
 
         <div class="hero-actions">
-          <a class="btn btn-primary" href="./case-study-1-diabetes-risk-prediction.html">Open Case Study 1</a>
-          <a class="btn btn-secondary" href="./case-study-2-regularised-diabetes-risk-prediction.html">Open Case Study 2</a>
+          <a class="btn btn-primary" href="./case-study-1-diabetes-risk-prediction.html">Start Case Study 1</a>
+          <a class="btn btn-secondary" href="../index.html">Back to course home</a>
         </div>
       </div>
     </section>
@@ -53,8 +64,8 @@
     <main class="main">
       <section class="section">
         <div class="section-heading">
-          <p class="kicker">Available case studies</p>
-          <h2>Apply the course ideas to medical prediction workflows.</h2>
+          <p class="kicker">Available now</p>
+          <h2>Current case study.</h2>
         </div>
 
         <div class="grid grid-2">
@@ -62,61 +73,64 @@
             <span class="badge">Case Study 1</span>
             <h3>Diabetes Risk Prediction</h3>
             <p>
-              A complete clinical prediction workflow using logistic regression:
-              train/test split, ROC curve, AUC, calibration plot, Brier score and clinical interpretation.
+              A complete logistic regression clinical prediction workflow using the Pima Indians Diabetes dataset.
+              Includes outcome distribution, train/test split, predicted probabilities, confusion matrix,
+              ROC/AUC, Brier score, calibration and threshold interpretation.
             </p>
-
             <div class="lesson-list">
               <a class="lesson-link" href="./case-study-1-diabetes-risk-prediction.html">
                 Open Case Study 1
+              </a>
+              <a class="lesson-link" href="../r/C1_diabetes_risk_prediction_case_study.R" download>
+                Download R script
               </a>
             </div>
           </article>
 
           <article class="module-card">
-            <span class="badge">Case Study 2</span>
+            <span class="badge">Coming next</span>
             <h3>Regularised Diabetes Risk Prediction</h3>
             <p>
-              A comparison of ordinary logistic regression with ridge, lasso and elastic net,
-              including coefficient shrinkage and selected predictor interpretation.
+              This case study will extend the logistic regression workflow using ridge regression,
+              lasso regression and elastic net regularisation.
             </p>
-
-            <div class="lesson-list">
-              <a class="lesson-link" href="./case-study-2-regularised-diabetes-risk-prediction.html">
-                Open Case Study 2
-              </a>
-            </div>
           </article>
         </div>
       </section>
 
       <section class="section">
         <div class="section-heading">
-          <p class="kicker">Case study structure</p>
-          <h2>Each case study follows a practical structure.</h2>
+          <p class="kicker">Planned case studies</p>
+          <h2>Next additions.</h2>
         </div>
 
-        <div class="grid grid-3">
+        <div class="grid grid-2">
           <div class="card">
-            <h3>Clinical question</h3>
-            <p>Define what is being predicted and why the prediction matters.</p>
+            <h3>Tree-based diabetes prediction</h3>
+            <p>
+              Decision trees, pruning, random forests, gradient boosting, XGBoost,
+              variable importance and partial dependence.
+            </p>
           </div>
 
           <div class="card">
-            <h3>Model workflow</h3>
-            <p>Describe outcome, predictors, prediction time point, model fitting and validation.</p>
-          </div>
-
-          <div class="card">
-            <h3>Interpretation</h3>
-            <p>Explain discrimination, calibration, limitations and clinical usefulness.</p>
+            <h3>Reporting and reproducibility</h3>
+            <p>
+              Model cards, transparent GitHub workflows, TRIPOD+AI-style reporting
+              and PROBAST+AI-style risk-of-bias thinking.
+            </p>
           </div>
         </div>
       </section>
     </main>
 
     <footer class="footer">
-      <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="footer-logo" />
+      <img
+        src="../assets/my-academic-tutor-logo.png"
+        alt="My Academic Tutor logo"
+        class="footer-logo"
+      />
+
       <p><strong>Developed by Rahul</strong></p>
       <p>Founder of My Academic Tutor</p>
       <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>

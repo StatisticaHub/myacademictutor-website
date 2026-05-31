@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Lesson 18: Random Forests | Machine Learning in Biostatistics</title>
+
+  <meta
+    name="description"
+    content="Lesson 18 of Machine Learning in Biostatistics: detailed random forests for clinical prediction, bagging, bootstrap samples, random predictor selection, out-of-bag error, variable importance and calibration."
+  />
+
+  <link rel="stylesheet" href="../assets/course.css" />
+
+  <style>
+    .forest-visual {
+      display: grid;
+      gap: 1rem;
+      margin: 1.3rem 0;
+    }
+
+    .forest-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.7rem;
+    }
+
+    .tree-icon {
+      border: 1px solid #ddcfb8;
+      border-radius: 16px;
+      background: #fffaf2;
+      padding: 0.85rem 0.5rem;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(16, 32, 51, 0.06);
+      font-weight: 700;
+      color: #6f1d1b;
+    }
+
+    .forest-average {
+      border: 1px solid #ddcfb8;
+      border-left: 6px solid #8C1515;
+      border-radius: 18px;
+      background: #ffffff;
+      padding: 1rem;
+      text-align: center;
+      font-weight: 800;
+    }
+
+    .bagging-demo {
+      margin-top: 1rem;
+      padding: 1.2rem;
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fffaf2;
+    }
+
+    .bagging-demo input[type="range"] {
+      width: 100%;
+      margin: 1rem 0;
+    }
+
+    .bag-output {
+      display: grid;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+
+    .bag-pill {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      border: 1px solid #ddcfb8;
+      background: #ffffff;
+      border-radius: 999px;
+      padding: 0.65rem 0.9rem;
+      font-size: 0.92rem;
+    }
+
+    .method-compare {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .compare-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      padding: 1.2rem;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+    }
+
+    .compare-card.warning {
+      border-left: 6px solid #991b1b;
+      background: #fff5f5;
+    }
+
+    .compare-card.good {
+      border-left: 6px solid #166534;
+      background: #f0fdf4;
+    }
+
+    @media (max-width: 900px) {
+      .forest-row,
+      .method-compare {
+        grid-template-columns: 1fr;
+      }
+
+      .bag-pill {
+        flex-direction: column;
+        border-radius: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="brand-logo" />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Module 5 · Lesson 18</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="../module-2/index.html">Module 2</a>
+          <a href="../module-3/index.html">Module 3</a>
+          <a href="../module-4/index.html">Module 4</a>
+          <a href="./index.html">Module 5</a>
+          <a href="../case-studies/index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Module 5 · Tree-Based Methods</p>
+        <h1>Lesson 18: Random Forests</h1>
+
+        <p class="hero-intro">
+          A random forest builds many decision trees and averages their predictions.
+          Instead of trusting one unstable tree, it combines many trees to improve stability and prediction performance.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#lecture">Start lesson</a>
+          <a class="btn btn-secondary" href="./5-2-tree-overfitting-pruning.html">Previous lesson</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <div class="lesson-layout">
+        <aside class="lesson-sidebar" aria-label="Lesson sections">
+          <h3>Lesson sections</h3>
+          <a class="active" href="#lecture">Lecture</a>
+          <a href="#intuition">Intuition</a>
+          <a href="#bagging">Bagging</a>
+          <a href="#randomness">Random predictor selection</a>
+          <a href="#oob">Out-of-bag error</a>
+          <a href="#importance">Variable importance</a>
+          <a href="#notes">Detailed notes</a>
+          <a href="#r-code">R code</a>
+          <a href="#exercises">Exercises</a>
+          <a href="#quiz">Quiz</a>
+        </aside>
+
+        <article class="lesson-content">
+          <section class="lesson-section" id="lecture">
+            <p class="kicker">Lecture</p>
+            <h2>Lecture 18: Random Forests</h2>
+
+            <div class="scene-card">
+              <div class="scene-title">Opening scene: Many imperfect trees</div>
+              <div class="dialogue-box">
+                <div class="dialogue-line learner">
+      <p><span class="character">Curious Learner:</span><br />“A single tree is easy to understand, but it can be unstable. Can we build many trees instead?”</p>
+    </div>
+                <div class="dialogue-line prof-stat">
+      <p><span class="character">Prof Stat:</span><br />“Yes. That is the idea behind random forests.”</p>
+    </div>
+                <div class="dialogue-line dr-clinic">
+      <p><span class="character">Dr Clinic:</span><br />“So instead of one clinical rule, we average many possible rules?”</p>
+    </div>
+                <div class="dialogue-line prof-stat">
+      <p><span class="character">Prof Stat:</span><br />“Exactly. Averaging many trees can reduce instability.”</p>
+    </div>
+                <div class="dialogue-line confusion-bug">
+      <p><span class="character">Confusion Bug:</span><br />“So if glucose is important in the forest, that proves glucose causes the outcome?”</p>
+    </div>
+                <div class="dialogue-line prof-stat">
+      <p><span class="character">Prof Stat:</span><br />“No. Importance means useful for prediction in the model, not automatic causality.”</p>
+    </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="big-question">
+            <p class="kicker">Today’s big question</p>
+            <h2>How can averaging many trees improve clinical prediction?</h2>
+
+            <div class="big-question">
+              <p>
+                Random forests improve stability by building many trees on slightly different data and averaging their predictions.
+              </p>
+            </div>
+
+            <p>
+              A single decision tree is sensitive to changes in the development data. A random forest reduces this sensitivity by combining many trees.
+              Each tree may be imperfect, but the average prediction can be more stable.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="intuition">
+            <p class="kicker">Intuition first</p>
+            <h2>A forest is more stable than one tree</h2>
+
+            <p>
+              Imagine asking one clinician for a risk estimate based on one decision pathway. Now imagine asking many clinicians,
+              each considering a slightly different view of the data, and averaging their opinions.
+            </p>
+
+            <div class="forest-visual">
+              <div class="forest-row">
+                <div class="tree-icon">Tree 1<br />0.20</div>
+                <div class="tree-icon">Tree 2<br />0.45</div>
+                <div class="tree-icon">Tree 3<br />0.35</div>
+                <div class="tree-icon">Tree 4<br />0.55</div>
+                <div class="tree-icon">Tree 5<br />0.40</div>
+              </div>
+              <div class="forest-average">
+                Average predicted risk ≈ 0.39
+              </div>
+            </div>
+
+            <p>
+              The forest prediction is not the opinion of one tree. It is the average of many tree predictions.
+              This averaging is why random forests often perform better than a single tree.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="bagging">
+            <p class="kicker">Bagging</p>
+            <h2>Each tree sees a bootstrap sample</h2>
+
+            <p>
+              Random forests use bootstrap samples. A bootstrap sample is created by sampling patients from the training data with replacement.
+              Some patients appear more than once. Some patients are left out.
+            </p>
+
+            <div class="formula-box">
+              Training data → bootstrap sample 1 → tree 1<br />
+              Training data → bootstrap sample 2 → tree 2<br />
+              Training data → bootstrap sample 3 → tree 3
+            </div>
+
+            <p>
+              This process is called bagging, short for bootstrap aggregation.
+              It creates many related but different trees.
+            </p>
+
+            <div class="bagging-demo">
+              <h3>Interactive forest-size demo</h3>
+              <p>Move the slider to think about what happens as the number of trees increases.</p>
+
+              <label for="treeSlider"><strong>Number of trees:</strong> <span id="treeValue">100</span></label>
+              <input id="treeSlider" type="range" min="10" max="500" value="100" step="10" />
+
+              <div class="bag-output" id="bagOutput">
+                <span class="bag-pill">Prediction stability <strong>moderate</strong></span>
+                <span class="bag-pill">Computation <strong>manageable</strong></span>
+                <span class="bag-pill">Interpretability <strong>less direct than one tree</strong></span>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="randomness">
+            <p class="kicker">Random predictor selection</p>
+            <h2>The trees are deliberately made different</h2>
+
+            <p>
+              Random forests add another source of randomness. At each split, the tree is not allowed to consider all predictors.
+              It considers only a random subset of predictors.
+            </p>
+
+            <p>
+              This helps because if one predictor is very strong, many trees might otherwise make very similar splits.
+              Random predictor selection makes the trees less correlated with each other.
+            </p>
+
+            <div class="clinical-check">
+              <h3>Why this helps</h3>
+              <p>
+                Averaging works best when the trees make somewhat different errors.
+                If all trees are nearly identical, averaging adds little benefit.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="oob">
+            <p class="kicker">Out-of-bag error</p>
+            <h2>Some patients are left out of each tree</h2>
+
+            <p>
+              Because each tree is trained on a bootstrap sample, some training patients are not used to build that particular tree.
+              These are called out-of-bag patients for that tree.
+            </p>
+
+            <p>
+              The model can predict each patient using only trees for which that patient was out-of-bag.
+              This gives an internal estimate of prediction error without needing a separate validation set.
+            </p>
+
+            <div class="common-mistake">
+              <h3>Important caution</h3>
+              <p>
+                Out-of-bag error is useful internal validation, but it does not replace external validation.
+                External data may differ in patient mix, measurement process, clinical practice or site effects.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="importance">
+            <p class="kicker">Variable importance</p>
+            <h2>Importance is predictive, not automatically causal</h2>
+
+            <p>
+              Random forests can produce variable importance measures.
+              These measures describe which predictors were useful for prediction in the fitted model.
+            </p>
+
+            <div class="method-compare">
+              <div class="compare-card good">
+                <h3>Reasonable interpretation</h3>
+                <p>
+                  Glucose was important for prediction in this dataset and model.
+                </p>
+              </div>
+
+              <div class="compare-card warning">
+                <h3>Overclaim</h3>
+                <p>
+                  Glucose importance proves a causal mechanism in this study.
+                </p>
+              </div>
+            </div>
+
+            <p>
+              Variable importance can be affected by correlation between predictors, measurement scale, missingness,
+              noise, and dataset-specific patterns.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="clinical-example">
+            <p class="kicker">Medical example</p>
+            <h2>Random forest for diabetes prediction</h2>
+
+            <p>
+              A random forest for diabetes prediction may use glucose, BMI, age, blood pressure, insulin,
+              pedigree and pregnancy count. Instead of using one tree, it builds hundreds of trees and averages their risk predictions.
+            </p>
+
+            <div class="grid grid-3">
+              <div class="card">
+                <h3>Potential strength</h3>
+                <p>Can capture non-linear patterns and interactions.</p>
+              </div>
+
+              <div class="card">
+                <h3>Main cost</h3>
+                <p>Less directly interpretable than a single tree.</p>
+              </div>
+
+              <div class="card">
+                <h3>Clinical need</h3>
+                <p>Still requires calibration, threshold evaluation and external validation.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="notes">
+            <p class="kicker">Detailed notes</p>
+            <h2>Note 18: Random Forests</h2>
+
+            <div class="key-takeaway">
+              <p>
+                A random forest improves on a single decision tree by building many trees and averaging their predictions.
+                This often improves stability, but interpretation and validation remain essential.
+              </p>
+            </div>
+
+            <h3>Learning objectives</h3>
+            <ul>
+              <li>Explain why a single decision tree can be unstable.</li>
+              <li>Describe the idea of an ensemble model.</li>
+              <li>Explain bootstrap sampling and bagging.</li>
+              <li>Describe random predictor selection at each split.</li>
+              <li>Explain why averaging many trees can reduce variance.</li>
+              <li>Understand out-of-bag error.</li>
+              <li>Interpret random forest variable importance cautiously.</li>
+              <li>Explain why random forests still need calibration and external validation.</li>
+            </ul>
+
+            <h3>1. Why this note matters</h3>
+            <p>
+              Decision trees are intuitive, but a single tree is often unstable. A small change in the dataset can change the first split and produce a different tree. This instability matters in medical prediction because we want predictions that are reliable for future patients, not only for the development sample.
+            </p>
+            <p>
+              Random forests address this problem by building many trees and averaging them. The result is usually more stable than a single tree, although it becomes less directly interpretable.
+            </p>
+
+            <h3>2. Ensemble learning</h3>
+            <p>
+              An ensemble model combines many individual models. A random forest is an ensemble of decision trees. Each tree gives a prediction, and the forest combines the predictions.
+            </p>
+            <p>
+              For binary clinical prediction, each tree can estimate a probability of the outcome. The random forest averages these probabilities across trees to produce a final predicted risk.
+            </p>
+
+            <h3>3. Bootstrap sampling</h3>
+            <p>
+              Each tree in a random forest is usually trained on a bootstrap sample of the training data. A bootstrap sample is created by sampling patients with replacement from the original training dataset.
+            </p>
+            <p>
+              Because sampling is with replacement, some patients appear multiple times in a bootstrap sample, while others are not included at all. This means each tree sees a slightly different version of the training data.
+            </p>
+
+            <h3>4. Bagging</h3>
+            <p>
+              Bagging means bootstrap aggregation. The method builds many models on bootstrap samples and then averages their predictions.
+            </p>
+            <p>
+              Bagging reduces variance. In simple terms, one tree may be highly sensitive to noise, but the average of many trees is usually less sensitive to any single noisy split.
+            </p>
+
+            <h3>5. Random predictor selection</h3>
+            <p>
+              Random forests are not just bagged trees. They also randomly select a subset of predictors at each split.
+            </p>
+            <p>
+              This matters because if all predictors are available at every split, a very strong predictor may dominate many trees. The trees may then become too similar. Random predictor selection makes trees more diverse, which improves the benefit of averaging.
+            </p>
+
+            <h3>6. Why averaging helps</h3>
+            <p>
+              A single tree can have high variance. High variance means that the fitted model changes substantially if the training data change slightly.
+            </p>
+            <p>
+              Random forests reduce variance by averaging many trees. If the trees make partly different errors, their average prediction is often more stable than the prediction from one tree.
+            </p>
+
+            <h3>7. Bias and variance intuition</h3>
+            <p>
+              A single deep tree may have low bias because it can fit complex patterns, but high variance because it is sensitive to the training data. Random forests keep much of the flexibility of trees while reducing variance through averaging.
+            </p>
+            <p>
+              This is why random forests often perform better than a single decision tree in prediction tasks.
+            </p>
+
+            <h3>8. Out-of-bag patients</h3>
+            <p>
+              For each bootstrap sample, some patients are left out. These are called out-of-bag patients for that tree.
+            </p>
+            <p>
+              A patient can be predicted using only the trees for which that patient was not included in the bootstrap training sample. This provides an internal estimate of prediction error called out-of-bag error.
+            </p>
+
+            <h3>9. Out-of-bag error is not external validation</h3>
+            <p>
+              Out-of-bag error is useful because it gives an internal validation estimate without needing a separate test set. However, it is still based on the same development dataset.
+            </p>
+            <p>
+              External validation remains important because real future data may differ in patient population, measurement systems, clinical practice, outcome definition or missing data patterns.
+            </p>
+
+            <h3>10. Important tuning choices</h3>
+            <p>Random forests have several tuning choices:</p>
+            <ul>
+              <li>number of trees;</li>
+              <li>number of predictors considered at each split;</li>
+              <li>minimum terminal node size;</li>
+              <li>maximum depth, depending on implementation;</li>
+              <li>sampling strategy if classes are imbalanced.</li>
+            </ul>
+            <p>
+              In many settings, increasing the number of trees stabilises the forest but increases computation. The number of predictors considered at each split affects how similar the trees are.
+            </p>
+
+            <h3>11. Random forests and non-linearity</h3>
+            <p>
+              Random forests can capture non-linear patterns because each tree uses splits rather than assuming a straight-line relationship.
+            </p>
+            <p>
+              For example, diabetes risk may rise sharply after a glucose threshold. A tree-based model can represent this without requiring the analyst to specify the threshold in advance.
+            </p>
+
+            <h3>12. Random forests and interactions</h3>
+            <p>
+              Random forests can also capture interactions. For example, BMI may be more predictive among patients with high glucose than among patients with low glucose.
+            </p>
+            <p>
+              Because each tree can split on different variables in different branches, interactions can arise naturally from the tree structure.
+            </p>
+
+            <h3>13. Variable importance</h3>
+            <p>
+              Random forests can rank predictors using variable importance measures. These measures can help identify which predictors the model used strongly.
+            </p>
+            <p>
+              However, importance is not the same as causality. A variable can be important because it is a proxy for another variable, because it is correlated with a causal factor, or because it reflects data collection patterns.
+            </p>
+
+            <h3>14. Correlated predictors and importance</h3>
+            <p>
+              If two predictors are highly correlated, importance can be shared or distorted. One predictor may appear less important because another correlated predictor already carries similar information.
+            </p>
+            <p>
+              In biomedical data, this is common. Related biomarkers, repeated clinical measurements, neighbouring genomic features and imaging variables may contain overlapping information.
+            </p>
+
+            <h3>15. Random forests and calibration</h3>
+            <p>
+              Random forests can have good discrimination but imperfect calibration. A model may rank patients well but produce risk estimates that are too high or too low.
+            </p>
+            <p>
+              Therefore, calibration plots, calibration slope, calibration intercept and Brier score remain important.
+            </p>
+
+            <h3>16. Random forests and clinical usefulness</h3>
+            <p>
+              A random forest should be evaluated in relation to the clinical decision it is intended to support.
+              If the model is used to decide who receives additional screening, the relevant threshold probabilities and consequences of false positives and false negatives should be considered.
+            </p>
+            <p>
+              Decision curve analysis may be useful when the model is linked to a clinical action.
+            </p>
+
+            <h3>17. Strengths of random forests</h3>
+            <ul>
+              <li>They can model non-linear relationships.</li>
+              <li>They can capture interactions.</li>
+              <li>They reduce instability compared with a single tree.</li>
+              <li>They can handle mixed types of predictors.</li>
+              <li>They provide internal out-of-bag error estimates.</li>
+              <li>They provide variable importance summaries.</li>
+            </ul>
+
+            <h3>18. Limitations of random forests</h3>
+            <ul>
+              <li>They are less interpretable than a single tree.</li>
+              <li>Predicted probabilities may require calibration assessment.</li>
+              <li>Variable importance can be misleading.</li>
+              <li>They do not automatically solve leakage problems.</li>
+              <li>They can perform poorly if the development data are biased.</li>
+              <li>They still need external validation before strong clinical claims.</li>
+            </ul>
+
+            <h3>19. Medical example: hospital readmission</h3>
+            <p>
+              A random forest could be used to predict hospital readmission using age, prior admissions, medications, comorbidities, blood tests and vital signs.
+            </p>
+            <p>
+              The model may detect complex patterns, such as a combination of age, recent admission history and abnormal laboratory values. However, if hospital site or discharge coding practices are strong predictors, the model may learn system-level artefacts rather than patient-level clinical risk.
+            </p>
+
+            <h3>20. Medical example: diabetes prediction</h3>
+            <p>
+              In diabetes prediction, a random forest may use glucose, BMI, age, pedigree, insulin and other variables.
+              Glucose may appear highly important, which is clinically plausible.
+            </p>
+            <p>
+              However, the correct interpretation is that glucose was useful for prediction in this model and dataset. The importance measure should not be written as proof of causality.
+            </p>
+
+            <h3>21. Common mistakes</h3>
+            <ul>
+              <li>Assuming random forests cannot overfit.</li>
+              <li>Reporting only AUC and ignoring calibration.</li>
+              <li>Treating variable importance as causal importance.</li>
+              <li>Ignoring correlated predictors when interpreting importance.</li>
+              <li>Assuming out-of-bag error replaces external validation.</li>
+              <li>Using predictors that are not available at the intended prediction time.</li>
+            </ul>
+
+            <h3>22. Reporting random forest models</h3>
+            <p>A clear report should describe:</p>
+            <ul>
+              <li>outcome definition;</li>
+              <li>prediction time point;</li>
+              <li>candidate predictors;</li>
+              <li>number of trees;</li>
+              <li>number of predictors considered at each split;</li>
+              <li>node-size settings;</li>
+              <li>validation strategy;</li>
+              <li>discrimination;</li>
+              <li>calibration;</li>
+              <li>variable importance method;</li>
+              <li>clinical interpretation and limitations.</li>
+            </ul>
+
+            <h3>23. Summary</h3>
+            <p>
+              A random forest is an ensemble of decision trees. It uses bootstrap samples and random predictor selection to create many different trees. The final prediction is an average across trees.
+            </p>
+            <p>
+              Random forests often improve stability compared with a single tree, but they are not automatically clinically useful. They still require honest validation, calibration assessment, cautious interpretation and external testing where possible.
+            </p>
+
+            <h3>Revision questions</h3>
+            <ul>
+              <li>Why can a single decision tree be unstable?</li>
+              <li>What is an ensemble model?</li>
+              <li>What is bootstrap sampling?</li>
+              <li>What does bagging mean?</li>
+              <li>Why does random predictor selection help?</li>
+              <li>What is out-of-bag error?</li>
+              <li>Why is out-of-bag error not external validation?</li>
+              <li>What does variable importance mean?</li>
+              <li>Why does variable importance not prove causality?</li>
+              <li>Why should random forests still be assessed for calibration?</li>
+            </ul>
+
+            <h3>Key terms</h3>
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Random forest</strong></td><td>An ensemble of many decision trees whose predictions are averaged.</td></tr>
+                  <tr><td><strong>Ensemble</strong></td><td>A model that combines many individual models.</td></tr>
+                  <tr><td><strong>Bootstrap sample</strong></td><td>A sample drawn with replacement from the training data.</td></tr>
+                  <tr><td><strong>Bagging</strong></td><td>Bootstrap aggregation; averaging models fitted to bootstrap samples.</td></tr>
+                  <tr><td><strong>Out-of-bag error</strong></td><td>Internal error estimate using patients left out of bootstrap samples.</td></tr>
+                  <tr><td><strong>Variable importance</strong></td><td>A measure of how strongly a predictor contributes to model prediction.</td></tr>
+                  <tr><td><strong>mtry</strong></td><td>Number of candidate predictors considered at each split in many random forest implementations.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>References</h3>
+            <p class="reference-item">Breiman, L. (2001). Random forests. Machine Learning.</p>
+            <p class="reference-item">Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning.</p>
+            <p class="reference-item">James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An Introduction to Statistical Learning.</p>
+            <p class="reference-item">Steyerberg, E. W. (2019). Clinical Prediction Models.</p>
+          </section>
+
+          <section class="lesson-section" id="r-code">
+            <p class="kicker">R code</p>
+            <h2>R practical: random forest for diabetes prediction</h2>
+
+            <div class="practice-note">
+              <p>
+                This script fits a random forest, compares it with a single decision tree, and checks AUC, Brier score,
+                grouped calibration and variable importance.
+              </p>
+            </div>
+
+            <div class="grid grid-3">
+              <div class="card">
+                <h3>Single tree</h3>
+                <p>Used as a simple baseline for comparison.</p>
+              </div>
+              <div class="card">
+                <h3>Random forest</h3>
+                <p>Averages predictions from 500 trees.</p>
+              </div>
+              <div class="card">
+                <h3>Interpretation</h3>
+                <p>Variable importance is shown but interpreted cautiously.</p>
+              </div>
+            </div>
+
+            <p style="margin-top: 1.2rem;">
+              <a class="btn btn-primary" href="../r/18_random_forests.R" download>
+                Download R script
+              </a>
+              <button class="btn btn-secondary" data-copy-target="r-code-18" type="button">
+                Copy code
+              </button>
+            </p>
+
+            <pre class="code-block"><code id="r-code-18"># Machine Learning in Biostatistics
+# Script 18: Random Forests
+#
+# This script fits a random forest for diabetes prediction.
+# It compares a single decision tree with a random forest and
+# demonstrates AUC, Brier score, variable importance and calibration.
+#
+# Main ideas:
+# 1. A random forest averages many decision trees.
+# 2. Bootstrap samples are used to build different trees.
+# 3. Random predictor selection makes trees less similar.
+# 4. Averaging many trees can reduce instability.
+# 5. Variable importance is not causal importance.
+
+library(tidyverse)
+library(mlbench)
+library(pROC)
+library(rpart)
+library(rpart.plot)
+library(randomForest)
+
+set.seed(123)
+
+data("PimaIndiansDiabetes")
+
+diabetes_data &lt;- PimaIndiansDiabetes %&gt;%
+  mutate(
+    diabetes = factor(diabetes, levels = c("neg", "pos"))
+  )
+
+cat("\nDataset summary:\n")
+cat("Number of patients:", nrow(diabetes_data), "\n")
+cat("Outcome distribution:\n")
+print(table(diabetes_data$diabetes))
+
+train_index &lt;- sample(
+  seq_len(nrow(diabetes_data)),
+  size = round(0.80 * nrow(diabetes_data))
+)
+
+train_data &lt;- diabetes_data[train_index, ]
+test_data &lt;- diabetes_data[-train_index, ]
+
+cat("\nTraining patients:", nrow(train_data), "\n")
+cat("Test patients:", nrow(test_data), "\n")
+
+calculate_auc &lt;- function(actual, risk) {
+  roc_object &lt;- roc(
+    response = actual,
+    predictor = risk,
+    levels = c("neg", "pos"),
+    quiet = TRUE
+  )
+
+  as.numeric(auc(roc_object))
+}
+
+calculate_brier &lt;- function(actual, risk) {
+  observed &lt;- as.numeric(actual == "pos")
+  mean((risk - observed)^2)
+}
+
+single_tree &lt;- rpart(
+  diabetes ~ pregnant + glucose + pressure + triceps +
+    insulin + mass + pedigree + age,
+  data = train_data,
+  method = "class",
+  control = rpart.control(
+    cp = 0.01,
+    maxdepth = 4,
+    minsplit = 20
+  )
+)
+
+single_tree_risk &lt;- predict(
+  single_tree,
+  newdata = test_data,
+  type = "prob"
+)[, "pos"]
+
+random_forest_model &lt;- randomForest(
+  diabetes ~ pregnant + glucose + pressure + triceps +
+    insulin + mass + pedigree + age,
+  data = train_data,
+  ntree = 500,
+  mtry = 3,
+  importance = TRUE
+)
+
+forest_risk &lt;- predict(
+  random_forest_model,
+  newdata = test_data,
+  type = "prob"
+)[, "pos"]
+
+model_comparison &lt;- tibble(
+  model = c("Single decision tree", "Random forest"),
+  test_auc = c(
+    calculate_auc(test_data$diabetes, single_tree_risk),
+    calculate_auc(test_data$diabetes, forest_risk)
+  ),
+  test_brier = c(
+    calculate_brier(test_data$diabetes, single_tree_risk),
+    calculate_brier(test_data$diabetes, forest_risk)
+  )
+)
+
+cat("\nModel comparison:\n")
+print(model_comparison)
+
+cat("\nRandom forest model summary:\n")
+print(random_forest_model)
+
+cat("\nOut-of-bag error by number of trees is stored in the model object.\n")
+cat("Final out-of-bag error estimate:\n")
+print(random_forest_model$err.rate[nrow(random_forest_model$err.rate), ])
+
+importance_table &lt;- importance(random_forest_model) %&gt;%
+  as.data.frame() %&gt;%
+  rownames_to_column("predictor") %&gt;%
+  arrange(desc(MeanDecreaseGini))
+
+cat("\nVariable importance table:\n")
+print(importance_table)
+
+varImpPlot(
+  random_forest_model,
+  main = "Random Forest Variable Importance"
+)
+
+forest_predictions &lt;- test_data %&gt;%
+  mutate(
+    predicted_risk = forest_risk,
+    observed_numeric = as.numeric(diabetes == "pos")
+  )
+
+calibration_table &lt;- forest_predictions %&gt;%
+  mutate(risk_group = ntile(predicted_risk, 5)) %&gt;%
+  group_by(risk_group) %&gt;%
+  summarise(
+    mean_predicted_risk = mean(predicted_risk),
+    observed_risk = mean(observed_numeric),
+    n = n(),
+    .groups = "drop"
+  )
+
+cat("\nGrouped calibration summary for random forest:\n")
+print(calibration_table)
+
+plot(
+  calibration_table$mean_predicted_risk,
+  calibration_table$observed_risk,
+  xlim = c(0, 1),
+  ylim = c(0, 1),
+  xlab = "Mean predicted risk",
+  ylab = "Observed risk",
+  main = "Grouped Calibration: Random Forest"
+)
+
+abline(0, 1, lty = 2)
+
+forest_roc &lt;- roc(
+  response = test_data$diabetes,
+  predictor = forest_risk,
+  levels = c("neg", "pos"),
+  quiet = TRUE
+)
+
+plot(
+  forest_roc,
+  main = "Random Forest ROC Curve",
+  legacy.axes = TRUE
+)
+
+rpart.plot(
+  single_tree,
+  type = 2,
+  extra = 104,
+  fallen.leaves = TRUE,
+  main = "Single Decision Tree"
+)
+
+cat("\nLearning points:\n")
+cat("1. A random forest averages predictions from many decision trees.\n")
+cat("2. Bootstrap sampling makes each tree use a slightly different dataset.\n")
+cat("3. Random predictor selection makes the trees less similar to each other.\n")
+cat("4. Averaging can reduce instability compared with a single tree.\n")
+cat("5. Variable importance should be interpreted as predictive importance, not causal importance.\n")
+cat("6. Random forests still need calibration, clinical usefulness assessment and external validation.\n")
+</code></pre>
+          </section>
+
+          <section class="lesson-section" id="exercises">
+            <p class="kicker">Exercises</p>
+            <h2>Exercise 18: Random Forests</h2>
+
+            <div class="practice-note">
+              <p>
+                Try the questions first, then open the suggested answers.
+              </p>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part A: Concepts</h3>
+
+              <h4>Question 1</h4>
+              <p>What is a random forest?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>A random forest is an ensemble of many decision trees. The final prediction is usually an average of the predictions from the individual trees.</p>
+              </div></details>
+
+              <h4>Question 2</h4>
+              <p>Why is a random forest often more stable than a single tree?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>A single tree can change a lot with small data changes. A random forest averages many trees, so the final prediction is less dependent on one unstable tree.</p>
+              </div></details>
+
+              <h4>Question 3</h4>
+              <p>What does bagging mean?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Bagging means bootstrap aggregation. It fits models to bootstrap samples and averages their predictions.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part B: Bootstrap samples and out-of-bag error</h3>
+
+              <h4>Question 4</h4>
+              <p>What is a bootstrap sample?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>A bootstrap sample is drawn with replacement from the training data. Some patients may appear more than once, while others are left out.</p>
+              </div></details>
+
+              <h4>Question 5</h4>
+              <p>What are out-of-bag patients?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Out-of-bag patients are training patients not included in the bootstrap sample for a particular tree.</p>
+              </div></details>
+
+              <h4>Question 6</h4>
+              <p>Why does out-of-bag error not replace external validation?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Out-of-bag error is still based on the development dataset. External validation tests performance in an independent setting.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part C: Clinical interpretation</h3>
+
+              <h4>Question 7</h4>
+              <p>Why might random forests be useful in medical prediction?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>They can capture non-linear relationships and interactions, and they are usually more stable than a single decision tree.</p>
+              </div></details>
+
+              <h4>Question 8</h4>
+              <p>Why are random forests less interpretable than a single tree?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>A single tree can be drawn as one rule pathway. A random forest combines hundreds of trees, so the final prediction is not one simple pathway.</p>
+              </div></details>
+
+              <h4>Question 9</h4>
+              <p>What does variable importance mean in a random forest?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Variable importance describes how much a predictor contributed to prediction in the fitted model. It does not prove causality.</p>
+              </div></details>
+
+              <h4>Question 10</h4>
+              <p>Why can correlated predictors make variable importance difficult to interpret?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>When predictors contain overlapping information, importance may be shared or shifted between them. One predictor may look less important because another correlated predictor is also available.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part D: Validation and reporting</h3>
+
+              <h4>Question 11</h4>
+              <p>What should be assessed besides AUC for a random forest clinical prediction model?</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Calibration, Brier score, threshold-specific metrics, clinical usefulness, variable importance limitations and external validation should be considered.</p>
+              </div></details>
+
+              <h4>Question 12</h4>
+              <p>List four things that should be reported for a random forest model.</p>
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <p>Report the outcome, predictors, number of trees, mtry or predictors considered per split, node-size settings, validation design, AUC, calibration, variable importance method and limitations.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Part E: True or false</h3>
+
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Statement</th><th>True / False</th></tr></thead>
+                  <tbody>
+                    <tr><td>A random forest averages many decision trees.</td><td></td></tr>
+                    <tr><td>Random forests remove the need for validation.</td><td></td></tr>
+                    <tr><td>Bootstrap samples are drawn with replacement.</td><td></td></tr>
+                    <tr><td>Variable importance proves causality.</td><td></td></tr>
+                    <tr><td>Random forests can model non-linear patterns.</td><td></td></tr>
+                    <tr><td>Calibration still matters for random forests.</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box"><summary>Show suggested answer</summary><div class="answer-content">
+                <ul>
+                  <li>Averages many decision trees: <strong>True</strong>.</li>
+                  <li>Removes the need for validation: <strong>False</strong>.</li>
+                  <li>Bootstrap samples use replacement: <strong>True</strong>.</li>
+                  <li>Variable importance proves causality: <strong>False</strong>.</li>
+                  <li>Can model non-linear patterns: <strong>True</strong>.</li>
+                  <li>Calibration still matters: <strong>True</strong>.</li>
+                </ul>
+              </div></details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="quiz">
+            <p class="kicker">Quick quiz</p>
+            <h2>Final checks</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">The main idea of a random forest is to:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">Average predictions from many decision trees.</button>
+                <button class="option-btn" data-answer="incorrect">Use one very deep tree only.</button>
+                <button class="option-btn" data-answer="incorrect">Avoid validation completely.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> A random forest combines many trees."
+                data-incorrect="<strong>Not quite.</strong> The key idea is averaging many trees."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Variable importance should be interpreted as:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">Predictive usefulness in the fitted model.</button>
+                <button class="option-btn" data-answer="incorrect">Automatic causal proof.</button>
+                <button class="option-btn" data-answer="incorrect">A replacement for calibration assessment.</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Importance is about model prediction, not automatic causality."
+                data-incorrect="<strong>Not quite.</strong> Variable importance does not prove biological or clinical causality."
+              ></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="next-lesson-card">
+              <div>
+                <p class="kicker">Next lesson</p>
+                <h2 style="margin: 0;">Gradient Boosting</h2>
+                <p style="margin-bottom: 0;">
+                  Learn how boosting builds trees sequentially to improve prediction.
+                </p>
+              </div>
+
+              <a class="btn btn-primary" href="./5-4-gradient-boosting.html">
+                Continue
+              </a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="footer-logo" />
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+
+  <script>
+    const treeSlider = document.getElementById("treeSlider");
+    const treeValue = document.getElementById("treeValue");
+    const bagOutput = document.getElementById("bagOutput");
+
+    function updateForestDemo() {
+      if (!treeSlider || !treeValue || !bagOutput) return;
+      const nTrees = Number(treeSlider.value);
+      treeValue.textContent = nTrees;
+
+      if (nTrees < 80) {
+        bagOutput.innerHTML = `
+          <span class="bag-pill">Prediction stability <strong>lower</strong></span>
+          <span class="bag-pill">Computation <strong>fast</strong></span>
+          <span class="bag-pill">Practical note <strong>may need more trees</strong></span>
+        `;
+      } else if (nTrees < 250) {
+        bagOutput.innerHTML = `
+          <span class="bag-pill">Prediction stability <strong>moderate</strong></span>
+          <span class="bag-pill">Computation <strong>manageable</strong></span>
+          <span class="bag-pill">Practical note <strong>reasonable starting range</strong></span>
+        `;
+      } else {
+        bagOutput.innerHTML = `
+          <span class="bag-pill">Prediction stability <strong>higher</strong></span>
+          <span class="bag-pill">Computation <strong>slower</strong></span>
+          <span class="bag-pill">Practical note <strong>check if performance has stabilised</strong></span>
+        `;
+      }
+    }
+
+    if (treeSlider) {
+      treeSlider.addEventListener("input", updateForestDemo);
+      updateForestDemo();
+    }
+  </script>
+</body>
+</html>
