@@ -1,0 +1,1122 @@
+<h1 id="case-study-2-regularised-diabetes-risk-prediction">Case Study 2: Regularised Diabetes Risk Prediction</h1>
+
+<h2 id="case-study-overview">Case study overview</h2>
+
+<p>This case study extends the first diabetes risk prediction case study.</p>
+
+<p>In Case Study 1, we used ordinary logistic regression to predict diabetes status from routinely measured clinical characteristics.</p>
+
+<p>In this case study, we ask a new question:</p>
+
+<blockquote>
+  <p>Can regularised regression methods improve or stabilise diabetes risk prediction compared with ordinary logistic regression?</p>
+</blockquote>
+
+<p>The aim is not simply to find the model with the highest AUC. The aim is to understand how regularisation changes the modelling process, how ridge, lasso, and elastic net behave differently, and how feature selection should be interpreted in a medical prediction setting.</p>
+
+<p>In this case study, we focus on:</p>
+
+<ul>
+  <li>comparing ordinary logistic regression with regularised regression;</li>
+  <li>understanding coefficient shrinkage;</li>
+  <li>fitting ridge regression;</li>
+  <li>fitting lasso regression;</li>
+  <li>fitting elastic net;</li>
+  <li>comparing model discrimination;</li>
+  <li>comparing Brier score;</li>
+  <li>examining selected predictors;</li>
+  <li>interpreting selected features cautiously;</li>
+  <li>understanding why selected predictors are not automatically causal;</li>
+  <li>recognising the importance of validation and calibration.</li>
+</ul>
+
+<hr />
+
+<h2 id="clinical-question">Clinical question</h2>
+
+<p>The clinical question is:</p>
+
+<blockquote>
+  <p>Can we predict whether a patient has diabetes using routinely measured clinical characteristics, and do regularised models provide a useful alternative to ordinary logistic regression?</p>
+</blockquote>
+
+<p>This remains a binary clinical prediction problem.</p>
+
+<p>The outcome has two categories:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Diabetes: yes/no
+</code></pre></div></div>
+
+<p>The model estimates the probability that a patient belongs to the diabetes-positive group based on clinical measurements.</p>
+
+<p>This case study is for teaching only. It should not be interpreted as a deployable diabetes diagnosis or screening model.</p>
+
+<hr />
+
+<h2 id="why-this-case-study-matters">Why this case study matters</h2>
+
+<p>Ordinary logistic regression is a strong baseline model for binary clinical prediction.</p>
+
+<p>However, ordinary regression can become unstable when:</p>
+
+<ul>
+  <li>the sample size is limited;</li>
+  <li>there are many candidate predictors;</li>
+  <li>predictors are correlated;</li>
+  <li>some predictors are weak;</li>
+  <li>there is noise in the data;</li>
+  <li>the model starts fitting dataset-specific patterns.</li>
+</ul>
+
+<p>Regularised regression methods try to reduce this problem by shrinking coefficients.</p>
+
+<p>This matters in medical prediction because a model should not only fit the development dataset. It should generalise to new patients.</p>
+
+<p>This case study introduces three regularised approaches:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Main idea</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Ridge regression</td>
+      <td>Shrinks coefficients but usually keeps all predictors</td>
+    </tr>
+    <tr>
+      <td>Lasso regression</td>
+      <td>Shrinks some coefficients exactly to zero</td>
+    </tr>
+    <tr>
+      <td>Elastic net</td>
+      <td>Combines ridge and lasso behaviour</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>A very important lesson from this case study is that regularisation does not automatically improve performance. Sometimes ordinary logistic regression performs just as well, especially when the number of predictors is modest.</p>
+
+<hr />
+
+<h2 id="dataset">Dataset</h2>
+
+<p>This case study uses the same <strong>Pima Indians Diabetes</strong> dataset used in Case Study 1.</p>
+
+<p>The dataset is commonly used for teaching binary classification. It contains clinical measurements such as pregnancies, glucose, blood pressure, skin thickness, insulin, BMI, diabetes pedigree function, age, and diabetes status.</p>
+
+<p>Using the same dataset helps learners focus on the difference between modelling approaches rather than learning a completely new dataset.</p>
+
+<p>However, this dataset should still be treated as an educational dataset, not as a modern clinical dataset ready for deployment.</p>
+
+<hr />
+
+<h2 id="outcome">Outcome</h2>
+
+<p>The outcome is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Diabetes status
+</code></pre></div></div>
+
+<p>The positive class is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Diabetes = positive
+</code></pre></div></div>
+
+<p>The negative class is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Diabetes = negative
+</code></pre></div></div>
+
+<p>Defining the positive class clearly is essential because sensitivity, specificity, positive predictive value, negative predictive value, ROC AUC, and threshold-based interpretation all depend on which class is treated as the event.</p>
+
+<hr />
+
+<h2 id="predictors">Predictors</h2>
+
+<p>The candidate predictors are the same as in Case Study 1:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Predictor</th>
+      <th>Clinical interpretation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Pregnancies</td>
+      <td>Number of pregnancies</td>
+    </tr>
+    <tr>
+      <td>Glucose</td>
+      <td>Plasma glucose concentration</td>
+    </tr>
+    <tr>
+      <td>Blood pressure</td>
+      <td>Diastolic blood pressure</td>
+    </tr>
+    <tr>
+      <td>Triceps</td>
+      <td>Skinfold thickness</td>
+    </tr>
+    <tr>
+      <td>Insulin</td>
+      <td>Serum insulin</td>
+    </tr>
+    <tr>
+      <td>BMI / mass</td>
+      <td>Body mass index</td>
+    </tr>
+    <tr>
+      <td>Pedigree</td>
+      <td>Diabetes pedigree function</td>
+    </tr>
+    <tr>
+      <td>Age</td>
+      <td>Age in years</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Some predictors, such as glucose, BMI, insulin, and age, have clear clinical relevance.</p>
+
+<p>Others may be weaker, more variable, or harder to interpret.</p>
+
+<p>Regularisation helps us examine whether the model can be stabilised when several predictors are included together.</p>
+
+<hr />
+
+<h2 id="prediction-time-point">Prediction time point</h2>
+
+<p>For this teaching example, we again define the prediction time point as:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>At the time of clinical assessment
+</code></pre></div></div>
+
+<p>This means the model should only use information available at that moment.</p>
+
+<p>Predictors measured after the assessment should not be included.</p>
+
+<p>This matters because using future information would create data leakage and make model performance look better than it really is.</p>
+
+<hr />
+
+<h2 id="why-regularisation-is-useful-here">Why regularisation is useful here</h2>
+
+<p>Regularisation is useful because ordinary logistic regression may produce coefficients that are too large or unstable when the dataset is limited or predictors overlap.</p>
+
+<p>For example, clinical variables such as BMI, insulin, glucose, and age may contain related information about diabetes risk.</p>
+
+<p>Ordinary logistic regression estimates coefficients to fit the training data as closely as possible.</p>
+
+<p>Regularised regression adds a penalty.</p>
+
+<p>The penalty discourages overly large coefficients.</p>
+
+<p>The goal is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Fit the data well, but avoid an overly complex or unstable model.
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="models-compared">Models compared</h2>
+
+<p>This case study compares four models.</p>
+
+<h3 id="1-ordinary-logistic-regression">1. Ordinary logistic regression</h3>
+
+<p>Ordinary logistic regression is the baseline model.</p>
+
+<p>It estimates:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>P(diabetes positive | clinical predictors)
+</code></pre></div></div>
+
+<p>It is interpretable and familiar in medical statistics.</p>
+
+<p>However, it does not apply coefficient shrinkage.</p>
+
+<hr />
+
+<h3 id="2-ridge-regression">2. Ridge regression</h3>
+
+<p>Ridge regression shrinks coefficients towards zero.</p>
+
+<p>It usually keeps all predictors in the model.</p>
+
+<p>Ridge is useful when many predictors may each contain some information, especially when predictors are correlated.</p>
+
+<p>In this case study, ridge helps us ask:</p>
+
+<blockquote>
+  <p>Can we stabilise the model without removing predictors?</p>
+</blockquote>
+
+<p>In the script, ridge regression is fitted using:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alpha = 0
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="3-lasso-regression">3. Lasso regression</h3>
+
+<p>Lasso regression can shrink some coefficients exactly to zero.</p>
+
+<p>This means lasso can perform feature selection.</p>
+
+<p>In this case study, lasso helps us ask:</p>
+
+<blockquote>
+  <p>Which predictors are retained by a sparse regularised model?</p>
+</blockquote>
+
+<p>In the script, lasso regression is fitted using:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alpha = 1
+</code></pre></div></div>
+
+<p>However, selected predictors should not be interpreted as automatically causal or clinically proven.</p>
+
+<p>They are predictors selected by the model in this dataset.</p>
+
+<hr />
+
+<h3 id="4-elastic-net">4. Elastic net</h3>
+
+<p>Elastic net combines ridge and lasso behaviour.</p>
+
+<p>It can shrink coefficients and perform some feature selection.</p>
+
+<p>It is especially useful when predictors are correlated.</p>
+
+<p>In the script, elastic net is fitted using:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alpha = 0.5
+</code></pre></div></div>
+
+<p>Elastic net helps us ask:</p>
+
+<blockquote>
+  <p>Can we balance coefficient shrinkage and feature selection?</p>
+</blockquote>
+
+<hr />
+
+<h2 id="analysis-workflow">Analysis workflow</h2>
+
+<p>The case study follows this workflow:</p>
+
+<ol>
+  <li>Load the dataset.</li>
+  <li>Define the outcome and predictors.</li>
+  <li>Split the data into training and test sets.</li>
+  <li>Fit ordinary logistic regression.</li>
+  <li>Fit ridge regression.</li>
+  <li>Fit lasso regression.</li>
+  <li>Fit elastic net.</li>
+  <li>Predict probabilities in the test set.</li>
+  <li>Compare test AUC.</li>
+  <li>Compare Brier score.</li>
+  <li>Examine coefficient shrinkage.</li>
+  <li>Examine selected predictors from lasso and elastic net.</li>
+  <li>Compare calibration.</li>
+  <li>Interpret the models clinically.</li>
+  <li>Discuss limitations.</li>
+</ol>
+
+<hr />
+
+<h2 id="step-1-traintest-split">Step 1: Train/test split</h2>
+
+<p>The data are split into:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Training set: used to fit and tune the models
+Test set: used to evaluate model performance
+</code></pre></div></div>
+
+<p>In this script, the split is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>80% training
+20% testing
+</code></pre></div></div>
+
+<p>The test set should not be used repeatedly to tune models.</p>
+
+<p>This matters especially for regularised models because <code class="language-plaintext highlighter-rouge">lambda</code> is a tuning parameter.</p>
+
+<p>If the test set is used repeatedly to choose tuning settings, the test performance may become optimistic.</p>
+
+<hr />
+
+<h2 id="step-2-ordinary-logistic-regression">Step 2: Ordinary logistic regression</h2>
+
+<p>The ordinary logistic regression model is fitted first.</p>
+
+<p>This gives us a baseline.</p>
+
+<p>Conceptually, the model is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>logit(P(diabetes positive)) =
+β0 + β1(pregnancies) + β2(glucose) + β3(blood pressure)
++ β4(triceps) + β5(insulin) + β6(BMI)
++ β7(pedigree) + β8(age)
+</code></pre></div></div>
+
+<p>The model produces predicted probabilities between 0 and 1.</p>
+
+<p>These probabilities can be evaluated using discrimination, calibration, Brier score, and threshold-based metrics.</p>
+
+<hr />
+
+<h2 id="step-3-ridge-regression">Step 3: Ridge regression</h2>
+
+<p>Ridge regression uses the same predictors as ordinary logistic regression.</p>
+
+<p>However, it shrinks coefficients towards zero.</p>
+
+<p>The important idea is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ridge does not usually remove predictors.
+</code></pre></div></div>
+
+<p>Instead, it reduces the size of coefficients.</p>
+
+<p>This may help reduce overfitting and improve stability.</p>
+
+<p>In this case study, the selected ridge tuning value was:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lambda.min = 0.02263119
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="step-4-lasso-regression">Step 4: Lasso regression</h2>
+
+<p>Lasso regression also applies shrinkage.</p>
+
+<p>However, lasso can shrink some coefficients exactly to zero.</p>
+
+<p>This means some predictors may be removed from the model.</p>
+
+<p>In this case study, the selected lasso tuning value was:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lambda.min = 0.003134162
+</code></pre></div></div>
+
+<p>The lasso model retained the following non-zero terms:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Term</th>
+      <th style="text-align: right">Coefficient</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Intercept</td>
+      <td style="text-align: right">-7.92</td>
+    </tr>
+    <tr>
+      <td>Pregnant</td>
+      <td style="text-align: right">0.112</td>
+    </tr>
+    <tr>
+      <td>Glucose</td>
+      <td style="text-align: right">0.0341</td>
+    </tr>
+    <tr>
+      <td>Pressure</td>
+      <td style="text-align: right">-0.0113</td>
+    </tr>
+    <tr>
+      <td>Insulin</td>
+      <td style="text-align: right">-0.000693</td>
+    </tr>
+    <tr>
+      <td>Mass</td>
+      <td style="text-align: right">0.0801</td>
+    </tr>
+    <tr>
+      <td>Pedigree</td>
+      <td style="text-align: right">0.701</td>
+    </tr>
+    <tr>
+      <td>Age</td>
+      <td style="text-align: right">0.0142</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The predictor <code class="language-plaintext highlighter-rouge">triceps</code> was not retained by lasso in this fitted model.</p>
+
+<p>This does not prove that triceps is clinically unimportant. It only means that, in this specific training split and modelling workflow, lasso shrank its coefficient to zero.</p>
+
+<hr />
+
+<h2 id="step-5-elastic-net">Step 5: Elastic net</h2>
+
+<p>Elastic net combines ridge and lasso behaviour.</p>
+
+<p>In this case study, the selected elastic net tuning value was:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lambda.min = 0.01202208
+</code></pre></div></div>
+
+<p>The elastic net model retained the following non-zero terms:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Term</th>
+      <th style="text-align: right">Coefficient</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Intercept</td>
+      <td style="text-align: right">-7.39</td>
+    </tr>
+    <tr>
+      <td>Pregnant</td>
+      <td style="text-align: right">0.101</td>
+    </tr>
+    <tr>
+      <td>Glucose</td>
+      <td style="text-align: right">0.0312</td>
+    </tr>
+    <tr>
+      <td>Pressure</td>
+      <td style="text-align: right">-0.00874</td>
+    </tr>
+    <tr>
+      <td>Insulin</td>
+      <td style="text-align: right">-0.000300</td>
+    </tr>
+    <tr>
+      <td>Mass</td>
+      <td style="text-align: right">0.0718</td>
+    </tr>
+    <tr>
+      <td>Pedigree</td>
+      <td style="text-align: right">0.605</td>
+    </tr>
+    <tr>
+      <td>Age</td>
+      <td style="text-align: right">0.0136</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Again, the predictor <code class="language-plaintext highlighter-rouge">triceps</code> was not retained.</p>
+
+<p>The selected predictors are very similar to the lasso model, but the coefficients are generally slightly more shrunk.</p>
+
+<hr />
+
+<h2 id="step-6-model-performance-comparison">Step 6: Model performance comparison</h2>
+
+<p>The models were compared using test-set AUC and Brier score.</p>
+
+<p><img src="../figures/regularised_diabetes_model_performance.png" alt="Model performance comparison" /></p>
+
+<p>The results were:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th style="text-align: right">Test AUC</th>
+      <th style="text-align: right">Brier score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Ordinary logistic regression</td>
+      <td style="text-align: right">0.851</td>
+      <td style="text-align: right">0.149</td>
+    </tr>
+    <tr>
+      <td>Ridge regression</td>
+      <td style="text-align: right">0.850</td>
+      <td style="text-align: right">0.151</td>
+    </tr>
+    <tr>
+      <td>Lasso regression</td>
+      <td style="text-align: right">0.850</td>
+      <td style="text-align: right">0.150</td>
+    </tr>
+    <tr>
+      <td>Elastic net</td>
+      <td style="text-align: right">0.847</td>
+      <td style="text-align: right">0.152</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="interpretation">Interpretation</h3>
+
+<p>The ordinary logistic regression model had the highest test AUC and the lowest Brier score in this split.</p>
+
+<p>However, the differences are very small.</p>
+
+<p>The main interpretation is not:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ordinary logistic regression is always better.
+</code></pre></div></div>
+
+<p>The better interpretation is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>In this modest-sized clinical predictor set, regularisation did not clearly improve test performance over ordinary logistic regression.
+</code></pre></div></div>
+
+<details>
+<summary>Show clinical interpretation</summary>
+
+All four models performed similarly.
+
+This is an important teaching result. Regularisation is useful, but it is not magic. If the number of predictors is modest and the signal is reasonably strong, ordinary logistic regression may already perform well.
+
+Regularised models become especially useful when there are many predictors, correlated predictors, high-dimensional data, or a stronger risk of overfitting.
+
+</details>
+
+<hr />
+
+<h2 id="step-7-roc-curve-comparison">Step 7: ROC curve comparison</h2>
+
+<p>The ROC curves for the four models were very similar.</p>
+
+<p><img src="../figures/regularised_diabetes_roc_comparison.png" alt="ROC comparison" /></p>
+
+<p>The AUC values were:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ordinary logistic regression: 0.851
+Ridge regression:             0.850
+Lasso regression:             0.850
+Elastic net:                  0.847
+</code></pre></div></div>
+
+<h3 id="interpretation-1">Interpretation</h3>
+
+<p>The four models have almost the same discrimination.</p>
+
+<p>This means they are similarly able to rank diabetes-positive patients above diabetes-negative patients.</p>
+
+<p>The ROC plot shows that the regularised models do not meaningfully outperform ordinary logistic regression in this particular example.</p>
+
+<details>
+<summary>Show clinical interpretation</summary>
+
+A model with slightly higher AUC in one test split should not automatically be preferred.
+
+Here, the differences are too small to justify strong claims.
+
+A responsible interpretation should consider:
+
+- whether the model is simpler;
+- whether predicted probabilities are calibrated;
+- whether selected predictors are stable;
+- whether the model generalises externally;
+- whether the model is clinically useful.
+
+</details>
+
+<hr />
+
+<h2 id="step-8-ridge-coefficient-shrinkage">Step 8: Ridge coefficient shrinkage</h2>
+
+<p>Ridge regression shrinks coefficients towards zero.</p>
+
+<p>The coefficient comparison was:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Term</th>
+      <th style="text-align: right">Ordinary coefficient</th>
+      <th style="text-align: right">Ridge coefficient</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Intercept</td>
+      <td style="text-align: right">-8.21</td>
+      <td style="text-align: right">-7.12</td>
+    </tr>
+    <tr>
+      <td>Pregnant</td>
+      <td style="text-align: right">0.118</td>
+      <td style="text-align: right">0.0979</td>
+    </tr>
+    <tr>
+      <td>Glucose</td>
+      <td style="text-align: right">0.0353</td>
+      <td style="text-align: right">0.0290</td>
+    </tr>
+    <tr>
+      <td>Pressure</td>
+      <td style="text-align: right">-0.0131</td>
+      <td style="text-align: right">-0.00933</td>
+    </tr>
+    <tr>
+      <td>Triceps</td>
+      <td style="text-align: right">-0.000959</td>
+      <td style="text-align: right">-0.000679</td>
+    </tr>
+    <tr>
+      <td>Insulin</td>
+      <td style="text-align: right">-0.000909</td>
+      <td style="text-align: right">-0.000342</td>
+    </tr>
+    <tr>
+      <td>Mass</td>
+      <td style="text-align: right">0.0861</td>
+      <td style="text-align: right">0.0711</td>
+    </tr>
+    <tr>
+      <td>Pedigree</td>
+      <td style="text-align: right">0.781</td>
+      <td style="text-align: right">0.657</td>
+    </tr>
+    <tr>
+      <td>Age</td>
+      <td style="text-align: right">0.0152</td>
+      <td style="text-align: right">0.0160</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><img src="../figures/regularised_diabetes_ridge_shrinkage.png" alt="Ridge shrinkage plot" /></p>
+
+<h3 id="interpretation-2">Interpretation</h3>
+
+<p>Most ridge coefficients are smaller in magnitude than the ordinary logistic regression coefficients.</p>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Pedigree: 0.781 → 0.657
+Pregnant: 0.118 → 0.0979
+Glucose: 0.0353 → 0.0290
+Mass: 0.0861 → 0.0711
+</code></pre></div></div>
+
+<p>This is coefficient shrinkage.</p>
+
+<p>Ridge keeps the predictors but reduces the strength of their coefficients.</p>
+
+<details>
+<summary>Show clinical interpretation</summary>
+
+Ridge regression is useful when we want to reduce overconfident or unstable coefficients without removing predictors entirely.
+
+In this case, ridge shrinks the coefficients, but the final test performance is almost the same as ordinary logistic regression.
+
+This suggests that ridge changed the model slightly, but did not create a clear performance improvement in this specific dataset split.
+
+</details>
+
+<hr />
+
+<h2 id="step-9-lasso-and-elastic-net-selected-features">Step 9: Lasso and elastic net selected features</h2>
+
+<p>Lasso and elastic net can shrink some coefficients to zero.</p>
+
+<p><img src="../figures/regularised_diabetes_selected_features.png" alt="Selected features from lasso and elastic net" /></p>
+
+<p>In this fitted model, both lasso and elastic net retained:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pregnant
+glucose
+pressure
+insulin
+mass
+pedigree
+age
+</code></pre></div></div>
+
+<p>Both models removed:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>triceps
+</code></pre></div></div>
+
+<h3 id="interpretation-3">Interpretation</h3>
+
+<p>The selected predictors are prediction features retained by the model.</p>
+
+<p>They should not be interpreted as confirmed causal risk factors.</p>
+
+<p>For example, lasso retaining <code class="language-plaintext highlighter-rouge">glucose</code>, <code class="language-plaintext highlighter-rouge">mass</code>, <code class="language-plaintext highlighter-rouge">pedigree</code>, and <code class="language-plaintext highlighter-rouge">age</code> is clinically sensible, but it does not prove that the selected set is the only important set of predictors.</p>
+
+<p>Similarly, removing <code class="language-plaintext highlighter-rouge">triceps</code> does not prove that skinfold thickness has no clinical relevance.</p>
+
+<details>
+<summary>Show clinical interpretation</summary>
+
+Feature selection is useful for creating simpler models, but it can be unstable.
+
+If we changed the train/test split, lasso and elastic net might select a slightly different set of predictors.
+
+This is why selected predictors should be interpreted cautiously, especially in biomedical datasets.
+
+The main message is:
+
+```text
+Selected features are prediction features, not automatic causal discoveries.
+```
+
+</details>
+
+<hr />
+
+<h2 id="step-10-calibration-comparison">Step 10: Calibration comparison</h2>
+
+<p>Regularisation does not remove the need for calibration assessment.</p>
+
+<p><img src="../figures/regularised_diabetes_calibration_comparison.png" alt="Calibration comparison" /></p>
+
+<p>Calibration assesses whether predicted probabilities agree with observed risks.</p>
+
+<p>A well-calibrated model should have points close to the diagonal line.</p>
+
+<p>If points are above the diagonal line, the observed risk is higher than the predicted risk. This suggests underestimation.</p>
+
+<p>If points are below the diagonal line, the observed risk is lower than the predicted risk. This suggests overestimation.</p>
+
+<h3 id="interpretation-4">Interpretation</h3>
+
+<p>The calibration plots for the four models are broadly similar.</p>
+
+<p>Some points are close to the diagonal line, especially at lower and higher predicted risks.</p>
+
+<p>However, there is visible instability in the middle risk groups.</p>
+
+<p>This is not surprising because the test set is small and each grouped calibration point contains only a limited number of patients.</p>
+
+<details>
+<summary>Show clinical interpretation</summary>
+
+The calibration plots show why AUC is not enough.
+
+Even if models rank patients well, predicted probabilities can still be imperfect.
+
+For example, if a group has a mean predicted risk around 0.40 but the observed risk is closer to 0.60, the model is underestimating risk for that group.
+
+In real clinical use, this would matter because decisions may depend on absolute predicted risk.
+
+Before real-world use, calibration would need to be assessed more carefully, ideally in an external validation dataset.
+
+</details>
+
+<hr />
+
+<h2 id="step-11-cross-validation-plots">Step 11: Cross-validation plots</h2>
+
+<p>The regularised models use cross-validation to choose the penalty strength.</p>
+
+<p>The script produces cross-validation plots for ridge, lasso, and elastic net.</p>
+
+<h3 id="ridge-cross-validation">Ridge cross-validation</h3>
+
+<p><img src="../figures/regularised_diabetes_ridge_cv.png" alt="Ridge cross-validation" /></p>
+
+<h3 id="lasso-cross-validation">Lasso cross-validation</h3>
+
+<p><img src="../figures/regularised_diabetes_lasso_cv.png" alt="Lasso cross-validation" /></p>
+
+<h3 id="elastic-net-cross-validation">Elastic net cross-validation</h3>
+
+<p><img src="../figures/regularised_diabetes_elastic_net_cv.png" alt="Elastic net cross-validation" /></p>
+
+<h3 id="interpretation-5">Interpretation</h3>
+
+<p>The cross-validation plots show how model fit changes across different values of <code class="language-plaintext highlighter-rouge">lambda</code>.</p>
+
+<p>The vertical dashed lines show commonly used choices of <code class="language-plaintext highlighter-rouge">lambda</code>, including the value that minimises cross-validation error and a more regularised value within one standard error.</p>
+
+<p>These plots help us see that regularisation is not a single model. It is a family of models across different penalty strengths.</p>
+
+<details>
+<summary>Show clinical interpretation</summary>
+
+Cross-validation helps choose the penalty strength using the training data.
+
+However, cross-validation inside the training data does not remove the need for final evaluation on unseen data.
+
+It also does not replace external validation.
+
+In clinical prediction, tuning and model development should be kept separate from honest model evaluation.
+
+</details>
+
+<hr />
+
+<h2 id="step-12-what-did-regularisation-add-here">Step 12: What did regularisation add here?</h2>
+
+<p>In this case study, regularisation added three useful learning points.</p>
+
+<p>First, ridge showed coefficient shrinkage.</p>
+
+<p>It kept the same predictors but reduced most coefficient magnitudes.</p>
+
+<p>Second, lasso and elastic net demonstrated feature selection.</p>
+
+<p>They removed <code class="language-plaintext highlighter-rouge">triceps</code> while retaining several clinically plausible predictors.</p>
+
+<p>Third, the model comparison showed that regularisation did not clearly improve test performance in this particular setting.</p>
+
+<p>This is a valuable result.</p>
+
+<p>A method can be statistically useful in general but not obviously better in every dataset.</p>
+
+<hr />
+
+<h2 id="clinical-interpretation">Clinical interpretation</h2>
+
+<p>In this diabetes risk prediction example, all four models performed similarly.</p>
+
+<p>The ordinary logistic regression model had:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AUC = 0.851
+Brier score = 0.149
+</code></pre></div></div>
+
+<p>Ridge and lasso had almost the same AUC:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ridge AUC = 0.850
+Lasso AUC = 0.850
+</code></pre></div></div>
+
+<p>Elastic net was slightly lower:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Elastic net AUC = 0.847
+</code></pre></div></div>
+
+<p>The differences are small.</p>
+
+<p>This suggests that, for this dataset and these eight predictors, ordinary logistic regression is already a strong baseline.</p>
+
+<p>Regularisation still teaches important ideas:</p>
+
+<ul>
+  <li>ridge shrinks coefficients;</li>
+  <li>lasso can remove predictors;</li>
+  <li>elastic net combines shrinkage and selection;</li>
+  <li>selected features are not automatically causal;</li>
+  <li>calibration still matters;</li>
+  <li>external validation is still needed.</li>
+</ul>
+
+<p>A responsible interpretation should consider:</p>
+
+<ul>
+  <li>test-set performance;</li>
+  <li>calibration;</li>
+  <li>selected predictors;</li>
+  <li>feature stability;</li>
+  <li>clinical plausibility;</li>
+  <li>predictor availability;</li>
+  <li>external validation;</li>
+  <li>intended use.</li>
+</ul>
+
+<hr />
+
+<h2 id="what-could-go-wrong">What could go wrong?</h2>
+
+<p>Several problems can affect this analysis.</p>
+
+<h3 id="1-feature-selection-may-be-unstable">1. Feature selection may be unstable</h3>
+
+<p>Lasso and elastic net may select different predictors if the train/test split changes.</p>
+
+<p>In this run, both lasso and elastic net removed <code class="language-plaintext highlighter-rouge">triceps</code>, but that does not prove the same thing would happen in every split.</p>
+
+<p>Selected predictors should not be overinterpreted.</p>
+
+<hr />
+
+<h3 id="2-selected-predictors-are-not-automatically-causal">2. Selected predictors are not automatically causal</h3>
+
+<p>A selected predictor helped prediction in this dataset.</p>
+
+<p>That does not prove that it causes diabetes.</p>
+
+<p>Causal interpretation requires different assumptions and study design.</p>
+
+<hr />
+
+<h3 id="3-test-set-tuning-can-bias-performance">3. Test-set tuning can bias performance</h3>
+
+<p>If we repeatedly try different models and choose the one that performs best on the test set, the test set becomes part of model development.</p>
+
+<p>This can make the final performance estimate too optimistic.</p>
+
+<hr />
+
+<h3 id="4-auc-is-not-enough">4. AUC is not enough</h3>
+
+<p>A model with high AUC may still be poorly calibrated.</p>
+
+<p>Clinical decisions often depend on absolute predicted risk, so calibration remains essential.</p>
+
+<hr />
+
+<h3 id="5-regularisation-is-not-always-better">5. Regularisation is not always better</h3>
+
+<p>Regularisation can reduce overfitting, but it does not automatically improve performance.</p>
+
+<p>In this example, ordinary logistic regression performed about as well as the regularised models.</p>
+
+<p>This is a useful reminder that modelling choices should be guided by validation, not by assuming that a more advanced method is always better.</p>
+
+<hr />
+
+<h3 id="6-educational-data-may-not-generalise">6. Educational data may not generalise</h3>
+
+<p>The Pima dataset is useful for teaching.</p>
+
+<p>However, it may not represent the target population where a real diabetes prediction model would be used.</p>
+
+<p>External validation would be essential before real-world use.</p>
+
+<hr />
+
+<h2 id="limitations">Limitations</h2>
+
+<p>This is an educational case study.</p>
+
+<p>The models should not be treated as deployable clinical tools.</p>
+
+<p>Before real-world use, a diabetes prediction model would require:</p>
+
+<ul>
+  <li>careful data quality assessment;</li>
+  <li>clinically justified predictor selection;</li>
+  <li>missing data handling;</li>
+  <li>internal validation;</li>
+  <li>external validation;</li>
+  <li>calibration assessment;</li>
+  <li>threshold analysis;</li>
+  <li>decision curve analysis;</li>
+  <li>fairness and subgroup performance checks;</li>
+  <li>transparent reporting.</li>
+</ul>
+
+<hr />
+
+<h2 id="reflection-questions">Reflection questions</h2>
+
+<ol>
+  <li>What is the outcome in this case study?</li>
+  <li>What is the positive class?</li>
+  <li>Why might ordinary logistic regression overfit?</li>
+  <li>What does ridge regression do to coefficients?</li>
+  <li>Does ridge usually remove predictors?</li>
+  <li>What does lasso do differently from ridge?</li>
+  <li>Which predictor was removed by lasso and elastic net in this run?</li>
+  <li>What does elastic net combine?</li>
+  <li>Why are selected predictors not automatically causal?</li>
+  <li>Which model had the highest test AUC in this run?</li>
+  <li>Which model had the lowest Brier score in this run?</li>
+  <li>Why is AUC alone not enough?</li>
+  <li>Why does calibration still matter after regularisation?</li>
+  <li>Why should the test set not be used repeatedly for tuning?</li>
+  <li>What additional validation would be needed before clinical use?</li>
+</ol>
+
+<details>
+<summary>Show suggested answers</summary>
+
+1. The outcome is diabetes status.
+2. The positive class is diabetes positive.
+3. Ordinary logistic regression may overfit when the dataset is small, predictors are correlated, or there are too many predictors relative to the available information.
+4. Ridge regression shrinks coefficients towards zero.
+5. No. Ridge usually keeps predictors in the model.
+6. Lasso can shrink some coefficients exactly to zero.
+7. In this run, `triceps` was removed by lasso and elastic net.
+8. Elastic net combines ridge and lasso behaviour.
+9. Selected predictors helped prediction in this dataset, but that does not prove causality.
+10. Ordinary logistic regression had the highest test AUC in this run, although the difference was very small.
+11. Ordinary logistic regression had the lowest Brier score in this run.
+12. AUC measures discrimination but not calibration or clinical usefulness.
+13. Calibration matters because clinical decisions often depend on absolute predicted risk.
+14. Repeated test-set tuning makes the test set part of model development and can bias performance upward.
+15. Internal validation, external validation, calibration assessment, threshold analysis, clinical usefulness evaluation, and subgroup checks would be needed.
+
+</details>
+
+<hr />
+
+<h2 id="related-course-material">Related course material</h2>
+
+<ul>
+  <li><a href="../lectures/10_regularisation_feature_selection">Lecture 10: Regularisation and Feature Selection</a></li>
+  <li><a href="../notes/10_regularisation_feature_selection">Note 10: Regularisation and Feature Selection</a></li>
+  <li>
+    <p><a href="../exercises/10_regularisation_feature_selection_exercises">Exercise 10: Regularisation and Feature Selection</a></p>
+  </li>
+  <li><a href="../lectures/11_ridge_regression">Lecture 11: Ridge Regression</a></li>
+  <li><a href="../notes/11_ridge_regression">Note 11: Ridge Regression</a></li>
+  <li>
+    <p><a href="../exercises/11_ridge_regression_exercises">Exercise 11: Ridge Regression</a></p>
+  </li>
+  <li><a href="../lectures/12_lasso_regression">Lecture 12: Lasso Regression</a></li>
+  <li><a href="../notes/12_lasso_regression">Note 12: Lasso Regression</a></li>
+  <li>
+    <p><a href="../exercises/12_lasso_regression_exercises">Exercise 12: Lasso Regression</a></p>
+  </li>
+  <li><a href="../lectures/13_elastic_net">Lecture 13: Elastic Net</a></li>
+  <li><a href="../notes/13_elastic_net">Note 13: Elastic Net</a></li>
+  <li>
+    <p><a href="../exercises/13_elastic_net_exercises">Exercise 13: Elastic Net</a></p>
+  </li>
+  <li><a href="../lectures/14_feature_selection_biomedical_data">Lecture 14: Feature Selection in Biomedical Data</a></li>
+  <li><a href="../notes/14_feature_selection_biomedical_data">Note 14: Feature Selection in Biomedical Data</a></li>
+  <li><a href="../exercises/14_feature_selection_biomedical_data_exercises">Exercise 14: Feature Selection in Biomedical Data</a></li>
+</ul>
+
+<hr />
+
+<h2 id="code">Code</h2>
+
+<p>The R code for this case study is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>r/C2_regularised_diabetes_prediction_case_study.R
+</code></pre></div></div>
+
+<p>This script compares:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ordinary logistic regression
+ridge regression
+lasso regression
+elastic net
+</code></pre></div></div>
+
+<p>After running the script, the figures should be saved in:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>figures/
+</code></pre></div></div>
+
+<p>Expected output files:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>figures/regularised_diabetes_model_performance.png
+figures/regularised_diabetes_ridge_shrinkage.png
+figures/regularised_diabetes_selected_features.png
+figures/regularised_diabetes_calibration_comparison.png
+figures/regularised_diabetes_roc_comparison.png
+figures/regularised_diabetes_ridge_cv.png
+figures/regularised_diabetes_lasso_cv.png
+figures/regularised_diabetes_elastic_net_cv.png
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="key-takeaway">Key takeaway</h2>
+
+<p>Regularised regression is useful for stabilising medical prediction models and reducing overfitting, but it does not automatically improve performance. In this case study, ordinary logistic regression, ridge regression, lasso regression, and elastic net performed very similarly. Ridge demonstrated coefficient shrinkage, while lasso and elastic net demonstrated feature selection by removing <code class="language-plaintext highlighter-rouge">triceps</code>. However, selected predictors should be interpreted cautiously, and model performance should be assessed using validation, calibration, Brier score, and clinical reasoning rather than AUC alone.</p>

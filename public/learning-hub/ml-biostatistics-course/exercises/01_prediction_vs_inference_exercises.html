@@ -1,0 +1,156 @@
+<h1 id="exercises-prediction-vs-inference">Exercises: Prediction vs Inference</h1>
+
+<p>…</p>
+<h2 id="exercise-1-classify-the-research-question">Exercise 1: Classify the research question</h2>
+
+<p>For each question, decide whether it is mainly prediction, inference, or causal inference.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Question</th>
+      <th>Answer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Does smoking increase lung cancer risk?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>What is this patient’s 10-year diabetes risk?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Does a new treatment reduce mortality?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Which ICU patients are most likely to die during admission?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Is BMI associated with diabetes after adjustment for age and sex?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Can methylation profiles classify disease status?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Does maternal smoking affect offspring DNA methylation?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>What is the predicted 5-year survival probability for a cancer patient?</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="exercise-2-identify-the-outcome-and-predictors">Exercise 2: Identify the outcome and predictors</h2>
+
+<p>For each problem, write the outcome and candidate predictors.</p>
+
+<h3 id="problem-a-diabetes-risk-prediction">Problem A: Diabetes risk prediction</h3>
+
+<p>Outcome:</p>
+
+<p>Predictors:</p>
+
+<p>Prediction time:</p>
+
+<p>Target population:</p>
+
+<h3 id="problem-b-breast-cancer-survival-prediction">Problem B: Breast cancer survival prediction</h3>
+
+<p>Outcome:</p>
+
+<p>Predictors:</p>
+
+<p>Prediction time:</p>
+
+<p>Target population:</p>
+
+<h3 id="problem-c-hospital-readmission-prediction">Problem C: Hospital readmission prediction</h3>
+
+<p>Outcome:</p>
+
+<p>Predictors:</p>
+
+<p>Prediction time:</p>
+
+<p>Target population:</p>
+
+<h2 id="exercise-3-spot-the-leakage">Exercise 3: Spot the leakage</h2>
+
+<p>You are building a model to predict ICU mortality at admission.</p>
+
+<p>Which variables are appropriate, and which may cause leakage?</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Variable</th>
+      <th>Appropriate or leakage risk?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Age at ICU admission</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Blood pressure at admission</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>ICU length of stay</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Discharge destination</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Comorbidity history</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Lab values measured after deterioration</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Admission diagnosis</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Treatment response after 5 days</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="exercise-4-calibration-interpretation">Exercise 4: Calibration interpretation</h2>
+
+<p>A model predicts 20% mortality risk for 100 patients. Among these 100 patients, 40 die.</p>
+
+<p>Answer:</p>
+
+<ol>
+  <li>Is the model well calibrated for this group?</li>
+  <li>Is the model overestimating or underestimating risk?</li>
+  <li>Why could this be clinically harmful?</li>
+</ol>
+
+<h2 id="exercise-5-short-answer">Exercise 5: Short answer</h2>
+
+<p>Write 3–5 sentences for each question.</p>
+
+<ol>
+  <li>Why is prediction different from inference?</li>
+  <li>Why is accuracy not enough in medical machine learning?</li>
+  <li>Why is external validation important?</li>
+  <li>Why can data leakage make a model look better than it really is?</li>
+  <li>Why should interpretability not be confused with causality?</li>
+</ol>

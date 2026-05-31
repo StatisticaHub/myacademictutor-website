@@ -1,0 +1,215 @@
+<h1 id="exercise-8-calibration-and-brier-score">Exercise 8: Calibration and Brier Score</h1>
+
+<h2 id="learning-aim">Learning aim</h2>
+
+<p>This exercise helps you understand calibration, predicted probabilities, and the Brier score.</p>
+
+<p>By the end of this exercise, you should be able to explain:</p>
+
+<ul>
+  <li>what calibration measures;</li>
+  <li>why AUC does not assess calibration;</li>
+  <li>how to interpret a calibration plot;</li>
+  <li>what the Brier score measures;</li>
+  <li>why calibration matters for clinical risk communication.</li>
+</ul>
+
+<hr />
+
+<h2 id="question-1-concept-check">Question 1: Concept check</h2>
+
+<p>What does calibration measure?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+Calibration measures whether predicted probabilities agree with observed risks.
+
+For example, if a group of patients has an average predicted risk of 30%, then approximately 30% of those patients should experience the outcome if the model is well calibrated.
+
+</details>
+
+<hr />
+
+<h2 id="question-2-discrimination-versus-calibration">Question 2: Discrimination versus calibration</h2>
+
+<p>A model has a high AUC but poor calibration.</p>
+
+<p>What does this mean?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+This means the model may rank patients well but give unreliable predicted probabilities.
+
+A high AUC means the model can often assign higher risk to patients with the outcome than to patients without the outcome.
+
+Poor calibration means the actual risk estimates may be too high or too low.
+
+</details>
+
+<hr />
+
+<h2 id="question-3-calibration-plot">Question 3: Calibration plot</h2>
+
+<p>In a calibration plot, points are mostly above the diagonal line.</p>
+
+<p>What does this suggest?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+If points are above the diagonal line, observed risk is higher than predicted risk.
+
+This suggests that the model may be underestimating risk.
+
+For example, if the model predicts 30% risk but observed risk is 50%, the model is predicting too low.
+
+</details>
+
+<hr />
+
+<h2 id="question-4-calibration-plot">Question 4: Calibration plot</h2>
+
+<p>In a calibration plot, points are mostly below the diagonal line.</p>
+
+<p>What does this suggest?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+If points are below the diagonal line, observed risk is lower than predicted risk.
+
+This suggests that the model may be overestimating risk.
+
+For example, if the model predicts 60% risk but observed risk is 35%, the model is predicting too high.
+
+</details>
+
+<hr />
+
+<h2 id="question-5-brier-score">Question 5: Brier score</h2>
+
+<p>For a binary outcome, what values are used for the observed outcome in the Brier score?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+The observed outcome is usually coded as:
+
+```text
+1 = event occurred
+0 = event did not occur
+```
+
+The Brier score is the mean squared difference between the predicted probability and the observed outcome.
+
+</details>
+
+<hr />
+
+<h2 id="question-6-simple-calculation">Question 6: Simple calculation</h2>
+
+<p>A patient has:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicted risk = 0.80
+Observed outcome = 1
+</code></pre></div></div>
+
+<p>What is the squared error contribution to the Brier score?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+The squared error is:
+
+```text
+(0.80 - 1)^2 = (-0.20)^2 = 0.04
+```
+
+So this patient contributes:
+
+```text
+0.04
+```
+
+to the Brier score.
+
+</details>
+
+<hr />
+
+<h2 id="question-7-simple-calculation">Question 7: Simple calculation</h2>
+
+<p>A patient has:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicted risk = 0.80
+Observed outcome = 0
+</code></pre></div></div>
+
+<p>What is the squared error contribution to the Brier score?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+The squared error is:
+
+```text
+(0.80 - 0)^2 = 0.80^2 = 0.64
+```
+
+So this patient contributes:
+
+```text
+0.64
+```
+
+to the Brier score.
+
+This is much larger because the model predicted high risk but the event did not occur.
+
+</details>
+
+<hr />
+
+<h2 id="question-8-clinical-interpretation">Question 8: Clinical interpretation</h2>
+
+<p>Why is calibration important when communicating risk to patients?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+Calibration is important because predicted probabilities are often used for communication and decision-making.
+
+If a model tells a patient that their risk is 40%, that number should be meaningful.
+
+Poor calibration can lead to:
+
+- unnecessary anxiety;
+- false reassurance;
+- over-treatment;
+- under-treatment;
+- poor shared decision-making.
+
+</details>
+
+<hr />
+
+<h2 id="reflection">Reflection</h2>
+
+<p>Why might calibration be especially important for models used to guide treatment decisions?</p>
+
+<details>
+<summary>Show reflection answer</summary>
+
+Treatment decisions often depend on absolute risk.
+
+For example, a treatment may be recommended if predicted risk is above a certain threshold.
+
+If the model overestimates risk, patients may receive unnecessary treatment.
+
+If the model underestimates risk, high-risk patients may miss beneficial treatment.
+
+Therefore, calibration is central when predicted probabilities guide clinical action.
+
+</details>

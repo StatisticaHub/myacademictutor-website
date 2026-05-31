@@ -1,0 +1,359 @@
+<h1 id="penalised-regression-for-high-dimensional-data">Penalised Regression for High-Dimensional Data</h1>
+
+<h2 id="big-idea">Big idea</h2>
+
+<p>High-dimensional data often contain far more predictors than patients.</p>
+
+<p>This is common in biomedical research.</p>
+
+<p>Penalised regression methods, such as ridge, lasso, and elastic net, help build prediction models when ordinary regression would be unstable or impossible.</p>
+
+<p>But high-dimensional prediction is risky.</p>
+
+<p>Without careful validation, models can look excellent and still fail on new data.</p>
+
+<hr />
+
+<h2 id="scene-too-many-columns-too-few-patients">Scene: too many columns, too few patients</h2>
+
+<div class="dialogue-box">
+
+<p><span class="character learner">Learner:</span> I have 200 patients and 20,000 gene expression features. Can I fit ordinary logistic regression?</p>
+
+<p><span class="character prof-stat">Prof. Stat:</span> No, not safely. You have far more predictors than patients.</p>
+
+<p><span class="character dr-clinic">Dr. Clinic:</span> But those genes may contain useful biological information.</p>
+
+<p><span class="character prof-stat">Prof. Stat:</span> They might. Penalised regression helps use that information while controlling overfitting.</p>
+
+</div>
+
+<hr />
+
+<h2 id="1-what-high-dimensional-means">1. What high-dimensional means</h2>
+
+<p>High-dimensional data means there are many predictors.</p>
+
+<p>Often:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>p &gt;&gt; n
+</code></pre></div></div>
+
+<p>where:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>p = number of predictors
+n = number of observations
+</code></pre></div></div>
+
+<p>Examples:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>300 patients and 20,000 genes
+500 patients and 450,000 methylation sites
+150 patients and 5,000 proteins
+</code></pre></div></div>
+
+<p>This is common in omics, imaging, and electronic health record research.</p>
+
+<hr />
+
+<h2 id="2-why-ordinary-regression-fails">2. Why ordinary regression fails</h2>
+
+<p>Ordinary regression becomes unstable when there are too many predictors.</p>
+
+<p>Problems include:</p>
+
+<ul>
+  <li>overfitting;</li>
+  <li>unstable coefficients;</li>
+  <li>perfect or near-perfect separation;</li>
+  <li>inability to estimate all coefficients;</li>
+  <li>excellent training performance but poor validation performance.</li>
+</ul>
+
+<p>With thousands of features, many will appear predictive by chance.</p>
+
+<hr />
+
+<h2 id="3-penalised-regression">3. Penalised regression</h2>
+
+<p>Penalised regression adds a penalty to the model.</p>
+
+<p>The model is asked to:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>predict the outcome well
+and
+avoid overly complex coefficients
+</code></pre></div></div>
+
+<p>This helps control overfitting.</p>
+
+<p>Common penalised regression methods include:</p>
+
+<ul>
+  <li>ridge regression;</li>
+  <li>lasso regression;</li>
+  <li>elastic net.</li>
+</ul>
+
+<hr />
+
+<h2 id="4-ridge-for-high-dimensional-data">4. Ridge for high-dimensional data</h2>
+
+<p>Ridge regression shrinks all coefficients.</p>
+
+<p>It can handle many correlated predictors.</p>
+
+<p>It is useful when many features may each contain small predictive information.</p>
+
+<p>However, ridge usually keeps all predictors, so it may not produce a short biomarker list.</p>
+
+<hr />
+
+<h2 id="5-lasso-for-high-dimensional-data">5. Lasso for high-dimensional data</h2>
+
+<p>Lasso can set many coefficients to zero.</p>
+
+<p>This makes it attractive for feature selection.</p>
+
+<p>For example, from:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>20,000 genes
+</code></pre></div></div>
+
+<p>lasso may select:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>30 genes
+</code></pre></div></div>
+
+<p>But selected features can be unstable, especially when predictors are correlated.</p>
+
+<hr />
+
+<h2 id="6-elastic-net-for-high-dimensional-data">6. Elastic net for high-dimensional data</h2>
+
+<p>Elastic net combines ridge and lasso.</p>
+
+<p>It can select features while also handling correlated predictors more smoothly than lasso alone.</p>
+
+<p>This makes it useful in omics data, where groups of features often move together.</p>
+
+<hr />
+
+<h2 id="scene-choosing-the-method">Scene: choosing the method</h2>
+
+<div class="dialogue-box">
+
+<p><span class="character learner">Learner:</span> Ridge, lasso, elastic net — which one should I choose?</p>
+
+<p><span class="character prof-stat">Prof. Stat:</span> It depends. Ridge is stable, lasso is sparse, elastic net is a compromise.</p>
+
+<p><span class="character dr-clinic">Dr. Clinic:</span> So we compare them using proper validation?</p>
+
+<p><span class="character prof-stat">Prof. Stat:</span> Exactly. Validation should guide the choice.</p>
+
+</div>
+
+<hr />
+
+<h2 id="7-tuning-matters">7. Tuning matters</h2>
+
+<p>Penalised regression depends on tuning parameters.</p>
+
+<p>The most important is often <code class="language-plaintext highlighter-rouge">lambda</code>.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Low penalty  → more complex model
+High penalty → simpler model
+</code></pre></div></div>
+
+<p>Elastic net also uses <code class="language-plaintext highlighter-rouge">alpha</code>, which controls the balance between ridge and lasso.</p>
+
+<p>Tuning must be performed using training data or inner validation.</p>
+
+<p>The final test set should remain untouched.</p>
+
+<hr />
+
+<h2 id="8-nested-validation">8. Nested validation</h2>
+
+<p>High-dimensional workflows often need nested validation.</p>
+
+<p>The inner loop selects features and tunes parameters.</p>
+
+<p>The outer loop estimates performance.</p>
+
+<p>This avoids using the same data to both choose the model and evaluate the model.</p>
+
+<p>Nested validation is especially important when many tuning choices are explored.</p>
+
+<hr />
+
+<h2 id="9-preprocessing-leakage">9. Preprocessing leakage</h2>
+
+<p>High-dimensional data often require preprocessing.</p>
+
+<p>Examples:</p>
+
+<ul>
+  <li>normalisation;</li>
+  <li>filtering;</li>
+  <li>batch correction;</li>
+  <li>PCA;</li>
+  <li>feature scaling;</li>
+  <li>missing data handling.</li>
+</ul>
+
+<p>If preprocessing is learned from the full dataset before validation, leakage can occur.</p>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. Perform PCA using all samples.
+2. Cross-validate a model using PCA components.
+</code></pre></div></div>
+
+<p>This is biased because the validation folds influenced the PCA components.</p>
+
+<hr />
+
+<h2 id="10-batch-effects">10. Batch effects</h2>
+
+<p>Batch effects are technical differences unrelated to biology.</p>
+
+<p>Examples:</p>
+
+<ul>
+  <li>sequencing batch;</li>
+  <li>methylation array plate;</li>
+  <li>laboratory technician;</li>
+  <li>processing date;</li>
+  <li>scanner;</li>
+  <li>hospital site.</li>
+</ul>
+
+<p>If batch is associated with outcome, the model may learn technical artefacts instead of biological signal.</p>
+
+<p>This can produce excellent internal performance and poor external performance.</p>
+
+<hr />
+
+<h2 id="11-external-validation">11. External validation</h2>
+
+<p>High-dimensional models can be fragile.</p>
+
+<p>A model trained on one platform, cohort, or laboratory may fail elsewhere.</p>
+
+<p>External validation is essential before making strong claims.</p>
+
+<p>For biomedical prediction, internal performance alone is not enough.</p>
+
+<hr />
+
+<h2 id="12-calibration-still-matters">12. Calibration still matters</h2>
+
+<p>High-dimensional models should not be evaluated only by AUC.</p>
+
+<p>A model may rank patients well but produce risk estimates that are too high or too low.</p>
+
+<p>For clinical prediction, calibration matters because predicted probabilities may guide action.</p>
+
+<p>Assessment should include:</p>
+
+<ul>
+  <li>calibration plot;</li>
+  <li>calibration slope;</li>
+  <li>calibration intercept;</li>
+  <li>Brier score;</li>
+  <li>clinical usefulness where relevant.</li>
+</ul>
+
+<hr />
+
+<h2 id="13-interpretation-of-selected-features">13. Interpretation of selected features</h2>
+
+<p>Selected features from penalised regression should be interpreted cautiously.</p>
+
+<p>They may represent:</p>
+
+<ul>
+  <li>true biological signal;</li>
+  <li>correlated proxies;</li>
+  <li>batch effects;</li>
+  <li>cohort-specific patterns;</li>
+  <li>noise.</li>
+</ul>
+
+<p>A prediction model can suggest candidates for further study, but it does not prove biological mechanism.</p>
+
+<hr />
+
+<h2 id="scene-discovery-or-prediction">Scene: discovery or prediction?</h2>
+
+<div class="dialogue-box">
+
+<p><span class="character learner">Learner:</span> My penalised model selected 25 genes. Can I say these genes explain the disease?</p>
+
+<p><span class="character prof-stat">Prof. Stat:</span> Not from prediction modelling alone.</p>
+
+<p><span class="character dr-clinic">Dr. Clinic:</span> So they are candidate predictors, not confirmed mechanisms?</p>
+
+<p><span class="character prof-stat">Prof. Stat:</span> Exactly.</p>
+
+</div>
+
+<hr />
+
+<h2 id="14-medical-example-methylation-prediction">14. Medical example: methylation prediction</h2>
+
+<p>Suppose we want to predict exposure status using DNA methylation.</p>
+
+<p>The dataset contains:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>300 participants
+450,000 CpG sites
+</code></pre></div></div>
+
+<p>A penalised model may select a small set of CpG sites.</p>
+
+<p>Before trusting the result, ask:</p>
+
+<ul>
+  <li>Was feature selection inside validation?</li>
+  <li>Was preprocessing inside validation?</li>
+  <li>Were batch effects assessed?</li>
+  <li>Was calibration assessed?</li>
+  <li>Was external validation performed?</li>
+  <li>Are selected features stable?</li>
+  <li>Are biological claims cautious?</li>
+</ul>
+
+<hr />
+
+<h2 id="15-practical-checklist">15. Practical checklist</h2>
+
+<p>Before trusting a high-dimensional penalised model, ask:</p>
+
+<ul>
+  <li>What is the exact prediction question?</li>
+  <li>What is the prediction time point?</li>
+  <li>How many patients are available?</li>
+  <li>How many outcome events are available?</li>
+  <li>How many candidate predictors are available?</li>
+  <li>Was preprocessing done inside validation?</li>
+  <li>Was feature selection done inside validation?</li>
+  <li>Was tuning performed without touching the test set?</li>
+  <li>Were batch effects assessed?</li>
+  <li>Was calibration assessed?</li>
+  <li>Was external validation performed?</li>
+  <li>Are selected features stable?</li>
+</ul>
+
+<hr />
+
+<h2 id="common-mistake">Common mistake</h2>
+
+<p class="common-mistake">Do not trust a high-dimensional model simply because it has a high internal AUC. High-dimensional models are very vulnerable to leakage, overfitting, and batch effects.</p>
+
+<hr />
+
+<h2 id="key-takeaway">Key takeaway</h2>
+
+<p class="key-takeaway">Penalised regression makes high-dimensional prediction possible, but credible biomedical use requires careful tuning, leakage prevention, validation, calibration, external testing, and cautious interpretation of selected features.</p>

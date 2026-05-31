@@ -1,0 +1,208 @@
+<h1 id="exercise-10-regularisation-and-feature-selection">Exercise 10: Regularisation and Feature Selection</h1>
+
+<h2 id="learning-aim">Learning aim</h2>
+
+<p>This exercise helps you understand why regularisation is useful when there are many predictors and why feature selection must be interpreted carefully.</p>
+
+<p>By the end of this exercise, you should be able to explain:</p>
+
+<ul>
+  <li>why many predictors increase overfitting risk;</li>
+  <li>how ridge regression differs from lasso regression;</li>
+  <li>why elastic net can be useful for correlated predictors;</li>
+  <li>why feature selection must be included inside validation;</li>
+  <li>why selected features should not automatically be interpreted as causal.</li>
+</ul>
+
+<hr />
+
+<h2 id="question-1-concept-check">Question 1: Concept check</h2>
+
+<p>Why does overfitting become more likely when there are many predictors and few patients?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+When there are many predictors compared with the number of patients, the model has many opportunities to find patterns that are due to noise rather than real signal.
+
+This can lead to excellent performance in the development data but poor performance in new patients.
+
+</details>
+
+<hr />
+
+<h2 id="question-2-ridge-regression">Question 2: Ridge regression</h2>
+
+<p>What does ridge regression do to model coefficients?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+Ridge regression shrinks coefficients towards zero.
+
+It usually keeps all predictors in the model, but reduces their size.
+
+This can improve stability, especially when predictors are correlated.
+
+</details>
+
+<hr />
+
+<h2 id="question-3-lasso-regression">Question 3: Lasso regression</h2>
+
+<p>How is lasso regression different from ridge regression?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+Lasso regression can shrink some coefficients exactly to zero.
+
+This means lasso can perform variable selection.
+
+Ridge regression shrinks coefficients towards zero but usually keeps all predictors in the model.
+
+</details>
+
+<hr />
+
+<h2 id="question-4-elastic-net">Question 4: Elastic net</h2>
+
+<p>Why might elastic net be useful for omics data?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+Omics data often contain many correlated predictors.
+
+Elastic net combines ridge and lasso penalties.
+
+This means it can:
+
+- shrink coefficients;
+- perform some feature selection;
+- handle correlated predictors more stably than lasso alone.
+
+</details>
+
+<hr />
+
+<h2 id="question-5-interpretation">Question 5: Interpretation</h2>
+
+<p>Why should selected features from a lasso model not automatically be interpreted as causal factors?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+Lasso selects features that help prediction in a specific dataset.
+
+Selection may be affected by:
+
+- correlation between predictors;
+- sample size;
+- random noise;
+- tuning choices;
+- measurement artefacts.
+
+A selected feature may improve prediction without being causal.
+
+</details>
+
+<hr />
+
+<h2 id="question-6-validation">Question 6: Validation</h2>
+
+<p>Why is it problematic to perform feature selection before train/test splitting?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+If feature selection is performed before train/test splitting, the test set has already influenced which features were selected.
+
+This creates data leakage.
+
+The test set is no longer truly independent, and performance estimates may be too optimistic.
+
+</details>
+
+<hr />
+
+<h2 id="question-7-clinical-reasoning">Question 7: Clinical reasoning</h2>
+
+<p>A lasso model selects a biomarker for cancer recurrence prediction.</p>
+
+<p>What should you check before claiming that this biomarker is clinically important?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+You should check:
+
+- whether the biomarker is biologically plausible;
+- whether it is selected consistently across resamples;
+- whether it improves validated prediction performance;
+- whether it is available and measurable in practice;
+- whether the finding is externally validated;
+- whether it may simply be correlated with another important predictor.
+
+</details>
+
+<hr />
+
+<h2 id="question-8-many-predictors">Question 8: Many predictors</h2>
+
+<p>You have:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>100 patients
+20,000 gene expression features
+</code></pre></div></div>
+
+<p>Why would ordinary logistic regression be problematic?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+Ordinary logistic regression would be problematic because the number of predictors is far larger than the number of patients.
+
+This can lead to unstable estimates, overfitting, and failure to generalise.
+
+Regularisation or dimension reduction would usually be needed.
+
+</details>
+
+<hr />
+
+<h2 id="question-9-prediction-versus-explanation">Question 9: Prediction versus explanation</h2>
+
+<p>A regularised model selects a group of methylation sites that predict exposure status.</p>
+
+<p>Does this prove that those methylation sites are caused by the exposure?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+No.
+
+The model identifies features that help prediction.
+
+It does not automatically establish causality.
+
+The selected methylation sites may be associated with exposure, correlated with other features, affected by confounding, or selected due to dataset-specific patterns.
+
+</details>
+
+<hr />
+
+<h2 id="reflection">Reflection</h2>
+
+<p>In a biomedical prediction model, how would you balance statistical feature selection with clinical or biological reasoning?</p>
+
+<details>
+<summary>Show reflection answer</summary>
+
+A strong modelling strategy should combine statistical performance with subject-matter reasoning.
+
+Statistical feature selection can help identify predictors that improve prediction, but clinical and biological reasoning is needed to assess whether selected features are meaningful, measurable, stable, and practical.
+
+Validation is essential before making strong claims about selected features.
+
+</details>

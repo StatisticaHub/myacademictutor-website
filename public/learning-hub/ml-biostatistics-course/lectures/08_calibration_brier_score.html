@@ -1,0 +1,221 @@
+<h1 id="lecture-8-calibration-and-brier-score">Lecture 8: Calibration and Brier Score</h1>
+
+<h2 id="opening-scene">Opening scene</h2>
+
+<div class="scene-card">
+
+  <div class="scene-title">Scene: The risk prediction clinic</div>
+
+  <div class="dialogue-line learner">
+    <p><span class="character">Curious Learner:</span><br />
+“My model has a good AUC. So the predicted risks are reliable, right?”</p>
+  </div>
+
+  <div class="dialogue-line ms-calibration">
+    <p><span class="character">Ms Calibration:</span><br />
+“Not necessarily. AUC tells you about ranking, not whether the probabilities are accurate.”</p>
+  </div>
+
+  <div class="dialogue-line dr-clinic">
+    <p><span class="character">Dr Clinic:</span><br />
+“If I tell a patient they have 40% risk, that number must mean something.”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“That is why calibration matters.”</p>
+  </div>
+
+</div>
+
+<hr />
+
+<h2 id="todays-big-question">Today’s big question</h2>
+
+<div class="big-question">
+
+  <p>Do predicted probabilities agree with observed risks?</p>
+
+</div>
+
+<p>Calibration is about whether predicted probabilities are believable.</p>
+
+<p>If a model says a group of patients has 30% risk, then about 30% of those patients should experience the outcome.</p>
+
+<hr />
+
+<h2 id="intuition-first">Intuition first</h2>
+
+<p>Imagine a weather forecast says:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Chance of rain = 80%
+</code></pre></div></div>
+
+<p>If it rains only 20% of the time when the forecast says 80%, the forecast is poorly calibrated.</p>
+
+<p>Medical risk prediction works similarly.</p>
+
+<div class="key-takeaway">
+
+  <p>Calibration asks whether predicted risks match observed outcome frequencies.</p>
+
+</div>
+
+<hr />
+
+<h2 id="discrimination-versus-calibration">Discrimination versus calibration</h2>
+
+<p>Discrimination and calibration are different.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Concept</th>
+      <th>Question</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Discrimination</td>
+      <td>Can the model rank high-risk patients above low-risk patients?</td>
+    </tr>
+    <tr>
+      <td>Calibration</td>
+      <td>Are the predicted probabilities close to observed risks?</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>A model can have good discrimination but poor calibration.</p>
+
+<hr />
+
+<h2 id="mini-conversation">Mini conversation</h2>
+
+<div class="dialogue-box">
+
+  <div class="dialogue-line learner">
+    <p><span class="character">Curious Learner:</span><br />
+“So high AUC does not guarantee good calibration?”</p>
+  </div>
+
+  <div class="dialogue-line ms-calibration">
+    <p><span class="character">Ms Calibration:</span><br />
+“Exactly. A model may rank patients correctly but still overestimate or underestimate risk.”</p>
+  </div>
+
+  <div class="dialogue-line dr-clinic">
+    <p><span class="character">Dr Clinic:</span><br />
+“And if risk estimates are wrong, decisions may be wrong.”</p>
+  </div>
+
+</div>
+
+<hr />
+
+<h2 id="calibration-plot">Calibration plot</h2>
+
+<p>A calibration plot compares:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicted risk
+</code></pre></div></div>
+
+<p>against:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Observed risk
+</code></pre></div></div>
+
+<p>A well-calibrated model should have points close to the diagonal line.</p>
+
+<p>If points are above the diagonal, observed risk is higher than predicted risk. The model may be underestimating risk.</p>
+
+<p>If points are below the diagonal, observed risk is lower than predicted risk. The model may be overestimating risk.</p>
+
+<hr />
+
+<h2 id="medical-example">Medical example</h2>
+
+<p>Suppose a diabetes model predicts that a group of patients has average risk:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicted risk = 40%
+</code></pre></div></div>
+
+<p>If the observed diabetes rate in that group is close to 40%, calibration is good.</p>
+
+<p>If the observed rate is 65%, the model is underestimating risk.</p>
+
+<p>If the observed rate is 20%, the model is overestimating risk.</p>
+
+<hr />
+
+<h2 id="brier-score">Brier score</h2>
+
+<p>The Brier score measures the average squared difference between predicted probabilities and observed outcomes.</p>
+
+<p>For binary outcomes:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Brier score = mean((predicted probability - observed outcome)^2)
+</code></pre></div></div>
+
+<p>where observed outcome is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 = event occurred
+0 = event did not occur
+</code></pre></div></div>
+
+<p>Lower Brier scores are better.</p>
+
+<hr />
+
+<h2 id="common-mistake">Common mistake</h2>
+
+<div class="common-mistake">
+
+  <h3 id="common-mistake-reporting-auc-but-ignoring-calibration">Common mistake: reporting AUC but ignoring calibration</h3>
+
+  <p>AUC is useful, but it does not tell us whether predicted probabilities are correct.</p>
+
+  <p>For clinical decision-making, calibration is essential because decisions are often based on absolute risk.</p>
+
+</div>
+
+<hr />
+
+<h2 id="clinical-reality-check">Clinical reality check</h2>
+
+<div class="clinical-check">
+
+  <h3 id="clinical-reality-check">Clinical reality check</h3>
+
+  <p>If a model overestimates risk, patients may receive unnecessary testing or treatment.</p>
+
+  <p>If a model underestimates risk, high-risk patients may be missed.</p>
+
+  <p>Poor calibration can affect patient communication, clinical decisions, and resource use.</p>
+
+</div>
+
+<hr />
+
+<h2 id="key-takeaway">Key takeaway</h2>
+
+<div class="key-takeaway">
+
+  <p>Calibration is central to clinical prediction modelling.</p>
+
+  <p>A model should not only rank patients well. It should also give predicted risks that match observed risks.</p>
+
+</div>
+
+<hr />
+
+<h2 id="reflection-question">Reflection question</h2>
+
+<p>Why might a model with high AUC still be unsafe for clinical risk communication?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+Because AUC measures ranking ability, not whether predicted probabilities are accurate. A high-AUC model may still overestimate or underestimate absolute risk, leading to misleading communication or poor decisions.
+
+</details>

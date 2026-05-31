@@ -1,0 +1,306 @@
+<h1 id="lasso-regression">Lasso Regression</h1>
+
+<h2 id="big-idea">Big idea</h2>
+
+<p>Lasso regression is a regularisation method that can shrink some coefficients exactly to zero.</p>
+
+<p>This means lasso can perform feature selection.</p>
+
+<p>In medical prediction, lasso can be useful when we have many candidate predictors and want a smaller model.</p>
+
+<p>But selected predictors should be interpreted carefully.</p>
+
+<hr />
+
+<h2 id="scene-too-many-predictors">Scene: too many predictors</h2>
+
+<div class="dialogue-box">
+
+<p><span class="character learner">Learner:</span> I have 60 possible predictors for a clinical prediction model. Ordinary logistic regression feels too crowded.</p>
+
+<p><span class="character dr-clinic">Dr. Clinic:</span> Also, collecting 60 predictors for every patient may not be realistic.</p>
+
+<p><span class="character prof-stat">Prof. Stat:</span> This is where lasso can help. It can shrink some coefficients to zero and produce a smaller model.</p>
+
+<p><span class="character learner">Learner:</span> So lasso chooses the important predictors?</p>
+
+<p><span class="character prof-stat">Prof. Stat:</span> It chooses predictors useful for prediction in the data. That is not the same as proving clinical or causal importance.</p>
+
+</div>
+
+<hr />
+
+<h2 id="1-what-lasso-regression-does">1. What lasso regression does</h2>
+
+<p>Lasso regression adds a penalty to the model-fitting process.</p>
+
+<p>Like ridge, it shrinks coefficients.</p>
+
+<p>But lasso can shrink some coefficients exactly to zero.</p>
+
+<p>If a coefficient becomes zero, that predictor is removed from the model.</p>
+
+<p>This makes lasso useful for feature selection.</p>
+
+<hr />
+
+<h2 id="2-a-simple-example">2. A simple example</h2>
+
+<p>Suppose ordinary logistic regression gives:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>glucose coefficient = 1.10
+BMI coefficient = 0.70
+age coefficient = 0.40
+pressure coefficient = 0.12
+triceps coefficient = 0.05
+</code></pre></div></div>
+
+<p>Lasso may give:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>glucose coefficient = 0.90
+BMI coefficient = 0.55
+age coefficient = 0.30
+pressure coefficient = 0
+triceps coefficient = 0
+</code></pre></div></div>
+
+<p>In this example, pressure and triceps are removed.</p>
+
+<p>The final model is smaller.</p>
+
+<hr />
+
+<h2 id="3-why-lasso-is-attractive-in-medical-prediction">3. Why lasso is attractive in medical prediction</h2>
+
+<p>Lasso can be useful when:</p>
+
+<ul>
+  <li>there are many candidate predictors;</li>
+  <li>some predictors may be weak or redundant;</li>
+  <li>a simpler model is preferred;</li>
+  <li>clinical measurement burden matters;</li>
+  <li>the dataset is too small for ordinary regression with all predictors;</li>
+  <li>the goal is prediction, not causal explanation.</li>
+</ul>
+
+<p>A smaller model may be easier to implement in practice.</p>
+
+<hr />
+
+<h2 id="4-lasso-and-feature-selection">4. Lasso and feature selection</h2>
+
+<p>Feature selection means choosing a subset of predictors.</p>
+
+<p>Lasso performs feature selection by setting some coefficients to zero.</p>
+
+<p>This can create a sparse model.</p>
+
+<p>A sparse model uses only a limited number of predictors.</p>
+
+<p>However, sparse does not automatically mean good.</p>
+
+<p>A smaller model can still be poorly validated, miscalibrated, or clinically unhelpful.</p>
+
+<hr />
+
+<h2 id="scene-selected-does-not-mean-causal">Scene: selected does not mean causal</h2>
+
+<div class="dialogue-box">
+
+<p><span class="character dr-clinic">Dr. Clinic:</span> Lasso selected biomarker A. Can we say biomarker A causes the disease?</p>
+
+<p><span class="character prof-stat">Prof. Stat:</span> No. Lasso selection means the biomarker helped prediction in this dataset.</p>
+
+<p><span class="character learner">Learner:</span> It could be correlated with something else?</p>
+
+<p><span class="character prof-stat">Prof. Stat:</span> Exactly. It may be a proxy, a correlated marker, or even a dataset-specific signal.</p>
+
+</div>
+
+<hr />
+
+<h2 id="5-lambda-in-lasso">5. Lambda in lasso</h2>
+
+<p>Lasso uses a tuning parameter called <code class="language-plaintext highlighter-rouge">lambda</code>.</p>
+
+<p>Lambda controls the amount of shrinkage.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Small lambda  → less shrinkage, more predictors kept
+Large lambda  → more shrinkage, fewer predictors kept
+</code></pre></div></div>
+
+<p>Different lambda values can produce different selected features.</p>
+
+<p>This is why lambda should be chosen carefully using training data or internal validation.</p>
+
+<hr />
+
+<h2 id="6-lasso-versus-ridge">6. Lasso versus ridge</h2>
+
+<p>Ridge and lasso are related, but they behave differently.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>What it does</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Ridge</td>
+      <td>Shrinks coefficients but usually keeps all predictors</td>
+    </tr>
+    <tr>
+      <td>Lasso</td>
+      <td>Shrinks some coefficients to zero and selects predictors</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Ridge is useful when many predictors may each contain useful information.</p>
+
+<p>Lasso is useful when we want a smaller selected predictor set.</p>
+
+<hr />
+
+<h2 id="7-correlated-predictors">7. Correlated predictors</h2>
+
+<p>Lasso can be unstable when predictors are strongly correlated.</p>
+
+<p>Suppose two biomarkers carry very similar information.</p>
+
+<p>Lasso may select biomarker A and remove biomarker B.</p>
+
+<p>In another sample, it may select biomarker B and remove biomarker A.</p>
+
+<p>This does not necessarily mean one biomarker is truly better.</p>
+
+<p>It may simply reflect instability caused by correlation.</p>
+
+<hr />
+
+<h2 id="8-biomedical-example">8. Biomedical example</h2>
+
+<p>Suppose we have:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>300 patients
+500 candidate biomarkers
+</code></pre></div></div>
+
+<p>Lasso may select 15 biomarkers.</p>
+
+<p>This looks useful.</p>
+
+<p>But before trusting the selected biomarkers, ask:</p>
+
+<ul>
+  <li>Were they selected inside validation?</li>
+  <li>Are they stable across resamples?</li>
+  <li>Are they biologically plausible?</li>
+  <li>Are they measured reliably?</li>
+  <li>Do they validate externally?</li>
+  <li>Could batch effects explain the selection?</li>
+</ul>
+
+<hr />
+
+<h2 id="9-data-leakage-with-lasso">9. Data leakage with lasso</h2>
+
+<p>Lasso can easily create leakage.</p>
+
+<p>An incorrect workflow is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. Run lasso on the full dataset.
+2. Keep selected predictors.
+3. Cross-validate a model using those predictors.
+4. Report cross-validated AUC.
+</code></pre></div></div>
+
+<p>This is wrong because the validation folds influenced feature selection.</p>
+
+<p>The reported AUC may be too optimistic.</p>
+
+<hr />
+
+<h2 id="10-correct-workflow">10. Correct workflow</h2>
+
+<p>A better workflow is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>For each cross-validation fold:
+    1. Use only the training fold.
+    2. Run lasso inside the training fold.
+    3. Select predictors inside the training fold.
+    4. Fit the model inside the training fold.
+    5. Evaluate on the validation fold.
+</code></pre></div></div>
+
+<p>The validation fold must remain unseen during feature selection.</p>
+
+<p>This is especially important in biomedical data.</p>
+
+<hr />
+
+<h2 id="scene-the-leakage-monster">Scene: the leakage monster</h2>
+
+<div class="dialogue-box">
+
+<p><span class="character leakage-monster">Leakage Monster:</span> Select features using the full dataset first. The AUC will look amazing.</p>
+
+<p><span class="character learner">Learner:</span> That sounds tempting.</p>
+
+<p><span class="character prof-stat">Prof. Stat:</span> And biased. The validation data would already have influenced the model.</p>
+
+<p><span class="character dr-clinic">Dr. Clinic:</span> So the model may fail on real patients?</p>
+
+<p><span class="character prof-stat">Prof. Stat:</span> Exactly.</p>
+
+</div>
+
+<hr />
+
+<h2 id="11-lasso-in-clinical-prediction">11. Lasso in clinical prediction</h2>
+
+<p>A lasso model should be judged by:</p>
+
+<ul>
+  <li>discrimination;</li>
+  <li>calibration;</li>
+  <li>Brier score;</li>
+  <li>clinical usefulness;</li>
+  <li>feature stability;</li>
+  <li>external validation;</li>
+  <li>feasibility of predictor measurement.</li>
+</ul>
+
+<p>A lasso model with a neat feature list but poor calibration may still be clinically unsafe.</p>
+
+<hr />
+
+<h2 id="12-when-lasso-may-be-useful">12. When lasso may be useful</h2>
+
+<p>Lasso may be useful when:</p>
+
+<ul>
+  <li>there are many predictors;</li>
+  <li>a smaller model is desired;</li>
+  <li>some predictors are likely irrelevant;</li>
+  <li>measurement burden matters;</li>
+  <li>the goal is prediction.</li>
+</ul>
+
+<p>Lasso may be less useful when predictors are highly correlated and feature stability is important.</p>
+
+<p>In those settings, elastic net may be more stable.</p>
+
+<hr />
+
+<h2 id="common-mistake">Common mistake</h2>
+
+<p class="common-mistake">Do not treat lasso-selected predictors as automatically causal, clinically proven, or biologically validated.</p>
+
+<hr />
+
+<h2 id="key-takeaway">Key takeaway</h2>
+
+<p class="key-takeaway">Lasso regression can shrink coefficients and select predictors, but feature selection must happen inside validation and selected features should be interpreted cautiously.</p>

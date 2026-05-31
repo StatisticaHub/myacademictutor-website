@@ -1,0 +1,495 @@
+<h1 id="bootstrap-validation-in-clinical-prediction-modelling">Bootstrap Validation in Clinical Prediction Modelling</h1>
+
+<h2 id="learning-objectives">Learning objectives</h2>
+
+<p>By the end of this note, you should be able to:</p>
+
+<ol>
+  <li>Explain what apparent performance means.</li>
+  <li>Explain why apparent performance is usually optimistic.</li>
+  <li>Define optimism in the context of prediction model performance.</li>
+  <li>Describe what bootstrap sampling means.</li>
+  <li>Explain how bootstrap validation estimates optimism.</li>
+  <li>Interpret optimism-corrected performance.</li>
+  <li>Understand why bootstrap validation is useful in clinical prediction modelling.</li>
+  <li>Distinguish bootstrap internal validation from external validation.</li>
+</ol>
+
+<hr />
+
+<h2 id="1-why-this-note-matters">1. Why this note matters</h2>
+
+<p>In medical prediction modelling, performance estimated in the development dataset is usually too optimistic. A model may appear to discriminate well, classify patients accurately, or produce low prediction error simply because it has already been developed using the same data.</p>
+
+<p>This is especially important in medical research because many datasets are small, outcomes may be rare, and the number of candidate predictors may be large. A model can easily learn dataset-specific patterns that do not apply to future patients.</p>
+
+<p>Bootstrap validation is a method for estimating this optimism. It is widely used in clinical prediction modelling because it can make efficient use of the development data while still assessing how much performance may be exaggerated.</p>
+
+<p>The practical message of this note is:</p>
+
+<blockquote>
+  <p>Bootstrap validation helps estimate how much a model’s apparent performance is likely to be too optimistic.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="2-apparent-performance">2. Apparent performance</h2>
+
+<p>Apparent performance is the performance of a model when it is evaluated on the same data used to develop it.</p>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Fit the model on the full development dataset.
+Evaluate the model on the same full development dataset.
+</code></pre></div></div>
+
+<p>This may give:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Apparent AUC = 0.86
+</code></pre></div></div>
+
+<p>The problem is that the model has already seen the data. It may have learned real patterns, but it may also have learned random noise, sample-specific patterns, or modelling choices that were selected because they worked well in this dataset.</p>
+
+<p>Therefore, apparent performance is usually optimistic.</p>
+
+<hr />
+
+<h2 id="3-why-apparent-performance-is-optimistic">3. Why apparent performance is optimistic</h2>
+
+<p>Apparent performance is optimistic because model development is not a neutral process.</p>
+
+<p>During development, analysts may:</p>
+
+<ul>
+  <li>try several models;</li>
+  <li>select predictors;</li>
+  <li>transform variables;</li>
+  <li>tune hyperparameters;</li>
+  <li>choose interactions;</li>
+  <li>remove outliers;</li>
+  <li>compare thresholds;</li>
+  <li>select the best-performing model.</li>
+</ul>
+
+<p>Even if the final model is evaluated only once, the dataset may have influenced many modelling decisions.</p>
+
+<p>This means apparent performance reflects both true signal and overfitting.</p>
+
+<hr />
+
+<h2 id="4-optimism">4. Optimism</h2>
+
+<p>Optimism is the amount by which apparent performance overestimates performance on new data.</p>
+
+<p>Conceptually:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Optimism = apparent performance - expected performance on new data
+</code></pre></div></div>
+
+<p>For performance measures where higher is better, such as AUC or C-index, optimism is subtracted from apparent performance.</p>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Apparent AUC = 0.86
+Estimated optimism = 0.04
+Optimism-corrected AUC = 0.82
+</code></pre></div></div>
+
+<p>The optimism-corrected estimate is usually more realistic than the apparent estimate.</p>
+
+<hr />
+
+<h2 id="5-what-is-bootstrap-sampling">5. What is bootstrap sampling?</h2>
+
+<p>Bootstrap sampling means sampling observations from the original dataset with replacement.</p>
+
+<p>If the original dataset contains 500 patients, a bootstrap sample also contains 500 rows.</p>
+
+<p>However:</p>
+
+<ul>
+  <li>some patients may appear more than once;</li>
+  <li>some patients may not appear at all;</li>
+  <li>the sample is a resampled version of the original dataset.</li>
+</ul>
+
+<p>Sampling with replacement allows us to create many slightly different versions of the development dataset.</p>
+
+<hr />
+
+<h2 id="6-why-bootstrap-sampling-is-useful">6. Why bootstrap sampling is useful</h2>
+
+<p>Bootstrap sampling helps us study how the model behaves when the development data change slightly.</p>
+
+<p>Each bootstrap sample acts like a new version of the dataset. The model is fitted in the bootstrap sample and evaluated to estimate how much performance is inflated by fitting the model to that sample.</p>
+
+<p>Repeating this many times gives an estimate of average optimism.</p>
+
+<hr />
+
+<h2 id="7-basic-bootstrap-validation-process">7. Basic bootstrap validation process</h2>
+
+<p>A simplified bootstrap validation process is:</p>
+
+<ol>
+  <li>Fit the original model in the full development data.</li>
+  <li>Calculate apparent performance.</li>
+  <li>Draw a bootstrap sample.</li>
+  <li>Fit the model in the bootstrap sample.</li>
+  <li>Evaluate performance in the bootstrap sample.</li>
+  <li>Evaluate the same bootstrap-fitted model in the original data.</li>
+  <li>Estimate optimism for that bootstrap sample.</li>
+  <li>Repeat many times.</li>
+  <li>Average the optimism.</li>
+  <li>Subtract average optimism from apparent performance.</li>
+</ol>
+
+<p>This gives an optimism-corrected estimate.</p>
+
+<hr />
+
+<h2 id="8-medical-example-cancer-recurrence-prediction">8. Medical example: cancer recurrence prediction</h2>
+
+<p>Suppose we develop a model to predict cancer recurrence within 5 years.</p>
+
+<p>The apparent performance is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Apparent AUC = 0.84
+</code></pre></div></div>
+
+<p>Bootstrap validation estimates:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Optimism = 0.05
+</code></pre></div></div>
+
+<p>The optimism-corrected estimate is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Optimism-corrected AUC = 0.84 - 0.05 = 0.79
+</code></pre></div></div>
+
+<p>This suggests that some of the apparent performance was due to overfitting.</p>
+
+<p>The model may still be useful, but the corrected estimate is more cautious.</p>
+
+<hr />
+
+<h2 id="9-bootstrap-validation-versus-traintest-split">9. Bootstrap validation versus train/test split</h2>
+
+<p>A train/test split holds out part of the dataset for evaluation.</p>
+
+<p>Bootstrap validation uses resampling and can allow the full dataset to contribute to model development.</p>
+
+<p>This can be attractive in clinical prediction modelling because sample sizes are often limited.</p>
+
+<p>For example, if there are only 200 patients and 40 events, holding out 20% of the data may leave too little data for model development and too few events for stable evaluation.</p>
+
+<p>Bootstrap validation can be more efficient in such situations.</p>
+
+<hr />
+
+<h2 id="10-bootstrap-validation-versus-cross-validation">10. Bootstrap validation versus cross-validation</h2>
+
+<p>Both bootstrap validation and cross-validation are internal validation methods.</p>
+
+<p>Cross-validation repeatedly divides the dataset into training and validation folds.</p>
+
+<p>Bootstrap validation repeatedly samples with replacement and estimates optimism.</p>
+
+<p>In clinical prediction modelling, bootstrap validation is often preferred for estimating optimism in a final model, especially when the sample size is limited.</p>
+
+<p>Cross-validation is often used for model comparison and tuning.</p>
+
+<p>Both methods must include the full modelling process to avoid biased results.</p>
+
+<hr />
+
+<h2 id="11-bootstrap-validation-and-the-full-modelling-process">11. Bootstrap validation and the full modelling process</h2>
+
+<p>Bootstrap validation should include all major steps in model development.</p>
+
+<p>If the original modelling process involved:</p>
+
+<ul>
+  <li>feature selection;</li>
+  <li>transformation selection;</li>
+  <li>tuning;</li>
+  <li>imputation;</li>
+  <li>variable filtering;</li>
+  <li>model comparison;</li>
+</ul>
+
+<p>then these steps should be repeated inside the bootstrap process.</p>
+
+<p>If not, the optimism estimate may be too small.</p>
+
+<p>The bootstrap should reflect the real modelling process, not only the final fitted model.</p>
+
+<hr />
+
+<h2 id="12-bootstrap-validation-and-calibration">12. Bootstrap validation and calibration</h2>
+
+<p>Bootstrap validation can assess more than discrimination.</p>
+
+<p>It can also assess:</p>
+
+<ul>
+  <li>calibration slope;</li>
+  <li>calibration intercept;</li>
+  <li>Brier score;</li>
+  <li>calibration plots;</li>
+  <li>C-index;</li>
+  <li>overall performance.</li>
+</ul>
+
+<p>This is important because a model may rank patients well but produce risk estimates that are too extreme.</p>
+
+<p>A calibration slope less than 1 often suggests overfitting.</p>
+
+<hr />
+
+<h2 id="13-calibration-slope-and-shrinkage">13. Calibration slope and shrinkage</h2>
+
+<p>When a model is overfitted, predictions may be too extreme.</p>
+
+<p>High-risk patients may be predicted too high.</p>
+
+<p>Low-risk patients may be predicted too low.</p>
+
+<p>This often produces a calibration slope less than 1.</p>
+
+<p>Bootstrap validation can help estimate the degree of overfitting and may support shrinkage or recalibration.</p>
+
+<hr />
+
+<h2 id="14-how-many-bootstrap-samples">14. How many bootstrap samples?</h2>
+
+<p>There is no single universal number.</p>
+
+<p>Common choices include:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>100 bootstrap samples
+200 bootstrap samples
+500 bootstrap samples
+1000 bootstrap samples
+</code></pre></div></div>
+
+<p>More samples usually give more stable estimates but require more computation.</p>
+
+<p>For serious modelling work, several hundred bootstrap samples are commonly used.</p>
+
+<hr />
+
+<h2 id="15-bootstrap-validation-is-internal-validation">15. Bootstrap validation is internal validation</h2>
+
+<p>Bootstrap validation uses the development dataset.</p>
+
+<p>Therefore, it remains internal validation.</p>
+
+<p>It gives information about expected performance in similar patients from the same source population.</p>
+
+<p>It does not prove that the model will work in another hospital, country, laboratory system, or time period.</p>
+
+<p>External validation is still needed before claiming broad generalisability.</p>
+
+<hr />
+
+<h2 id="16-what-bootstrap-validation-does-not-solve">16. What bootstrap validation does not solve</h2>
+
+<p>Bootstrap validation does not fix:</p>
+
+<ul>
+  <li>poor outcome definition;</li>
+  <li>poor predictor quality;</li>
+  <li>data leakage;</li>
+  <li>missing important predictors;</li>
+  <li>poor measurement quality;</li>
+  <li>unrepresentative data;</li>
+  <li>lack of external validation;</li>
+  <li>lack of clinical usefulness.</li>
+</ul>
+
+<p>If the model is developed using future information or leakage, bootstrap validation may still give misleading results.</p>
+
+<hr />
+
+<h2 id="17-common-mistakes">17. Common mistakes</h2>
+
+<h3 id="171-reporting-only-apparent-performance">17.1 Reporting only apparent performance</h3>
+
+<p>This can seriously exaggerate model performance.</p>
+
+<h3 id="172-calling-bootstrap-validation-external-validation">17.2 Calling bootstrap validation external validation</h3>
+
+<p>Bootstrap validation is internal validation.</p>
+
+<h3 id="173-not-repeating-feature-selection">17.3 Not repeating feature selection</h3>
+
+<p>Feature selection should be included inside the bootstrap process.</p>
+
+<h3 id="174-ignoring-calibration">17.4 Ignoring calibration</h3>
+
+<p>Optimism should be considered for calibration and overall error, not only AUC.</p>
+
+<h3 id="175-using-too-few-bootstrap-samples">17.5 Using too few bootstrap samples</h3>
+
+<p>Very few bootstrap samples may give unstable estimates.</p>
+
+<hr />
+
+<h2 id="18-reporting-bootstrap-validation">18. Reporting bootstrap validation</h2>
+
+<p>A clear report should describe:</p>
+
+<ul>
+  <li>number of bootstrap samples;</li>
+  <li>performance measures evaluated;</li>
+  <li>apparent performance;</li>
+  <li>estimated optimism;</li>
+  <li>optimism-corrected performance;</li>
+  <li>whether feature selection was repeated;</li>
+  <li>whether tuning was repeated;</li>
+  <li>calibration assessment;</li>
+  <li>limitations.</li>
+</ul>
+
+<p>Transparent reporting is important because bootstrap validation can be misunderstood if the workflow is unclear.</p>
+
+<hr />
+
+<h2 id="19-worked-example-hospital-mortality-model">19. Worked example: hospital mortality model</h2>
+
+<p>Suppose we develop a model to predict 30-day hospital mortality.</p>
+
+<p>The apparent AUC is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0.88
+</code></pre></div></div>
+
+<p>Bootstrap validation estimates optimism as:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0.06
+</code></pre></div></div>
+
+<p>The optimism-corrected AUC is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0.82
+</code></pre></div></div>
+
+<p>This suggests that the model is likely less impressive than the apparent performance suggested.</p>
+
+<p>If the calibration slope is also low, the model may be overfitted and may require shrinkage or recalibration before further testing.</p>
+
+<hr />
+
+<h2 id="20-summary">20. Summary</h2>
+
+<p>Bootstrap validation is a practical internal validation method for clinical prediction models. It estimates how much apparent performance may be exaggerated due to overfitting.</p>
+
+<p>It is particularly useful when sample size is limited and when holding out a test set would be inefficient.</p>
+
+<p>However, bootstrap validation is not external validation. It should be used as part of responsible model development, not as final proof of clinical usefulness.</p>
+
+<hr />
+
+<h2 id="revision-questions">Revision questions</h2>
+
+<ol>
+  <li>What is apparent performance?</li>
+  <li>Why is apparent performance usually optimistic?</li>
+  <li>What is optimism?</li>
+  <li>What does sampling with replacement mean?</li>
+  <li>What is a bootstrap sample?</li>
+  <li>How does bootstrap validation estimate optimism?</li>
+  <li>How is optimism-corrected AUC calculated?</li>
+  <li>Why can bootstrap validation be useful in small clinical datasets?</li>
+  <li>Why should feature selection be repeated inside bootstrap validation?</li>
+  <li>Why is bootstrap validation internal validation?</li>
+  <li>Why does bootstrap validation not replace external validation?</li>
+  <li>How can bootstrap validation be used to assess calibration?</li>
+  <li>What does a calibration slope less than 1 suggest?</li>
+  <li>What should be reported in a bootstrap validation study?</li>
+  <li>What problems does bootstrap validation not solve?</li>
+</ol>
+
+<hr />
+
+<h2 id="key-terms">Key terms</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Term</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Apparent performance</td>
+      <td>Performance measured on the development data used to fit the model</td>
+    </tr>
+    <tr>
+      <td>Optimism</td>
+      <td>Amount by which apparent performance overestimates expected new-data performance</td>
+    </tr>
+    <tr>
+      <td>Bootstrap sample</td>
+      <td>Sample drawn from the original data with replacement</td>
+    </tr>
+    <tr>
+      <td>Sampling with replacement</td>
+      <td>Sampling where observations can be selected more than once</td>
+    </tr>
+    <tr>
+      <td>Optimism-corrected performance</td>
+      <td>Apparent performance adjusted by estimated optimism</td>
+    </tr>
+    <tr>
+      <td>Internal validation</td>
+      <td>Validation using the same data source as model development</td>
+    </tr>
+    <tr>
+      <td>External validation</td>
+      <td>Validation using independent data from another setting, time, or population</td>
+    </tr>
+    <tr>
+      <td>Calibration slope</td>
+      <td>Measure of whether predictions are too extreme or not extreme enough</td>
+    </tr>
+    <tr>
+      <td>Overfitting</td>
+      <td>Learning noise or dataset-specific patterns</td>
+    </tr>
+    <tr>
+      <td>Shrinkage</td>
+      <td>Reducing model coefficients or predictions to improve generalisability</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li>
+    <p>Steyerberg, E. W. (2019). <em>Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating</em> (2nd ed.). Springer.</p>
+  </li>
+  <li>
+    <p>Harrell, F. E. (2015). <em>Regression Modeling Strategies</em>. Springer.</p>
+  </li>
+  <li>
+    <p>Riley, R. D., van der Windt, D., Croft, P., &amp; Moons, K. G. M. (2019). <em>Prognosis Research in Healthcare: Concepts, Methods, and Impact</em>. Oxford University Press.</p>
+  </li>
+  <li>
+    <p>Moons, K. G. M., et al. (2015). Transparent Reporting of a multivariable prediction model for Individual Prognosis Or Diagnosis: TRIPOD.</p>
+  </li>
+  <li>
+    <p>Van Calster, B., McLernon, D. J., van Smeden, M., Wynants, L., &amp; Steyerberg, E. W. (2019). Calibration: the Achilles heel of predictive analytics. <em>BMC Medicine</em>, 17, 230.</p>
+  </li>
+</ol>
+
+<hr />
+
+<h2 id="key-takeaway">Key takeaway</h2>
+
+<p>Bootstrap validation estimates how much a model’s apparent performance is likely to be too optimistic. It gives a more realistic internal estimate of performance, but it does not replace external validation or clinical usefulness assessment.</p>

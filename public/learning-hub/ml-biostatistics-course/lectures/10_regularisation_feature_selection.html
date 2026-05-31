@@ -1,0 +1,259 @@
+<h1 id="lecture-10-regularisation-and-feature-selection">Lecture 10: Regularisation and Feature Selection</h1>
+
+<h2 id="opening-scene">Opening scene</h2>
+
+<div class="scene-card">
+
+  <div class="scene-title">Scene: Too many predictors enter the model</div>
+
+  <div class="dialogue-line learner">
+    <p><span class="character">Curious Learner:</span><br />
+“I have 500 predictors and only 150 patients. Can I put everything into the model?”</p>
+  </div>
+
+  <div class="dialogue-line captain-overfit">
+    <p><span class="character">Captain Overfit:</span><br />
+“Yes! More predictors, more memorisation, more chaos.”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“That is exactly when we need regularisation.”</p>
+  </div>
+
+  <div class="dialogue-line dr-clinic">
+    <p><span class="character">Dr Clinic:</span><br />
+“I also need predictors that make clinical sense, not just random noise.”</p>
+  </div>
+
+</div>
+
+<hr />
+
+<h2 id="todays-big-question">Today’s big question</h2>
+
+<div class="big-question">
+
+  <p>How can we build prediction models when there are many predictors?</p>
+
+</div>
+
+<p>In biomedical data, we often have many possible predictors.</p>
+
+<p>Examples include:</p>
+
+<ul>
+  <li>clinical variables;</li>
+  <li>lab measurements;</li>
+  <li>imaging features;</li>
+  <li>genetic markers;</li>
+  <li>methylation sites;</li>
+  <li>gene expression features.</li>
+</ul>
+
+<p>When the number of predictors is large, overfitting becomes a major risk.</p>
+
+<hr />
+
+<h2 id="intuition-first">Intuition first</h2>
+
+<p>Imagine trying to explain a small group of patients using hundreds of variables.</p>
+
+<p>The model may find patterns that are not real.</p>
+
+<p>It may learn noise instead of signal.</p>
+
+<p>Regularisation helps control model complexity.</p>
+
+<div class="key-takeaway">
+
+  <p>Regularisation reduces overfitting by discouraging overly complex models.</p>
+
+</div>
+
+<hr />
+
+<h2 id="what-is-regularisation">What is regularisation?</h2>
+
+<p>Regularisation adds a penalty to the model-fitting process.</p>
+
+<p>Instead of only trying to fit the data as closely as possible, the model is also encouraged to keep coefficients smaller or simpler.</p>
+
+<p>This can improve performance on new data.</p>
+
+<hr />
+
+<h2 id="ridge-regression">Ridge regression</h2>
+
+<p>Ridge regression shrinks coefficients towards zero.</p>
+
+<p>It usually keeps all predictors in the model, but reduces their influence.</p>
+
+<p>This can be useful when many predictors are correlated.</p>
+
+<p>Example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Many biomarkers are weakly related to the outcome
+</code></pre></div></div>
+
+<p>Ridge can stabilise the model.</p>
+
+<hr />
+
+<h2 id="lasso-regression">Lasso regression</h2>
+
+<p>Lasso regression can shrink some coefficients exactly to zero.</p>
+
+<p>This means it can perform variable selection.</p>
+
+<p>Example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Only a subset of biomarkers may be selected
+</code></pre></div></div>
+
+<p>This can make the model simpler, but selection can be unstable if predictors are highly correlated.</p>
+
+<hr />
+
+<h2 id="elastic-net">Elastic net</h2>
+
+<p>Elastic net combines ridge and lasso.</p>
+
+<p>It can shrink coefficients and select variables.</p>
+
+<p>It is often useful when there are many correlated predictors, such as omics features.</p>
+
+<hr />
+
+<h2 id="mini-conversation">Mini conversation</h2>
+
+<div class="dialogue-box">
+
+  <div class="dialogue-line learner">
+    <p><span class="character">Curious Learner:</span><br />
+“So lasso chooses the important predictors?”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“It chooses predictors that help prediction in that dataset, but selection may not always be stable.”</p>
+  </div>
+
+  <div class="dialogue-line dr-clinic">
+    <p><span class="character">Dr Clinic:</span><br />
+“So I should not automatically treat selected predictors as causal or clinically proven?”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“Exactly.”</p>
+  </div>
+
+</div>
+
+<hr />
+
+<h2 id="feature-selection-versus-clinical-reasoning">Feature selection versus clinical reasoning</h2>
+
+<p>Feature selection can be statistical, clinical, or both.</p>
+
+<p>Purely data-driven selection may choose variables that do not generalise.</p>
+
+<p>Purely clinical selection may miss useful patterns.</p>
+
+<p>A good modelling strategy should consider:</p>
+
+<ul>
+  <li>clinical relevance;</li>
+  <li>predictor availability;</li>
+  <li>measurement quality;</li>
+  <li>missingness;</li>
+  <li>correlation between predictors;</li>
+  <li>sample size;</li>
+  <li>validation performance.</li>
+</ul>
+
+<hr />
+
+<h2 id="common-mistake">Common mistake</h2>
+
+<div class="common-mistake">
+
+  <h3 id="common-mistake-selecting-features-before-validation">Common mistake: selecting features before validation</h3>
+
+  <p>If feature selection is performed before cross-validation or train/test splitting, the validation process becomes biased.</p>
+
+  <p>Feature selection must be included inside the resampling or validation workflow.</p>
+
+  <p>Otherwise, performance estimates may be too optimistic.</p>
+
+</div>
+
+<hr />
+
+<h2 id="medical-example">Medical example</h2>
+
+<p>Suppose we use methylation data to predict an exposure or disease outcome.</p>
+
+<p>There may be hundreds of thousands of methylation sites.</p>
+
+<p>A standard logistic regression model cannot handle all of them directly with a small sample size.</p>
+
+<p>Regularisation methods such as lasso, ridge, or elastic net can help build more stable prediction models.</p>
+
+<p>But careful validation is essential.</p>
+
+<hr />
+
+<h2 id="clinical-reality-check">Clinical reality check</h2>
+
+<div class="clinical-check">
+
+  <h3 id="clinical-reality-check">Clinical reality check</h3>
+
+  <p>A selected predictor is not automatically clinically important.</p>
+
+  <p>It may be selected because it improves prediction in one dataset.</p>
+
+  <p>Before interpreting selected features strongly, consider:</p>
+
+  <ul>
+    <li>biological plausibility;</li>
+    <li>stability across resamples;</li>
+    <li>external validation;</li>
+    <li>measurement reliability;</li>
+    <li>whether the predictor is available in practice.</li>
+  </ul>
+
+</div>
+
+<hr />
+
+<h2 id="key-takeaway">Key takeaway</h2>
+
+<div class="key-takeaway">
+
+  <p>Regularisation helps reduce overfitting when there are many predictors.</p>
+
+  <p>Ridge shrinks coefficients.</p>
+
+  <p>Lasso can select predictors.</p>
+
+  <p>Elastic net combines both ideas.</p>
+
+  <p>But feature selection must be validated carefully and interpreted cautiously.</p>
+
+</div>
+
+<hr />
+
+<h2 id="reflection-question">Reflection question</h2>
+
+<p>Why should selected features from a lasso model not automatically be interpreted as causal factors?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+Because lasso selects predictors that help prediction in a specific dataset. Selection may be affected by correlation, noise, sample size, and model settings. A selected feature may improve prediction without being causal.
+
+</details>

@@ -1,0 +1,525 @@
+<h1 id="ridge-regression">Ridge Regression</h1>
+
+<h2 id="learning-objectives">Learning objectives</h2>
+
+<p>By the end of this note, you should be able to:</p>
+
+<ol>
+  <li>Explain why ordinary regression can overfit when there are many predictors or limited outcome events.</li>
+  <li>Describe the idea of coefficient shrinkage.</li>
+  <li>Explain how ridge regression differs from ordinary logistic regression.</li>
+  <li>Understand why ridge regression usually keeps all predictors in the model.</li>
+  <li>Explain why ridge regression is useful when predictors are correlated.</li>
+  <li>Describe the role of the tuning parameter <code class="language-plaintext highlighter-rouge">lambda</code>.</li>
+  <li>Understand why ridge regression still requires validation and calibration assessment.</li>
+  <li>Recognise when ridge regression may be preferable to lasso regression.</li>
+</ol>
+
+<hr />
+
+<h2 id="1-why-this-note-matters">1. Why this note matters</h2>
+
+<p>In medical prediction modelling, ordinary regression can become unstable when there are too many predictors for the available sample size or number of outcome events.</p>
+
+<p>This is common in clinical and biomedical datasets.</p>
+
+<p>For example, we may have:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>200 patients
+35 outcome events
+25 candidate predictors
+</code></pre></div></div>
+
+<p>Ordinary logistic regression may fit the development data well, but some coefficients may be too large, unstable, or strongly affected by random noise.</p>
+
+<p>Ridge regression helps by shrinking coefficients towards zero.</p>
+
+<p>The practical message of this note is:</p>
+
+<blockquote>
+  <p>Ridge regression improves stability by reducing overly large coefficients, especially when predictors are correlated or the model is at risk of overfitting.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="2-ordinary-regression-and-instability">2. Ordinary regression and instability</h2>
+
+<p>Ordinary logistic regression estimates coefficients that maximise the fit to the data.</p>
+
+<p>This works well when:</p>
+
+<ul>
+  <li>the sample size is large;</li>
+  <li>the number of predictors is modest;</li>
+  <li>predictors are not highly correlated;</li>
+  <li>there are enough outcome events;</li>
+  <li>the relationships are not too noisy.</li>
+</ul>
+
+<p>However, medical datasets often violate these conditions.</p>
+
+<p>Clinical prediction studies may have:</p>
+
+<ul>
+  <li>small sample sizes;</li>
+  <li>rare outcomes;</li>
+  <li>many candidate predictors;</li>
+  <li>correlated clinical measurements;</li>
+  <li>noisy biomarker data;</li>
+  <li>missing values;</li>
+  <li>site-specific patterns.</li>
+</ul>
+
+<p>In such settings, ordinary regression may overfit.</p>
+
+<hr />
+
+<h2 id="3-what-overfitting-looks-like">3. What overfitting looks like</h2>
+
+<p>Overfitting means the model learns patterns that are too specific to the development dataset.</p>
+
+<p>An overfitted model may show:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>High training performance
+Lower validation performance
+Poor external performance
+</code></pre></div></div>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Training AUC = 0.90
+Test AUC = 0.72
+External validation AUC = 0.64
+</code></pre></div></div>
+
+<p>This suggests that the model learned some unstable patterns that did not generalise.</p>
+
+<p>Ridge regression tries to reduce this instability.</p>
+
+<hr />
+
+<h2 id="4-what-ridge-regression-does">4. What ridge regression does</h2>
+
+<p>Ridge regression adds a penalty to the model-fitting process.</p>
+
+<p>Ordinary regression says:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Fit the data as well as possible.
+</code></pre></div></div>
+
+<p>Ridge regression says:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Fit the data well, but avoid unnecessarily large coefficients.
+</code></pre></div></div>
+
+<p>The penalty discourages large coefficients.</p>
+
+<p>As a result, ridge regression produces a model that is usually less extreme and more stable.</p>
+
+<hr />
+
+<h2 id="5-coefficient-shrinkage">5. Coefficient shrinkage</h2>
+
+<p>Shrinkage means pulling coefficients towards zero.</p>
+
+<p>For example, ordinary logistic regression may estimate:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>glucose coefficient = 1.20
+BMI coefficient = 0.80
+age coefficient = 0.45
+</code></pre></div></div>
+
+<p>Ridge regression may shrink these to:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>glucose coefficient = 0.95
+BMI coefficient = 0.62
+age coefficient = 0.33
+</code></pre></div></div>
+
+<p>The predictors are still in the model, but their effects are less extreme.</p>
+
+<p>This can improve performance in new patients.</p>
+
+<hr />
+
+<h2 id="6-why-shrinkage-helps">6. Why shrinkage helps</h2>
+
+<p>Large coefficients can appear because the model is fitting random variation in the training data.</p>
+
+<p>This is especially likely when:</p>
+
+<ul>
+  <li>the sample size is small;</li>
+  <li>predictors are correlated;</li>
+  <li>there are many predictors;</li>
+  <li>outcome events are limited.</li>
+</ul>
+
+<p>By shrinking coefficients, ridge regression reduces the model’s sensitivity to random noise.</p>
+
+<p>It may fit the training data slightly less perfectly, but it can perform better on new data.</p>
+
+<p>This is an example of the bias-variance trade-off.</p>
+
+<hr />
+
+<h2 id="7-bias-variance-trade-off">7. Bias-variance trade-off</h2>
+
+<p>Ridge regression introduces some bias by shrinking coefficients.</p>
+
+<p>However, it reduces variance.</p>
+
+<p>This means the model becomes less sensitive to small changes in the training data.</p>
+
+<p>The trade-off is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>slightly more bias
+less variance
+better generalisation
+</code></pre></div></div>
+
+<p>In prediction, this can be a good trade-off.</p>
+
+<p>A model that fits the training data perfectly is not useful if it fails on new patients.</p>
+
+<hr />
+
+<h2 id="8-ridge-usually-keeps-all-predictors">8. Ridge usually keeps all predictors</h2>
+
+<p>Ridge regression usually does not set coefficients exactly to zero.</p>
+
+<p>This means all predictors usually remain in the model.</p>
+
+<p>For example, if the original model includes 20 predictors, ridge regression will usually keep all 20, but shrink their coefficients.</p>
+
+<p>This is different from lasso regression, which can remove predictors by setting their coefficients to zero.</p>
+
+<p>Therefore, ridge is usually not considered a feature selection method.</p>
+
+<hr />
+
+<h2 id="9-why-ridge-is-useful-with-correlated-predictors">9. Why ridge is useful with correlated predictors</h2>
+
+<p>Medical predictors are often correlated.</p>
+
+<p>Examples include:</p>
+
+<ul>
+  <li>BMI and waist circumference;</li>
+  <li>systolic and diastolic blood pressure;</li>
+  <li>tumour size and tumour stage;</li>
+  <li>related blood biomarkers;</li>
+  <li>gene expression features from the same biological pathway.</li>
+</ul>
+
+<p>When predictors are correlated, ordinary regression coefficients can become unstable.</p>
+
+<p>One predictor may receive a large positive coefficient, while a correlated predictor receives a small or even opposite coefficient.</p>
+
+<p>Ridge regression stabilises this by shrinking coefficients.</p>
+
+<p>It allows correlated predictors to share information more smoothly.</p>
+
+<hr />
+
+<h2 id="10-medical-example-diabetes-prediction">10. Medical example: diabetes prediction</h2>
+
+<p>Suppose we build a diabetes prediction model using:</p>
+
+<ul>
+  <li>glucose;</li>
+  <li>BMI;</li>
+  <li>age;</li>
+  <li>insulin;</li>
+  <li>blood pressure;</li>
+  <li>diabetes pedigree function.</li>
+</ul>
+
+<p>Some of these predictors may be correlated.</p>
+
+<p>For example, BMI and insulin resistance-related measures may contain overlapping information.</p>
+
+<p>Ordinary logistic regression may estimate unstable coefficients if the sample size is limited.</p>
+
+<p>Ridge regression can produce a more stable prediction model.</p>
+
+<p>However, the ridge model still needs validation.</p>
+
+<hr />
+
+<h2 id="11-medical-example-cancer-prognosis">11. Medical example: cancer prognosis</h2>
+
+<p>Suppose we predict cancer recurrence using:</p>
+
+<ul>
+  <li>age;</li>
+  <li>tumour size;</li>
+  <li>tumour stage;</li>
+  <li>tumour grade;</li>
+  <li>receptor status;</li>
+  <li>treatment;</li>
+  <li>biomarkers.</li>
+</ul>
+
+<p>Many predictors may be related.</p>
+
+<p>For example, tumour size and stage are connected.</p>
+
+<p>Ridge regression can help stabilise the model when several predictors contribute overlapping information.</p>
+
+<p>This may improve predictions for new patients.</p>
+
+<hr />
+
+<h2 id="12-the-tuning-parameter-lambda">12. The tuning parameter lambda</h2>
+
+<p>Ridge regression uses a tuning parameter often called <code class="language-plaintext highlighter-rouge">lambda</code>.</p>
+
+<p>Lambda controls how strongly coefficients are shrunk.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Small lambda  → weak penalty
+Large lambda  → strong penalty
+</code></pre></div></div>
+
+<p>If lambda is too small, ridge behaves more like ordinary regression and may still overfit.</p>
+
+<p>If lambda is too large, coefficients may be shrunk too much and the model may underfit.</p>
+
+<hr />
+
+<h2 id="13-choosing-lambda">13. Choosing lambda</h2>
+
+<p>Lambda is usually chosen using cross-validation.</p>
+
+<p>A common workflow is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. Define candidate lambda values.
+2. Fit ridge models across those values.
+3. Use cross-validation to estimate performance.
+4. Choose a lambda that gives good validated performance.
+</code></pre></div></div>
+
+<p>The test set should not be used repeatedly to choose lambda.</p>
+
+<p>If the test set is used for tuning, it becomes part of model development and performance may become optimistic.</p>
+
+<hr />
+
+<h2 id="14-ridge-regression-and-calibration">14. Ridge regression and calibration</h2>
+
+<p>Ridge regression can reduce overfitting, which may improve calibration.</p>
+
+<p>However, ridge does not guarantee good calibration.</p>
+
+<p>After fitting a ridge model, we should still assess:</p>
+
+<ul>
+  <li>AUC;</li>
+  <li>calibration plot;</li>
+  <li>calibration intercept;</li>
+  <li>calibration slope;</li>
+  <li>Brier score;</li>
+  <li>clinical usefulness.</li>
+</ul>
+
+<p>A model can be regularised and still poorly calibrated.</p>
+
+<hr />
+
+<h2 id="15-ridge-versus-lasso">15. Ridge versus lasso</h2>
+
+<p>Ridge and lasso are both regularisation methods.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Main behaviour</th>
+      <th>Feature selection?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Ridge</td>
+      <td>Shrinks coefficients</td>
+      <td>Usually no</td>
+    </tr>
+    <tr>
+      <td>Lasso</td>
+      <td>Shrinks some coefficients to zero</td>
+      <td>Yes</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Ridge may be preferred when:</p>
+
+<ul>
+  <li>predictors are correlated;</li>
+  <li>many predictors may contain small amounts of information;</li>
+  <li>stability is more important than sparsity;</li>
+  <li>we do not need a small predictor list.</li>
+</ul>
+
+<p>Lasso may be preferred when:</p>
+
+<ul>
+  <li>we want a smaller model;</li>
+  <li>some predictors are likely irrelevant;</li>
+  <li>feature selection is a major goal.</li>
+</ul>
+
+<hr />
+
+<h2 id="16-what-ridge-regression-does-not-solve">16. What ridge regression does not solve</h2>
+
+<p>Ridge regression does not solve all modelling problems.</p>
+
+<p>It does not fix:</p>
+
+<ul>
+  <li>data leakage;</li>
+  <li>poor outcome definition;</li>
+  <li>predictors measured after the prediction time;</li>
+  <li>poor data quality;</li>
+  <li>unrepresentative samples;</li>
+  <li>lack of external validation;</li>
+  <li>lack of clinical usefulness.</li>
+</ul>
+
+<p>Ridge is a modelling tool, not a complete study design.</p>
+
+<hr />
+
+<h2 id="17-reporting-ridge-regression">17. Reporting ridge regression</h2>
+
+<p>A clear ridge regression report should describe:</p>
+
+<ul>
+  <li>outcome definition;</li>
+  <li>prediction time point;</li>
+  <li>candidate predictors;</li>
+  <li>sample size;</li>
+  <li>number of outcome events;</li>
+  <li>missing data handling;</li>
+  <li>whether predictors were standardised;</li>
+  <li>lambda selection method;</li>
+  <li>validation method;</li>
+  <li>discrimination;</li>
+  <li>calibration;</li>
+  <li>clinical interpretation.</li>
+</ul>
+
+<p>Without these details, readers cannot judge whether the model is reliable.</p>
+
+<hr />
+
+<h2 id="18-summary">18. Summary</h2>
+
+<p>Ridge regression is a regularisation method that shrinks coefficients towards zero.</p>
+
+<p>It is useful when ordinary regression may overfit.</p>
+
+<p>It is especially helpful when predictors are correlated or when many predictors may each contribute small amounts of information.</p>
+
+<p>Ridge usually keeps all predictors in the model, so it is not mainly a feature selection method.</p>
+
+<p>Like all medical prediction models, ridge regression still requires careful validation, calibration assessment, and clinical interpretation.</p>
+
+<hr />
+
+<h2 id="revision-questions">Revision questions</h2>
+
+<ol>
+  <li>What problem does ridge regression try to solve?</li>
+  <li>What is coefficient shrinkage?</li>
+  <li>Why can ordinary regression become unstable in small medical datasets?</li>
+  <li>Does ridge regression usually remove predictors?</li>
+  <li>Why is ridge useful when predictors are correlated?</li>
+  <li>What does lambda control?</li>
+  <li>What happens if lambda is too large?</li>
+  <li>How is ridge different from lasso?</li>
+  <li>Why does ridge regression still need calibration assessment?</li>
+  <li>Why does ridge regression not solve data leakage?</li>
+  <li>When might ridge be preferable to lasso?</li>
+  <li>Why should the test set not be used repeatedly to choose lambda?</li>
+</ol>
+
+<hr />
+
+<h2 id="key-terms">Key terms</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Term</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Ridge regression</td>
+      <td>Regularised regression method that shrinks coefficients towards zero</td>
+    </tr>
+    <tr>
+      <td>Shrinkage</td>
+      <td>Pulling coefficients towards smaller values</td>
+    </tr>
+    <tr>
+      <td>Lambda</td>
+      <td>Tuning parameter controlling penalty strength</td>
+    </tr>
+    <tr>
+      <td>Overfitting</td>
+      <td>Learning noise or dataset-specific patterns rather than generalisable signal</td>
+    </tr>
+    <tr>
+      <td>Correlated predictors</td>
+      <td>Predictors that carry overlapping information</td>
+    </tr>
+    <tr>
+      <td>Bias-variance trade-off</td>
+      <td>Trade-off between model simplicity and sensitivity to the training data</td>
+    </tr>
+    <tr>
+      <td>Calibration</td>
+      <td>Agreement between predicted risks and observed risks</td>
+    </tr>
+    <tr>
+      <td>Internal validation</td>
+      <td>Validation using data from the same source as the development data</td>
+    </tr>
+    <tr>
+      <td>External validation</td>
+      <td>Validation using independent data from another setting, time, or population</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li>
+    <p>Hoerl, A. E., &amp; Kennard, R. W. (1970). Ridge regression: biased estimation for nonorthogonal problems. <em>Technometrics</em>.</p>
+  </li>
+  <li>
+    <p>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <em>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</em>.</p>
+  </li>
+  <li>
+    <p>James, G., Witten, D., Hastie, T., &amp; Tibshirani, R. (2021). <em>An Introduction to Statistical Learning: With Applications in R</em>.</p>
+  </li>
+  <li>
+    <p>Friedman, J., Hastie, T., &amp; Tibshirani, R. <code class="language-plaintext highlighter-rouge">glmnet</code>: Lasso and elastic-net regularized generalized linear models.</p>
+  </li>
+  <li>
+    <p>Steyerberg, E. W. (2019). <em>Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating</em>.</p>
+  </li>
+</ol>
+
+<hr />
+
+<h2 id="key-takeaway">Key takeaway</h2>
+
+<p>Ridge regression reduces overfitting by shrinking coefficients towards zero. It is especially useful when predictors are correlated or when many predictors may each contribute modest predictive information.</p>

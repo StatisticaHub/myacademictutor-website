@@ -1,0 +1,392 @@
+<h1 id="exercise-13-elastic-net">Exercise 13: Elastic Net</h1>
+
+<h2 id="aim">Aim</h2>
+
+<p>This exercise helps you understand elastic net as a compromise between ridge and lasso.</p>
+
+<p>You will practise thinking about:</p>
+
+<ul>
+  <li>ridge-lasso mixing;</li>
+  <li><code class="language-plaintext highlighter-rouge">alpha</code>;</li>
+  <li><code class="language-plaintext highlighter-rouge">lambda</code>;</li>
+  <li>correlated predictors;</li>
+  <li>biomedical feature selection;</li>
+  <li>tuning without leakage;</li>
+  <li>interpretation of selected features.</li>
+</ul>
+
+<hr />
+
+<h2 id="part-a-conceptual-understanding">Part A: Conceptual understanding</h2>
+
+<h3 id="question-1">Question 1</h3>
+
+<p>In your own words, explain what elastic net does.</p>
+
+<p>Use the following words:</p>
+
+<ul>
+  <li>ridge;</li>
+  <li>lasso;</li>
+  <li>shrinkage;</li>
+  <li>feature selection;</li>
+  <li>correlated predictors.</li>
+</ul>
+
+<hr />
+
+<h3 id="question-2">Question 2</h3>
+
+<p>Complete the following:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alpha = 0   → __________
+alpha = 1   → __________
+0 &lt; alpha &lt; 1 → __________
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="question-3">Question 3</h3>
+
+<p>What does <code class="language-plaintext highlighter-rouge">lambda</code> control in elastic net?</p>
+
+<hr />
+
+<h3 id="question-4">Question 4</h3>
+
+<p>Which statement is most correct?</p>
+
+<p>A. Elastic net is only useful for small datasets with one predictor.<br />
+B. Elastic net combines ridge-like and lasso-like regularisation.<br />
+C. Elastic net proves biological causality.<br />
+D. Elastic net removes the need for external validation.</p>
+
+<hr />
+
+<h2 id="part-b-ridge-lasso-or-elastic-net">Part B: Ridge, lasso, or elastic net?</h2>
+
+<h3 id="question-5">Question 5</h3>
+
+<p>For each situation, choose whether ridge, lasso, or elastic net may be most appropriate. More than one answer may sometimes be reasonable.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Situation</th>
+      <th>Possible method</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Many correlated predictors may each contain small predictive information</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>A very small selected predictor set is desired</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Predictors are highly correlated and some feature selection is desired</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Feature stability is more important than sparsity</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>A compromise between shrinkage and selection is desired</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="question-6">Question 6</h3>
+
+<p>Explain why elastic net may be more stable than lasso when predictors are correlated.</p>
+
+<hr />
+
+<h2 id="part-c-biomedical-scenarios">Part C: Biomedical scenarios</h2>
+
+<h3 id="question-7">Question 7</h3>
+
+<p>A gene expression dataset contains:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>250 patients
+15,000 gene expression features
+</code></pre></div></div>
+
+<p>Many genes belong to related biological pathways.</p>
+
+<p>Why might elastic net be useful here?</p>
+
+<hr />
+
+<h3 id="question-8">Question 8</h3>
+
+<p>A clinical prediction model contains only four predictors:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Age
+BMI
+Glucose
+Blood pressure
+</code></pre></div></div>
+
+<p>Would elastic net always be necessary here?</p>
+
+<p>Explain your answer.</p>
+
+<hr />
+
+<h3 id="question-9">Question 9</h3>
+
+<p>A methylation prediction study includes neighbouring CpG sites that are highly correlated.</p>
+
+<p>Why might pure lasso selection be unstable?</p>
+
+<hr />
+
+<h2 id="part-d-tuning-and-validation">Part D: Tuning and validation</h2>
+
+<h3 id="question-10">Question 10</h3>
+
+<p>A student says:</p>
+
+<blockquote>
+  <p>I tried many alpha and lambda values and selected the combination with the best final test set AUC.</p>
+</blockquote>
+
+<p>What is wrong with this approach?</p>
+
+<hr />
+
+<h3 id="question-11">Question 11</h3>
+
+<p>Write a better workflow for tuning elastic net.</p>
+
+<hr />
+
+<h3 id="question-12">Question 12</h3>
+
+<p>What is nested cross-validation?</p>
+
+<p>Why may it be useful for elastic net?</p>
+
+<hr />
+
+<h2 id="part-e-interpretation">Part E: Interpretation</h2>
+
+<h3 id="question-13">Question 13</h3>
+
+<p>An elastic net model selected 25 genes for predicting cancer recurrence.</p>
+
+<p>Can we say these 25 genes cause recurrence?</p>
+
+<p>Explain your answer.</p>
+
+<hr />
+
+<h3 id="question-14">Question 14</h3>
+
+<p>List four questions you should ask before making biological claims about elastic net-selected features.</p>
+
+<hr />
+
+<h3 id="question-15">Question 15</h3>
+
+<p>Why should calibration still be assessed after fitting an elastic net model?</p>
+
+<hr />
+
+<h2 id="part-f-true-or-false">Part F: True or false</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Statement</th>
+      <th>True / False</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Elastic net combines ridge and lasso penalties.</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Elastic net always gives a causal explanation.</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Elastic net can be useful when predictors are correlated.</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">alpha</code> controls the ridge-lasso mixture.</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">lambda</code> controls the strength of the penalty.</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>The test set should be repeatedly used for tuning.</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="part-g-short-written-answer">Part G: Short written answer</h2>
+
+<h3 id="question-16">Question 16</h3>
+
+<p>Write a short explanation of elastic net for a biomedical researcher working with omics data.</p>
+
+<hr />
+
+<h2 id="suggested-answers">Suggested answers</h2>
+
+<h3 id="answer-1">Answer 1</h3>
+
+<p>Elastic net combines ridge and lasso. It shrinks coefficients, can perform some feature selection, and can be more stable than lasso when predictors are correlated.</p>
+
+<hr />
+
+<h3 id="answer-2">Answer 2</h3>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alpha = 0   → ridge regression
+alpha = 1   → lasso regression
+0 &lt; alpha &lt; 1 → elastic net
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="answer-3">Answer 3</h3>
+
+<p><code class="language-plaintext highlighter-rouge">lambda</code> controls the overall strength of the regularisation penalty.</p>
+
+<hr />
+
+<h3 id="answer-4">Answer 4</h3>
+
+<p>B. Elastic net combines ridge-like and lasso-like regularisation.</p>
+
+<hr />
+
+<h3 id="answer-5">Answer 5</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Situation</th>
+      <th>Possible method</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Many correlated predictors may each contain small predictive information</td>
+      <td>Ridge or elastic net</td>
+    </tr>
+    <tr>
+      <td>A very small selected predictor set is desired</td>
+      <td>Lasso</td>
+    </tr>
+    <tr>
+      <td>Predictors are highly correlated and some feature selection is desired</td>
+      <td>Elastic net</td>
+    </tr>
+    <tr>
+      <td>Feature stability is more important than sparsity</td>
+      <td>Ridge or elastic net</td>
+    </tr>
+    <tr>
+      <td>A compromise between shrinkage and selection is desired</td>
+      <td>Elastic net</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="answer-6">Answer 6</h3>
+
+<p>Elastic net includes a ridge-like component, which helps handle correlated predictors more smoothly. Lasso may choose one predictor from a correlated group and discard others, while elastic net may allow grouped predictors to contribute together.</p>
+
+<hr />
+
+<h3 id="answer-7">Answer 7</h3>
+
+<p>Elastic net may be useful because the dataset has many predictors and many genes may be correlated through biological pathways. Elastic net can shrink coefficients, select features, and handle correlated predictors better than pure lasso.</p>
+
+<hr />
+
+<h3 id="answer-8">Answer 8</h3>
+
+<p>No. With only four clinically meaningful predictors, ordinary logistic regression or ridge may be sufficient. Elastic net becomes more useful when there are many candidate predictors or strong correlation with a need for feature selection.</p>
+
+<hr />
+
+<h3 id="answer-9">Answer 9</h3>
+
+<p>Neighbouring CpG sites may contain similar information. Lasso may select one CpG site and remove others, but a small change in the sample could lead to a different CpG being selected.</p>
+
+<hr />
+
+<h3 id="answer-10">Answer 10</h3>
+
+<p>The final test set was used for model tuning. This means the test set became part of model development, so the final test AUC may be optimistic.</p>
+
+<hr />
+
+<h3 id="answer-11">Answer 11</h3>
+
+<p>A better workflow is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. Split data into training and test sets.
+2. Use cross-validation inside the training data to choose alpha and lambda.
+3. Fit the final model on the training data.
+4. Evaluate once on the untouched test set.
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="answer-12">Answer 12</h3>
+
+<p>Nested cross-validation separates tuning from performance estimation. The inner loop tunes alpha and lambda. The outer loop estimates model performance. This is useful when many tuning combinations are tested.</p>
+
+<hr />
+
+<h3 id="answer-13">Answer 13</h3>
+
+<p>No. Elastic net-selected genes are predictors in a model. They may be causal, correlated with causal factors, proxies, artefacts, or selected by chance. Causality requires additional evidence.</p>
+
+<hr />
+
+<h3 id="answer-14">Answer 14</h3>
+
+<p>Ask:</p>
+
+<ul>
+  <li>Are the selected features stable?</li>
+  <li>Are they biologically plausible?</li>
+  <li>Do they validate externally?</li>
+  <li>Could batch effects explain them?</li>
+  <li>Are they measured reliably?</li>
+  <li>Are they available at prediction time?</li>
+</ul>
+
+<hr />
+
+<h3 id="answer-15">Answer 15</h3>
+
+<p>Elastic net may improve stability, but it does not guarantee well-calibrated probabilities. Calibration must be checked because clinical decisions may depend on accurate risk estimates.</p>
+
+<hr />
+
+<h3 id="answer-16">Answer 16</h3>
+
+<p>Elastic net is useful for omics data because it combines shrinkage and feature selection. It can handle correlated features better than lasso alone, which is helpful when genes, methylation sites, or proteins move together. However, selected features still need careful validation and cautious biological interpretation.</p>

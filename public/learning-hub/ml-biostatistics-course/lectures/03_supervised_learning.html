@@ -1,0 +1,447 @@
+<h1 id="lecture-3-supervised-learning-for-medical-data">Lecture 3: Supervised Learning for Medical Data</h1>
+
+<h2 id="opening-scene">Opening scene</h2>
+
+<div class="scene-card">
+
+  <div class="scene-title">Scene: A patient dataset arrives in the lab</div>
+
+  <div class="dialogue-line learner">
+    <p><span class="character">Curious Learner:</span><br />
+“I have a dataset with patient characteristics and disease status. Is this machine learning now?”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“If each patient has an observed outcome, then yes, this is a supervised learning problem.”</p>
+  </div>
+
+  <div class="dialogue-line dr-clinic">
+    <p><span class="character">Dr Clinic:</span><br />
+“So the model learns from previous patients and then predicts outcomes for future patients?”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“Exactly. But first, we must define the outcome, predictors, and prediction time point clearly.”</p>
+  </div>
+
+  <div class="dialogue-line leakage-monster">
+    <p><span class="character">Leakage Monster:</span><br />
+“Or just throw every variable into the model. Future variables are very powerful!”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“And very dangerous. That is how leakage begins.”</p>
+  </div>
+
+</div>
+
+<hr />
+
+<h2 id="todays-big-question">Today’s big question</h2>
+
+<div class="big-question">
+
+  <p>What is supervised learning, and how do we use it correctly with medical data?</p>
+
+</div>
+
+<p>Supervised learning means learning a relationship between predictors and an observed outcome.</p>
+
+<p>The data usually look like this:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Patient characteristics → observed outcome
+</code></pre></div></div>
+
+<p>The model uses past examples to learn patterns that may help predict outcomes for future patients.</p>
+
+<hr />
+
+<h2 id="intuition-first">Intuition first</h2>
+
+<p>Think of supervised learning like clinical teaching.</p>
+
+<p>A trainee clinician learns from previous cases:</p>
+
+<ul>
+  <li>symptoms;</li>
+  <li>test results;</li>
+  <li>diagnosis;</li>
+  <li>treatment history;</li>
+  <li>outcome.</li>
+</ul>
+
+<p>Over time, the trainee starts recognising patterns.</p>
+
+<p>A supervised learning model does something similar, but using data.</p>
+
+<div class="key-takeaway">
+
+  <p>Supervised learning uses examples with known outcomes to learn how predictors relate to the outcome.</p>
+
+</div>
+
+<hr />
+
+<h2 id="outcomes-and-predictors">Outcomes and predictors</h2>
+
+<p>Every supervised learning problem needs two main ingredients.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Term</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Outcome</td>
+      <td>What we want to predict</td>
+    </tr>
+    <tr>
+      <td>Predictors</td>
+      <td>Variables used to make the prediction</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>For example:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Clinical task</th>
+      <th>Outcome</th>
+      <th>Predictors</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Diabetes prediction</td>
+      <td>Diabetes yes/no</td>
+      <td>Glucose, BMI, age</td>
+    </tr>
+    <tr>
+      <td>Hospital readmission prediction</td>
+      <td>Readmission yes/no</td>
+      <td>Previous admissions, diagnosis, length of stay</td>
+    </tr>
+    <tr>
+      <td>Cancer recurrence prediction</td>
+      <td>Recurrence yes/no</td>
+      <td>Tumour stage, treatment, biomarkers</td>
+    </tr>
+    <tr>
+      <td>Survival prediction</td>
+      <td>Time to event</td>
+      <td>Age, tumour stage, molecular markers</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The model learns from the relationship between predictors and outcome.</p>
+
+<hr />
+
+<h2 id="mini-conversation-can-we-use-every-variable">Mini conversation: can we use every variable?</h2>
+
+<div class="dialogue-box">
+
+  <div class="dialogue-line learner">
+    <p><span class="character">Curious Learner:</span><br />
+“So should I include every variable in the dataset?”</p>
+  </div>
+
+  <div class="dialogue-line dr-clinic">
+    <p><span class="character">Dr Clinic:</span><br />
+“Not necessarily. Some variables may not be available when the model is supposed to make the prediction.”</p>
+  </div>
+
+  <div class="dialogue-line leakage-monster">
+    <p><span class="character">Leakage Monster:</span><br />
+“But post-outcome variables make the model look amazing.”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“That is exactly the problem. A predictor must be available at the prediction time point.”</p>
+  </div>
+
+</div>
+
+<p>In medical machine learning, predictor availability matters.</p>
+
+<p>A model is not useful if it needs information that would not be available in real practice.</p>
+
+<hr />
+
+<h2 id="prediction-time-point">Prediction time point</h2>
+
+<p>The prediction time point answers:</p>
+
+<blockquote>
+  <p>When is the model supposed to make the prediction?</p>
+</blockquote>
+
+<p>Examples:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>At hospital admission
+At diagnosis
+Before treatment starts
+At discharge
+At first antenatal visit
+</code></pre></div></div>
+
+<p>Once the prediction time point is defined, only information available at or before that time should be used.</p>
+
+<p>This protects the analysis from data leakage.</p>
+
+<hr />
+
+<h2 id="medical-example-diabetes-prediction">Medical example: diabetes prediction</h2>
+
+<p>Suppose we want to predict whether a patient has diabetes at clinical assessment.</p>
+
+<p>Possible predictors:</p>
+
+<ul>
+  <li>glucose;</li>
+  <li>BMI;</li>
+  <li>age;</li>
+  <li>insulin;</li>
+  <li>blood pressure;</li>
+  <li>number of pregnancies.</li>
+</ul>
+
+<p>Outcome:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Diabetes status: positive or negative
+</code></pre></div></div>
+
+<p>Prediction time point:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>At clinical assessment
+</code></pre></div></div>
+
+<p>This is a supervised learning problem because we have both predictors and known diabetes status in the dataset.</p>
+
+<hr />
+
+<h2 id="types-of-supervised-learning-problems">Types of supervised learning problems</h2>
+
+<p>Supervised learning includes different types of prediction problems.</p>
+
+<h3 id="regression">Regression</h3>
+
+<p>Used when the outcome is continuous.</p>
+
+<p>Example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predict systolic blood pressure
+</code></pre></div></div>
+
+<h3 id="classification">Classification</h3>
+
+<p>Used when the outcome is categorical.</p>
+
+<p>Example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predict diabetes positive or negative
+</code></pre></div></div>
+
+<h3 id="survival-prediction">Survival prediction</h3>
+
+<p>Used when the outcome is time-to-event.</p>
+
+<p>Example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predict time to cancer recurrence
+</code></pre></div></div>
+
+<p>Medical data often involve all three types.</p>
+
+<hr />
+
+<h2 id="binary-classification">Binary classification</h2>
+
+<p>Binary classification is very common in medical prediction.</p>
+
+<p>Examples:</p>
+
+<ul>
+  <li>disease yes/no;</li>
+  <li>hospital readmission yes/no;</li>
+  <li>treatment response yes/no;</li>
+  <li>recurrence yes/no;</li>
+  <li>ICU admission yes/no;</li>
+  <li>mortality yes/no.</li>
+</ul>
+
+<p>The model usually estimates:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>P(outcome = positive | predictors)
+</code></pre></div></div>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>P(diabetes = positive | glucose, BMI, age) = 0.72
+</code></pre></div></div>
+
+<p>This means the model estimates a 72% probability that the patient belongs to the diabetes-positive group.</p>
+
+<hr />
+
+<h2 id="common-mistake">Common mistake</h2>
+
+<div class="common-mistake">
+
+  <h3 id="common-mistake-unclear-outcome-definition">Common mistake: unclear outcome definition</h3>
+
+  <p>A prediction model is only as clear as its outcome.</p>
+
+  <p>For example, “diabetes” could mean:</p>
+
+  <ul>
+    <li>self-reported diabetes;</li>
+    <li>doctor-diagnosed diabetes;</li>
+    <li>medication use;</li>
+    <li>glucose threshold;</li>
+    <li>HbA1c threshold;</li>
+    <li>hospital record diagnosis.</li>
+  </ul>
+
+  <p>These are not always equivalent.</p>
+
+  <p>If the outcome is unclear, the model interpretation becomes unclear.</p>
+
+</div>
+
+<hr />
+
+<h2 id="clinical-reality-check">Clinical reality check</h2>
+
+<div class="clinical-check">
+
+  <h3 id="clinical-reality-check">Clinical reality check</h3>
+
+  <p>Before fitting a supervised learning model, ask:</p>
+
+  <ul>
+    <li>What exactly is the outcome?</li>
+    <li>What is the positive class?</li>
+    <li>When is the prediction made?</li>
+    <li>Are all predictors available at that time?</li>
+    <li>What decision could the prediction support?</li>
+    <li>What are the consequences of wrong predictions?</li>
+  </ul>
+
+  <p>Prediction modelling is not just a technical exercise. It must match a real clinical question.</p>
+
+</div>
+
+<hr />
+
+<h2 id="the-supervised-learning-workflow">The supervised learning workflow</h2>
+
+<p>A simple supervised learning workflow is:</p>
+
+<ol>
+  <li>Define the clinical question.</li>
+  <li>Define the outcome.</li>
+  <li>Define candidate predictors.</li>
+  <li>Define the prediction time point.</li>
+  <li>Split data into training and test sets.</li>
+  <li>Fit the model on the training data.</li>
+  <li>Evaluate performance on the test data.</li>
+  <li>Interpret performance clinically.</li>
+  <li>Check limitations.</li>
+  <li>Consider external validation.</li>
+</ol>
+
+<p>This workflow will be used throughout the course.</p>
+
+<hr />
+
+<h2 id="mini-conversation-model-first-or-question-first">Mini conversation: model first or question first?</h2>
+
+<div class="dialogue-box">
+
+  <div class="dialogue-line learner">
+    <p><span class="character">Curious Learner:</span><br />
+“Should I start by choosing the model?”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“No. Start with the clinical question.”</p>
+  </div>
+
+  <div class="dialogue-line dr-clinic">
+    <p><span class="character">Dr Clinic:</span><br />
+“If the clinical question is unclear, the model cannot rescue the analysis.”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“Exactly. The method should follow the question, not the other way around.”</p>
+  </div>
+
+</div>
+
+<hr />
+
+<h2 id="key-takeaway">Key takeaway</h2>
+
+<div class="key-takeaway">
+
+  <p>Supervised learning in medical data starts with:</p>
+
+  <ul>
+    <li>a clear outcome;</li>
+    <li>clinically sensible predictors;</li>
+    <li>a defined prediction time point;</li>
+    <li>proper model validation;</li>
+    <li>careful clinical interpretation.</li>
+  </ul>
+
+  <p>Before fitting any model, ask:</p>
+
+  <div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>What are we predicting?
+For whom?
+At what time?
+Using what information?
+For what decision?
+</code></pre></div>  </div>
+
+</div>
+
+<hr />
+
+<h2 id="reflection-question">Reflection question</h2>
+
+<p>Suppose you want to predict cancer recurrence after diagnosis.</p>
+
+<p>What would be:</p>
+
+<ol>
+  <li>the outcome;</li>
+  <li>the predictors;</li>
+  <li>the prediction time point;</li>
+  <li>the clinical use of the prediction?</li>
+</ol>
+
+<details>
+<summary>Show suggested answer</summary>
+
+The outcome could be recurrence within a defined time period, such as recurrence within 5 years.
+
+Predictors could include tumour stage, grade, treatment information available at diagnosis, age, biomarkers, and baseline clinical characteristics.
+
+The prediction time point might be at diagnosis or after surgery, depending on the intended use.
+
+The prediction could support follow-up planning, risk stratification, or treatment discussion, but it would need proper validation before clinical use.
+
+</details>

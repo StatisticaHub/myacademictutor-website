@@ -1,0 +1,542 @@
+<h1 id="exercise-3-supervised-learning-for-medical-data">Exercise 3: Supervised Learning for Medical Data</h1>
+
+<h2 id="exercise-1-identify-outcome-and-predictors">Exercise 1: Identify outcome and predictors</h2>
+
+<p>For each clinical prediction problem, identify:</p>
+
+<ol>
+  <li>the outcome;</li>
+  <li>possible predictors;</li>
+  <li>the prediction time point;</li>
+  <li>the target population.</li>
+</ol>
+
+<hr />
+
+<h3 id="a-diabetes-prediction">A. Diabetes prediction</h3>
+
+<p>Question:</p>
+
+<blockquote>
+  <p>Can we predict whether a person will develop diabetes within 10 years?</p>
+</blockquote>
+
+<p>Outcome:</p>
+
+<p>Predictors:</p>
+
+<p>Prediction time point:</p>
+
+<p>Target population:</p>
+
+<details>
+<summary>Show answer</summary>
+
+Outcome: diabetes within 10 years.
+
+Possible predictors: age, sex, BMI, family history, fasting glucose, HbA1c, blood pressure, cholesterol, smoking status, physical activity, comorbidities.
+
+Prediction time point: baseline health assessment.
+
+Target population: people without diabetes at baseline who are being assessed for future diabetes risk.
+
+</details>
+
+<hr />
+
+<h3 id="b-hospital-readmission-prediction">B. Hospital readmission prediction</h3>
+
+<p>Question:</p>
+
+<blockquote>
+  <p>Can we predict whether a patient will be readmitted within 30 days after hospital discharge?</p>
+</blockquote>
+
+<p>Outcome:</p>
+
+<p>Predictors:</p>
+
+<p>Prediction time point:</p>
+
+<p>Target population:</p>
+
+<details>
+<summary>Show answer</summary>
+
+Outcome: unplanned hospital readmission within 30 days of discharge.
+
+Possible predictors: age, diagnosis, comorbidities, previous admissions, length of stay, discharge medications, lab values before discharge, social factors, discharge destination.
+
+Prediction time point: hospital discharge.
+
+Target population: patients being discharged from hospital.
+
+</details>
+
+<hr />
+
+<h3 id="c-breast-cancer-recurrence-prediction">C. Breast cancer recurrence prediction</h3>
+
+<p>Question:</p>
+
+<blockquote>
+  <p>Can we predict whether a breast cancer patient will experience recurrence within 5 years?</p>
+</blockquote>
+
+<p>Outcome:</p>
+
+<p>Predictors:</p>
+
+<p>Prediction time point:</p>
+
+<p>Target population:</p>
+
+<details>
+<summary>Show answer</summary>
+
+Outcome: cancer recurrence within 5 years.
+
+Possible predictors: age at diagnosis, tumour size, tumour grade, lymph node status, receptor status, treatment, comorbidities, biomarkers, gene expression signatures.
+
+Prediction time point: diagnosis or after initial treatment planning, depending on the intended model use.
+
+Target population: breast cancer patients at baseline or treatment initiation.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-2-regression-classification-or-survival-prediction">Exercise 2: Regression, classification, or survival prediction?</h2>
+
+<p>Classify each task as:</p>
+
+<ul>
+  <li>regression;</li>
+  <li>binary classification;</li>
+  <li>multiclass classification;</li>
+  <li>survival prediction.</li>
+</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Predict systolic blood pressure</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Predict diabetes yes/no</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Predict cancer subtype</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Predict time to cancer recurrence</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Predict hospital readmission yes/no</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Predict cholesterol level</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Predict low/intermediate/high risk group</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Predict time to death after diagnosis</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Predict treatment responder/non-responder</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<details>
+<summary>Show answer</summary>
+
+| Task | Type |
+|---|---|
+| Predict systolic blood pressure | Regression |
+| Predict diabetes yes/no | Binary classification |
+| Predict cancer subtype | Multiclass classification |
+| Predict time to cancer recurrence | Survival prediction |
+| Predict hospital readmission yes/no | Binary classification |
+| Predict cholesterol level | Regression |
+| Predict low/intermediate/high risk group | Multiclass classification or ordinal classification |
+| Predict time to death after diagnosis | Survival prediction |
+| Predict treatment responder/non-responder | Binary classification |
+
+</details>
+
+<hr />
+
+<h2 id="exercise-3-prediction-time-point">Exercise 3: Prediction time point</h2>
+
+<p>For each problem, state the most appropriate prediction time point.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Problem</th>
+      <th>Prediction time point</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Predict ICU mortality</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Predict 30-day readmission</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Predict 5-year cancer survival</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Predict response to chemotherapy</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Predict recurrence after surgery</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<details>
+<summary>Show answer</summary>
+
+| Problem | Prediction time point |
+|---|---|
+| Predict ICU mortality | At ICU admission |
+| Predict 30-day readmission | At hospital discharge |
+| Predict 5-year cancer survival | At diagnosis or treatment start |
+| Predict response to chemotherapy | Before chemotherapy begins |
+| Predict recurrence after surgery | At surgery or shortly after surgery |
+
+</details>
+
+<hr />
+
+<h2 id="exercise-4-appropriate-predictors">Exercise 4: Appropriate predictors</h2>
+
+<p>You are building a model to predict mortality at hospital admission.</p>
+
+<p>Classify each variable as appropriate or leakage risk.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Variable</th>
+      <th>Appropriate or leakage risk?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Age at admission</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Sex</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Blood pressure at admission</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Discharge destination</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>ICU length of stay</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Comorbidity history</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Lab values at admission</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Lab values after clinical deterioration</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Final diagnosis after discharge</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<details>
+<summary>Show answer</summary>
+
+| Variable | Appropriate or leakage risk? |
+|---|---|
+| Age at admission | Appropriate |
+| Sex | Appropriate |
+| Blood pressure at admission | Appropriate |
+| Discharge destination | Leakage risk |
+| ICU length of stay | Leakage risk |
+| Comorbidity history | Appropriate |
+| Lab values at admission | Appropriate |
+| Lab values after clinical deterioration | Leakage risk |
+| Final diagnosis after discharge | Leakage risk |
+
+</details>
+
+<hr />
+
+<h2 id="exercise-5-confusion-matrix-calculation">Exercise 5: Confusion matrix calculation</h2>
+
+<p>A model predicts disease status for 100 patients.</p>
+
+<p>Results:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>True positives = 30
+False positives = 10
+True negatives = 50
+False negatives = 10
+</code></pre></div></div>
+
+<p>Calculate:</p>
+
+<ol>
+  <li>Accuracy</li>
+  <li>Sensitivity</li>
+  <li>Specificity</li>
+  <li>Positive predictive value</li>
+  <li>Negative predictive value</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+Total = 30 + 10 + 50 + 10 = 100
+
+Accuracy:
+
+```text
+(TP + TN) / Total = (30 + 50) / 100 = 0.80
+```
+
+Sensitivity:
+
+```text
+TP / (TP + FN) = 30 / (30 + 10) = 0.75
+```
+
+Specificity:
+
+```text
+TN / (TN + FP) = 50 / (50 + 10) = 0.833
+```
+
+Positive predictive value:
+
+```text
+TP / (TP + FP) = 30 / (30 + 10) = 0.75
+```
+
+Negative predictive value:
+
+```text
+TN / (TN + FN) = 50 / (50 + 10) = 0.833
+```
+
+</details>
+
+<hr />
+
+<h2 id="exercise-6-accuracy-problem">Exercise 6: Accuracy problem</h2>
+
+<p>A disease has prevalence 2%.</p>
+
+<p>A model predicts every patient as disease negative.</p>
+
+<p>Answer:</p>
+
+<ol>
+  <li>What is the accuracy?</li>
+  <li>What is the sensitivity?</li>
+  <li>Why is this model clinically useless?</li>
+  <li>Which metrics would be more informative?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+Accuracy is 98%, because 98% of patients do not have the disease.
+
+Sensitivity is 0%, because the model detects none of the true disease cases.
+
+The model is clinically useless for identifying disease because it classifies every patient as negative.
+
+More informative metrics include sensitivity, specificity, PPV, NPV, ROC AUC, precision-recall curve, and calibration. In screening, sensitivity is especially important.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-7-threshold-choice">Exercise 7: Threshold choice</h2>
+
+<p>A model gives predicted probability of disease.</p>
+
+<p>For screening, should we usually prefer:</p>
+
+<ol>
+  <li>a lower threshold with higher sensitivity, or</li>
+  <li>a higher threshold with higher specificity?</li>
+</ol>
+
+<p>Explain your answer.</p>
+
+<details>
+<summary>Show answer</summary>
+
+For screening, we often prefer a lower threshold with higher sensitivity because the goal is to avoid missing true cases. However, this usually increases false positives. Whether this is acceptable depends on the harm, cost, and burden of follow-up testing.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-8-ppv-and-prevalence">Exercise 8: PPV and prevalence</h2>
+
+<p>Two populations are screened using the same model.</p>
+
+<p>The model has the same sensitivity and specificity in both populations.</p>
+
+<p>Population A has disease prevalence 20%.</p>
+
+<p>Population B has disease prevalence 2%.</p>
+
+<p>Question:</p>
+
+<blockquote>
+  <p>In which population will the positive predictive value usually be higher?</p>
+</blockquote>
+
+<details>
+<summary>Show answer</summary>
+
+The positive predictive value will usually be higher in Population A because disease prevalence is higher. PPV depends strongly on prevalence. When disease is rare, many positive predictions may be false positives even if sensitivity and specificity are reasonable.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-9-auc-interpretation">Exercise 9: AUC interpretation</h2>
+
+<p>A model has:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AUC = 0.82
+</code></pre></div></div>
+
+<p>Answer:</p>
+
+<ol>
+  <li>What does this tell us?</li>
+  <li>Does this tell us whether predicted probabilities are well calibrated?</li>
+  <li>What else should be assessed?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+An AUC of 0.82 suggests the model has reasonably good discrimination. It can rank patients with the outcome higher than patients without the outcome fairly well.
+
+AUC does not tell us whether predicted probabilities are calibrated.
+
+Calibration should also be assessed, along with clinical usefulness, sensitivity, specificity, PPV, NPV, and performance in relevant subgroups.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-10-logistic-regression-as-baseline">Exercise 10: Logistic regression as baseline</h2>
+
+<p>Why is logistic regression often a good first model for binary clinical prediction?</p>
+
+<p>Write 4–6 sentences.</p>
+
+<details>
+<summary>Show answer</summary>
+
+Logistic regression is a good baseline model because it is interpretable, familiar in medical statistics, and produces predicted probabilities. It works well for many tabular clinical datasets and can be assessed using standard prediction metrics. It is also easier to validate and report than many complex models. More complex machine learning models should usually be compared against logistic regression to show whether they provide meaningful improvement.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-11-short-answer-questions">Exercise 11: Short answer questions</h2>
+
+<p>Write 3–5 sentences for each question.</p>
+
+<ol>
+  <li>Why is the prediction time point important?</li>
+  <li>Why should predictors be available at prediction time?</li>
+  <li>Why is accuracy not enough in medical classification?</li>
+  <li>Why can PPV be low for rare diseases?</li>
+  <li>Why should thresholds be chosen based on clinical context?</li>
+</ol>
+
+<hr />
+
+<h2 id="exercise-12-mini-case-study">Exercise 12: Mini case study</h2>
+
+<p>A team develops a model to predict 30-day readmission.</p>
+
+<p>They use the following variables:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Age
+Sex
+Admission diagnosis
+Comorbidities
+Length of stay
+Discharge medications
+Number of previous admissions
+Discharge destination
+Readmission status
+</code></pre></div></div>
+
+<p>The model is intended to be used at hospital discharge.</p>
+
+<p>Answer:</p>
+
+<ol>
+  <li>Which variables are appropriate?</li>
+  <li>Which variable should not be used as a predictor?</li>
+  <li>Is length of stay appropriate in this case?</li>
+  <li>Would your answer change if the prediction time point was hospital admission?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+Appropriate predictors include age, sex, admission diagnosis, comorbidities, length of stay, discharge medications, number of previous admissions, and discharge destination, assuming the prediction is made at discharge.
+
+Readmission status should not be used as a predictor because it is the outcome.
+
+Length of stay is appropriate if the prediction is made at discharge because it is known at that time.
+
+If the prediction time point was hospital admission, length of stay, discharge medications, and discharge destination would not be available and would become leakage-risk variables.
+
+</details>

@@ -1,0 +1,358 @@
+<h1 id="lecture-1-what-is-machine-learning-in-biostatistics">Lecture 1: What is Machine Learning in Biostatistics?</h1>
+
+<h2 id="opening-scene">Opening scene</h2>
+
+<div class="scene-card">
+
+  <div class="scene-title">Scene: A classroom inside a hospital data lab</div>
+
+  <div class="dialogue-line learner">
+    <p><span class="character">Curious Learner:</span><br />
+“Everyone keeps talking about machine learning. Is it just fancy algorithms with complicated names?”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“Not exactly. In biostatistics, machine learning is mainly about learning useful patterns from health data.”</p>
+  </div>
+
+  <div class="dialogue-line dr-clinic">
+    <p><span class="character">Dr Clinic:</span><br />
+“And those patterns must mean something clinically. I cannot use a model just because it looks impressive.”</p>
+  </div>
+
+  <div class="dialogue-line leakage-monster">
+    <p><span class="character">Leakage Monster:</span><br />
+“Unless you accidentally include future information. Then the model looks amazing!”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“That is exactly why medical machine learning needs careful thinking.”</p>
+  </div>
+
+</div>
+
+<hr />
+
+<h2 id="todays-big-question">Today’s big question</h2>
+
+<div class="big-question">
+
+  <p>What does <strong>machine learning</strong> mean in <strong>biostatistics and medical research</strong>?</p>
+
+</div>
+
+<p>In this course, machine learning is not treated as magic.</p>
+
+<p>It is treated as a set of statistical and computational tools that help us learn from data and make predictions.</p>
+
+<p>In medical research, we may want to predict:</p>
+
+<ul>
+  <li>whether a patient has a disease;</li>
+  <li>whether a patient will be readmitted to hospital;</li>
+  <li>whether cancer may recur;</li>
+  <li>whether a patient may respond to treatment;</li>
+  <li>whether a patient is at high risk of clinical deterioration;</li>
+  <li>survival probability over time.</li>
+</ul>
+
+<p>The goal is not just to build a model.</p>
+
+<p>The goal is to build a model that is valid, interpretable, clinically meaningful, and useful on new patients.</p>
+
+<hr />
+
+<h2 id="intuition-first">Intuition first</h2>
+
+<p>Imagine a clinician seeing many patients over time.</p>
+
+<p>The clinician starts noticing patterns:</p>
+
+<ul>
+  <li>patients with higher glucose often have higher diabetes risk;</li>
+  <li>patients with advanced tumour stage may have worse prognosis;</li>
+  <li>patients with repeated hospital admissions may have higher readmission risk;</li>
+  <li>some biomarkers may be linked with treatment response.</li>
+</ul>
+
+<p>Machine learning tries to learn such patterns from data in a structured way.</p>
+
+<p>But there is one important rule:</p>
+
+<div class="key-takeaway">
+
+  <p>A model is only useful if it performs well on <strong>new patients</strong>, not just on the patients used to build it.</p>
+
+</div>
+
+<hr />
+
+<h2 id="prediction-versus-explanation">Prediction versus explanation</h2>
+
+<div class="dialogue-box">
+
+  <div class="dialogue-line learner">
+    <p><span class="character">Curious Learner:</span><br />
+“So machine learning tells us what causes disease?”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“Sometimes people confuse this. Prediction and causal explanation are different goals.”</p>
+  </div>
+
+  <div class="dialogue-line dr-clinic">
+    <p><span class="character">Dr Clinic:</span><br />
+“So a model can predict risk without proving that a variable causes the disease?”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“Exactly.”</p>
+  </div>
+
+</div>
+
+<p>There are two different types of questions.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Question type</th>
+      <th>Example</th>
+      <th>Main aim</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Inference</td>
+      <td>Does smoking increase lung cancer risk?</td>
+      <td>Understand association or causal effect</td>
+    </tr>
+    <tr>
+      <td>Prediction</td>
+      <td>Can we predict lung cancer risk?</td>
+      <td>Predict outcome accurately for new patients</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Both are important, but they are not the same.</p>
+
+<p>A prediction model may use variables because they improve prediction, even if they are not causal.</p>
+
+<p>A causal or explanatory model focuses more on estimating and interpreting effects.</p>
+
+<hr />
+
+<h2 id="medical-example">Medical example</h2>
+
+<p>Suppose we build a model to predict diabetes using:</p>
+
+<ul>
+  <li>glucose;</li>
+  <li>BMI;</li>
+  <li>age;</li>
+  <li>insulin;</li>
+  <li>blood pressure.</li>
+</ul>
+
+<p>The model may estimate:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicted diabetes risk = 0.72
+</code></pre></div></div>
+
+<p>This means the model estimates a 72% probability that the patient is diabetes positive.</p>
+
+<p>But before trusting this model, we should ask:</p>
+
+<ul>
+  <li>Was the model tested on unseen patients?</li>
+  <li>Is the prediction well calibrated?</li>
+  <li>Is sensitivity high enough?</li>
+  <li>Is specificity acceptable?</li>
+  <li>Would it work in another population?</li>
+  <li>Are the predictors available in real clinical practice?</li>
+</ul>
+
+<hr />
+
+<h2 id="mini-conversation-the-accuracy-trap">Mini conversation: the accuracy trap</h2>
+
+<div class="dialogue-box">
+
+  <div class="dialogue-line learner">
+    <p><span class="character">Curious Learner:</span><br />
+“My model has 95% accuracy. So it is excellent, right?”</p>
+  </div>
+
+  <div class="dialogue-line dr-clinic">
+    <p><span class="character">Dr Clinic:</span><br />
+“Maybe. But what if only 5% of patients actually have the disease?”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“Then a model could predict everyone as disease-negative and still appear highly accurate.”</p>
+  </div>
+
+  <div class="dialogue-line leakage-monster">
+    <p><span class="character">Leakage Monster:</span><br />
+“And everyone celebrates the model while it misses all real cases!”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“That is why medical machine learning needs more than accuracy.”</p>
+  </div>
+
+</div>
+
+<p>Accuracy is useful, but it is not enough.</p>
+
+<p>In medicine, we often need to examine:</p>
+
+<ul>
+  <li>sensitivity;</li>
+  <li>specificity;</li>
+  <li>positive predictive value;</li>
+  <li>negative predictive value;</li>
+  <li>ROC AUC;</li>
+  <li>calibration;</li>
+  <li>clinical usefulness;</li>
+  <li>external validation.</li>
+</ul>
+
+<hr />
+
+<h2 id="what-makes-medical-machine-learning-different">What makes medical machine learning different?</h2>
+
+<p>General machine learning often focuses on predictive performance.</p>
+
+<p>Medical machine learning also cares about:</p>
+
+<ul>
+  <li>patient safety;</li>
+  <li>clinical interpretation;</li>
+  <li>calibration;</li>
+  <li>fairness;</li>
+  <li>generalisability;</li>
+  <li>reproducibility;</li>
+  <li>transparent reporting;</li>
+  <li>external validation;</li>
+  <li>decision consequences.</li>
+</ul>
+
+<p>A model can perform well in one dataset but fail in another hospital, population, time period, or healthcare setting.</p>
+
+<p>This is why a medical prediction model should not be judged only by whether the algorithm is advanced.</p>
+
+<p>It should be judged by whether it is valid and useful in the intended setting.</p>
+
+<hr />
+
+<h2 id="common-mistake">Common mistake</h2>
+
+<div class="common-mistake">
+
+  <h3 id="common-mistake-thinking-complex-models-are-automatically-better">Common mistake: thinking complex models are automatically better</h3>
+
+  <p>A complex model is not automatically better than a simpler model.</p>
+
+  <p>For example, a random forest or boosting model may perform well, but if it is poorly validated or difficult to interpret, it may not be useful clinically.</p>
+
+  <p>A logistic regression model with good validation, good calibration, and clear interpretation may be more useful than a black-box model with weak reporting.</p>
+
+</div>
+
+<hr />
+
+<h2 id="clinical-reality-check">Clinical reality check</h2>
+
+<div class="clinical-check">
+
+  <h3 id="clinical-reality-check">Clinical reality check</h3>
+
+  <p>If a model predicts:</p>
+
+  <div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicted risk = 40%
+</code></pre></div>  </div>
+
+  <p>a clinician needs to know:</p>
+
+  <ul>
+    <li>Is 40% close to the true observed risk?</li>
+    <li>What should be done at 40% risk?</li>
+    <li>What are the harms of false positives?</li>
+    <li>What are the harms of false negatives?</li>
+    <li>Has the model been tested externally?</li>
+    <li>Was the model developed without data leakage?</li>
+  </ul>
+
+  <p>A prediction is only useful if it supports a meaningful decision.</p>
+
+</div>
+
+<hr />
+
+<h2 id="the-role-of-r-in-this-course">The role of R in this course</h2>
+
+<p>This course is R-based.</p>
+
+<p>R is widely used in medical statistics, epidemiology, clinical prediction modelling, survival analysis, and biomedical data science.</p>
+
+<p>In later sections, we will use R to:</p>
+
+<ul>
+  <li>prepare medical datasets;</li>
+  <li>fit prediction models;</li>
+  <li>calculate performance metrics;</li>
+  <li>create ROC curves;</li>
+  <li>assess calibration;</li>
+  <li>build reproducible case studies;</li>
+  <li>interpret results clinically.</li>
+</ul>
+
+<p>The aim is not just to run R code.</p>
+
+<p>The aim is to understand what the results mean in a medical setting.</p>
+
+<hr />
+
+<h2 id="key-takeaway">Key takeaway</h2>
+
+<div class="key-takeaway">
+
+  <p>Machine learning in biostatistics is not just about algorithms.</p>
+
+  <p>It is about building, validating, interpreting, and reporting prediction models that may support medical research or clinical decision-making.</p>
+
+  <p>A useful medical machine learning model should be:</p>
+
+  <ul>
+    <li>valid;</li>
+    <li>calibrated;</li>
+    <li>interpretable;</li>
+    <li>reproducible;</li>
+    <li>clinically meaningful;</li>
+    <li>tested on unseen data.</li>
+  </ul>
+
+</div>
+
+<hr />
+
+<h2 id="reflection-question">Reflection question</h2>
+
+<p>A model predicts cancer recurrence with very high accuracy in the training dataset.</p>
+
+<p>Before trusting it on new patients, what questions would you ask?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+You should ask whether the model was evaluated on unseen data, whether the prediction time point was clearly defined, whether any data leakage occurred, whether the model is calibrated, whether sensitivity and specificity are clinically acceptable, and whether the model has been externally validated in another population.
+
+</details>

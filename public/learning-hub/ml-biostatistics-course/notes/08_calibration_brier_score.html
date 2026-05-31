@@ -1,0 +1,567 @@
+<h1 id="calibration-and-brier-score-in-medical-prediction-models">Calibration and Brier Score in Medical Prediction Models</h1>
+
+<h2 id="learning-objectives">Learning objectives</h2>
+
+<p>By the end of this note, you should be able to:</p>
+
+<ol>
+  <li>Explain what calibration means in clinical prediction modelling.</li>
+  <li>Distinguish calibration from discrimination.</li>
+  <li>Interpret calibration plots.</li>
+  <li>Explain overestimation and underestimation of risk.</li>
+  <li>Describe calibration intercept and calibration slope.</li>
+  <li>Explain what the Brier score measures.</li>
+  <li>Understand why calibration is important for clinical decisions.</li>
+  <li>Recognise why a model with high AUC may still be clinically unreliable.</li>
+</ol>
+
+<hr />
+
+<h2 id="1-why-this-note-matters">1. Why this note matters</h2>
+
+<p>Many medical prediction models produce predicted probabilities.</p>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicted diabetes risk = 40%
+Predicted cancer recurrence risk = 25%
+Predicted hospital readmission risk = 18%
+</code></pre></div></div>
+
+<p>These probabilities are useful only if they are meaningful.</p>
+
+<p>If a model says that a group of patients has a 40% risk, then approximately 40% of those patients should experience the outcome.</p>
+
+<p>This is the idea of calibration.</p>
+
+<p>The practical message of this note is:</p>
+
+<blockquote>
+  <p>A medical prediction model should not only rank patients correctly. It should also give predicted risks that agree with observed risks.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="2-discrimination-versus-calibration">2. Discrimination versus calibration</h2>
+
+<p>Discrimination and calibration are different.</p>
+
+<p>Discrimination asks:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Can the model separate patients with the outcome from patients without the outcome?
+</code></pre></div></div>
+
+<p>Calibration asks:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Do the predicted probabilities match observed risks?
+</code></pre></div></div>
+
+<p>AUC measures discrimination.</p>
+
+<p>Calibration assesses whether predicted risks are numerically reliable.</p>
+
+<p>A model can have good discrimination but poor calibration.</p>
+
+<hr />
+
+<h2 id="3-example-good-auc-but-poor-calibration">3. Example: good AUC but poor calibration</h2>
+
+<p>Suppose a diabetes model correctly gives higher predicted risks to most patients with diabetes than to patients without diabetes.</p>
+
+<p>This may produce a good AUC.</p>
+
+<p>However, suppose the model predicts:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Average predicted risk = 60%
+Observed risk = 30%
+</code></pre></div></div>
+
+<p>The model ranks patients well, but it overestimates absolute risk.</p>
+
+<p>This is poor calibration.</p>
+
+<p>In clinical practice, this matters because a patient may be told they are at much higher risk than they really are.</p>
+
+<hr />
+
+<h2 id="4-what-does-calibration-mean">4. What does calibration mean?</h2>
+
+<p>Calibration asks:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>When the model predicts x% risk, is the observed risk close to x%?
+</code></pre></div></div>
+
+<p>For example:</p>
+
+<ul>
+  <li>among patients predicted around 10% risk, about 10% should have the outcome;</li>
+  <li>among patients predicted around 30% risk, about 30% should have the outcome;</li>
+  <li>among patients predicted around 70% risk, about 70% should have the outcome.</li>
+</ul>
+
+<p>If this is approximately true across the risk range, the model is well calibrated.</p>
+
+<hr />
+
+<h2 id="5-why-calibration-matters-in-medicine">5. Why calibration matters in medicine</h2>
+
+<p>Calibration matters because clinical decisions often depend on absolute risk.</p>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Offer treatment if predicted risk is at least 20%.
+</code></pre></div></div>
+
+<p>If the model overestimates risk, patients may receive unnecessary treatment.</p>
+
+<p>If the model underestimates risk, high-risk patients may not receive needed treatment.</p>
+
+<p>Poor calibration can affect:</p>
+
+<ul>
+  <li>treatment decisions;</li>
+  <li>screening decisions;</li>
+  <li>referral decisions;</li>
+  <li>follow-up intensity;</li>
+  <li>patient counselling;</li>
+  <li>shared decision-making;</li>
+  <li>resource allocation.</li>
+</ul>
+
+<hr />
+
+<h2 id="6-calibration-plot">6. Calibration plot</h2>
+
+<p>A calibration plot compares predicted risk with observed risk.</p>
+
+<p>Usually:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>x-axis: predicted risk
+y-axis: observed risk
+</code></pre></div></div>
+
+<p>A perfectly calibrated model would follow the diagonal line.</p>
+
+<p>Interpretation:</p>
+
+<ul>
+  <li>points close to the diagonal suggest good calibration;</li>
+  <li>points above the diagonal suggest the model is underestimating risk;</li>
+  <li>points below the diagonal suggest the model is overestimating risk.</li>
+</ul>
+
+<hr />
+
+<h2 id="7-points-above-the-diagonal">7. Points above the diagonal</h2>
+
+<p>If points are above the diagonal:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Observed risk &gt; predicted risk
+</code></pre></div></div>
+
+<p>This means the model predicted too low.</p>
+
+<p>The model is underestimating risk.</p>
+
+<p>Example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicted risk = 30%
+Observed risk = 50%
+</code></pre></div></div>
+
+<p>The model may give false reassurance.</p>
+
+<hr />
+
+<h2 id="8-points-below-the-diagonal">8. Points below the diagonal</h2>
+
+<p>If points are below the diagonal:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Observed risk &lt; predicted risk
+</code></pre></div></div>
+
+<p>This means the model predicted too high.</p>
+
+<p>The model is overestimating risk.</p>
+
+<p>Example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicted risk = 60%
+Observed risk = 35%
+</code></pre></div></div>
+
+<p>The model may cause unnecessary concern or intervention.</p>
+
+<hr />
+
+<h2 id="9-grouped-calibration">9. Grouped calibration</h2>
+
+<p>One simple way to create a calibration plot is to group patients by predicted risk.</p>
+
+<p>For example, patients may be divided into ten groups based on predicted risk.</p>
+
+<p>For each group, we calculate:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mean predicted risk
+Observed outcome proportion
+</code></pre></div></div>
+
+<p>These values are plotted against each other.</p>
+
+<p>This approach is easy to understand but can be unstable when sample size is small.</p>
+
+<hr />
+
+<h2 id="10-smooth-calibration-curves">10. Smooth calibration curves</h2>
+
+<p>Instead of grouped calibration, a smooth calibration curve can be fitted.</p>
+
+<p>This can show patterns across the range of predicted risks.</p>
+
+<p>Smooth curves may be more informative than grouped points, but they also require careful interpretation.</p>
+
+<p>In small datasets, calibration curves may be noisy.</p>
+
+<hr />
+
+<h2 id="11-calibration-intercept">11. Calibration intercept</h2>
+
+<p>The calibration intercept measures whether predictions are systematically too high or too low.</p>
+
+<p>An ideal calibration intercept is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0
+</code></pre></div></div>
+
+<p>If the intercept is greater than 0, the model may be underestimating risk overall.</p>
+
+<p>If the intercept is less than 0, the model may be overestimating risk overall.</p>
+
+<p>The exact interpretation can depend on how the calibration model is specified, but the ideal value is usually 0.</p>
+
+<hr />
+
+<h2 id="12-calibration-slope">12. Calibration slope</h2>
+
+<p>The calibration slope measures whether predictions are too extreme or not extreme enough.</p>
+
+<p>An ideal calibration slope is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1
+</code></pre></div></div>
+
+<p>A slope less than 1 often suggests overfitting.</p>
+
+<p>This means:</p>
+
+<ul>
+  <li>high risks are predicted too high;</li>
+  <li>low risks are predicted too low.</li>
+</ul>
+
+<p>A slope greater than 1 can suggest that predictions are not extreme enough.</p>
+
+<hr />
+
+<h2 id="13-overfitting-and-calibration-slope">13. Overfitting and calibration slope</h2>
+
+<p>Overfitted models often produce predictions that are too confident.</p>
+
+<p>For example, the model may classify some patients as extremely high risk and others as extremely low risk.</p>
+
+<p>In new data, these extremes may not be justified.</p>
+
+<p>A calibration slope less than 1 warns that the model may be overfitted.</p>
+
+<p>This is common when too many predictors are used for the available sample size.</p>
+
+<hr />
+
+<h2 id="14-brier-score">14. Brier score</h2>
+
+<p>The Brier score measures the average squared difference between predicted probabilities and observed outcomes.</p>
+
+<p>For a binary outcome:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Brier score = mean((predicted probability - observed outcome)^2)
+</code></pre></div></div>
+
+<p>where:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>observed outcome = 1 if event occurred
+observed outcome = 0 if event did not occur
+</code></pre></div></div>
+
+<p>Lower Brier scores are better.</p>
+
+<hr />
+
+<h2 id="15-simple-brier-score-example">15. Simple Brier score example</h2>
+
+<p>Suppose a patient has:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicted risk = 0.80
+Observed outcome = 1
+</code></pre></div></div>
+
+<p>The squared error is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(0.80 - 1)^2 = 0.04
+</code></pre></div></div>
+
+<p>This is a good prediction because the event occurred and the predicted risk was high.</p>
+
+<p>Now suppose another patient has:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicted risk = 0.80
+Observed outcome = 0
+</code></pre></div></div>
+
+<p>The squared error is:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(0.80 - 0)^2 = 0.64
+</code></pre></div></div>
+
+<p>This is a poor prediction because the model predicted high risk but the event did not occur.</p>
+
+<hr />
+
+<h2 id="16-interpreting-the-brier-score">16. Interpreting the Brier score</h2>
+
+<p>The Brier score captures overall probability prediction error.</p>
+
+<p>It reflects aspects of:</p>
+
+<ul>
+  <li>discrimination;</li>
+  <li>calibration;</li>
+  <li>prediction accuracy.</li>
+</ul>
+
+<p>However, the Brier score is not always intuitive by itself.</p>
+
+<p>It should usually be interpreted together with:</p>
+
+<ul>
+  <li>AUC;</li>
+  <li>calibration plot;</li>
+  <li>calibration slope;</li>
+  <li>calibration intercept;</li>
+  <li>clinical context.</li>
+</ul>
+
+<hr />
+
+<h2 id="17-calibration-in-external-validation">17. Calibration in external validation</h2>
+
+<p>Calibration often changes when a model is applied to a new population.</p>
+
+<p>For example, a model developed in one hospital may overestimate risk in another hospital if the outcome is less common there.</p>
+
+<p>This is why external validation should assess calibration, not only AUC.</p>
+
+<p>A model may transport reasonably well in terms of ranking but require recalibration before use.</p>
+
+<hr />
+
+<h2 id="18-recalibration">18. Recalibration</h2>
+
+<p>Recalibration means updating the model so that predicted risks better match observed risks in a new population.</p>
+
+<p>This may involve adjusting:</p>
+
+<ul>
+  <li>intercept;</li>
+  <li>slope;</li>
+  <li>baseline risk;</li>
+  <li>model coefficients.</li>
+</ul>
+
+<p>Recalibration should be done carefully and transparently.</p>
+
+<p>A model should not be silently recalibrated without reporting what was changed.</p>
+
+<hr />
+
+<h2 id="19-clinical-example-diabetes-risk">19. Clinical example: diabetes risk</h2>
+
+<p>Suppose a diabetes model predicts that a group of patients has an average risk of 40%.</p>
+
+<p>If the observed diabetes rate is 42%, the model is well calibrated in that group.</p>
+
+<p>If the observed rate is 65%, the model is underestimating risk.</p>
+
+<p>If the observed rate is 20%, the model is overestimating risk.</p>
+
+<p>This matters because different decisions may be made depending on whether the predicted risk is 20%, 40%, or 65%.</p>
+
+<hr />
+
+<h2 id="20-clinical-example-cancer-recurrence">20. Clinical example: cancer recurrence</h2>
+
+<p>Suppose a cancer recurrence model predicts a 5-year recurrence risk of 30%.</p>
+
+<p>A clinician may use this estimate to discuss follow-up intensity or treatment options.</p>
+
+<p>If the model is poorly calibrated, the patient may receive misleading information.</p>
+
+<p>This could lead to overtreatment, undertreatment, unnecessary anxiety, or false reassurance.</p>
+
+<hr />
+
+<h2 id="21-common-mistakes">21. Common mistakes</h2>
+
+<h3 id="211-reporting-only-auc">21.1 Reporting only AUC</h3>
+
+<p>AUC does not assess predicted probability accuracy.</p>
+
+<h3 id="212-assuming-high-auc-means-good-calibration">21.2 Assuming high AUC means good calibration</h3>
+
+<p>A model can rank patients well but still overestimate or underestimate risk.</p>
+
+<h3 id="213-ignoring-calibration-in-external-validation">21.3 Ignoring calibration in external validation</h3>
+
+<p>Calibration may change across populations.</p>
+
+<h3 id="214-using-arbitrary-risk-thresholds-without-checking-calibration">21.4 Using arbitrary risk thresholds without checking calibration</h3>
+
+<p>Threshold-based decisions require meaningful predicted risks.</p>
+
+<h3 id="215-treating-calibration-as-optional">21.5 Treating calibration as optional</h3>
+
+<p>For clinical prediction, calibration is usually essential.</p>
+
+<hr />
+
+<h2 id="22-reporting-calibration">22. Reporting calibration</h2>
+
+<p>A strong report should include:</p>
+
+<ul>
+  <li>calibration plot;</li>
+  <li>calibration intercept;</li>
+  <li>calibration slope;</li>
+  <li>Brier score;</li>
+  <li>AUC or other discrimination measure;</li>
+  <li>validation method;</li>
+  <li>explanation of clinical implications.</li>
+</ul>
+
+<p>Calibration should be interpreted in the context of the intended use.</p>
+
+<hr />
+
+<h2 id="23-summary">23. Summary</h2>
+
+<p>Calibration is central to medical prediction modelling because predicted probabilities are often used to guide decisions.</p>
+
+<p>A model can have good discrimination but poor calibration. This means it may rank patients correctly but give risk estimates that are too high or too low.</p>
+
+<p>The Brier score summarises probability prediction error, while calibration plots and calibration slope/intercept help diagnose how predicted risks behave.</p>
+
+<p>In clinical applications, calibration is not a technical extra. It directly affects risk communication and decision-making.</p>
+
+<hr />
+
+<h2 id="revision-questions">Revision questions</h2>
+
+<ol>
+  <li>What is calibration?</li>
+  <li>How is calibration different from discrimination?</li>
+  <li>Why can a model have high AUC but poor calibration?</li>
+  <li>How do you interpret points above the diagonal in a calibration plot?</li>
+  <li>How do you interpret points below the diagonal?</li>
+  <li>What is the ideal calibration intercept?</li>
+  <li>What is the ideal calibration slope?</li>
+  <li>What does a calibration slope less than 1 often suggest?</li>
+  <li>What is the Brier score?</li>
+  <li>How is the Brier score calculated for binary outcomes?</li>
+  <li>Why is calibration important for treatment decisions?</li>
+  <li>Why should calibration be assessed in external validation?</li>
+  <li>What is recalibration?</li>
+  <li>Why should risk thresholds not be used without calibration assessment?</li>
+  <li>Why is AUC alone insufficient for clinical prediction?</li>
+</ol>
+
+<hr />
+
+<h2 id="key-terms">Key terms</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Term</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Calibration</td>
+      <td>Agreement between predicted probabilities and observed risks</td>
+    </tr>
+    <tr>
+      <td>Discrimination</td>
+      <td>Ability to rank patients with the outcome above patients without the outcome</td>
+    </tr>
+    <tr>
+      <td>AUC</td>
+      <td>Measure of discrimination for binary classification</td>
+    </tr>
+    <tr>
+      <td>Calibration plot</td>
+      <td>Plot comparing predicted risk with observed risk</td>
+    </tr>
+    <tr>
+      <td>Underestimation</td>
+      <td>Predicted risk is lower than observed risk</td>
+    </tr>
+    <tr>
+      <td>Overestimation</td>
+      <td>Predicted risk is higher than observed risk</td>
+    </tr>
+    <tr>
+      <td>Calibration intercept</td>
+      <td>Measure of systematic overprediction or underprediction</td>
+    </tr>
+    <tr>
+      <td>Calibration slope</td>
+      <td>Measure of whether predictions are too extreme or not extreme enough</td>
+    </tr>
+    <tr>
+      <td>Brier score</td>
+      <td>Mean squared error of predicted probabilities</td>
+    </tr>
+    <tr>
+      <td>Recalibration</td>
+      <td>Updating model predictions to better match a new population</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li>
+    <p>Steyerberg, E. W. (2019). <em>Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating</em> (2nd ed.). Springer.</p>
+  </li>
+  <li>
+    <p>Van Calster, B., McLernon, D. J., van Smeden, M., Wynants, L., &amp; Steyerberg, E. W. (2019). Calibration: the Achilles heel of predictive analytics. <em>BMC Medicine</em>, 17, 230.</p>
+  </li>
+  <li>
+    <p>Harrell, F. E. (2015). <em>Regression Modeling Strategies</em>. Springer.</p>
+  </li>
+  <li>
+    <p>Riley, R. D., van der Windt, D., Croft, P., &amp; Moons, K. G. M. (2019). <em>Prognosis Research in Healthcare: Concepts, Methods, and Impact</em>. Oxford University Press.</p>
+  </li>
+  <li>
+    <p>Moons, K. G. M., et al. (2015). Transparent Reporting of a multivariable prediction model for Individual Prognosis Or Diagnosis: TRIPOD.</p>
+  </li>
+</ol>
+
+<hr />
+
+<h2 id="key-takeaway">Key takeaway</h2>
+
+<p>A model with good AUC is not automatically clinically reliable. For medical prediction, predicted probabilities should be calibrated so that risk estimates are meaningful for patients, clinicians, and decision-making.</p>

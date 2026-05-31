@@ -1,0 +1,240 @@
+<h1 id="lecture-9-decision-curve-analysis">Lecture 9: Decision Curve Analysis</h1>
+
+<h2 id="opening-scene">Opening scene</h2>
+
+<div class="scene-card">
+
+  <div class="scene-title">Scene: The model meets the decision</div>
+
+  <div class="dialogue-line learner">
+    <p><span class="character">Curious Learner:</span><br />
+“My model has good AUC and decent calibration. Is that enough?”</p>
+  </div>
+
+  <div class="dialogue-line dr-clinic">
+    <p><span class="character">Dr Clinic:</span><br />
+“Maybe not. What decision will the model actually support?”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“That is the key question. A model should improve decisions, not just metrics.”</p>
+  </div>
+
+  <div class="dialogue-line confusion-bug">
+    <p><span class="character">Confusion Bug:</span><br />
+“I thought good AUC automatically means clinical usefulness.”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“Not always. That is why decision curve analysis can be useful.”</p>
+  </div>
+
+</div>
+
+<hr />
+
+<h2 id="todays-big-question">Today’s big question</h2>
+
+<div class="big-question">
+
+  <p>Does the model help make better clinical decisions?</p>
+
+</div>
+
+<p>Decision curve analysis is used to evaluate the clinical usefulness of a prediction model.</p>
+
+<p>It asks whether using the model gives more benefit than simple alternatives such as:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Treat everyone
+Treat no one
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="intuition-first">Intuition first</h2>
+
+<p>A model is clinically useful only if it changes decisions in a helpful way.</p>
+
+<p>For example:</p>
+
+<ul>
+  <li>who should receive further testing?</li>
+  <li>who should be referred?</li>
+  <li>who should receive treatment?</li>
+  <li>who should be monitored more closely?</li>
+</ul>
+
+<div class="key-takeaway">
+
+  <p>Good statistical performance does not automatically mean good clinical usefulness.</p>
+
+</div>
+
+<hr />
+
+<h2 id="threshold-probability">Threshold probability</h2>
+
+<p>Decision curve analysis uses the idea of a threshold probability.</p>
+
+<p>A threshold probability is the risk level at which action would be taken.</p>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>If predicted risk ≥ 20%, refer for further testing
+</code></pre></div></div>
+
+<p>Here, 20% is the threshold probability.</p>
+
+<p>Different clinical settings may use different thresholds.</p>
+
+<hr />
+
+<h2 id="mini-conversation">Mini conversation</h2>
+
+<div class="dialogue-box">
+
+  <div class="dialogue-line learner">
+    <p><span class="character">Curious Learner:</span><br />
+“Why does the threshold matter?”</p>
+  </div>
+
+  <div class="dialogue-line dr-clinic">
+    <p><span class="character">Dr Clinic:</span><br />
+“Because action depends on risk. I may act at 5% risk for a harmless test, but not for a risky treatment.”</p>
+  </div>
+
+  <div class="dialogue-line prof-stat">
+    <p><span class="character">Prof Stat:</span><br />
+“Exactly. The threshold reflects the trade-off between false positives and false negatives.”</p>
+  </div>
+
+</div>
+
+<hr />
+
+<h2 id="net-benefit">Net benefit</h2>
+
+<p>Decision curve analysis uses a measure called net benefit.</p>
+
+<p>Net benefit combines:</p>
+
+<ul>
+  <li>true positives;</li>
+  <li>false positives;</li>
+  <li>threshold probability.</li>
+</ul>
+
+<p>The idea is to reward correct identification of patients who need action, while penalising unnecessary action in patients who do not need it.</p>
+
+<hr />
+
+<h2 id="medical-example">Medical example</h2>
+
+<p>Suppose a model predicts diabetes risk.</p>
+
+<p>A clinic may decide:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Refer for further testing if predicted risk ≥ 20%
+</code></pre></div></div>
+
+<p>Decision curve analysis asks:</p>
+
+<ul>
+  <li>Is using the model better than testing everyone?</li>
+  <li>Is using the model better than testing no one?</li>
+  <li>Across which risk thresholds is the model useful?</li>
+</ul>
+
+<hr />
+
+<h2 id="treat-all-versus-treat-none">Treat all versus treat none</h2>
+
+<p>Decision curves often compare three strategies:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Strategy</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Treat all</td>
+      <td>Everyone receives the action</td>
+    </tr>
+    <tr>
+      <td>Treat none</td>
+      <td>Nobody receives the action</td>
+    </tr>
+    <tr>
+      <td>Model-based</td>
+      <td>Action depends on predicted risk</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>A model is useful if it gives higher net benefit than both treat-all and treat-none across relevant thresholds.</p>
+
+<hr />
+
+<h2 id="common-mistake">Common mistake</h2>
+
+<div class="common-mistake">
+
+  <h3 id="common-mistake-assuming-strong-auc-means-clinical-usefulness">Common mistake: assuming strong AUC means clinical usefulness</h3>
+
+  <p>A model can discriminate well but still not improve clinical decisions.</p>
+
+  <p>Clinical usefulness depends on the decision, threshold, harms, benefits, and target population.</p>
+
+</div>
+
+<hr />
+
+<h2 id="clinical-reality-check">Clinical reality check</h2>
+
+<div class="clinical-check">
+
+  <h3 id="clinical-reality-check">Clinical reality check</h3>
+
+  <p>A prediction model should support a real decision.</p>
+
+  <p>Before using decision curve analysis, ask:</p>
+
+  <ul>
+    <li>What action will be taken?</li>
+    <li>What threshold risk would trigger action?</li>
+    <li>What are the harms of false positives?</li>
+    <li>What are the harms of false negatives?</li>
+    <li>Is the model useful across realistic thresholds?</li>
+  </ul>
+
+</div>
+
+<hr />
+
+<h2 id="key-takeaway">Key takeaway</h2>
+
+<div class="key-takeaway">
+
+  <p>Decision curve analysis connects prediction modelling with clinical decision-making.</p>
+
+  <p>It asks whether using the model improves decisions compared with simple alternatives.</p>
+
+</div>
+
+<hr />
+
+<h2 id="reflection-question">Reflection question</h2>
+
+<p>Why might a model with good AUC and calibration still have limited clinical usefulness?</p>
+
+<details>
+<summary>Show suggested answer</summary>
+
+Because it may not improve decisions at clinically relevant thresholds. A model must be linked to a real action, and the benefits of correct decisions must outweigh the harms of false positives and false negatives.
+
+</details>

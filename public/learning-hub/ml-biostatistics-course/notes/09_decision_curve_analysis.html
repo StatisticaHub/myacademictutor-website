@@ -1,0 +1,481 @@
+<h1 id="decision-curve-analysis-and-clinical-usefulness">Decision Curve Analysis and Clinical Usefulness</h1>
+
+<h2 id="learning-objectives">Learning objectives</h2>
+
+<p>By the end of this note, you should be able to:</p>
+
+<ol>
+  <li>Explain why good model performance does not automatically imply clinical usefulness.</li>
+  <li>Define threshold probability.</li>
+  <li>Explain the purpose of decision curve analysis.</li>
+  <li>Describe treat-all, treat-none, and model-based strategies.</li>
+  <li>Explain the idea of net benefit.</li>
+  <li>Understand how false positives and false negatives are weighted in decision-making.</li>
+  <li>Recognise why decision curve analysis requires a clear clinical decision.</li>
+  <li>Interpret decision curve analysis in medical prediction studies.</li>
+</ol>
+
+<hr />
+
+<h2 id="1-why-this-note-matters">1. Why this note matters</h2>
+
+<p>A prediction model can have good statistical performance but still be clinically unhelpful.</p>
+
+<p>For example, a model may have:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AUC = 0.82
+Good calibration
+Acceptable sensitivity and specificity
+</code></pre></div></div>
+
+<p>This sounds promising. But it does not automatically mean that using the model will improve patient care.</p>
+
+<p>A clinical prediction model should support a decision. Decision curve analysis helps evaluate whether using a model improves decisions compared with simpler strategies.</p>
+
+<p>The practical message of this note is:</p>
+
+<blockquote>
+  <p>A prediction model is clinically useful only if it improves decisions at relevant risk thresholds.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="2-from-prediction-to-decision">2. From prediction to decision</h2>
+
+<p>Many prediction models estimate risk.</p>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Predicted diabetes risk = 25%
+Predicted cancer recurrence risk = 18%
+Predicted readmission risk = 30%
+</code></pre></div></div>
+
+<p>But risk prediction alone is not the final goal.</p>
+
+<p>The question is what should be done with the prediction.</p>
+
+<p>Possible actions include:</p>
+
+<ul>
+  <li>further testing;</li>
+  <li>referral;</li>
+  <li>treatment;</li>
+  <li>closer monitoring;</li>
+  <li>reassurance;</li>
+  <li>follow-up planning.</li>
+</ul>
+
+<p>Decision curve analysis links predicted risk to clinical action.</p>
+
+<hr />
+
+<h2 id="3-the-clinical-decision">3. The clinical decision</h2>
+
+<p>Before using decision curve analysis, define the decision clearly.</p>
+
+<p>Examples:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Should this patient receive further diabetes testing?
+</code></pre></div></div>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Should this patient receive additional cancer follow-up?
+</code></pre></div></div>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Should this patient be referred to a specialist?
+</code></pre></div></div>
+
+<p>Without a clear decision, decision curve analysis becomes difficult to interpret.</p>
+
+<p>A decision curve is not just a statistical plot. It is a way of asking whether model-based decisions are better than simple alternatives.</p>
+
+<hr />
+
+<h2 id="4-threshold-probability">4. Threshold probability</h2>
+
+<p>A threshold probability is the risk level at which action is taken.</p>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Refer for further testing if predicted risk ≥ 20%
+</code></pre></div></div>
+
+<p>Here, 20% is the threshold probability.</p>
+
+<p>The threshold reflects the point at which the expected benefit of action is judged to outweigh the potential harm, cost, or burden.</p>
+
+<hr />
+
+<h2 id="5-why-threshold-probability-matters">5. Why threshold probability matters</h2>
+
+<p>Different clinical actions have different thresholds.</p>
+
+<p>A low threshold may be reasonable when:</p>
+
+<ul>
+  <li>the action is safe;</li>
+  <li>the action is cheap;</li>
+  <li>the test is non-invasive;</li>
+  <li>missing disease is harmful.</li>
+</ul>
+
+<p>A high threshold may be reasonable when:</p>
+
+<ul>
+  <li>treatment is risky;</li>
+  <li>treatment is expensive;</li>
+  <li>false positives cause harm;</li>
+  <li>the intervention is invasive.</li>
+</ul>
+
+<p>Therefore, the same model may be useful at some thresholds but not others.</p>
+
+<hr />
+
+<h2 id="6-treat-all-strategy">6. Treat-all strategy</h2>
+
+<p>The treat-all strategy means every patient receives the action.</p>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Test every patient.
+</code></pre></div></div>
+
+<p>This may be reasonable when the test is cheap and safe, or when the outcome is common.</p>
+
+<p>However, it may lead to unnecessary testing, anxiety, cost, or overtreatment.</p>
+
+<hr />
+
+<h2 id="7-treat-none-strategy">7. Treat-none strategy</h2>
+
+<p>The treat-none strategy means no patient receives the action.</p>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Test no patients.
+</code></pre></div></div>
+
+<p>This may be reasonable when the outcome is rare, the action is harmful, or the cost is high.</p>
+
+<p>However, it may miss patients who could benefit from intervention.</p>
+
+<hr />
+
+<h2 id="8-model-based-strategy">8. Model-based strategy</h2>
+
+<p>The model-based strategy uses predicted risk.</p>
+
+<p>For example:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Test patients if predicted risk ≥ 20%.
+</code></pre></div></div>
+
+<p>This strategy is useful only if it improves the balance between detecting true cases and avoiding unnecessary action.</p>
+
+<p>Decision curve analysis compares model-based decisions with treat-all and treat-none strategies.</p>
+
+<hr />
+
+<h2 id="9-net-benefit">9. Net benefit</h2>
+
+<p>Decision curve analysis uses a measure called <strong>net benefit</strong>.</p>
+
+<p>Net benefit combines:</p>
+
+<ul>
+  <li>true positives;</li>
+  <li>false positives;</li>
+  <li>threshold probability.</li>
+</ul>
+
+<p>It rewards correct identification of patients who should receive action and penalises unnecessary action in patients who do not need it.</p>
+
+<p>The exact formula is less important at this stage than the interpretation:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Higher net benefit = better decision strategy
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="10-intuition-behind-net-benefit">10. Intuition behind net benefit</h2>
+
+<p>A true positive is beneficial because the model correctly identifies a patient who may need action.</p>
+
+<p>A false positive is harmful because the model recommends action for a patient who does not need it.</p>
+
+<p>The threshold probability determines how much false positives are penalised.</p>
+
+<p>At a low threshold, false positives are penalised less.</p>
+
+<p>At a high threshold, false positives are penalised more.</p>
+
+<p>This reflects clinical judgement about the relative harm of false positives and false negatives.</p>
+
+<hr />
+
+<h2 id="11-medical-example-diabetes-testing">11. Medical example: diabetes testing</h2>
+
+<p>Suppose a diabetes model predicts risk.</p>
+
+<p>The clinic considers further testing if risk is at least 20%.</p>
+
+<p>Possible strategies are:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Test everyone
+Test nobody
+Test only if predicted risk ≥ 20%
+</code></pre></div></div>
+
+<p>Decision curve analysis asks whether the model-based strategy gives higher net benefit than testing everyone or testing nobody.</p>
+
+<p>If it does, the model may be clinically useful at that threshold.</p>
+
+<hr />
+
+<h2 id="12-medical-example-cancer-follow-up">12. Medical example: cancer follow-up</h2>
+
+<p>Suppose a model predicts cancer recurrence risk.</p>
+
+<p>A clinician may consider intensive follow-up if predicted recurrence risk is high.</p>
+
+<p>However, intensive follow-up may involve cost, anxiety, imaging, and clinic visits.</p>
+
+<p>Decision curve analysis can help assess whether the model improves decisions across plausible thresholds for additional follow-up.</p>
+
+<hr />
+
+<h2 id="13-why-auc-is-not-enough">13. Why AUC is not enough</h2>
+
+<p>AUC measures discrimination.</p>
+
+<p>It asks:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Does the model rank patients with the outcome above patients without the outcome?
+</code></pre></div></div>
+
+<p>But AUC does not tell us whether using the model improves decisions.</p>
+
+<p>A model can have good AUC and still be clinically unhelpful if it does not improve net benefit at relevant thresholds.</p>
+
+<hr />
+
+<h2 id="14-why-calibration-is-still-important">14. Why calibration is still important</h2>
+
+<p>Decision curve analysis uses predicted probabilities.</p>
+
+<p>If the model is poorly calibrated, threshold-based decisions may be misleading.</p>
+
+<p>For example, if a model overestimates risk, too many patients may be placed above the treatment threshold.</p>
+
+<p>If it underestimates risk, high-risk patients may be missed.</p>
+
+<p>Therefore, calibration should be assessed before interpreting decision curves.</p>
+
+<hr />
+
+<h2 id="15-relevant-threshold-range">15. Relevant threshold range</h2>
+
+<p>Decision curve analysis should focus on clinically relevant thresholds.</p>
+
+<p>For example, if clinicians would only act between 10% and 30% predicted risk, then model usefulness outside this range may be less relevant.</p>
+
+<p>A decision curve should not be interpreted without asking:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Are these thresholds realistic for the clinical decision?
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="16-interpreting-a-decision-curve">16. Interpreting a decision curve</h2>
+
+<p>A model is potentially useful when its net benefit is higher than both:</p>
+
+<ul>
+  <li>treat-all;</li>
+  <li>treat-none.</li>
+</ul>
+
+<p>This should be true across thresholds that make clinical sense.</p>
+
+<p>If a model has higher net benefit only at unrealistic thresholds, it may not be useful in practice.</p>
+
+<hr />
+
+<h2 id="17-clinical-usefulness-depends-on-context">17. Clinical usefulness depends on context</h2>
+
+<p>The same model may be useful in one setting but not another.</p>
+
+<p>For example, a diabetes risk model may be useful for deciding who should receive a low-cost blood test.</p>
+
+<p>The same model may not be sufficient for deciding who should start a medication with side effects.</p>
+
+<p>Clinical usefulness depends on:</p>
+
+<ul>
+  <li>the decision;</li>
+  <li>the intervention;</li>
+  <li>harms and benefits;</li>
+  <li>disease prevalence;</li>
+  <li>patient preferences;</li>
+  <li>healthcare resources.</li>
+</ul>
+
+<hr />
+
+<h2 id="18-common-mistakes">18. Common mistakes</h2>
+
+<h3 id="181-assuming-high-auc-means-clinical-usefulness">18.1 Assuming high AUC means clinical usefulness</h3>
+
+<p>High AUC does not guarantee improved decisions.</p>
+
+<h3 id="182-using-decision-curve-analysis-without-a-clear-decision">18.2 Using decision curve analysis without a clear decision</h3>
+
+<p>The method requires a defined action.</p>
+
+<h3 id="183-ignoring-threshold-relevance">18.3 Ignoring threshold relevance</h3>
+
+<p>The threshold range must be clinically realistic.</p>
+
+<h3 id="184-ignoring-calibration">18.4 Ignoring calibration</h3>
+
+<p>Poor calibration can make threshold-based decisions unreliable.</p>
+
+<h3 id="185-overclaiming-clinical-value">18.5 Overclaiming clinical value</h3>
+
+<p>Decision curve analysis can support usefulness, but it does not prove real-world implementation benefit by itself.</p>
+
+<hr />
+
+<h2 id="19-reporting-decision-curve-analysis">19. Reporting decision curve analysis</h2>
+
+<p>A clear report should describe:</p>
+
+<ul>
+  <li>target population;</li>
+  <li>prediction model;</li>
+  <li>clinical decision;</li>
+  <li>action triggered by the model;</li>
+  <li>threshold probability range;</li>
+  <li>reason the threshold range is clinically relevant;</li>
+  <li>comparison strategies;</li>
+  <li>validation dataset;</li>
+  <li>interpretation of net benefit.</li>
+</ul>
+
+<p>This makes the decision curve clinically interpretable.</p>
+
+<hr />
+
+<h2 id="20-summary">20. Summary</h2>
+
+<p>Decision curve analysis evaluates clinical usefulness. It asks whether using a model improves decisions compared with treating everyone or treating no one.</p>
+
+<p>It is useful because good statistical performance does not automatically mean clinical value.</p>
+
+<p>A decision curve should always be interpreted in context: what decision is being made, what threshold range is realistic, what harms are involved, and whether the model has been validated.</p>
+
+<hr />
+
+<h2 id="revision-questions">Revision questions</h2>
+
+<ol>
+  <li>What is decision curve analysis?</li>
+  <li>Why is AUC not enough to show clinical usefulness?</li>
+  <li>What is threshold probability?</li>
+  <li>What does the treat-all strategy mean?</li>
+  <li>What does the treat-none strategy mean?</li>
+  <li>What is a model-based decision strategy?</li>
+  <li>What is net benefit?</li>
+  <li>Why are false positives penalised in net benefit?</li>
+  <li>Why does the threshold probability matter?</li>
+  <li>Why should decision curves focus on clinically relevant thresholds?</li>
+  <li>Why is calibration important before decision curve analysis?</li>
+  <li>Why might a model with good AUC have limited clinical usefulness?</li>
+  <li>What should be reported when presenting decision curve analysis?</li>
+  <li>Why does decision curve analysis require a clear clinical decision?</li>
+  <li>How can patient preferences influence threshold probability?</li>
+</ol>
+
+<hr />
+
+<h2 id="key-terms">Key terms</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Term</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Decision curve analysis</td>
+      <td>Method for evaluating clinical usefulness of prediction models</td>
+    </tr>
+    <tr>
+      <td>Threshold probability</td>
+      <td>Risk level at which clinical action is taken</td>
+    </tr>
+    <tr>
+      <td>Treat all</td>
+      <td>Strategy where every patient receives the action</td>
+    </tr>
+    <tr>
+      <td>Treat none</td>
+      <td>Strategy where no patient receives the action</td>
+    </tr>
+    <tr>
+      <td>Model-based strategy</td>
+      <td>Strategy where action depends on predicted risk</td>
+    </tr>
+    <tr>
+      <td>Net benefit</td>
+      <td>Measure balancing true positives and false positives according to threshold</td>
+    </tr>
+    <tr>
+      <td>Clinical usefulness</td>
+      <td>Whether a model improves decisions in practice</td>
+    </tr>
+    <tr>
+      <td>False positive</td>
+      <td>Patient incorrectly classified as needing action</td>
+    </tr>
+    <tr>
+      <td>False negative</td>
+      <td>Patient incorrectly classified as not needing action</td>
+    </tr>
+    <tr>
+      <td>Relevant threshold range</td>
+      <td>Range of risk thresholds that are realistic for the clinical decision</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li>
+    <p>Vickers, A. J., &amp; Elkin, E. B. (2006). Decision curve analysis: a novel method for evaluating prediction models. <em>Medical Decision Making</em>.</p>
+  </li>
+  <li>
+    <p>Van Calster, B., Wynants, L., Verbeek, J. F. M., et al. (2018). Reporting and interpreting decision curve analysis: a guide for investigators. <em>European Urology</em>.</p>
+  </li>
+  <li>
+    <p>Steyerberg, E. W. (2019). <em>Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating</em> (2nd ed.). Springer.</p>
+  </li>
+  <li>
+    <p>Riley, R. D., van der Windt, D., Croft, P., &amp; Moons, K. G. M. (2019). <em>Prognosis Research in Healthcare: Concepts, Methods, and Impact</em>. Oxford University Press.</p>
+  </li>
+  <li>
+    <p>Moons, K. G. M., et al. (2015). Transparent Reporting of a multivariable prediction model for Individual Prognosis Or Diagnosis: TRIPOD.</p>
+  </li>
+</ol>
+
+<hr />
+
+<h2 id="key-takeaway">Key takeaway</h2>
+
+<p>Decision curve analysis connects prediction modelling to clinical action. A model is not useful simply because it has good AUC or calibration; it is useful when it improves decisions at clinically meaningful risk thresholds.</p>

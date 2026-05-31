@@ -1,0 +1,454 @@
+<h1 id="exercise-4-logistic-regression-for-clinical-prediction">Exercise 4: Logistic Regression for Clinical Prediction</h1>
+
+<h2 id="exercise-1-probability-to-odds">Exercise 1: Probability to odds</h2>
+
+<p>Convert each probability into odds.</p>
+
+<p>Use:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Odds = p / (1 - p)
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: right">Probability</th>
+      <th style="text-align: right">Odds</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: right">0.10</td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: right">0.20</td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: right">0.50</td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: right">0.75</td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: right">0.90</td>
+      <td style="text-align: right"> </td>
+    </tr>
+  </tbody>
+</table>
+
+<details>
+<summary>Show answer</summary>
+
+| Probability | Odds |
+|---:|---:|
+| 0.10 | 0.10 / 0.90 = 0.111 |
+| 0.20 | 0.20 / 0.80 = 0.25 |
+| 0.50 | 0.50 / 0.50 = 1 |
+| 0.75 | 0.75 / 0.25 = 3 |
+| 0.90 | 0.90 / 0.10 = 9 |
+
+</details>
+
+<hr />
+
+<h2 id="exercise-2-odds-to-probability">Exercise 2: Odds to probability</h2>
+
+<p>Convert each odds value into probability.</p>
+
+<p>Use:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>p = odds / (1 + odds)
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: right">Odds</th>
+      <th style="text-align: right">Probability</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: right">0.25</td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: right">0.50</td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: right">1.00</td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: right">2.00</td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: right">4.00</td>
+      <td style="text-align: right"> </td>
+    </tr>
+  </tbody>
+</table>
+
+<details>
+<summary>Show answer</summary>
+
+| Odds | Probability |
+|---:|---:|
+| 0.25 | 0.25 / 1.25 = 0.20 |
+| 0.50 | 0.50 / 1.50 = 0.333 |
+| 1.00 | 1 / 2 = 0.50 |
+| 2.00 | 2 / 3 = 0.667 |
+| 4.00 | 4 / 5 = 0.80 |
+
+</details>
+
+<hr />
+
+<h2 id="exercise-3-interpreting-coefficients">Exercise 3: Interpreting coefficients</h2>
+
+<p>A logistic regression model gives the following coefficient for age:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>β_age = 0.05
+</code></pre></div></div>
+
+<p>Answer:</p>
+
+<ol>
+  <li>Is age associated with higher or lower odds of the outcome?</li>
+  <li>What is the odds ratio?</li>
+  <li>Interpret the odds ratio.</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+The coefficient is positive, so higher age is associated with higher odds of the outcome.
+
+The odds ratio is:
+
+```text
+exp(0.05) = 1.051
+```
+
+This means each one-year increase in age is associated with approximately 5.1% higher odds of the outcome, holding other predictors constant.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-4-interpreting-an-odds-ratio">Exercise 4: Interpreting an odds ratio</h2>
+
+<p>A logistic regression model for diabetes gives:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Odds ratio for BMI = 1.12
+</code></pre></div></div>
+
+<p>Answer:</p>
+
+<ol>
+  <li>What does this mean?</li>
+  <li>Does this mean the risk increases by 12%?</li>
+  <li>Why should odds ratios be interpreted carefully?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+An odds ratio of 1.12 means each one-unit increase in BMI is associated with 12% higher odds of diabetes, holding other variables constant.
+
+It does not necessarily mean the risk increases by 12%. Odds and risk are different, especially when the outcome is common.
+
+Odds ratios should be interpreted carefully because they can exaggerate the impression of effect size compared with risk ratios when outcomes are common.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-5-inference-or-prediction">Exercise 5: Inference or prediction?</h2>
+
+<p>Classify each logistic regression use as inference or prediction.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Question</th>
+      <th>Inference or prediction?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Is BMI associated with diabetes after adjustment for age and sex?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Can we predict 10-year diabetes risk?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Is smoking associated with lung cancer?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Can we predict 30-day hospital readmission?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Is tumour stage independently associated with survival?</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Can we predict recurrence within 5 years?</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<details>
+<summary>Show answer</summary>
+
+| Question | Inference or prediction? |
+|---|---|
+| Is BMI associated with diabetes after adjustment for age and sex? | Inference |
+| Can we predict 10-year diabetes risk? | Prediction |
+| Is smoking associated with lung cancer? | Inference |
+| Can we predict 30-day hospital readmission? | Prediction |
+| Is tumour stage independently associated with survival? | Inference/prognostic association |
+| Can we predict recurrence within 5 years? | Prediction |
+
+</details>
+
+<hr />
+
+<h2 id="exercise-6-appropriate-predictors">Exercise 6: Appropriate predictors</h2>
+
+<p>You are building a logistic regression model to predict 30-day hospital readmission at discharge.</p>
+
+<p>Classify each variable as appropriate or leakage risk.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Variable</th>
+      <th>Appropriate or leakage risk?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Age</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Sex</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Admission diagnosis</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Previous admissions</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Length of stay</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Discharge medications</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Readmission status</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Lab values after readmission</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<details>
+<summary>Show answer</summary>
+
+Appropriate predictors: age, sex, admission diagnosis, previous admissions, length of stay, discharge medications.
+
+Leakage risk: readmission status and lab values after readmission.
+
+Because the prediction is made at discharge, length of stay and discharge medications are available and may be appropriate.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-7-breast-cancer-prediction">Exercise 7: Breast cancer prediction</h2>
+
+<p>Suppose you want to predict whether a breast cancer patient will experience recurrence within 5 years.</p>
+
+<p>Answer:</p>
+
+<ol>
+  <li>What is the binary outcome?</li>
+  <li>List five possible predictors.</li>
+  <li>What is the prediction time point?</li>
+  <li>Why might survival analysis sometimes be better than logistic regression?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+The binary outcome is recurrence within 5 years: yes/no.
+
+Possible predictors include age at diagnosis, tumour size, tumour grade, lymph node status, receptor status, treatment, comorbidities, and baseline biomarkers.
+
+The prediction time point could be diagnosis or treatment initiation.
+
+Survival analysis may be better if patients have different follow-up times or censoring. Logistic regression ignores timing and may discard information when the outcome is time-to-event.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-8-methylation-prediction">Exercise 8: Methylation prediction</h2>
+
+<p>Suppose you want to predict disease status using DNA methylation data.</p>
+
+<p>You have:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>n = 500 participants
+p = 450,000 CpG sites
+</code></pre></div></div>
+
+<p>Answer:</p>
+
+<ol>
+  <li>Why is ordinary logistic regression problematic?</li>
+  <li>What type of logistic regression may be more suitable?</li>
+  <li>What validation issue is especially important?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+Ordinary logistic regression is problematic because the number of predictors is much larger than the number of participants. This creates severe overfitting risk and may make the model impossible to estimate.
+
+Penalised logistic regression, such as lasso or elastic net, may be more suitable.
+
+Feature selection and preprocessing must be done inside resampling to avoid data leakage.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-9-calibration-interpretation">Exercise 9: Calibration interpretation</h2>
+
+<p>A logistic regression model predicts 40% risk for a group of patients.</p>
+
+<p>Observed event rate in this group is 20%.</p>
+
+<p>Answer:</p>
+
+<ol>
+  <li>Is the model well calibrated in this group?</li>
+  <li>Is it overestimating or underestimating risk?</li>
+  <li>Why could this be clinically harmful?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+The model is not well calibrated in this group.
+
+It is overestimating risk because predicted risk is 40% but observed risk is 20%.
+
+This could lead to unnecessary treatment, unnecessary monitoring, patient anxiety, or inefficient use of clinical resources.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-10-separation">Exercise 10: Separation</h2>
+
+<p>A dataset contains 80 patients.</p>
+
+<p>All 10 patients with a particular biomarker value experienced the outcome. None of the 70 patients without that biomarker value experienced the outcome.</p>
+
+<p>Answer:</p>
+
+<ol>
+  <li>What problem might occur in logistic regression?</li>
+  <li>Why is this a problem?</li>
+  <li>What could be done?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+This is a separation problem.
+
+The predictor perfectly separates the outcome groups, which can lead to unstable or infinite coefficient estimates.
+
+Possible solutions include penalised logistic regression, Firth correction, reducing model complexity, or collecting more data.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-11-short-answer-questions">Exercise 11: Short answer questions</h2>
+
+<p>Write 3–5 sentences for each question.</p>
+
+<ol>
+  <li>Why is logistic regression suitable for binary outcomes?</li>
+  <li>Why is ordinary linear regression not ideal for binary outcomes?</li>
+  <li>What is the difference between probability and odds?</li>
+  <li>Why are odds ratios easy to misinterpret?</li>
+  <li>Why is logistic regression a useful baseline model?</li>
+  <li>Why is calibration important for logistic regression prediction models?</li>
+  <li>Why should complex machine learning models be compared with logistic regression?</li>
+</ol>
+
+<hr />
+
+<h2 id="exercise-12-mini-case-study">Exercise 12: Mini case study</h2>
+
+<p>A researcher builds a logistic regression model to predict 1-year mortality after cancer diagnosis.</p>
+
+<p>They include:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Age at diagnosis
+Tumour stage
+Tumour grade
+Treatment type
+Baseline biomarker level
+Recurrence status during follow-up
+End-of-life care referral
+</code></pre></div></div>
+
+<p>Answer:</p>
+
+<ol>
+  <li>Which predictors are appropriate?</li>
+  <li>Which predictors are leakage risks?</li>
+  <li>Why are they leakage risks?</li>
+  <li>How would you improve the predictor list?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+Appropriate predictors may include age at diagnosis, tumour stage, tumour grade, treatment type if known at prediction time, and baseline biomarker level.
+
+Leakage risks include recurrence status during follow-up and end-of-life care referral. These occur after baseline and are closely related to the outcome.
+
+They are leakage risks because they would not be available when predicting 1-year mortality at diagnosis.
+
+The predictor list should include only variables available at the defined prediction time point. The model should clearly state whether prediction is made at diagnosis, after treatment planning, or at another time.
+
+</details>

@@ -1,0 +1,499 @@
+<h1 id="exercise-5-classification-metrics-in-medicine">Exercise 5: Classification Metrics in Medicine</h1>
+
+<h2 id="exercise-1-confusion-matrix-terms">Exercise 1: Confusion matrix terms</h2>
+
+<p>Complete the definitions.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Term</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>True positive</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>False positive</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>True negative</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>False negative</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<details>
+<summary>Show answer</summary>
+
+| Term | Meaning |
+|---|---|
+| True positive | Model predicts positive and the patient truly has the outcome |
+| False positive | Model predicts positive but the patient does not have the outcome |
+| True negative | Model predicts negative and the patient truly does not have the outcome |
+| False negative | Model predicts negative but the patient truly has the outcome |
+
+</details>
+
+<hr />
+
+<h2 id="exercise-2-calculate-classification-metrics">Exercise 2: Calculate classification metrics</h2>
+
+<p>A model gives the following results:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>True positives = 40
+False positives = 20
+True negatives = 120
+False negatives = 20
+</code></pre></div></div>
+
+<p>Calculate:</p>
+
+<ol>
+  <li>Accuracy</li>
+  <li>Sensitivity</li>
+  <li>Specificity</li>
+  <li>Positive predictive value</li>
+  <li>Negative predictive value</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+Total:
+
+```text
+40 + 20 + 120 + 20 = 200
+```
+
+Accuracy:
+
+```text
+(TP + TN) / Total = (40 + 120) / 200 = 0.80
+```
+
+Sensitivity:
+
+```text
+TP / (TP + FN) = 40 / (40 + 20) = 0.667
+```
+
+Specificity:
+
+```text
+TN / (TN + FP) = 120 / (120 + 20) = 0.857
+```
+
+Positive predictive value:
+
+```text
+TP / (TP + FP) = 40 / (40 + 20) = 0.667
+```
+
+Negative predictive value:
+
+```text
+TN / (TN + FN) = 120 / (120 + 20) = 0.857
+```
+
+</details>
+
+<hr />
+
+<h2 id="exercise-3-accuracy-and-rare-disease">Exercise 3: Accuracy and rare disease</h2>
+
+<p>A disease has prevalence 1%.</p>
+
+<p>A model predicts every patient as disease negative.</p>
+
+<p>Answer:</p>
+
+<ol>
+  <li>What is the accuracy?</li>
+  <li>What is the sensitivity?</li>
+  <li>Why is this model not clinically useful for screening?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+The accuracy is 99%, because 99% of patients do not have the disease.
+
+The sensitivity is 0%, because the model identifies none of the true disease cases.
+
+The model is not useful for screening because it misses every patient with the disease.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-4-sensitivity-or-specificity">Exercise 4: Sensitivity or specificity?</h2>
+
+<p>For each situation, state whether sensitivity or specificity is more important.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Situation</th>
+      <th>Sensitivity or specificity?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Cancer screening test</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Sepsis early warning alert</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Confirmatory test before invasive procedure</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Model recommending toxic chemotherapy</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Infectious disease screening at airport</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Avoiding unnecessary biopsy</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<details>
+<summary>Show answer</summary>
+
+| Situation | Sensitivity or specificity? |
+|---|---|
+| Cancer screening test | Sensitivity |
+| Sepsis early warning alert | Sensitivity |
+| Confirmatory test before invasive procedure | Specificity |
+| Model recommending toxic chemotherapy | Specificity |
+| Infectious disease screening at airport | Sensitivity |
+| Avoiding unnecessary biopsy | Specificity |
+
+These are general answers. In practice, the final decision depends on clinical consequences, cost, feasibility, and patient safety.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-5-ppv-and-prevalence">Exercise 5: PPV and prevalence</h2>
+
+<p>Two populations are tested with the same model.</p>
+
+<p>The model has the same sensitivity and specificity in both populations.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Population A prevalence = 20%
+Population B prevalence = 2%
+</code></pre></div></div>
+
+<p>Question:</p>
+
+<blockquote>
+  <p>In which population will PPV usually be higher, and why?</p>
+</blockquote>
+
+<details>
+<summary>Show answer</summary>
+
+PPV will usually be higher in Population A because the outcome is more common.
+
+When prevalence is low, many positive predictions may be false positives, even if sensitivity and specificity are reasonable.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-6-npv-and-rare-disease">Exercise 6: NPV and rare disease</h2>
+
+<p>A model has very high NPV in a rare disease setting.</p>
+
+<p>Question:</p>
+
+<blockquote>
+  <p>Does this automatically mean the model is excellent? Explain.</p>
+</blockquote>
+
+<details>
+<summary>Show answer</summary>
+
+No. NPV can be high simply because the disease is rare.
+
+If most people do not have the disease, many negative predictions will be correct even for a weak model.
+
+NPV should be interpreted alongside prevalence, sensitivity, specificity, PPV, and clinical purpose.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-7-threshold-trade-off">Exercise 7: Threshold trade-off</h2>
+
+<p>A model predicts probability of disease.</p>
+
+<p>At threshold 0.20:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Sensitivity = 0.92
+Specificity = 0.55
+</code></pre></div></div>
+
+<p>At threshold 0.70:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Sensitivity = 0.50
+Specificity = 0.94
+</code></pre></div></div>
+
+<p>Answer:</p>
+
+<ol>
+  <li>Which threshold may be preferred for screening?</li>
+  <li>Which threshold may be preferred before giving a risky treatment?</li>
+  <li>Why?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+For screening, threshold 0.20 may be preferred because it gives higher sensitivity and misses fewer true cases.
+
+Before giving a risky treatment, threshold 0.70 may be preferred because it gives higher specificity and reduces false positives.
+
+The preferred threshold depends on the consequences of false positives and false negatives.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-8-auc-interpretation">Exercise 8: AUC interpretation</h2>
+
+<p>A model has:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AUC = 0.84
+</code></pre></div></div>
+
+<p>Answer:</p>
+
+<ol>
+  <li>What does this tell us?</li>
+  <li>Does it tell us whether predicted probabilities are well calibrated?</li>
+  <li>Does it tell us which threshold should be used?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+An AUC of 0.84 suggests good discrimination. The model is reasonably good at ranking patients who experience the outcome above those who do not.
+
+AUC does not tell us whether predicted probabilities are calibrated.
+
+AUC also does not tell us which threshold should be used. Threshold choice depends on clinical context.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-9-calibration-problem">Exercise 9: Calibration problem</h2>
+
+<p>A model predicts 40% risk for a group of patients.</p>
+
+<p>The observed event rate in that group is 15%.</p>
+
+<p>Answer:</p>
+
+<ol>
+  <li>Is the model well calibrated?</li>
+  <li>Is it overestimating or underestimating risk?</li>
+  <li>Why could this be harmful?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+The model is not well calibrated in this group.
+
+It is overestimating risk because predicted risk is 40%, but observed risk is 15%.
+
+This could lead to unnecessary treatment, monitoring, anxiety, or inefficient use of healthcare resources.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-10-breast-cancer-recurrence-example">Exercise 10: Breast cancer recurrence example</h2>
+
+<p>A model predicts 5-year breast cancer recurrence.</p>
+
+<p>Answer:</p>
+
+<ol>
+  <li>What is the positive class?</li>
+  <li>What would sensitivity mean?</li>
+  <li>What would specificity mean?</li>
+  <li>Why might ordinary binary classification metrics be incomplete if censoring is present?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+The positive class is recurrence within 5 years.
+
+Sensitivity means: among patients who truly recur within 5 years, how many are classified as high risk.
+
+Specificity means: among patients who do not recur within 5 years, how many are classified as low risk.
+
+If censoring is present, some patients may not have known 5-year recurrence status. In that case, survival-specific metrics such as C-index, time-dependent AUC, and time-dependent Brier score may be more appropriate.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-11-methylation-classification-example">Exercise 11: Methylation classification example</h2>
+
+<p>Suppose a model uses DNA methylation markers to classify disease status.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>n = 600 participants
+p = 450,000 CpG sites
+</code></pre></div></div>
+
+<p>Answer:</p>
+
+<ol>
+  <li>Why might accuracy be misleading?</li>
+  <li>Why is feature-selection leakage a risk?</li>
+  <li>Which metrics would you report?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+Accuracy may be misleading if the disease classes are imbalanced.
+
+Feature-selection leakage is a risk because selecting CpG sites using the full dataset before cross-validation allows outcome information from the test folds to influence model development.
+
+Useful metrics include sensitivity, specificity, PPV, NPV, ROC AUC, calibration if predicted probabilities are used, and external validation where possible.
+
+</details>
+
+<hr />
+
+<h2 id="exercise-12-choose-appropriate-metrics">Exercise 12: Choose appropriate metrics</h2>
+
+<p>Choose useful metrics for each clinical purpose.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Clinical purpose</th>
+      <th>Useful metrics</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Screening</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Confirmatory diagnosis</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Treatment decision</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Rare disease prediction</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Risk prediction</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Patient reassurance</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<details>
+<summary>Show answer</summary>
+
+| Clinical purpose | Useful metrics |
+|---|---|
+| Screening | Sensitivity, NPV, PPV, false positive burden |
+| Confirmatory diagnosis | Specificity, PPV, sensitivity |
+| Treatment decision | Calibration, threshold-specific sensitivity/specificity, net benefit |
+| Rare disease prediction | PPV, sensitivity, precision-recall curve |
+| Risk prediction | AUC, calibration, Brier score, decision curve analysis |
+| Patient reassurance | NPV, sensitivity, calibration |
+
+</details>
+
+<hr />
+
+<h2 id="exercise-13-short-answer-questions">Exercise 13: Short answer questions</h2>
+
+<p>Write 3–5 sentences for each question.</p>
+
+<ol>
+  <li>Why is accuracy not enough in medical prediction?</li>
+  <li>Why does PPV depend on prevalence?</li>
+  <li>Why can AUC be misleading if reported alone?</li>
+  <li>What is the difference between discrimination and calibration?</li>
+  <li>Why should threshold choice depend on clinical context?</li>
+  <li>Why is external validation important for classification models?</li>
+</ol>
+
+<hr />
+
+<h2 id="exercise-14-mini-case-study">Exercise 14: Mini case study</h2>
+
+<p>A hospital develops a model to identify patients at risk of sepsis.</p>
+
+<p>At threshold 0.30:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Sensitivity = 0.95
+Specificity = 0.50
+</code></pre></div></div>
+
+<p>At threshold 0.70:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Sensitivity = 0.60
+Specificity = 0.90
+</code></pre></div></div>
+
+<p>The clinical team wants to use the model as an early warning alert.</p>
+
+<p>Answer:</p>
+
+<ol>
+  <li>Which threshold seems more appropriate?</li>
+  <li>What is the trade-off?</li>
+  <li>What additional information would you want before making a final decision?</li>
+</ol>
+
+<details>
+<summary>Show answer</summary>
+
+Threshold 0.30 may be more appropriate because the model is being used as an early warning alert, where missing sepsis cases could be dangerous.
+
+The trade-off is that specificity is lower, meaning more false positives and more alerts for patients who do not develop sepsis.
+
+Additional information needed includes alert burden, clinician workload, harms of false alarms, PPV, calibration, time-to-alert, clinical workflow, and external validation.
+
+</details>
