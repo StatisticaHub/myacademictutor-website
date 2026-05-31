@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Lesson 4: Logistic Regression for Clinical Prediction | Machine Learning in Biostatistics</title>
+
+  <meta
+    name="description"
+    content="Lesson 4 of Machine Learning in Biostatistics: logistic regression for binary clinical prediction, probabilities, odds, log-odds, odds ratios, thresholds, calibration and R workflow."
+  />
+
+  <link rel="stylesheet" href="../assets/course.css" />
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="brand-logo" />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Module 2 · Lesson 4</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="./index.html">Module 2</a>
+          <a href="../module-3/index.html">Module 3</a>
+          <a href="../module-4/index.html">Module 4</a>
+          <a href="../case-studies/index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Module 2 · Supervised Learning for Medical Data</p>
+        <h1>Lesson 4: Logistic Regression for Clinical Prediction</h1>
+
+        <p class="hero-intro">
+          Logistic regression is one of the most important baseline models for binary clinical prediction.
+          This lesson explains probabilities, odds, log-odds, odds ratios, thresholds, calibration,
+          and why logistic regression remains central in medical machine learning.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#lecture">Start lesson</a>
+          <a class="btn btn-secondary" href="./2-1-supervised-learning-medical-data.html">Previous lesson</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <div class="lesson-layout">
+        <aside class="lesson-sidebar" aria-label="Lesson sections">
+          <h3>Lesson sections</h3>
+          <a class="active" href="#lecture">Lecture</a>
+          <a href="#model-idea">Model idea</a>
+          <a href="#interactive">Interactive checks</a>
+          <a href="#notes">Detailed notes</a>
+          <a href="#r-code">R code</a>
+          <a href="#exercises">Exercises</a>
+          <a href="#quiz">Quiz</a>
+        </aside>
+
+        <article class="lesson-content">
+          <section class="lesson-section" id="lecture">
+            <p class="kicker">Lecture</p>
+            <h2>Lecture 4: Logistic Regression for Clinical Prediction</h2>
+
+            <div class="scene-card">
+              <div class="scene-title">Opening scene: The old model walks into the machine learning classroom</div>
+
+              <div class="dialogue-box">
+                
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“Logistic regression? I thought this was a machine learning course. Isn’t logistic regression too old?”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Old does not mean weak. Logistic regression is still one of the most important models for binary clinical prediction.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“I like models that give predicted probabilities I can understand.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“That is one reason logistic regression is so useful in medical statistics.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line captain-overfit">
+        <p><span class="character">Captain Overfit:</span><br />“But can it memorise noise like a very complex model?”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“That is not a strength, Captain.”</p>
+      </div>
+    
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="big-question">
+            <p class="kicker">Today’s big question</p>
+            <h2>Why is logistic regression still so useful for clinical prediction?</h2>
+
+            <p>Logistic regression is used when the outcome is binary.</p>
+
+            <p>Examples:</p>
+            <ul>
+              <li>Diabetes: yes/no</li>
+              <li>Cancer recurrence: yes/no</li>
+              <li>Hospital readmission: yes/no</li>
+              <li>Treatment response: yes/no</li>
+              <li>Mortality: yes/no</li>
+            </ul>
+
+            <div class="big-question">
+              <p>It estimates the probability of the positive outcome.</p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="intuition">
+            <p class="kicker">Intuition first</p>
+            <h2>For a binary outcome, we want probabilities between 0 and 1</h2>
+
+            <p>For a binary outcome, we do not want predictions like:</p>
+            <code class="inline-code">Diabetes = 1.8</code>
+
+            <p>That would not make sense.</p>
+
+            <p>Instead, we want a probability between 0 and 1.</p>
+            <code class="inline-code">Predicted diabetes risk = 0.72</code>
+
+            <p>This means the model estimates a 72% probability that the patient is diabetes positive.</p>
+
+            <div class="key-takeaway">
+              <p>Logistic regression turns patient information into an estimated probability of a binary outcome.</p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="model-idea">
+            <p class="kicker">The model idea</p>
+            <h2>Logistic regression models the log-odds of the outcome</h2>
+
+            <p>Conceptually:</p>
+
+            <div class="formula-box">
+              <strong>logit(P(outcome positive)) =</strong><br />
+              β<sub>0</sub> + β<sub>1</sub>X<sub>1</sub> + β<sub>2</sub>X<sub>2</sub> + β<sub>3</sub>X<sub>3</sub> + ...
+            </div>
+
+            <p>For diabetes prediction, this might look like:</p>
+
+            <div class="formula-box">
+              <strong>logit(P(diabetes positive)) =</strong><br />
+              β<sub>0</sub> + β<sub>1</sub>(glucose) + β<sub>2</sub>(BMI) + β<sub>3</sub>(age)
+            </div>
+
+            <p>The model then converts the log-odds into a predicted probability.</p>
+          </section>
+
+          <section class="lesson-section" id="probability-class">
+            <p class="kicker">Mini conversation</p>
+            <h2>Probability versus class</h2>
+
+            <div class="dialogue-box">
+              
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“So does logistic regression directly say diabetes positive or negative?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Not first. It first gives a predicted probability.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“That is useful. A patient with 80% predicted risk is different from a patient with 51% predicted risk.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Exactly. The probability contains more information than a simple class label.”</p>
+      </div>
+    
+            </div>
+
+            <p>A predicted probability can later be converted into a class using a threshold.</p>
+
+            <code class="inline-code">If predicted risk ≥ 0.50 → predict positive
+If predicted risk &lt; 0.50 → predict negative</code>
+
+            <p>But the threshold should depend on the clinical context.</p>
+          </section>
+
+          <section class="lesson-section" id="prediction-model">
+            <p class="kicker">Logistic regression as a prediction model</p>
+            <h2>The focus changes when the goal is prediction</h2>
+
+            <p>In medical statistics, logistic regression is often used for inference.</p>
+
+            <p>For example, we may ask:</p>
+            <code class="inline-code">Is glucose associated with diabetes after adjusting for age and BMI?</code>
+
+            <p>But logistic regression can also be used for prediction.</p>
+
+            <p>Then the focus changes. Instead of only asking:</p>
+            <code class="inline-code">Which predictors are statistically significant?</code>
+
+            <p>we ask:</p>
+            <code class="inline-code">Does the full model predict well for new patients?</code>
+
+            <p>That means we need to evaluate:</p>
+            <ul>
+              <li>discrimination;</li>
+              <li>calibration;</li>
+              <li>sensitivity;</li>
+              <li>specificity;</li>
+              <li>clinical usefulness;</li>
+              <li>validation performance.</li>
+            </ul>
+          </section>
+
+          <section class="lesson-section" id="medical-example">
+            <p class="kicker">Medical example</p>
+            <h2>Diabetes prediction</h2>
+
+            <p>Suppose we fit a logistic regression model using:</p>
+
+            <ul>
+              <li>glucose;</li>
+              <li>BMI;</li>
+              <li>age;</li>
+              <li>insulin;</li>
+              <li>blood pressure.</li>
+            </ul>
+
+            <p>The model produces predicted probabilities.</p>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr><th>Patient</th><th>Predicted diabetes risk</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>A</td><td>0.12</td></tr>
+                  <tr><td>B</td><td>0.48</td></tr>
+                  <tr><td>C</td><td>0.82</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>Patient C has the highest predicted risk.</p>
+
+            <p>But we still need to ask:</p>
+            <ul>
+              <li>Are these probabilities well calibrated?</li>
+              <li>Does the model discriminate well?</li>
+              <li>What threshold should be used?</li>
+              <li>Would the model work in another population?</li>
+            </ul>
+          </section>
+
+          <section class="lesson-section" id="coefficients">
+            <p class="kicker">Mini conversation</p>
+            <h2>Coefficients and prediction</h2>
+
+            <div class="dialogue-box">
+              
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“If glucose has a positive coefficient, does that mean higher glucose increases predicted risk?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Yes, within the model, higher glucose is associated with higher predicted probability.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“But for prediction, I also care about whether the model works well for new patients.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Correct. Coefficients are useful, but prediction performance must be validated.”</p>
+      </div>
+    
+            </div>
+          </section>
+
+          <section class="lesson-section" id="odds-vs-probabilities">
+            <p class="kicker">Odds ratios versus predicted probabilities</p>
+            <h2>Two useful but different perspectives</h2>
+
+            <p>Logistic regression coefficients are often converted to odds ratios.</p>
+            <p>Odds ratios are useful for interpretation.</p>
+            <p>But for prediction, predicted probabilities are often more directly useful.</p>
+
+            <div class="grid grid-2">
+              <div class="model-card">
+                <p class="model-label">Coefficient interpretation</p>
+                <h3>Odds ratio for glucose = 1.08</h3>
+                <p>This may be statistically meaningful.</p>
+              </div>
+              <div class="model-card">
+                <p class="model-label">Clinical prediction</p>
+                <h3>Predicted diabetes risk = 72%</h3>
+                <p>This may be easier to use for patient-level risk communication.</p>
+              </div>
+            </div>
+
+            <p>Both perspectives can be useful, but they answer different practical questions.</p>
+          </section>
+
+          <section class="lesson-section" id="threshold-choice">
+            <p class="kicker">Threshold choice</p>
+            <h2>A threshold converts probabilities into predicted classes</h2>
+
+            <p>Commonly, people start with:</p>
+            <code class="inline-code">Threshold = 0.50</code>
+
+            <p>But 0.50 is not automatically correct.</p>
+
+            <p>For screening, a lower threshold may be preferred because missing true disease cases can be harmful.</p>
+            <p>For confirmatory decisions, a higher threshold may be preferred to avoid too many false positives.</p>
+
+            <div class="clinical-check">
+              <h3>Clinical reality check</h3>
+              <p>A threshold is not just a statistical choice. It reflects clinical consequences.</p>
+              <p>Ask:</p>
+              <ul>
+                <li>What happens if we miss a true case?</li>
+                <li>What happens if we create a false positive?</li>
+                <li>Is the model being used for screening, diagnosis, triage, or treatment decisions?</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="interactive">
+            <p class="kicker">Interactive checks</p>
+            <h2>Test the key ideas before moving on</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Logistic regression first produces:</p>
+
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">A final clinical decision</button>
+                <button class="option-btn" data-answer="correct">A predicted probability</button>
+                <button class="option-btn" data-answer="incorrect">A p-value only</button>
+              </div>
+
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Logistic regression first estimates a predicted probability, which can later be converted into a class using a threshold."
+                data-incorrect="<strong>Not quite.</strong> Logistic regression first estimates a predicted probability. The class label comes later after choosing a threshold."
+              ></div>
+            </div>
+
+            <div class="slider-demo">
+              <h3>Threshold explorer</h3>
+              <p>Move the threshold and think about how sensitivity and specificity may change.</p>
+
+              <input
+                type="range"
+                min="0.10"
+                max="0.90"
+                step="0.05"
+                value="0.50"
+                data-slider-output="threshold-output-1"
+              />
+
+              <div class="slider-output" id="threshold-output-1"></div>
+            </div>
+
+            <div class="interactive-panel">
+              <h3>Flashcards: probability, odds and odds ratio</h3>
+              <p>Click each card to reveal the explanation.</p>
+
+              <div class="flashcard-grid">
+                <div class="flashcard">
+                  <div class="flashcard-front">Probability</div>
+                  <div class="flashcard-back">The chance that an event occurs. A probability of 0.20 means 20% risk.</div>
+                </div>
+
+                <div class="flashcard">
+                  <div class="flashcard-front">Odds</div>
+                  <div class="flashcard-back">Odds compare the probability of the event with the probability of no event: p / (1 - p).</div>
+                </div>
+
+                <div class="flashcard">
+                  <div class="flashcard-front">Odds ratio</div>
+                  <div class="flashcard-back">An odds ratio compares odds between groups or per unit change in a predictor. It is not the same as a risk ratio.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="common-mistakes">
+            <p class="kicker">Common mistakes</p>
+            <h2>Two common mistakes in logistic regression prediction</h2>
+
+            <div class="common-mistake">
+              <h3>Common mistake: treating 0.50 as the automatic threshold</h3>
+              <p>A threshold of 0.50 may be reasonable in some settings, but it is not universal.</p>
+              <p>In a screening setting, we may choose a lower threshold to improve sensitivity.</p>
+              <p>In a treatment decision with serious side effects, we may choose a higher threshold.</p>
+              <p>Threshold choice should depend on clinical consequences, not habit.</p>
+            </div>
+
+            <div class="common-mistake">
+              <h3>Common mistake: judging the model only by p-values</h3>
+              <p>A prediction model is not evaluated only by whether predictors are statistically significant.</p>
+              <p>A model can contain statistically significant predictors and still perform poorly for prediction.</p>
+              <p>For clinical prediction, we need to evaluate the whole model using validation, discrimination, calibration, and clinical usefulness.</p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="baseline">
+            <p class="kicker">Why logistic regression is a strong baseline</p>
+            <h2>A serious benchmark before complex models</h2>
+
+            <p>Logistic regression is often a good first model because it is:</p>
+
+            <ul>
+              <li>interpretable;</li>
+              <li>familiar in medical statistics;</li>
+              <li>suitable for binary outcomes;</li>
+              <li>able to produce predicted probabilities;</li>
+              <li>easier to validate and explain than many black-box models;</li>
+              <li>useful as a benchmark before trying more complex methods.</li>
+            </ul>
+
+            <p>A complex machine learning model should usually be compared against a logistic regression baseline.</p>
+
+            <p>If the complex model does not improve meaningful performance, it may not be worth the added complexity.</p>
+          </section>
+
+          <section class="lesson-section" id="lecture-key">
+            <p class="kicker">Key takeaway</p>
+            <h2>Logistic regression is not weak because it is old</h2>
+
+            <div class="key-takeaway">
+              <p>Logistic regression is a powerful baseline model for binary clinical prediction.</p>
+
+              <p>It is useful because it:</p>
+
+              <ul>
+                <li>handles binary outcomes;</li>
+                <li>produces predicted probabilities;</li>
+                <li>supports clinical interpretation;</li>
+                <li>can be validated;</li>
+                <li>connects statistical modelling with machine learning workflows.</li>
+              </ul>
+
+              <p>But it still needs proper evaluation before real-world use.</p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="lecture-reflection">
+            <p class="kicker">Reflection question</p>
+            <h2>Why might a threshold lower than 0.50 be preferred?</h2>
+
+            <div class="reflection-box">
+              <p>In a diabetes screening model, why might a threshold lower than 0.50 be preferred?</p>
+
+              <details class="answer-box">
+                <summary>Show suggested answer</summary>
+                <div class="answer-content">
+                  <p>
+                    A lower threshold may increase sensitivity, meaning the model detects more true diabetes-positive patients.
+                    This can be useful in screening because missing true cases may delay diagnosis and treatment.
+                    However, the trade-off is that specificity may decrease, leading to more false positives and additional follow-up testing.
+                  </p>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="notes">
+            <p class="kicker">Detailed notes</p>
+            <h2>Note 4: Logistic Regression for Clinical Prediction</h2>
+
+            <div class="key-takeaway">
+              <p>
+                Logistic regression is one of the most important models in medical statistics,
+                epidemiology, and clinical prediction modelling. Although it is often taught as a classical statistical method,
+                it is also a supervised learning method when used to predict a binary outcome.
+              </p>
+            </div>
+
+            <h3>Learning objectives</h3>
+            <ul>
+              <li>Explain why logistic regression is one of the most important baseline models in medical machine learning.</li>
+              <li>Understand the difference between linear probability modelling and logistic regression.</li>
+              <li>Interpret probabilities, odds, log-odds, odds ratios, and predicted risks.</li>
+              <li>Fit logistic regression conceptually as a binary clinical prediction model.</li>
+              <li>Explain why logistic regression can be used for both inference and prediction.</li>
+              <li>Understand how logistic regression connects to clinical risk prediction.</li>
+              <li>Recognise common modelling issues such as overfitting, separation, poor calibration, and inappropriate predictor selection.</li>
+              <li>Explain why logistic regression should often be compared with more complex machine learning models.</li>
+            </ul>
+
+            <h3>1. Introduction</h3>
+            <p>
+              Many medical outcomes are binary. A patient may develop diabetes or not.
+              A patient may be readmitted within 30 days or not. A tumour may recur within 5 years or not.
+              A patient may respond to treatment or not. A participant may be classified as a case or control.
+              These are all examples where logistic regression can be used.
+            </p>
+
+            <p>
+              In machine learning courses, logistic regression is sometimes treated as a simple baseline model before moving to random forests,
+              support vector machines, boosting, or neural networks. In biostatistics, however, logistic regression deserves deeper attention.
+              It is interpretable, clinically familiar, statistically well understood, and often performs surprisingly well for structured tabular medical data.
+            </p>
+
+            <h3>2. Where logistic regression fits in supervised learning</h3>
+            <p>Logistic regression is used when the outcome is binary.</p>
+
+            <code class="inline-code">Y = 0 or 1</code>
+
+            <p>where:</p>
+            <ul>
+              <li><strong>Y = 1</strong> means the event occurs;</li>
+              <li><strong>Y = 0</strong> means the event does not occur.</li>
+            </ul>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Clinical question</th><th>Outcome coded as 1</th><th>Outcome coded as 0</th></tr></thead>
+                <tbody>
+                  <tr><td>Diabetes prediction</td><td>Developed diabetes</td><td>Did not develop diabetes</td></tr>
+                  <tr><td>Readmission prediction</td><td>Readmitted within 30 days</td><td>Not readmitted</td></tr>
+                  <tr><td>Cancer recurrence prediction</td><td>Recurrence within 5 years</td><td>No recurrence</td></tr>
+                  <tr><td>Treatment response</td><td>Responded</td><td>Did not respond</td></tr>
+                  <tr><td>Disease classification</td><td>Case</td><td>Control</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>The model uses predictors such as age, sex, BMI, blood pressure, biomarkers, tumour features, or methylation markers to estimate the probability that Y = 1.</p>
+
+            <code class="inline-code">P(Y = 1 | X)</code>
+
+            <p>This means the probability that the event occurs, given the predictors.</p>
+
+            <h3>3. Why not use ordinary linear regression?</h3>
+            <p>
+              Ordinary linear regression is not ideal for binary outcomes because it can produce predicted values below 0 or above 1.
+              But probabilities must lie between 0 and 1.
+            </p>
+
+            <code class="inline-code">Predicted probability = 1.18
+Predicted probability = -0.12</code>
+
+            <p>These values are not meaningful probabilities.</p>
+
+            <p>
+              Logistic regression handles this by modelling the log-odds of the outcome rather than the probability directly.
+            </p>
+
+            <h3>4. Probability, odds, and log-odds</h3>
+
+            <div class="grid grid-3">
+              <div class="card">
+                <h3>Probability</h3>
+                <p>The chance that an event occurs. If the probability is 0.20, this means 20%.</p>
+              </div>
+              <div class="card">
+                <h3>Odds</h3>
+                <p>Odds = probability / (1 - probability). If probability is 0.20, odds = 0.25.</p>
+              </div>
+              <div class="card">
+                <h3>Log-odds</h3>
+                <p>Logistic regression models the log of the odds, also called the logit transformation.</p>
+              </div>
+            </div>
+
+            <code class="inline-code">Odds = p / (1 - p)
+logit(p) = log(p / (1 - p))</code>
+
+            <h3>5. The logistic regression model</h3>
+
+            <code class="inline-code">logit(p) = β0 + β1X1 + β2X2 + ... + βpXp</code>
+
+            <p>where:</p>
+            <ul>
+              <li><strong>p</strong> is the probability of the outcome;</li>
+              <li><strong>β0</strong> is the intercept;</li>
+              <li><strong>β1, β2, ..., βp</strong> are regression coefficients;</li>
+              <li><strong>X1, X2, ..., Xp</strong> are predictors.</li>
+            </ul>
+
+            <p>For example:</p>
+            <code class="inline-code">logit(p) = β0 + β1(age) + β2(BMI) + β3(HbA1c)</code>
+
+            <p>The model is linear on the log-odds scale, not on the probability scale.</p>
+
+            <p>After estimating the log-odds, we can convert back to probability using:</p>
+            <code class="inline-code">p = exp(logit) / (1 + exp(logit))</code>
+
+            <h3>6. Interpreting coefficients</h3>
+            <p>
+              If a coefficient is positive, higher values of the predictor are associated with higher odds of the outcome.
+              If a coefficient is negative, higher values of the predictor are associated with lower odds of the outcome.
+            </p>
+
+            <code class="inline-code">β_age = 0.04
+Odds ratio = exp(β) = exp(0.04) = 1.04</code>
+
+            <p>
+              This means each one-year increase in age is associated with approximately 4% higher odds of the outcome,
+              assuming other predictors are held constant.
+            </p>
+
+            <h3>7. Odds ratios: useful but easy to misunderstand</h3>
+            <p>
+              An odds ratio is not the same as a risk ratio, especially when the outcome is common.
+              For rare outcomes, odds ratios and risk ratios may be similar.
+              For common outcomes, odds ratios can exaggerate the impression of effect size compared with risk ratios.
+            </p>
+
+            <p>
+              In prediction, odds ratios may be less central because the main goal is not necessarily to interpret each coefficient.
+              Instead, we often care about predicted risks, discrimination, calibration, and clinical usefulness.
+            </p>
+
+            <h3>8. Logistic regression for inference vs prediction</h3>
+
+            <div class="grid grid-2">
+              <div class="model-card">
+                <p class="model-label">Inference</p>
+                <h3>Is BMI associated with diabetes?</h3>
+                <p>The focus is the coefficient, odds ratio, confidence interval, p-value and confounding control.</p>
+              </div>
+
+              <div class="model-card">
+                <p class="model-label">Prediction</p>
+                <h3>Can we predict diabetes risk?</h3>
+                <p>The focus is predicted probabilities, discrimination, calibration, clinical usefulness and validation.</p>
+              </div>
+            </div>
+
+            <h3>9. Breast cancer prediction example</h3>
+            <p>
+              Logistic regression can be relevant if a survival question is converted into a fixed-time binary prediction problem,
+              such as death within 5 years or recurrence within 5 years.
+            </p>
+
+            <p>
+              However, if patients have different follow-up times or censoring is present,
+              converting survival data into a binary outcome may discard information or introduce bias.
+              In that case, Cox models or survival machine learning methods may be more appropriate.
+            </p>
+
+            <div class="key-takeaway">
+              <p>The model should match the outcome structure.</p>
+            </div>
+
+            <h3>10. EWAS and methylation example</h3>
+            <p>
+              Methylation data are high-dimensional. A dataset may contain hundreds of thousands of CpG sites and far fewer participants.
+            </p>
+
+            <code class="inline-code">n = 800 participants
+p = 450,000 CpG sites</code>
+
+            <p>
+              A standard logistic regression model cannot be fitted safely with so many predictors.
+              Penalised logistic regression methods such as lasso or elastic net are more appropriate because they shrink coefficients
+              and can perform variable selection.
+            </p>
+
+            <p>
+              Even then, feature selection must be done inside the resampling process to avoid data leakage.
+            </p>
+
+            <h3>11. Choosing predictors in logistic regression</h3>
+            <p>In clinical prediction, predictor choice should be guided by the intended use of the model.</p>
+
+            <p>A predictor should generally be:</p>
+            <ul>
+              <li>available at the prediction time point;</li>
+              <li>measured reliably;</li>
+              <li>clinically meaningful or operationally available;</li>
+              <li>not a consequence of the outcome;</li>
+              <li>not a leakage variable;</li>
+              <li>feasible to collect in the intended setting.</li>
+            </ul>
+
+            <h3>12. Events per predictor and sample size</h3>
+            <p>
+              Logistic regression can overfit when there are too many predictors relative to the number of outcome events.
+            </p>
+
+            <code class="inline-code">Total patients = 200
+Outcome events = 20
+Candidate predictors = 30</code>
+
+            <p>This is a risky setting for ordinary logistic regression.</p>
+
+            <p>Possible solutions include:</p>
+            <ul>
+              <li>reducing the number of predictors;</li>
+              <li>using penalised logistic regression;</li>
+              <li>increasing sample size;</li>
+              <li>using clinical knowledge to pre-specify predictors;</li>
+              <li>applying internal validation;</li>
+              <li>avoiding data-driven variable selection without validation.</li>
+            </ul>
+
+            <h3>13. Separation and unstable estimates</h3>
+            <p>
+              Separation occurs when a predictor or combination of predictors perfectly separates outcome groups.
+              The model may try to estimate an infinitely large coefficient.
+            </p>
+
+            <p>This can lead to:</p>
+            <ul>
+              <li>very large standard errors;</li>
+              <li>unstable coefficients;</li>
+              <li>convergence warnings;</li>
+              <li>extreme predicted probabilities;</li>
+              <li>poor generalisation.</li>
+            </ul>
+
+            <p>Possible solutions include penalised logistic regression, Firth correction, reducing model complexity, or collecting more data.</p>
+
+            <h3>14. Logistic regression and calibration</h3>
+            <p>
+              Logistic regression often produces reasonably calibrated probabilities when the model is well specified and validated.
+              However, it is not automatically well calibrated.
+            </p>
+
+            <p>Poor calibration can occur if:</p>
+            <ul>
+              <li>important predictors are missing;</li>
+              <li>relationships are nonlinear but modelled as linear;</li>
+              <li>interactions are ignored;</li>
+              <li>the model is overfitted;</li>
+              <li>the model is applied to a different population;</li>
+              <li>outcome prevalence differs between development and validation settings.</li>
+            </ul>
+
+            <h3>15. Logistic regression and discrimination</h3>
+            <p>
+              Discrimination measures how well the model separates patients who experience the outcome from those who do not.
+              For binary outcomes, discrimination is commonly assessed using the ROC curve and AUC.
+            </p>
+
+            <code class="inline-code">AUC = 0.82</code>
+
+            <p>This suggests that the model has good ability to rank patients by risk, but AUC alone is not enough.</p>
+
+            <h3>16. Model specification: linearity and interactions</h3>
+            <p>
+              Standard logistic regression assumes that continuous predictors have a linear relationship with the log-odds of the outcome.
+              This may not always be realistic.
+            </p>
+
+            <p>Possible ways to handle nonlinear effects include:</p>
+            <ul>
+              <li>transforming variables;</li>
+              <li>using splines;</li>
+              <li>categorising variables carefully, though this often loses information;</li>
+              <li>using more flexible models;</li>
+              <li>including clinically justified interaction terms.</li>
+            </ul>
+
+            <h3>17. Variable selection: be careful</h3>
+            <p>Stepwise variable selection can lead to:</p>
+            <ul>
+              <li>unstable predictor sets;</li>
+              <li>biased coefficient estimates;</li>
+              <li>overfitting;</li>
+              <li>optimistic performance estimates;</li>
+              <li>poor reproducibility;</li>
+              <li>exaggerated importance of selected predictors.</li>
+            </ul>
+
+            <h3>18. Logistic regression vs machine learning models</h3>
+            <p>
+              Complex models may sometimes outperform logistic regression, especially when there are nonlinear relationships or complex interactions.
+              However, complex models are not automatically better.
+            </p>
+
+            <div class="key-takeaway">
+              <p>Do not use a more complex model unless it improves clinically meaningful performance after proper validation.</p>
+            </div>
+
+            <h3>19. Reporting a logistic regression prediction model</h3>
+            <p>A report should include:</p>
+            <ul>
+              <li>clinical prediction question;</li>
+              <li>target population;</li>
+              <li>prediction time point;</li>
+              <li>outcome definition;</li>
+              <li>candidate predictors;</li>
+              <li>missing data handling;</li>
+              <li>sample size and number of events;</li>
+              <li>model specification;</li>
+              <li>validation strategy;</li>
+              <li>discrimination;</li>
+              <li>calibration;</li>
+              <li>clinical usefulness where relevant;</li>
+              <li>limitations;</li>
+              <li>model equation or sufficient details for implementation.</li>
+            </ul>
+
+            <h3>20. Practical workflow</h3>
+            <ol>
+              <li>Define the clinical prediction question.</li>
+              <li>Define the target population.</li>
+              <li>Define the prediction time point.</li>
+              <li>Define the binary outcome clearly.</li>
+              <li>Identify candidate predictors available at prediction time.</li>
+              <li>Explore missing data and data quality.</li>
+              <li>Split data into training and test sets or define resampling strategy.</li>
+              <li>Fit logistic regression as a baseline model.</li>
+              <li>Generate predicted probabilities.</li>
+              <li>Evaluate discrimination using ROC AUC.</li>
+              <li>Evaluate calibration using calibration plots.</li>
+              <li>Examine sensitivity and specificity at clinically relevant thresholds.</li>
+              <li>Compare with more complex models only after the baseline is understood.</li>
+              <li>Report the model transparently.</li>
+            </ol>
+
+            <h3>21. Summary</h3>
+            <p>
+              Logistic regression is a foundational model for binary clinical prediction.
+              It estimates the probability of an outcome using a linear model on the log-odds scale.
+            </p>
+
+            <p>
+              For prediction, logistic regression should be evaluated using discrimination, calibration,
+              sensitivity, specificity, predictive values, and validation on new data. Accuracy alone is not enough.
+            </p>
+
+            <p>
+              Logistic regression is not just an old statistical method.
+              In biostatistics, it is a strong, interpretable, and clinically meaningful baseline for supervised machine learning.
+            </p>
+
+            <h3>Revision questions</h3>
+            <ul>
+              <li>Why is logistic regression used for binary outcomes?</li>
+              <li>Why is ordinary linear regression not ideal for binary outcomes?</li>
+              <li>What is the difference between probability and odds?</li>
+              <li>What does the logit transformation do?</li>
+              <li>How do you interpret an odds ratio?</li>
+              <li>Why can odds ratios be misleading when outcomes are common?</li>
+              <li>How can logistic regression be used for both inference and prediction?</li>
+              <li>Why is logistic regression a good baseline model in clinical prediction?</li>
+              <li>Why should predictors be available at the prediction time point?</li>
+              <li>What is separation in logistic regression?</li>
+              <li>Why can too many predictors cause overfitting?</li>
+              <li>Why is calibration important for logistic regression prediction models?</li>
+              <li>Why is AUC not enough?</li>
+              <li>Why should variable selection be handled carefully?</li>
+              <li>When might penalised logistic regression be preferable?</li>
+            </ul>
+
+            <h3>References</h3>
+            <p class="reference-item">James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An Introduction to Statistical Learning: With Applications in R. Springer.</p>
+            <p class="reference-item">James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An Introduction to Statistical Learning: With Applications in R (2nd ed.). Springer.</p>
+            <p class="reference-item">Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning: Data Mining, Inference, and Prediction (2nd ed.). Springer.</p>
+            <p class="reference-item">Steyerberg, E. W. (2019). Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating (2nd ed.). Springer.</p>
+            <p class="reference-item">Riley, R. D., Snell, K. I. E., Ensor, J., et al. (2019). Minimum sample size for developing a multivariable prediction model: Part I - Continuous outcomes. Statistics in Medicine, 38(7), 1262–1275.</p>
+            <p class="reference-item">Riley, R. D., Snell, K. I. E., Ensor, J., et al. (2019). Minimum sample size for developing a multivariable prediction model: Part II - Binary and time-to-event outcomes. Statistics in Medicine, 38(7), 1276–1296.</p>
+            <p class="reference-item">Collins, G. S., Moons, K. G. M., Dhiman, P., et al. (2024). TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods. BMJ, 385, e078378.</p>
+            <p class="reference-item">Moons, K. G. M., Damen, J. A. A. G., Kaul, T., et al. (2025). PROBAST+AI: an updated quality, risk of bias, and applicability assessment tool for prediction models using regression or artificial intelligence methods. BMJ, 388, e082505.</p>
+            <p class="reference-item">Kuhn, M., & Johnson, K. (2013). Applied Predictive Modeling. Springer.</p>
+          </section>
+
+          <section class="lesson-section" id="r-code">
+            <p class="kicker">R code</p>
+            <h2>R practical: logistic regression for clinical prediction</h2>
+
+            <div class="practice-note">
+              <p>
+                This script fits a logistic regression model for diabetes prediction, prints coefficients,
+                converts coefficients to odds ratios, generates predicted risks, evaluates test-set performance,
+                and plots an ROC curve.
+              </p>
+            </div>
+
+            <div class="grid grid-3">
+              <div class="card">
+                <h3>Coefficients</h3>
+                <p>The model summary and tidy output show the estimated effects on the log-odds scale.</p>
+              </div>
+              <div class="card">
+                <h3>Odds ratios</h3>
+                <p>The script exponentiates coefficients to create an odds ratio table.</p>
+              </div>
+              <div class="card">
+                <h3>Prediction</h3>
+                <p>The model generates predicted risks and evaluates AUC on the test set.</p>
+              </div>
+            </div>
+
+            <p style="margin-top: 1.2rem;">
+              <a class="btn btn-primary" href="../r/04_logistic_regression_clinical_prediction.R" download>
+                Download R script
+              </a>
+              <button class="btn btn-secondary" data-copy-target="r-code-04" type="button">
+                Copy code
+              </button>
+            </p>
+
+            <pre class="code-block"><code id="r-code-04"># Machine Learning in Biostatistics
+# Script 04: Logistic Regression for Clinical Prediction
+#
+# This script uses logistic regression as a clinical prediction model.
+# The focus is on predicted probabilities, odds ratios, and test-set performance.
+
+library(tidyverse)
+library(mlbench)
+library(pROC)
+library(broom)
+
+set.seed(123)
+
+data("PimaIndiansDiabetes")
+
+diabetes_data &lt;- PimaIndiansDiabetes %&gt;%
+  mutate(
+    diabetes = factor(diabetes, levels = c("neg", "pos"))
+  )
+
+train_index &lt;- sample(seq_len(nrow(diabetes_data)), size = round(0.80 * nrow(diabetes_data)))
+
+train_data &lt;- diabetes_data[train_index, ]
+test_data &lt;- diabetes_data[-train_index, ]
+
+logistic_model &lt;- glm(
+  diabetes ~ pregnant + glucose + pressure + triceps +
+    insulin + mass + pedigree + age,
+  data = train_data,
+  family = binomial
+)
+
+cat("\nLogistic regression coefficients:\n")
+print(tidy(logistic_model))
+
+odds_ratio_table &lt;- tidy(logistic_model) %&gt;%
+  mutate(
+    odds_ratio = exp(estimate),
+    conf_low = exp(estimate - 1.96 * std.error),
+    conf_high = exp(estimate + 1.96 * std.error)
+  ) %&gt;%
+  select(term, estimate, odds_ratio, conf_low, conf_high, p.value)
+
+cat("\nOdds ratio table:\n")
+print(odds_ratio_table)
+
+test_data &lt;- test_data %&gt;%
+  mutate(
+    predicted_risk = predict(logistic_model, newdata = test_data, type = "response")
+  )
+
+cat("\nPredicted risks for first 10 test patients:\n")
+print(
+  test_data %&gt;%
+    select(diabetes, glucose, mass, age, predicted_risk) %&gt;%
+    head(10)
+)
+
+risk_summary &lt;- test_data %&gt;%
+  summarise(
+    min_risk = min(predicted_risk),
+    median_risk = median(predicted_risk),
+    mean_risk = mean(predicted_risk),
+    max_risk = max(predicted_risk)
+  )
+
+cat("\nPredicted risk summary:\n")
+print(risk_summary)
+
+threshold &lt;- 0.50
+
+test_data &lt;- test_data %&gt;%
+  mutate(
+    predicted_class = factor(
+      ifelse(predicted_risk &gt;= threshold, "pos", "neg"),
+      levels = c("neg", "pos")
+    )
+  )
+
+cat("\nConfusion matrix:\n")
+print(table(Predicted = test_data$predicted_class, Actual = test_data$diabetes))
+
+roc_object &lt;- roc(
+  response = test_data$diabetes,
+  predictor = test_data$predicted_risk,
+  levels = c("neg", "pos"),
+  quiet = TRUE
+)
+
+cat("\nTest AUC:\n")
+print(auc(roc_object))
+
+plot(
+  roc_object,
+  lwd = 2,
+  main = paste0("ROC Curve: Logistic Regression, AUC = ", round(auc(roc_object), 3))
+)
+
+abline(a = 0, b = 1, lty = 2)
+
+cat("\nClinical interpretation prompts:\n")
+cat("1. Which predictors have clinically sensible directions?\n")
+cat("2. Does a predictor being statistically significant prove good prediction? No.\n")
+cat("3. Are predicted probabilities useful for risk stratification?\n")
+cat("4. Should threshold 0.50 always be used? No.\n")
+cat("5. Would this model need external validation? Yes.\n")</code></pre>
+          </section>
+
+          <section class="lesson-section" id="exercises">
+            <p class="kicker">Exercises</p>
+            <h2>Exercise 4: Logistic Regression for Clinical Prediction</h2>
+
+            <div class="exercise-card">
+              <h3>Exercise 1: Probability to odds</h3>
+              <p>Convert each probability into odds using:</p>
+              <code class="inline-code">Odds = p / (1 - p)</code>
+
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Probability</th><th>Odds</th></tr></thead>
+                  <tbody>
+                    <tr><td>0.10</td><td></td></tr>
+                    <tr><td>0.20</td><td></td></tr>
+                    <tr><td>0.50</td><td></td></tr>
+                    <tr><td>0.75</td><td></td></tr>
+                    <tr><td>0.90</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <ul>
+                    <li>0.10 / 0.90 = 0.111</li>
+                    <li>0.20 / 0.80 = 0.25</li>
+                    <li>0.50 / 0.50 = 1.00</li>
+                    <li>0.75 / 0.25 = 3.00</li>
+                    <li>0.90 / 0.10 = 9.00</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 2: Odds to probability</h3>
+              <p>Convert each odds value into probability using:</p>
+              <code class="inline-code">p = odds / (1 + odds)</code>
+
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Odds</th><th>Probability</th></tr></thead>
+                  <tbody>
+                    <tr><td>0.25</td><td></td></tr>
+                    <tr><td>0.50</td><td></td></tr>
+                    <tr><td>1.00</td><td></td></tr>
+                    <tr><td>2.00</td><td></td></tr>
+                    <tr><td>4.00</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <ul>
+                    <li>0.25 / 1.25 = 0.20</li>
+                    <li>0.50 / 1.50 = 0.333</li>
+                    <li>1.00 / 2.00 = 0.50</li>
+                    <li>2.00 / 3.00 = 0.667</li>
+                    <li>4.00 / 5.00 = 0.80</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 3: Interpreting coefficients</h3>
+              <p>A logistic regression model gives:</p>
+              <code class="inline-code">β_age = 0.05</code>
+
+              <p>Answer:</p>
+              <ul>
+                <li>Is age associated with higher or lower odds of the outcome?</li>
+                <li>What is the odds ratio?</li>
+                <li>Interpret the odds ratio.</li>
+              </ul>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    Age is associated with <strong>higher odds</strong> of the outcome because the coefficient is positive.
+                    The odds ratio is exp(0.05) = 1.051.
+                    This means each one-unit increase in age is associated with about 5.1% higher odds of the outcome,
+                    holding other predictors constant.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 4: Interpreting an odds ratio</h3>
+              <p>A logistic regression model for diabetes gives:</p>
+              <code class="inline-code">Odds ratio for BMI = 1.12</code>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    This means that for a one-unit increase in BMI, the odds of diabetes are estimated to be 1.12 times higher,
+                    assuming other predictors are held constant.
+                  </p>
+                  <p>
+                    It does <strong>not</strong> necessarily mean the risk increases by 12%.
+                    Odds and probability are related but not the same, especially when the outcome is common.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 5: Inference or prediction?</h3>
+
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Question</th><th>Inference or prediction?</th></tr></thead>
+                  <tbody>
+                    <tr><td>Is BMI associated with diabetes after adjustment for age and sex?</td><td></td></tr>
+                    <tr><td>Can we predict 10-year diabetes risk?</td><td></td></tr>
+                    <tr><td>Is smoking associated with lung cancer?</td><td></td></tr>
+                    <tr><td>Can we predict 30-day hospital readmission?</td><td></td></tr>
+                    <tr><td>Is tumour stage independently associated with survival?</td><td></td></tr>
+                    <tr><td>Can we predict recurrence within 5 years?</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <ul>
+                    <li>BMI associated with diabetes: inference.</li>
+                    <li>Predict 10-year diabetes risk: prediction.</li>
+                    <li>Smoking associated with lung cancer: inference, or causal inference if the aim is causal effect.</li>
+                    <li>Predict 30-day readmission: prediction.</li>
+                    <li>Tumour stage independently associated with survival: inference.</li>
+                    <li>Predict recurrence within 5 years: prediction.</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 6: Appropriate predictors</h3>
+              <p>You are building a logistic regression model to predict 30-day hospital readmission at discharge.</p>
+
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Variable</th><th>Appropriate or leakage risk?</th></tr></thead>
+                  <tbody>
+                    <tr><td>Age</td><td></td></tr>
+                    <tr><td>Sex</td><td></td></tr>
+                    <tr><td>Admission diagnosis</td><td></td></tr>
+                    <tr><td>Previous admissions</td><td></td></tr>
+                    <tr><td>Length of stay</td><td></td></tr>
+                    <tr><td>Discharge medications</td><td></td></tr>
+                    <tr><td>Readmission status</td><td></td></tr>
+                    <tr><td>Lab values after readmission</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    <strong>Appropriate:</strong> age, sex, admission diagnosis, previous admissions, length of stay,
+                    and discharge medications, assuming they are available at discharge.
+                  </p>
+                  <p>
+                    <strong>Leakage risk:</strong> readmission status and lab values after readmission.
+                    These are outcome or future information.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 7: Breast cancer prediction</h3>
+              <p>Suppose you want to predict whether a breast cancer patient will experience recurrence within 5 years.</p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p><strong>Binary outcome:</strong> recurrence within 5 years: yes/no.</p>
+                  <p><strong>Possible predictors:</strong> age, tumour stage, tumour grade, lymph node status, receptor status, treatment plan, and baseline biomarkers.</p>
+                  <p><strong>Prediction time point:</strong> at diagnosis, after surgery, or before treatment planning depending on intended use.</p>
+                  <p>
+                    Survival analysis may be better if follow-up times differ, censoring is present, or the exact time to recurrence matters.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 8: Methylation prediction</h3>
+              <p>You want to predict disease status using DNA methylation data.</p>
+              <code class="inline-code">n = 500 participants
+p = 450,000 CpG sites</code>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    Ordinary logistic regression is problematic because the number of predictors is far larger than the number of participants.
+                    The model would be highly unstable and prone to overfitting.
+                  </p>
+                  <p>
+                    Penalised logistic regression, such as lasso or elastic net, may be more suitable.
+                    Feature selection and preprocessing must be performed inside resampling to avoid data leakage.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 9: Calibration interpretation</h3>
+              <p>A logistic regression model predicts 40% risk for a group of patients. The observed event rate is 20%.</p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    The model is not well calibrated in this group. It is <strong>overestimating risk</strong>,
+                    because predicted risk is higher than observed risk.
+                  </p>
+                  <p>
+                    This could lead to unnecessary treatment, monitoring, anxiety, or inefficient resource use.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 10: Separation</h3>
+              <p>
+                A dataset contains 80 patients. All 10 patients with a particular biomarker value experienced the outcome.
+                None of the 70 patients without that biomarker value experienced the outcome.
+              </p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    This may cause <strong>separation</strong> in logistic regression.
+                    The model may estimate an extremely large or infinite coefficient.
+                  </p>
+                  <p>
+                    This is a problem because estimates become unstable, standard errors may be very large,
+                    and predictions may not generalise.
+                  </p>
+                  <p>
+                    Possible solutions include penalised logistic regression, Firth correction, reducing model complexity,
+                    or collecting more data.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 11: Short answer questions</h3>
+
+              <div class="short-answer"><h4>Why is logistic regression suitable for binary outcomes?</h4><details class="answer-box"><summary>Click to see answer</summary><div class="answer-content"><p>It models the probability of a binary outcome and ensures predictions lie between 0 and 1 by using the logit link.</p></div></details></div>
+              <div class="short-answer"><h4>Why is ordinary linear regression not ideal for binary outcomes?</h4><details class="answer-box"><summary>Click to see answer</summary><div class="answer-content"><p>Linear regression can predict values below 0 or above 1, which are not valid probabilities.</p></div></details></div>
+              <div class="short-answer"><h4>What is the difference between probability and odds?</h4><details class="answer-box"><summary>Click to see answer</summary><div class="answer-content"><p>Probability is the chance that an event occurs. Odds compare the probability of the event to the probability of no event: p / (1 - p).</p></div></details></div>
+              <div class="short-answer"><h4>Why are odds ratios easy to misinterpret?</h4><details class="answer-box"><summary>Click to see answer</summary><div class="answer-content"><p>Odds ratios are often mistaken for risk ratios. When outcomes are common, odds ratios can make effects look larger than risk ratios.</p></div></details></div>
+              <div class="short-answer"><h4>Why is logistic regression a useful baseline model?</h4><details class="answer-box"><summary>Click to see answer</summary><div class="answer-content"><p>It is interpretable, stable, familiar, produces predicted probabilities, and often performs well for structured clinical data.</p></div></details></div>
+              <div class="short-answer"><h4>Why is calibration important?</h4><details class="answer-box"><summary>Click to see answer</summary><div class="answer-content"><p>Clinical decisions often use absolute predicted risk. Poor calibration can lead to over-treatment or under-treatment.</p></div></details></div>
+              <div class="short-answer"><h4>Why compare complex models with logistic regression?</h4><details class="answer-box"><summary>Click to see answer</summary><div class="answer-content"><p>A complex model should justify its added complexity by improving validated, clinically meaningful performance compared with a strong baseline.</p></div></details></div>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 12: Mini case study</h3>
+              <p>A researcher builds a logistic regression model to predict 1-year mortality after cancer diagnosis.</p>
+
+              <p>They include:</p>
+              <ul>
+                <li>Age at diagnosis</li>
+                <li>Tumour stage</li>
+                <li>Tumour grade</li>
+                <li>Treatment type</li>
+                <li>Baseline biomarker level</li>
+                <li>Recurrence status during follow-up</li>
+                <li>End-of-life care referral</li>
+              </ul>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    Appropriate predictors may include age at diagnosis, tumour stage, tumour grade,
+                    treatment type if known at prediction time, and baseline biomarker level.
+                  </p>
+                  <p>
+                    Leakage risks include recurrence status during follow-up and end-of-life care referral.
+                    These occur after baseline and are closely related to the outcome.
+                  </p>
+                  <p>
+                    The predictor list should include only variables available at the defined prediction time point.
+                    The model should clearly state whether prediction is made at diagnosis, after treatment planning, or at another time.
+                  </p>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="quiz">
+            <p class="kicker">Quick quiz</p>
+            <h2>Check your understanding</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Why is logistic regression preferred over ordinary linear regression for binary outcomes?</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">Because it always gives better AUC</button>
+                <button class="option-btn" data-answer="correct">Because it models probabilities between 0 and 1 using the logit link</button>
+                <button class="option-btn" data-answer="incorrect">Because it removes the need for validation</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Logistic regression uses the logit link and produces valid predicted probabilities."
+                data-incorrect="<strong>Not quite.</strong> The key reason is that logistic regression is designed for binary outcomes and predicted probabilities."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">An odds ratio of 2 always means the risk has doubled.</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">True</button>
+                <button class="option-btn" data-answer="correct">False</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Odds ratios and risk ratios are not the same, especially when outcomes are common."
+                data-incorrect="<strong>Not quite.</strong> An odds ratio describes odds, not risk directly."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">For a clinical prediction model, a statistically significant predictor automatically proves good prediction.</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">True</button>
+                <button class="option-btn" data-answer="correct">False</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Prediction requires validation, discrimination, calibration and clinical interpretation."
+                data-incorrect="<strong>Not quite.</strong> Significance of one predictor does not prove the full model predicts well."
+              ></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="next-lesson-card">
+              <div>
+                <p class="kicker">Next lesson</p>
+                <h2 style="margin: 0;">Classification Metrics in Medicine</h2>
+                <p style="margin-bottom: 0;">
+                  Learn sensitivity, specificity, predictive values, ROC AUC and why metrics must be interpreted clinically.
+                </p>
+              </div>
+
+              <a class="btn btn-primary" href="./2-3-classification-metrics-medicine.html">
+                Continue
+              </a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="footer-logo" />
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+</body>
+</html>

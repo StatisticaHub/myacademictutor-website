@@ -1,0 +1,21 @@
+
+/* Notes and table enhancements */
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.reference-item {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 0.95rem;
+}
+
+.lesson-section h4 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.2rem;
+  margin: 0 0 0.8rem;
+}

@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Lesson 5: Classification Metrics in Medicine | Machine Learning in Biostatistics</title>
+
+  <meta
+    name="description"
+    content="Lesson 5 of Machine Learning in Biostatistics: accuracy, sensitivity, specificity, PPV, NPV, ROC AUC, calibration, thresholds and clinical interpretation."
+  />
+
+  <link rel="stylesheet" href="../assets/course.css" />
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="brand-logo" />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Module 2 · Lesson 5</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="./index.html">Module 2</a>
+          <a href="../module-3/index.html">Module 3</a>
+          <a href="../module-4/index.html">Module 4</a>
+          <a href="../case-studies/index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Module 2 · Supervised Learning for Medical Data</p>
+        <h1>Lesson 5: Classification Metrics in Medicine</h1>
+
+        <p class="hero-intro">
+          Accuracy alone is not enough in medical prediction. This lesson explains the confusion matrix,
+          sensitivity, specificity, predictive values, ROC AUC, calibration, threshold choice, and why
+          classification metrics must be interpreted in relation to clinical consequences.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#lecture">Start lesson</a>
+          <a class="btn btn-secondary" href="./2-2-logistic-regression-clinical-prediction.html">Previous lesson</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <div class="lesson-layout">
+        <aside class="lesson-sidebar" aria-label="Lesson sections">
+          <h3>Lesson sections</h3>
+          <a class="active" href="#lecture">Lecture</a>
+          <a href="#confusion-matrix">Confusion matrix</a>
+          <a href="#metrics">Core metrics</a>
+          <a href="#interactive">Interactive checks</a>
+          <a href="#notes">Detailed notes</a>
+          <a href="#r-code">R code</a>
+          <a href="#exercises">Exercises</a>
+          <a href="#quiz">Quiz</a>
+        </aside>
+
+        <article class="lesson-content">
+          <section class="lesson-section" id="lecture">
+            <p class="kicker">Lecture</p>
+            <h2>Lecture 5: Classification Metrics in Medicine</h2>
+
+            <div class="scene-card">
+              <div class="scene-title">Opening scene: The model performance celebration</div>
+              <div class="dialogue-box">
+                
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“My model has 90% accuracy. I think it is ready!”</p>
+      </div>
+    
+                
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“Does it detect the patients who actually have the disease?”</p>
+      </div>
+    
+                
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“I did not check that.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Then we need to talk about sensitivity, specificity, ROC AUC, and calibration.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line ms-calibration">
+        <p><span class="character">Ms Calibration:</span><br />“And please do not forget whether the predicted probabilities are meaningful.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line confusion-bug">
+        <p><span class="character">Confusion Bug:</span><br />“I thought accuracy, AUC, and calibration were all the same thing.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“That is exactly why this lecture exists.”</p>
+      </div>
+    
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="big-question">
+            <p class="kicker">Today’s big question</p>
+            <h2>Why is accuracy not enough in medical prediction?</h2>
+
+            <p>Accuracy is simple:</p>
+
+            <code class="inline-code">Accuracy = proportion of all patients correctly classified</code>
+
+            <p>But in medicine, different errors have different consequences.</p>
+
+            <p>Missing a true disease case is not the same as sending a healthy person for extra testing.</p>
+
+            <div class="big-question">
+              <p>That is why medical classification models need more than accuracy.</p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="confusion-matrix">
+            <p class="kicker">Confusion matrix</p>
+            <h2>The foundation of many classification metrics</h2>
+
+            <p>For a binary outcome, predictions can be summarised using a confusion matrix.</p>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Actually positive</th>
+                    <th>Actually negative</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Predicted positive</strong></td>
+                    <td>True positive</td>
+                    <td>False positive</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Predicted negative</strong></td>
+                    <td>False negative</td>
+                    <td>True negative</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>This table is the foundation for many classification metrics.</p>
+
+            <div class="dialogue-box">
+              
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“So the confusion matrix tells me where the model is right and wrong?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Yes. It separates correct positives, correct negatives, false positives, and false negatives.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“And those errors have different clinical consequences.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Exactly. That is why one number is rarely enough.”</p>
+      </div>
+    
+            </div>
+          </section>
+
+          <section class="lesson-section" id="metrics">
+            <p class="kicker">Core metrics</p>
+            <h2>Accuracy, sensitivity, specificity, PPV and NPV</h2>
+
+            <div class="grid grid-2">
+              <div class="model-card">
+                <p class="model-label">Accuracy</p>
+                <h3>Overall correctness</h3>
+                <code class="inline-code">Accuracy = (TP + TN) / all patients</code>
+                <p>Accuracy can be useful, but it can be misleading when the outcome is imbalanced.</p>
+              </div>
+
+              <div class="model-card">
+                <p class="model-label">Sensitivity</p>
+                <h3>Detecting true positives</h3>
+                <code class="inline-code">Sensitivity = TP / (TP + FN)</code>
+                <p>High sensitivity is important when missing disease is harmful.</p>
+              </div>
+
+              <div class="model-card">
+                <p class="model-label">Specificity</p>
+                <h3>Identifying true negatives</h3>
+                <code class="inline-code">Specificity = TN / (TN + FP)</code>
+                <p>High specificity is important when false positives cause harm, anxiety, or unnecessary cost.</p>
+              </div>
+
+              <div class="model-card">
+                <p class="model-label">Predictive values</p>
+                <h3>Trustworthiness of predictions</h3>
+                <code class="inline-code">PPV = TP / (TP + FP)
+NPV = TN / (TN + FN)</code>
+                <p>PPV and NPV depend strongly on disease prevalence.</p>
+              </div>
+            </div>
+
+            <div class="common-mistake">
+              <h3>Accuracy trap</h3>
+              <p>
+                If only 5% of patients have a disease, a model could predict everyone as disease-negative
+                and still achieve 95% accuracy. That model would be clinically poor for detecting disease.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="sensitivity-specificity">
+            <p class="kicker">Sensitivity versus specificity</p>
+            <h2>The best metric depends on the decision context</h2>
+
+            <div class="dialogue-box">
+              
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“Which is more important: sensitivity or specificity?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“It depends on the clinical purpose.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“For screening, sensitivity is often very important. For confirmatory decisions, specificity may matter more.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line confusion-bug">
+        <p><span class="character">Confusion Bug:</span><br />“So there is no universally best metric?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Correct. The best metric depends on the decision context.”</p>
+      </div>
+    
+            </div>
+
+            <div class="grid grid-2">
+              <div class="clinical-check">
+                <h3>High sensitivity matters when missing disease is harmful</h3>
+                <ul>
+                  <li>screening for cancer;</li>
+                  <li>detecting sepsis;</li>
+                  <li>identifying high-risk pregnancy;</li>
+                  <li>flagging patients at risk of deterioration;</li>
+                  <li>screening for diabetes.</li>
+                </ul>
+              </div>
+
+              <div class="clinical-check">
+                <h3>High specificity matters when false positives are harmful</h3>
+                <ul>
+                  <li>avoiding unnecessary invasive testing;</li>
+                  <li>reducing false alarms;</li>
+                  <li>preventing overtreatment;</li>
+                  <li>avoiding unnecessary referrals;</li>
+                  <li>reducing patient anxiety.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="auc-calibration">
+            <p class="kicker">ROC AUC and calibration</p>
+            <h2>Ranking is not the same as risk accuracy</h2>
+
+            <p>The ROC curve shows how sensitivity and specificity change across thresholds.</p>
+
+            <p>AUC measures discrimination.</p>
+
+            <code class="inline-code">Discrimination asks:
+Does the model assign higher predicted risk to patients with the outcome than to patients without the outcome?</code>
+
+            <p>A higher AUC means better ranking ability.</p>
+
+            <p>But AUC tells us about ranking, not whether predicted probabilities are accurate.</p>
+
+            <div class="dialogue-box">
+              
+      <div class="dialogue-line ms-calibration">
+        <p><span class="character">Ms Calibration:</span><br />“AUC tells us whether the model ranks patients well. But I care about whether the predicted risks are believable.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“What does believable mean?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line ms-calibration">
+        <p><span class="character">Ms Calibration:</span><br />“If the model says 30% risk, then around 30% of similar patients should actually have the outcome.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“That is calibration.”</p>
+      </div>
+    
+            </div>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Concept</th>
+                    <th>Question</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Discrimination</strong></td>
+                    <td>Can the model rank high-risk patients above low-risk patients?</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Calibration</strong></td>
+                    <td>Are the predicted probabilities close to observed risks?</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>A model can have good discrimination but poor calibration. For clinical decision-making, both matter.</p>
+          </section>
+
+          <section class="lesson-section" id="threshold-choice">
+            <p class="kicker">Threshold choice</p>
+            <h2>A threshold converts predicted probabilities into predicted classes</h2>
+
+            <code class="inline-code">Predicted risk ≥ 0.50 → positive
+Predicted risk &lt; 0.50 → negative</code>
+
+            <p>But threshold choice should depend on clinical context.</p>
+
+            <p>For screening, we may choose a lower threshold to increase sensitivity.</p>
+
+            <p>For confirmatory decisions, we may choose a higher threshold to increase specificity.</p>
+
+            <div class="clinical-check">
+              <h3>Clinical reality check</h3>
+              <p>In medicine, model errors have consequences.</p>
+              <ul>
+                <li><strong>False negative:</strong> missed diagnosis, delayed treatment, unsafe reassurance.</li>
+                <li><strong>False positive:</strong> unnecessary testing, anxiety, cost, overtreatment.</li>
+                <li><strong>Poor calibration:</strong> misleading risk communication and poor shared decision-making.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="interactive">
+            <p class="kicker">Interactive checks</p>
+            <h2>Practise metric interpretation</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">A disease has prevalence 1%. A model predicts everyone as disease-negative. What is the main problem?</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">The model has no accuracy</button>
+                <button class="option-btn" data-answer="correct">The model has high accuracy but zero sensitivity</button>
+                <button class="option-btn" data-answer="incorrect">The model has perfect calibration</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Accuracy can be very high in rare disease settings while sensitivity is zero."
+                data-incorrect="<strong>Not quite.</strong> The model may have high accuracy because most people are disease-negative, but it detects no true cases."
+              ></div>
+            </div>
+
+            <div class="slider-demo">
+              <h3>Threshold explorer</h3>
+              <p>Move the threshold and think about the sensitivity-specificity trade-off.</p>
+
+              <input
+                type="range"
+                min="0.10"
+                max="0.90"
+                step="0.05"
+                value="0.50"
+                data-slider-output="threshold-output-5"
+              />
+
+              <div class="slider-output" id="threshold-output-5"></div>
+            </div>
+
+            <div class="interactive-panel">
+              <h3>Flashcards: metric meanings</h3>
+              <p>Click each card to reveal the explanation.</p>
+
+              <div class="flashcard-grid">
+                <div class="flashcard">
+                  <div class="flashcard-front">Sensitivity</div>
+                  <div class="flashcard-back">Among patients who truly have the disease, how many did the model detect?</div>
+                </div>
+
+                <div class="flashcard">
+                  <div class="flashcard-front">Specificity</div>
+                  <div class="flashcard-back">Among patients who truly do not have the disease, how many did the model correctly classify as negative?</div>
+                </div>
+
+                <div class="flashcard">
+                  <div class="flashcard-front">PPV</div>
+                  <div class="flashcard-back">Among patients predicted positive, how many truly have the outcome? PPV depends strongly on prevalence.</div>
+                </div>
+
+                <div class="flashcard">
+                  <div class="flashcard-front">Calibration</div>
+                  <div class="flashcard-back">Agreement between predicted probabilities and observed risks.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="reporting">
+            <p class="kicker">Reporting</p>
+            <h2>Which metrics should we report?</h2>
+
+            <p>There is no single best metric for every situation.</p>
+
+            <p>A transparent report should usually include:</p>
+
+            <ul>
+              <li>outcome definition;</li>
+              <li>positive class;</li>
+              <li>threshold used;</li>
+              <li>confusion matrix;</li>
+              <li>sensitivity;</li>
+              <li>specificity;</li>
+              <li>PPV;</li>
+              <li>NPV;</li>
+              <li>ROC AUC;</li>
+              <li>calibration assessment;</li>
+              <li>validation method.</li>
+            </ul>
+
+            <p>The final interpretation should connect the numbers to the clinical decision.</p>
+
+            <div class="dialogue-box">
+              
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“So I should not just report accuracy?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Correct.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“I need to know what errors the model makes and whether the risk estimates are useful.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line ms-calibration">
+        <p><span class="character">Ms Calibration:</span><br />“And whether predicted probabilities match observed risks.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line confusion-bug">
+        <p><span class="character">Confusion Bug:</span><br />“Fine. I will stop calling every metric accuracy.”</p>
+      </div>
+    
+            </div>
+          </section>
+
+          <section class="lesson-section" id="lecture-key">
+            <p class="kicker">Key takeaway</p>
+            <h2>A medical classification model should not be judged only by accuracy</h2>
+
+            <div class="key-takeaway">
+              <p>A proper evaluation should consider:</p>
+
+              <ul>
+                <li>confusion matrix;</li>
+                <li>sensitivity;</li>
+                <li>specificity;</li>
+                <li>PPV;</li>
+                <li>NPV;</li>
+                <li>ROC AUC;</li>
+                <li>calibration;</li>
+                <li>threshold choice;</li>
+                <li>clinical consequences.</li>
+              </ul>
+
+              <p>A model is useful only if its performance supports the intended medical decision.</p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="lecture-reflection">
+            <p class="kicker">Reflection question</p>
+            <h2>Screening versus risky treatment</h2>
+
+            <div class="reflection-box">
+              <p>For a diabetes screening model, which is more important: sensitivity or specificity?</p>
+              <p>How would your answer change if the model were used to decide on an expensive or risky treatment?</p>
+
+              <details class="answer-box">
+                <summary>Show suggested answer</summary>
+                <div class="answer-content">
+                  <p>
+                    For diabetes screening, sensitivity may be especially important because missing true cases could delay diagnosis and intervention.
+                    However, specificity also matters because too many false positives could lead to unnecessary follow-up testing and anxiety.
+                  </p>
+                  <p>
+                    If the model were used to decide on an expensive or risky treatment, specificity and positive predictive value may become more important,
+                    because unnecessary treatment could cause harm or waste resources.
+                  </p>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="notes">
+            <p class="kicker">Detailed notes</p>
+            <h2>Note 5: Classification Metrics in Medicine</h2>
+
+            <div class="key-takeaway">
+              <p>
+                Classification metrics in medicine are not just mathematical calculations.
+                They are tools for understanding clinical trade-offs.
+                A good medical prediction model should be assessed using a combination of discrimination,
+                calibration, threshold-based performance and clinical usefulness.
+              </p>
+            </div>
+
+            <h3>Learning objectives</h3>
+            <ul>
+              <li>Explain why classification metrics are essential in medical machine learning.</li>
+              <li>Interpret accuracy, sensitivity, specificity, PPV and NPV.</li>
+              <li>Understand why accuracy can be misleading in imbalanced medical datasets.</li>
+              <li>Explain how disease prevalence affects PPV and NPV.</li>
+              <li>Interpret ROC curves and AUC in clinical prediction.</li>
+              <li>Understand the difference between discrimination and calibration.</li>
+              <li>Explain why threshold choice should depend on clinical context.</li>
+              <li>Understand why one metric is never enough in medical prediction.</li>
+            </ul>
+
+            <h3>1. Introduction</h3>
+            <p>
+              After building a classification model, the next question is not simply whether the model ran successfully.
+              The more important question is whether the model is useful, reliable and clinically meaningful.
+            </p>
+
+            <p>
+              In medical machine learning, classification models are often used to predict binary outcomes such as disease status,
+              hospital readmission, treatment response, recurrence, or mortality within a fixed time period.
+            </p>
+
+            <p>
+              A model with high accuracy may still be clinically useless.
+              A model with high AUC may still give poorly calibrated probabilities.
+              A model with high sensitivity may produce many false positives.
+              A model with high specificity may miss many true cases.
+            </p>
+
+            <h3>2. Binary classification in medical prediction</h3>
+            <p>In binary classification, the outcome has two categories.</p>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr><th>Medical problem</th><th>Positive class</th><th>Negative class</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Diabetes prediction</td><td>Diabetes</td><td>No diabetes</td></tr>
+                  <tr><td>Cancer diagnosis</td><td>Malignant</td><td>Benign</td></tr>
+                  <tr><td>Hospital readmission</td><td>Readmitted</td><td>Not readmitted</td></tr>
+                  <tr><td>Treatment response</td><td>Responder</td><td>Non-responder</td></tr>
+                  <tr><td>5-year recurrence</td><td>Recurrence</td><td>No recurrence</td></tr>
+                  <tr><td>Exposure prediction from methylation</td><td>Exposed</td><td>Unexposed</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              The positive class does not always mean something good. In medical prediction, the positive class usually means the event or condition of interest.
+              Before calculating metrics, it is essential to define the positive class clearly.
+            </p>
+
+            <h3>3. Predicted probabilities and predicted classes</h3>
+            <p>Many classification models produce predicted probabilities, which can be converted into predicted classes using a threshold.</p>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Patient</th><th>Predicted probability</th><th>Predicted class at threshold 0.50</th></tr></thead>
+                <tbody>
+                  <tr><td>A</td><td>0.82</td><td>Positive</td></tr>
+                  <tr><td>B</td><td>0.61</td><td>Positive</td></tr>
+                  <tr><td>C</td><td>0.44</td><td>Negative</td></tr>
+                  <tr><td>D</td><td>0.12</td><td>Negative</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              A threshold of 0.50 is not automatically appropriate in medicine.
+              For some clinical problems, a lower threshold may be preferred because missing a true case is dangerous.
+              For other problems, a higher threshold may be preferred because false positives may lead to unnecessary invasive testing or harmful treatment.
+            </p>
+
+            <h3>4. The confusion matrix</h3>
+            <p>Most threshold-based classification metrics are derived from the confusion matrix.</p>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th></th><th>Predicted positive</th><th>Predicted negative</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Actual positive</strong></td><td>True positive</td><td>False negative</td></tr>
+                  <tr><td><strong>Actual negative</strong></td><td>False positive</td><td>True negative</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <ul>
+              <li><strong>True positive:</strong> the model predicts positive and the patient truly has the outcome.</li>
+              <li><strong>False positive:</strong> the model predicts positive but the patient does not have the outcome.</li>
+              <li><strong>True negative:</strong> the model predicts negative and the patient truly does not have the outcome.</li>
+              <li><strong>False negative:</strong> the model predicts negative but the patient truly has the outcome.</li>
+            </ul>
+
+            <h3>5. Accuracy and why it can mislead</h3>
+            <code class="inline-code">Accuracy = (TP + TN) / (TP + FP + TN + FN)</code>
+
+            <p>
+              Accuracy answers: out of all patients, how many did the model classify correctly?
+              Accuracy is simple and easy to understand, but it can be misleading in medical datasets, especially when the outcome is rare.
+            </p>
+
+            <p>
+              Suppose a disease has prevalence 2%. A model that predicts “no disease” for every patient will have 98% accuracy,
+              but sensitivity of 0%. This model is clinically useless for screening because it fails to identify every patient with disease.
+            </p>
+
+            <h3>6. Sensitivity and specificity</h3>
+            <code class="inline-code">Sensitivity = TP / (TP + FN)
+Specificity = TN / (TN + FP)</code>
+
+            <p>
+              Sensitivity answers: among patients who truly have the outcome, how many did the model detect?
+              Specificity answers: among patients who truly do not have the outcome, how many did the model correctly classify as negative?
+            </p>
+
+            <p>
+              Sensitivity is especially important when missing a case is harmful.
+              Specificity is especially important when false positives are harmful.
+            </p>
+
+            <h3>7. Sensitivity-specificity trade-off</h3>
+            <p>If we lower the classification threshold, more patients are classified as positive. This usually increases sensitivity and decreases specificity.</p>
+            <p>If we raise the classification threshold, fewer patients are classified as positive. This usually decreases sensitivity and increases specificity.</p>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Threshold</th><th>Sensitivity</th><th>Specificity</th><th>Typical use</th></tr></thead>
+                <tbody>
+                  <tr><td>0.30</td><td>0.90</td><td>0.60</td><td>Screening</td></tr>
+                  <tr><td>0.70</td><td>0.55</td><td>0.92</td><td>Confirmatory decision</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>8. PPV and NPV</h3>
+            <code class="inline-code">PPV = TP / (TP + FP)
+NPV = TN / (TN + FN)</code>
+
+            <p>
+              PPV answers: among patients predicted positive, how many truly have the outcome?
+              NPV answers: among patients predicted negative, how many truly do not have the outcome?
+            </p>
+
+            <p>
+              PPV and NPV depend strongly on disease prevalence.
+              If disease prevalence is high, PPV tends to be higher.
+              If disease prevalence is low, PPV tends to be lower.
+            </p>
+
+            <h3>9. Worked example</h3>
+            <p>Suppose a model predicts disease status in 200 patients.</p>
+
+            <code class="inline-code">True positives  = 40
+False positives = 20
+True negatives  = 120
+False negatives = 20</code>
+
+            <ul>
+              <li><strong>Accuracy:</strong> (40 + 120) / 200 = 0.80.</li>
+              <li><strong>Sensitivity:</strong> 40 / (40 + 20) = 0.667.</li>
+              <li><strong>Specificity:</strong> 120 / (120 + 20) = 0.857.</li>
+              <li><strong>PPV:</strong> 40 / (40 + 20) = 0.667.</li>
+              <li><strong>NPV:</strong> 120 / (120 + 20) = 0.857.</li>
+            </ul>
+
+            <p>This model is better at identifying negative cases than positive cases. Whether this is acceptable depends on the clinical task.</p>
+
+            <h3>10. ROC curve and AUC</h3>
+            <p>
+              The ROC curve shows how sensitivity and specificity change across all possible classification thresholds.
+              It plots sensitivity against 1 - specificity.
+            </p>
+
+            <p>
+              AUC is a measure of discrimination. It asks whether the model can assign higher predicted risks
+              to patients who experience the outcome than to patients who do not.
+            </p>
+
+            <ul>
+              <li><strong>AUC = 0.5:</strong> no discrimination.</li>
+              <li><strong>AUC = 1.0:</strong> perfect discrimination.</li>
+            </ul>
+
+            <p>
+              AUC is useful, but it does not measure calibration, it does not tell us which threshold should be used,
+              and it may not reflect clinical usefulness.
+            </p>
+
+            <h3>11. Precision-recall curve</h3>
+            <p>
+              The precision-recall curve is another way to evaluate classification models, especially when the positive outcome is rare.
+              Precision is PPV and recall is sensitivity.
+            </p>
+
+            <p>
+              This can be more informative than the ROC curve when the outcome is rare because it focuses more directly
+              on the performance among predicted positives.
+            </p>
+
+            <h3>12. Discrimination versus calibration</h3>
+
+            <div class="grid grid-2">
+              <div class="model-card">
+                <p class="model-label">Discrimination</p>
+                <h3>Ranking ability</h3>
+                <p>Can the model separate patients who experience the outcome from those who do not?</p>
+              </div>
+
+              <div class="model-card">
+                <p class="model-label">Calibration</p>
+                <h3>Probability accuracy</h3>
+                <p>Do predicted probabilities agree with observed risks?</p>
+              </div>
+            </div>
+
+            <p>
+              A model can have good discrimination but poor calibration.
+              In medicine, calibration is essential because clinical decisions often depend on absolute risk.
+            </p>
+
+            <h3>13. Brier score</h3>
+            <p>The Brier score is a measure of prediction error for probabilistic predictions.</p>
+
+            <code class="inline-code">Brier score = mean((predicted probability - observed outcome)^2)</code>
+
+            <p>The observed outcome is coded as 1 if the event occurred and 0 if the event did not occur. A lower Brier score is better.</p>
+
+            <h3>14. Breast cancer survival example</h3>
+            <p>
+              Sometimes a survival question is converted into a binary classification question, such as recurrence within 5 years: yes/no.
+              Then classification metrics may be used.
+            </p>
+
+            <p>
+              However, if follow-up times differ and censoring is present, ordinary binary classification metrics may be inappropriate or incomplete.
+              Survival-specific metrics such as the C-index, time-dependent AUC and time-dependent Brier score may be more appropriate.
+            </p>
+
+            <div class="key-takeaway">
+              <p>The evaluation metric should match the outcome structure.</p>
+            </div>
+
+            <h3>15. Methylation and EWAS-style prediction</h3>
+            <p>
+              In methylation-based classification, the number of predictors may be very large.
+            </p>
+
+            <code class="inline-code">n = 800 participants
+p = 450,000 CpG sites</code>
+
+            <p>
+              This creates a serious risk of overfitting.
+              Feature selection can cause leakage if it is done before the train/test split or before cross-validation.
+              Accuracy may also be misleading if the outcome is imbalanced.
+            </p>
+
+            <p>
+              Methylation-based classification should report more than accuracy:
+              sensitivity, specificity, PPV, NPV, ROC AUC, calibration where probabilities are used,
+              and ideally external validation in an independent cohort.
+            </p>
+
+            <h3>16. Balanced accuracy and F1 score</h3>
+            <code class="inline-code">Balanced accuracy = (Sensitivity + Specificity) / 2
+F1 = 2 × (Precision × Recall) / (Precision + Recall)</code>
+
+            <p>
+              Balanced accuracy can be useful when outcome classes are imbalanced because it gives equal weight to positive and negative classes.
+              F1 score combines precision and recall, but it ignores true negatives, so it should not be the only metric in medical evaluation.
+            </p>
+
+            <h3>17. Choosing metrics according to clinical purpose</h3>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Clinical purpose</th><th>Metrics that may matter</th></tr></thead>
+                <tbody>
+                  <tr><td>Screening</td><td>Sensitivity, NPV, PPV, burden of false positives</td></tr>
+                  <tr><td>Diagnosis</td><td>Sensitivity, specificity, PPV, NPV</td></tr>
+                  <tr><td>Risk prediction</td><td>AUC, calibration, Brier score, decision curve analysis</td></tr>
+                  <tr><td>Treatment decision</td><td>Calibration, net benefit, threshold-specific performance</td></tr>
+                  <tr><td>Rare disease prediction</td><td>PPV, sensitivity, precision-recall curve</td></tr>
+                  <tr><td>Patient reassurance</td><td>NPV, calibration, safety of false negatives</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>18. Common mistakes</h3>
+            <ul>
+              <li>Reporting accuracy alone.</li>
+              <li>Ignoring class imbalance.</li>
+              <li>Reporting AUC without calibration.</li>
+              <li>Not defining the positive class.</li>
+              <li>Choosing a threshold without explanation.</li>
+              <li>Reporting PPV and NPV without discussing prevalence.</li>
+              <li>Using test data repeatedly to choose the best threshold.</li>
+              <li>Applying ordinary binary metrics to censored survival outcomes.</li>
+            </ul>
+
+            <h3>19. Practical interpretation framework</h3>
+            <ul>
+              <li>What is the clinical question?</li>
+              <li>What is the positive class?</li>
+              <li>What is the prediction time point?</li>
+              <li>What is the outcome prevalence?</li>
+              <li>Is the dataset imbalanced?</li>
+              <li>What threshold was used?</li>
+              <li>Is sensitivity high enough for the intended use?</li>
+              <li>Is specificity high enough for the intended use?</li>
+              <li>Is PPV acceptable?</li>
+              <li>Is NPV acceptable?</li>
+              <li>Does the model discriminate well?</li>
+              <li>Is the model calibrated?</li>
+              <li>Was the model validated properly?</li>
+              <li>Could performance be inflated by leakage?</li>
+            </ul>
+
+            <h3>20. Summary</h3>
+            <p>
+              Classification metrics are central to evaluating medical machine learning models, but they must be interpreted carefully.
+              Accuracy is easy to understand but can be misleading when outcomes are imbalanced.
+              Sensitivity and specificity describe how well the model identifies true positives and true negatives.
+              PPV and NPV describe how trustworthy positive and negative predictions are, but they depend strongly on prevalence.
+            </p>
+
+            <p>
+              ROC AUC measures discrimination, but it does not measure calibration or clinical usefulness.
+              Threshold choice should depend on clinical context and the consequences of false positives and false negatives.
+            </p>
+
+            <div class="key-takeaway">
+              <p>
+                In medical machine learning, model performance should be judged by a combination of metrics that reflect
+                the clinical purpose, outcome structure, prevalence, validation design, calibration and consequences of decision-making.
+              </p>
+            </div>
+
+            <h3>Revision questions</h3>
+            <ul>
+              <li>What is a confusion matrix?</li>
+              <li>What is the difference between a false positive and a false negative?</li>
+              <li>Why can accuracy be misleading in rare disease prediction?</li>
+              <li>What does sensitivity measure?</li>
+              <li>What does specificity measure?</li>
+              <li>What does PPV measure?</li>
+              <li>Why does PPV depend on prevalence?</li>
+              <li>What does ROC AUC measure?</li>
+              <li>Why is AUC not enough in clinical prediction?</li>
+              <li>What is the difference between discrimination and calibration?</li>
+              <li>Why should threshold choice depend on clinical context?</li>
+              <li>Why is one metric never enough in medical prediction?</li>
+            </ul>
+
+            <h3>Key terms</h3>
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Accuracy</strong></td><td>Proportion of all patients correctly classified.</td></tr>
+                  <tr><td><strong>Sensitivity</strong></td><td>Proportion of true positives correctly identified.</td></tr>
+                  <tr><td><strong>Specificity</strong></td><td>Proportion of true negatives correctly identified.</td></tr>
+                  <tr><td><strong>PPV</strong></td><td>Proportion of predicted positives who are truly positive.</td></tr>
+                  <tr><td><strong>NPV</strong></td><td>Proportion of predicted negatives who are truly negative.</td></tr>
+                  <tr><td><strong>ROC curve</strong></td><td>Plot of sensitivity against false positive rate across thresholds.</td></tr>
+                  <tr><td><strong>AUC</strong></td><td>Area under the ROC curve; measures discrimination.</td></tr>
+                  <tr><td><strong>Calibration</strong></td><td>Agreement between predicted probabilities and observed risks.</td></tr>
+                  <tr><td><strong>Brier score</strong></td><td>Mean squared error of predicted probabilities.</td></tr>
+                  <tr><td><strong>Threshold</strong></td><td>Cut-off used to convert probabilities into classes.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>References</h3>
+            <p class="reference-item">Altman, D. G., & Bland, J. M. (1994). Diagnostic tests 1: sensitivity and specificity. BMJ, 308, 1552.</p>
+            <p class="reference-item">Altman, D. G., & Bland, J. M. (1994). Diagnostic tests 2: predictive values. BMJ, 309, 102.</p>
+            <p class="reference-item">Steyerberg, E. W. (2019). Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating (2nd ed.). Springer.</p>
+            <p class="reference-item">James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An Introduction to Statistical Learning: With Applications in R. Springer.</p>
+            <p class="reference-item">Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning: Data Mining, Inference, and Prediction (2nd ed.). Springer.</p>
+            <p class="reference-item">Collins, G. S., Moons, K. G. M., Dhiman, P., et al. (2024). TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods. BMJ, 385, e078378.</p>
+            <p class="reference-item">Moons, K. G. M., Damen, J. A. A. G., Kaul, T., et al. (2025). PROBAST+AI: an updated quality, risk of bias, and applicability assessment tool for prediction models using regression or artificial intelligence methods. BMJ, 388, e082505.</p>
+          </section>
+
+          <section class="lesson-section" id="r-code">
+            <p class="kicker">R code</p>
+            <h2>R practical: classification metrics in medicine</h2>
+
+            <div class="practice-note">
+              <p>
+                This R script shows why accuracy is not enough. It calculates accuracy, sensitivity,
+                specificity, PPV, NPV and AUC, then compares performance across different thresholds.
+              </p>
+            </div>
+
+            <div class="grid grid-3">
+              <div class="card">
+                <h3>Confusion matrix</h3>
+                <p>The script creates predicted classes from predicted risks and extracts TP, FP, TN and FN.</p>
+              </div>
+              <div class="card">
+                <h3>Threshold comparison</h3>
+                <p>Metrics are calculated across thresholds from 0.20 to 0.80.</p>
+              </div>
+              <div class="card">
+                <h3>ROC AUC</h3>
+                <p>The script plots an ROC curve and prints AUC for discrimination.</p>
+              </div>
+            </div>
+
+            <p style="margin-top: 1.2rem;">
+              <a class="btn btn-primary" href="../r/05_classification_metrics_in_medicine.R" download>
+                Download R script
+              </a>
+              <button class="btn btn-secondary" data-copy-target="r-code-05" type="button">
+                Copy code
+              </button>
+            </p>
+
+            <pre class="code-block"><code id="r-code-05"># Machine Learning in Biostatistics
+# Script 05: Classification Metrics in Medicine
+#
+# This script shows why accuracy is not enough.
+# We calculate sensitivity, specificity, PPV, NPV, accuracy, and AUC.
+
+library(tidyverse)
+library(mlbench)
+library(pROC)
+
+set.seed(123)
+
+data("PimaIndiansDiabetes")
+
+diabetes_data &lt;- PimaIndiansDiabetes %&gt;%
+  mutate(
+    diabetes = factor(diabetes, levels = c("neg", "pos"))
+  )
+
+train_index &lt;- sample(seq_len(nrow(diabetes_data)), size = round(0.80 * nrow(diabetes_data)))
+
+train_data &lt;- diabetes_data[train_index, ]
+test_data &lt;- diabetes_data[-train_index, ]
+
+model &lt;- glm(
+  diabetes ~ pregnant + glucose + pressure + triceps +
+    insulin + mass + pedigree + age,
+  data = train_data,
+  family = binomial
+)
+
+test_data &lt;- test_data %&gt;%
+  mutate(
+    predicted_risk = predict(model, newdata = test_data, type = "response")
+  )
+
+calculate_classification_metrics &lt;- function(actual, risk, threshold) {
+  predicted &lt;- factor(
+    ifelse(risk &gt;= threshold, "pos", "neg"),
+    levels = c("neg", "pos")
+  )
+
+  tab &lt;- table(Predicted = predicted, Actual = actual)
+
+  tn &lt;- tab["neg", "neg"]
+  fp &lt;- tab["pos", "neg"]
+  fn &lt;- tab["neg", "pos"]
+  tp &lt;- tab["pos", "pos"]
+
+  accuracy &lt;- (tp + tn) / sum(tab)
+  sensitivity &lt;- tp / (tp + fn)
+  specificity &lt;- tn / (tn + fp)
+  ppv &lt;- tp / (tp + fp)
+  npv &lt;- tn / (tn + fn)
+
+  tibble(
+    threshold = threshold,
+    accuracy = accuracy,
+    sensitivity = sensitivity,
+    specificity = specificity,
+    ppv = ppv,
+    npv = npv,
+    true_positive = tp,
+    false_positive = fp,
+    false_negative = fn,
+    true_negative = tn
+  )
+}
+
+metrics_050 &lt;- calculate_classification_metrics(
+  actual = test_data$diabetes,
+  risk = test_data$predicted_risk,
+  threshold = 0.50
+)
+
+cat("\nClassification metrics at threshold 0.50:\n")
+print(metrics_050)
+
+threshold_grid &lt;- seq(0.20, 0.80, by = 0.10)
+
+threshold_results &lt;- map_dfr(
+  threshold_grid,
+  ~ calculate_classification_metrics(
+    actual = test_data$diabetes,
+    risk = test_data$predicted_risk,
+    threshold = .x
+  )
+)
+
+cat("\nMetrics across different thresholds:\n")
+print(threshold_results)
+
+roc_object &lt;- roc(
+  response = test_data$diabetes,
+  predictor = test_data$predicted_risk,
+  levels = c("neg", "pos"),
+  quiet = TRUE
+)
+
+cat("\nAUC:\n")
+print(auc(roc_object))
+
+plot(
+  roc_object,
+  lwd = 2,
+  main = paste0("ROC Curve: Classification Metrics, AUC = ", round(auc(roc_object), 3))
+)
+
+abline(a = 0, b = 1, lty = 2)
+
+plot(
+  threshold_results$threshold,
+  threshold_results$sensitivity,
+  type = "b",
+  ylim = c(0, 1),
+  xlab = "Threshold",
+  ylab = "Metric value",
+  main = "Sensitivity and Specificity Across Thresholds"
+)
+
+lines(
+  threshold_results$threshold,
+  threshold_results$specificity,
+  type = "b",
+  lty = 2
+)
+
+legend(
+  "right",
+  legend = c("Sensitivity", "Specificity"),
+  lty = c(1, 2),
+  pch = 1,
+  bty = "n"
+)
+
+cat("\nClinical interpretation:\n")
+cat("1. Lower thresholds usually increase sensitivity.\n")
+cat("2. Higher thresholds usually increase specificity.\n")
+cat("3. Screening often prioritises sensitivity.\n")
+cat("4. Confirmatory decisions may require higher specificity.\n")
+cat("5. Accuracy alone can hide clinically important errors.\n")</code></pre>
+          </section>
+
+          <section class="lesson-section" id="exercises">
+            <p class="kicker">Exercises</p>
+            <h2>Exercise 5: Classification Metrics in Medicine</h2>
+
+            <div class="exercise-card">
+              <h3>Exercise 1: Confusion matrix terms</h3>
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+                  <tbody>
+                    <tr><td>True positive</td><td></td></tr>
+                    <tr><td>False positive</td><td></td></tr>
+                    <tr><td>True negative</td><td></td></tr>
+                    <tr><td>False negative</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <ul>
+                    <li><strong>True positive:</strong> predicted positive and actually positive.</li>
+                    <li><strong>False positive:</strong> predicted positive but actually negative.</li>
+                    <li><strong>True negative:</strong> predicted negative and actually negative.</li>
+                    <li><strong>False negative:</strong> predicted negative but actually positive.</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 2: Calculate classification metrics</h3>
+              <code class="inline-code">True positives = 40
+False positives = 20
+True negatives = 120
+False negatives = 20</code>
+
+              <p>Calculate accuracy, sensitivity, specificity, PPV and NPV.</p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <ul>
+                    <li><strong>Accuracy:</strong> (40 + 120) / 200 = 0.80.</li>
+                    <li><strong>Sensitivity:</strong> 40 / (40 + 20) = 0.667.</li>
+                    <li><strong>Specificity:</strong> 120 / (120 + 20) = 0.857.</li>
+                    <li><strong>PPV:</strong> 40 / (40 + 20) = 0.667.</li>
+                    <li><strong>NPV:</strong> 120 / (120 + 20) = 0.857.</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 3: Accuracy and rare disease</h3>
+              <p>A disease has prevalence 1%. A model predicts every patient as disease negative.</p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p><strong>Accuracy:</strong> 99%.</p>
+                  <p><strong>Sensitivity:</strong> 0%, because no true disease cases are detected.</p>
+                  <p>This model is not clinically useful for screening because it misses every patient with the disease.</p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 4: Sensitivity or specificity?</h3>
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Situation</th><th>Sensitivity or specificity?</th></tr></thead>
+                  <tbody>
+                    <tr><td>Cancer screening test</td><td></td></tr>
+                    <tr><td>Sepsis early warning alert</td><td></td></tr>
+                    <tr><td>Confirmatory test before invasive procedure</td><td></td></tr>
+                    <tr><td>Model recommending toxic chemotherapy</td><td></td></tr>
+                    <tr><td>Infectious disease screening at airport</td><td></td></tr>
+                    <tr><td>Avoiding unnecessary biopsy</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <ul>
+                    <li><strong>Cancer screening:</strong> sensitivity.</li>
+                    <li><strong>Sepsis early warning:</strong> sensitivity.</li>
+                    <li><strong>Confirmatory test before invasive procedure:</strong> specificity.</li>
+                    <li><strong>Toxic chemotherapy recommendation:</strong> specificity and PPV.</li>
+                    <li><strong>Infectious disease screening at airport:</strong> often sensitivity, with practical consideration of false positives.</li>
+                    <li><strong>Avoiding unnecessary biopsy:</strong> specificity.</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 5: PPV and prevalence</h3>
+              <p>Population A prevalence = 20%. Population B prevalence = 2%. The model has the same sensitivity and specificity in both populations.</p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    PPV will usually be higher in Population A because the disease is more common.
+                    When prevalence is low, many positive predictions may be false positives even if sensitivity and specificity are unchanged.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 6: NPV and rare disease</h3>
+              <p>A model has very high NPV in a rare disease setting. Does this automatically mean the model is excellent?</p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    No. NPV can be high simply because the disease is rare.
+                    A model that predicts nearly everyone as negative may have high NPV but poor sensitivity.
+                    NPV should be interpreted with prevalence, sensitivity, specificity and clinical context.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 7: Threshold trade-off</h3>
+              <code class="inline-code">At threshold 0.20:
+Sensitivity = 0.92
+Specificity = 0.55
+
+At threshold 0.70:
+Sensitivity = 0.50
+Specificity = 0.94</code>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    Threshold 0.20 may be preferred for screening because it has higher sensitivity.
+                    Threshold 0.70 may be preferred before giving a risky treatment because it has higher specificity.
+                    The choice depends on the harms of false negatives and false positives.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 8: AUC interpretation</h3>
+              <code class="inline-code">AUC = 0.84</code>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    AUC = 0.84 suggests good discrimination: the model tends to assign higher risk to patients with the outcome.
+                    It does not tell us whether probabilities are well calibrated and does not tell us which threshold should be used.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 9: Calibration problem</h3>
+              <p>A model predicts 40% risk for a group of patients. The observed event rate is 15%.</p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    The model is not well calibrated. It is overestimating risk because predicted risk is higher than observed risk.
+                    This could lead to overtreatment, unnecessary anxiety, unnecessary monitoring or poor shared decision-making.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 10: Breast cancer recurrence example</h3>
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p><strong>Positive class:</strong> recurrence within 5 years.</p>
+                  <p><strong>Sensitivity:</strong> among patients who recur within 5 years, how many are identified as high risk?</p>
+                  <p><strong>Specificity:</strong> among patients who do not recur, how many are correctly identified as low risk?</p>
+                  <p>
+                    Binary classification metrics may be incomplete if censoring is present because some patients may not have enough follow-up
+                    to know their true 5-year recurrence status.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 11: Methylation classification example</h3>
+              <code class="inline-code">n = 600 participants
+p = 450,000 CpG sites</code>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    Accuracy may be misleading if the outcome is imbalanced. Feature-selection leakage is a major risk if CpGs are selected
+                    using all data before validation.
+                  </p>
+                  <p>
+                    Report sensitivity, specificity, PPV, NPV, ROC AUC, calibration where probabilities are used,
+                    and preferably external validation. Use resampling with feature selection inside each training fold.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 12: Choose appropriate metrics</h3>
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Clinical purpose</th><th>Useful metrics</th></tr></thead>
+                  <tbody>
+                    <tr><td>Screening</td><td></td></tr>
+                    <tr><td>Confirmatory diagnosis</td><td></td></tr>
+                    <tr><td>Treatment decision</td><td></td></tr>
+                    <tr><td>Rare disease prediction</td><td></td></tr>
+                    <tr><td>Risk prediction</td><td></td></tr>
+                    <tr><td>Patient reassurance</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <ul>
+                    <li><strong>Screening:</strong> sensitivity, NPV, PPV, false-positive burden.</li>
+                    <li><strong>Confirmatory diagnosis:</strong> specificity, PPV, sensitivity, NPV.</li>
+                    <li><strong>Treatment decision:</strong> calibration, PPV, specificity, net benefit, threshold-specific performance.</li>
+                    <li><strong>Rare disease prediction:</strong> PPV, sensitivity, precision-recall curve, calibration.</li>
+                    <li><strong>Risk prediction:</strong> AUC, calibration, Brier score, decision curve analysis.</li>
+                    <li><strong>Patient reassurance:</strong> NPV, sensitivity, calibration and safety of false negatives.</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 13: Short answer questions</h3>
+
+              <div class="short-answer"><h4>Why is accuracy not enough in medical prediction?</h4><details class="answer-box"><summary>Click to see answer</summary><div class="answer-content"><p>Accuracy can hide clinically important errors, especially when outcomes are rare. A model may be accurate overall but miss most true cases. Medical evaluation requires sensitivity, specificity, predictive values, calibration and clinical interpretation.</p></div></details></div>
+              <div class="short-answer"><h4>Why does PPV depend on prevalence?</h4><details class="answer-box"><summary>Click to see answer</summary><div class="answer-content"><p>When the outcome is rare, true positives are uncommon, so many positive predictions may be false positives. As prevalence increases, a positive prediction is more likely to be a true positive.</p></div></details></div>
+              <div class="short-answer"><h4>Why can AUC be misleading if reported alone?</h4><details class="answer-box"><summary>Click to see answer</summary><div class="answer-content"><p>AUC measures ranking ability but not calibration, threshold performance or clinical usefulness. A model can have high AUC but give risk probabilities that are too high or too low.</p></div></details></div>
+              <div class="short-answer"><h4>What is the difference between discrimination and calibration?</h4><details class="answer-box"><summary>Click to see answer</summary><div class="answer-content"><p>Discrimination asks whether the model ranks higher-risk patients above lower-risk patients. Calibration asks whether predicted probabilities agree with observed risks.</p></div></details></div>
+              <div class="short-answer"><h4>Why should threshold choice depend on clinical context?</h4><details class="answer-box"><summary>Click to see answer</summary><div class="answer-content"><p>Thresholds change the balance between false positives and false negatives. The best threshold depends on the harms, costs and benefits of action in the intended clinical setting.</p></div></details></div>
+              <div class="short-answer"><h4>Why is external validation important?</h4><details class="answer-box"><summary>Click to see answer</summary><div class="answer-content"><p>External validation tests whether model performance generalises to a new setting, population or time period. This matters because prevalence, measurement and clinical workflows can differ across settings.</p></div></details></div>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 14: Mini case study</h3>
+
+              <code class="inline-code">At threshold 0.30:
+Sensitivity = 0.95
+Specificity = 0.50
+
+At threshold 0.70:
+Sensitivity = 0.60
+Specificity = 0.90</code>
+
+              <p>The clinical team wants to use the model as an early warning alert for sepsis.</p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    Threshold 0.30 may be more appropriate because the model is being used as an early warning alert,
+                    where missing sepsis cases could be dangerous.
+                  </p>
+                  <p>
+                    The trade-off is that specificity is lower, meaning more false positives and more alerts for patients who do not develop sepsis.
+                  </p>
+                  <p>
+                    Additional information needed includes alert burden, clinician workload, harms of false alarms, PPV, calibration,
+                    time-to-alert, clinical workflow, and external validation.
+                  </p>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="quiz">
+            <p class="kicker">Quick quiz</p>
+            <h2>Check your understanding</h2>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">Which metric answers: among true disease cases, how many did the model detect?</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">Sensitivity</button>
+                <button class="option-btn" data-answer="incorrect">Specificity</button>
+                <button class="option-btn" data-answer="incorrect">PPV</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Sensitivity is TP / (TP + FN)."
+                data-incorrect="<strong>Not quite.</strong> This is sensitivity, also called recall or true positive rate."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">AUC mainly measures:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="incorrect">Calibration</button>
+                <button class="option-btn" data-answer="correct">Discrimination</button>
+                <button class="option-btn" data-answer="incorrect">Disease prevalence</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> AUC measures discrimination or ranking ability."
+                data-incorrect="<strong>Not quite.</strong> AUC measures discrimination, not calibration."
+              ></div>
+            </div>
+
+            <div class="checkpoint">
+              <p class="checkpoint-question">If predicted risk is 40% but observed risk is 15%, the model is:</p>
+              <div class="option-list">
+                <button class="option-btn" data-answer="correct">Overestimating risk</button>
+                <button class="option-btn" data-answer="incorrect">Underestimating risk</button>
+                <button class="option-btn" data-answer="incorrect">Perfectly calibrated</button>
+              </div>
+              <div
+                class="feedback-box"
+                data-correct="<strong>Correct.</strong> Predicted risk is higher than observed risk, so the model overestimates risk."
+                data-incorrect="<strong>Not quite.</strong> The model predicts higher risk than observed, so it is overestimating."
+              ></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="next-lesson-card">
+              <div>
+                <p class="kicker">Next module</p>
+                <h2 style="margin: 0;">Model Evaluation, Validation and Clinical Usefulness</h2>
+                <p style="margin-bottom: 0;">
+                  Continue to cross-validation, bootstrap validation, calibration, Brier score and decision curve analysis.
+                </p>
+              </div>
+
+              <a class="btn btn-primary" href="../module-3/index.html">
+                Continue
+              </a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="footer-logo" />
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+</body>
+</html>

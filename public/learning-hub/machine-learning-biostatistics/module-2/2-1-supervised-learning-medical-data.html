@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Lesson 3: Supervised Learning for Medical Data | Machine Learning in Biostatistics</title>
+
+  <meta
+    name="description"
+    content="Lesson 3 of Machine Learning in Biostatistics: supervised learning, outcomes, predictors, prediction time points, train/test split, classification metrics and R workflow."
+  />
+
+  <link rel="stylesheet" href="../assets/course.css" />
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="brand-logo" />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Module 2 · Lesson 3</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="./index.html">Module 2</a>
+          <a href="../module-3/index.html">Module 3</a>
+          <a href="../module-4/index.html">Module 4</a>
+          <a href="../case-studies/index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Module 2 · Supervised Learning for Medical Data</p>
+        <h1>Lesson 3: Supervised Learning for Medical Data</h1>
+
+        <p class="hero-intro">
+          This lesson introduces supervised learning as the main framework for many medical prediction problems.
+          We define outcomes, predictors, prediction time points, train/test splitting, classification metrics,
+          and a first R workflow using a diabetes prediction example.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#lecture">Start lesson</a>
+          <a class="btn btn-secondary" href="../module-1/1-2-validation-overfitting-data-leakage.html">Previous lesson</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <div class="lesson-layout">
+        <aside class="lesson-sidebar" aria-label="Lesson sections">
+          <h3>Lesson sections</h3>
+          <a class="active" href="#lecture">Lecture</a>
+          <a href="#outcomes-predictors">Outcomes and predictors</a>
+          <a href="#prediction-time">Prediction time point</a>
+          <a href="#types">Types of supervised learning</a>
+          <a href="#notes">Detailed notes</a>
+          <a href="#r-code">R code</a>
+          <a href="#exercises">Exercises</a>
+          <a href="#quiz">Quiz</a>
+        </aside>
+
+        <article class="lesson-content">
+          <section class="lesson-section" id="lecture">
+            <p class="kicker">Lecture</p>
+            <h2>Lecture 3: Supervised Learning for Medical Data</h2>
+
+            <div class="scene-card">
+              <div class="scene-title">Opening scene: A patient dataset arrives in the lab</div>
+
+              <div class="dialogue-box">
+                
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“I have a dataset with patient characteristics and disease status. Is this machine learning now?”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“If each patient has an observed outcome, then yes, this is a supervised learning problem.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“So the model learns from previous patients and then predicts outcomes for future patients?”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Exactly. But first, we must define the outcome, predictors, and prediction time point clearly.”</p>
+      </div>
+    
+                
+      <div class="dialogue-line leakage-monster">
+        <p><span class="character">Leakage Monster:</span><br />“Or just throw every variable into the model. Future variables are very powerful!”</p>
+      </div>
+    
+                
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“And very dangerous. That is how leakage begins.”</p>
+      </div>
+    
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="big-question">
+            <p class="kicker">Today’s big question</p>
+            <h2>What is supervised learning, and how do we use it correctly with medical data?</h2>
+
+            <div class="big-question">
+              <p>
+                <strong>Supervised learning</strong> means learning a relationship between predictors
+                and an observed outcome.
+              </p>
+            </div>
+
+            <p>The data usually look like this:</p>
+
+            <code class="inline-code">Patient characteristics → observed outcome</code>
+
+            <p>
+              The model uses past examples to learn patterns that may help predict outcomes for future patients.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="intuition">
+            <p class="kicker">Intuition first</p>
+            <h2>Supervised learning is like learning from previous clinical cases</h2>
+
+            <p>Think of supervised learning like clinical teaching.</p>
+
+            <p>A trainee clinician learns from previous cases:</p>
+
+            <ul>
+              <li>symptoms;</li>
+              <li>test results;</li>
+              <li>diagnosis;</li>
+              <li>treatment history;</li>
+              <li>outcome.</li>
+            </ul>
+
+            <p>Over time, the trainee starts recognising patterns.</p>
+
+            <p>A supervised learning model does something similar, but using data.</p>
+
+            <div class="key-takeaway">
+              <p>
+                Supervised learning uses examples with known outcomes to learn how predictors relate to the outcome.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="outcomes-predictors">
+            <p class="kicker">Outcomes and predictors</p>
+            <h2>Every supervised learning problem needs two main ingredients</h2>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Term</th>
+                    <th>Meaning</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Outcome</strong></td>
+                    <td>What we want to predict.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Predictors</strong></td>
+                    <td>Variables used to make the prediction.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Clinical task</th>
+                    <th>Outcome</th>
+                    <th>Predictors</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Diabetes prediction</td>
+                    <td>Diabetes yes/no</td>
+                    <td>Glucose, BMI, age</td>
+                  </tr>
+                  <tr>
+                    <td>Hospital readmission prediction</td>
+                    <td>Readmission yes/no</td>
+                    <td>Previous admissions, diagnosis, length of stay</td>
+                  </tr>
+                  <tr>
+                    <td>Cancer recurrence prediction</td>
+                    <td>Recurrence yes/no</td>
+                    <td>Tumour stage, treatment, biomarkers</td>
+                  </tr>
+                  <tr>
+                    <td>Survival prediction</td>
+                    <td>Time to event</td>
+                    <td>Age, tumour stage, molecular markers</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>The model learns from the relationship between predictors and outcome.</p>
+          </section>
+
+          <section class="lesson-section" id="every-variable">
+            <p class="kicker">Mini conversation</p>
+            <h2>Can we use every variable?</h2>
+
+            <div class="dialogue-box">
+              
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“So should I include every variable in the dataset?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“Not necessarily. Some variables may not be available when the model is supposed to make the prediction.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line leakage-monster">
+        <p><span class="character">Leakage Monster:</span><br />“But post-outcome variables make the model look amazing.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“That is exactly the problem. A predictor must be available at the prediction time point.”</p>
+      </div>
+    
+            </div>
+
+            <p>In medical machine learning, predictor availability matters.</p>
+
+            <p>A model is not useful if it needs information that would not be available in real practice.</p>
+          </section>
+
+          <section class="lesson-section" id="prediction-time">
+            <p class="kicker">Prediction time point</p>
+            <h2>When is the model supposed to make the prediction?</h2>
+
+            <p>The prediction time point answers:</p>
+
+            <code class="inline-code">When is the model supposed to make the prediction?</code>
+
+            <p>Examples:</p>
+
+            <ul>
+              <li>At hospital admission</li>
+              <li>At diagnosis</li>
+              <li>Before treatment starts</li>
+              <li>At discharge</li>
+              <li>At first antenatal visit</li>
+            </ul>
+
+            <p>
+              Once the prediction time point is defined, only information available at or before that time should be used.
+            </p>
+
+            <p>This protects the analysis from data leakage.</p>
+          </section>
+
+          <section class="lesson-section" id="diabetes-example">
+            <p class="kicker">Medical example</p>
+            <h2>Diabetes prediction</h2>
+
+            <p>Suppose we want to predict whether a patient has diabetes at clinical assessment.</p>
+
+            <p>Possible predictors:</p>
+
+            <ul>
+              <li>glucose;</li>
+              <li>BMI;</li>
+              <li>age;</li>
+              <li>insulin;</li>
+              <li>blood pressure;</li>
+              <li>number of pregnancies.</li>
+            </ul>
+
+            <p><strong>Outcome:</strong> diabetes status: positive or negative.</p>
+
+            <p><strong>Prediction time point:</strong> at clinical assessment.</p>
+
+            <p>
+              This is a supervised learning problem because we have both predictors and known diabetes status in the dataset.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="types">
+            <p class="kicker">Types of supervised learning</p>
+            <h2>Regression, classification and survival prediction</h2>
+
+            <div class="grid grid-3">
+              <div class="card">
+                <h3>Regression</h3>
+                <p>Used when the outcome is continuous.</p>
+                <p><strong>Example:</strong> predict systolic blood pressure.</p>
+              </div>
+
+              <div class="card">
+                <h3>Classification</h3>
+                <p>Used when the outcome is categorical.</p>
+                <p><strong>Example:</strong> predict diabetes positive or negative.</p>
+              </div>
+
+              <div class="card">
+                <h3>Survival prediction</h3>
+                <p>Used when the outcome is time-to-event.</p>
+                <p><strong>Example:</strong> predict time to cancer recurrence.</p>
+              </div>
+            </div>
+
+            <p>Medical data often involve all three types.</p>
+          </section>
+
+          <section class="lesson-section" id="binary-classification">
+            <p class="kicker">Binary classification</p>
+            <h2>Estimating the probability of a positive outcome</h2>
+
+            <p>Binary classification is very common in medical prediction.</p>
+
+            <p>Examples:</p>
+
+            <ul>
+              <li>disease yes/no;</li>
+              <li>hospital readmission yes/no;</li>
+              <li>treatment response yes/no;</li>
+              <li>recurrence yes/no;</li>
+              <li>ICU admission yes/no;</li>
+              <li>mortality yes/no.</li>
+            </ul>
+
+            <p>The model usually estimates:</p>
+
+            <code class="inline-code">P(outcome = positive | predictors)</code>
+
+            <p>For example:</p>
+
+            <code class="inline-code">P(diabetes = positive | glucose, BMI, age) = 0.72</code>
+
+            <p>
+              This means the model estimates a 72% probability that the patient belongs to the diabetes-positive group.
+            </p>
+          </section>
+
+          <section class="lesson-section" id="common-mistake">
+            <p class="kicker">Common mistake</p>
+            <h2>Unclear outcome definition</h2>
+
+            <div class="common-mistake">
+              <h3>Common mistake: unclear outcome definition</h3>
+
+              <p>A prediction model is only as clear as its outcome.</p>
+
+              <p>For example, “diabetes” could mean:</p>
+
+              <ul>
+                <li>self-reported diabetes;</li>
+                <li>doctor-diagnosed diabetes;</li>
+                <li>medication use;</li>
+                <li>glucose threshold;</li>
+                <li>HbA1c threshold;</li>
+                <li>hospital record diagnosis.</li>
+              </ul>
+
+              <p>These are not always equivalent.</p>
+
+              <p>If the outcome is unclear, the model interpretation becomes unclear.</p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="clinical-check">
+            <p class="kicker">Clinical reality check</p>
+            <h2>Before fitting a supervised learning model</h2>
+
+            <div class="clinical-check">
+              <h3>Clinical reality check</h3>
+
+              <p>Before fitting a supervised learning model, ask:</p>
+
+              <ul>
+                <li>What exactly is the outcome?</li>
+                <li>What is the positive class?</li>
+                <li>When is the prediction made?</li>
+                <li>Are all predictors available at that time?</li>
+                <li>What decision could the prediction support?</li>
+                <li>What are the consequences of wrong predictions?</li>
+              </ul>
+
+              <p>Prediction modelling is not just a technical exercise. It must match a real clinical question.</p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="workflow">
+            <p class="kicker">Workflow</p>
+            <h2>The supervised learning workflow</h2>
+
+            <p>A simple supervised learning workflow is:</p>
+
+            <ol>
+              <li>Define the clinical question.</li>
+              <li>Define the outcome.</li>
+              <li>Define candidate predictors.</li>
+              <li>Define the prediction time point.</li>
+              <li>Split data into training and test sets.</li>
+              <li>Fit the model on the training data.</li>
+              <li>Evaluate performance on the test data.</li>
+              <li>Interpret performance clinically.</li>
+              <li>Check limitations.</li>
+              <li>Consider external validation.</li>
+            </ol>
+
+            <p>This workflow will be used throughout the course.</p>
+          </section>
+
+          <section class="lesson-section" id="question-first">
+            <p class="kicker">Mini conversation</p>
+            <h2>Model first or question first?</h2>
+
+            <div class="dialogue-box">
+              
+      <div class="dialogue-line learner">
+        <p><span class="character">Curious Learner:</span><br />“Should I start by choosing the model?”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“No. Start with the clinical question.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line dr-clinic">
+        <p><span class="character">Dr Clinic:</span><br />“If the clinical question is unclear, the model cannot rescue the analysis.”</p>
+      </div>
+    
+              
+      <div class="dialogue-line prof-stat">
+        <p><span class="character">Prof Stat:</span><br />“Exactly. The method should follow the question, not the other way around.”</p>
+      </div>
+    
+            </div>
+          </section>
+
+          <section class="lesson-section" id="lecture-key">
+            <p class="kicker">Key takeaway</p>
+            <h2>Supervised learning starts with the clinical question</h2>
+
+            <div class="key-takeaway">
+              <p>Supervised learning in medical data starts with:</p>
+
+              <ul>
+                <li>a clear outcome;</li>
+                <li>clinically sensible predictors;</li>
+                <li>a defined prediction time point;</li>
+                <li>proper model validation;</li>
+                <li>careful clinical interpretation.</li>
+              </ul>
+
+              <p>Before fitting any model, ask:</p>
+
+              <ul>
+                <li>What are we predicting?</li>
+                <li>For whom?</li>
+                <li>At what time?</li>
+                <li>Using what information?</li>
+                <li>For what decision?</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="lecture-reflection">
+            <p class="kicker">Reflection question</p>
+            <h2>Cancer recurrence prediction after diagnosis</h2>
+
+            <div class="reflection-box">
+              <p>Suppose you want to predict cancer recurrence after diagnosis.</p>
+
+              <p>What would be:</p>
+
+              <ul>
+                <li>the outcome;</li>
+                <li>the predictors;</li>
+                <li>the prediction time point;</li>
+                <li>the clinical use of the prediction?</li>
+              </ul>
+
+              <details class="answer-box">
+                <summary>Show suggested answer</summary>
+                <div class="answer-content">
+                  <p>
+                    The outcome could be recurrence within a defined time period, such as recurrence within 5 years.
+                    Predictors could include tumour stage, grade, treatment information available at diagnosis,
+                    age, biomarkers, and baseline clinical characteristics.
+                  </p>
+
+                  <p>
+                    The prediction time point might be at diagnosis or after surgery, depending on the intended use.
+                    The prediction could support follow-up planning, risk stratification, or treatment discussion,
+                    but it would need proper validation before clinical use.
+                  </p>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="notes">
+            <p class="kicker">Detailed notes</p>
+            <h2>Note 3: Supervised Learning for Medical Data</h2>
+
+            <div class="key-takeaway">
+              <p>
+                Supervised learning is one of the most important areas of machine learning for biostatistics and medical statistics.
+                Many medical prediction problems are supervised learning problems because we usually have a dataset containing
+                patient characteristics and known outcomes.
+              </p>
+            </div>
+
+            <h3>Learning objectives</h3>
+            <p>By the end of this note, you should be able to:</p>
+
+            <ul>
+              <li>Define supervised learning in the context of biostatistics.</li>
+              <li>Identify outcomes and predictors in medical datasets.</li>
+              <li>Distinguish regression, classification, and survival prediction problems.</li>
+              <li>Explain why the prediction time point matters in medical machine learning.</li>
+              <li>Understand train/test splitting and why test-set performance matters.</li>
+              <li>Explain why logistic regression is often used as a baseline prediction model.</li>
+              <li>Interpret the confusion matrix, sensitivity, specificity, positive predictive value, negative predictive value, ROC curve, and AUC.</li>
+              <li>Understand why classification metrics must be interpreted in the clinical context.</li>
+            </ul>
+
+            <h3>1. Introduction</h3>
+            <p>
+              Supervised learning is one of the most important areas of machine learning for biostatistics and medical statistics.
+              Many medical prediction problems are supervised learning problems because we usually have a dataset containing patient
+              characteristics and known outcomes.
+            </p>
+
+            <p>
+              For example, we may have data on patients’ age, sex, blood pressure, glucose level, body mass index,
+              treatment history, tumour stage, or biomarker values. We may also know whether each patient developed diabetes,
+              experienced cancer recurrence, died within a certain time period, responded to treatment, or was readmitted to hospital.
+            </p>
+
+            <p>
+              The aim of supervised learning is to use the available predictors to learn a relationship with the outcome,
+              and then use that learned relationship to make predictions for new patients.
+            </p>
+
+            <code class="inline-code">Y = f(X) + error</code>
+
+            <p>where:</p>
+
+            <ul>
+              <li><strong>Y</strong> is the outcome;</li>
+              <li><strong>X</strong> represents the predictors or features;</li>
+              <li><strong>f(X)</strong> is the function learned from the data;</li>
+              <li><strong>error</strong> represents unexplained variation.</li>
+            </ul>
+
+            <p>
+              This notation appears simple, but it captures the core idea behind supervised learning.
+              We use observed examples to learn a mapping between predictors and outcomes.
+              The model is then assessed by how well it performs on new individuals, not simply by how well it fits the training dataset.
+            </p>
+
+            <h3>2. What makes learning supervised?</h3>
+            <p>
+              The term supervised learning means that the algorithm learns from examples where the correct outcome is already known.
+            </p>
+
+            <p>For each individual in the dataset, we observe:</p>
+
+            <code class="inline-code">Predictors + Outcome</code>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Patient</th>
+                    <th>Age</th>
+                    <th>BMI</th>
+                    <th>HbA1c</th>
+                    <th>Blood pressure</th>
+                    <th>Diabetes status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>52</td><td>31.2</td><td>6.8</td><td>142</td><td>Yes</td></tr>
+                  <tr><td>2</td><td>39</td><td>24.8</td><td>5.1</td><td>118</td><td>No</td></tr>
+                  <tr><td>3</td><td>61</td><td>29.4</td><td>7.2</td><td>151</td><td>Yes</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              Here, diabetes status is the known outcome. Age, BMI, HbA1c, and blood pressure are predictors.
+              The model uses these examples to learn patterns. Once trained, the model can be given a new patient’s predictors
+              and return a predicted probability of diabetes.
+            </p>
+
+            <p>
+              This is different from unsupervised learning, where there is no labelled outcome.
+              In unsupervised learning, the aim may be to identify clusters, reduce dimensionality, or discover structure in the data.
+              Examples include clustering patients into subgroups or using principal component analysis to summarise high-dimensional omics data.
+            </p>
+
+            <h3>3. Supervised learning in biostatistics</h3>
+
+            <p>Supervised learning is central to many medical and biomedical prediction problems.</p>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Medical question</th>
+                    <th>Outcome</th>
+                    <th>Predictors</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Can we predict diabetes within 10 years?</td>
+                    <td>Diabetes yes/no</td>
+                    <td>Age, BMI, glucose, HbA1c, family history</td>
+                  </tr>
+                  <tr>
+                    <td>Can we predict 30-day readmission?</td>
+                    <td>Readmission yes/no</td>
+                    <td>Diagnosis, comorbidities, admission history, labs</td>
+                  </tr>
+                  <tr>
+                    <td>Can we predict cancer recurrence?</td>
+                    <td>Recurrence yes/no or time to recurrence</td>
+                    <td>Tumour stage, grade, treatment, biomarkers</td>
+                  </tr>
+                  <tr>
+                    <td>Can we predict treatment response?</td>
+                    <td>Responder/non-responder</td>
+                    <td>Clinical characteristics, molecular markers</td>
+                  </tr>
+                  <tr>
+                    <td>Can we predict survival?</td>
+                    <td>Time to death or relapse</td>
+                    <td>Age, disease stage, biomarkers, treatment</td>
+                  </tr>
+                  <tr>
+                    <td>Can we classify disease status from methylation data?</td>
+                    <td>Case/control</td>
+                    <td>CpG methylation markers</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              These examples show that supervised learning is not a single method. It is a framework.
+              The specific model depends on the outcome type, sample size, predictors, missing data, and scientific question.
+            </p>
+
+            <h3>4. Outcome variable</h3>
+            <p>
+              The outcome is the variable we want to predict. In medical statistics, defining the outcome carefully is one of the most important steps.
+              A vague or poorly defined outcome can make even a technically sophisticated model clinically meaningless.
+            </p>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Outcome</th><th>Type</th></tr></thead>
+                <tbody>
+                  <tr><td>Systolic blood pressure</td><td>Continuous</td></tr>
+                  <tr><td>Diabetes status</td><td>Binary</td></tr>
+                  <tr><td>Hospital readmission within 30 days</td><td>Binary</td></tr>
+                  <tr><td>Cancer subtype</td><td>Multiclass</td></tr>
+                  <tr><td>Treatment response</td><td>Binary or ordinal</td></tr>
+                  <tr><td>Time to death</td><td>Time-to-event</td></tr>
+                  <tr><td>Time to cancer recurrence</td><td>Time-to-event</td></tr>
+                  <tr><td>DNA methylation level at a CpG site</td><td>Continuous</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>A good outcome definition should specify:</p>
+            <ul>
+              <li>what event or measurement is being predicted;</li>
+              <li>how it is measured;</li>
+              <li>over what time horizon it is observed;</li>
+              <li>whether censoring is present;</li>
+              <li>whether the outcome is clinically meaningful;</li>
+              <li>whether the outcome is available consistently across patients.</li>
+            </ul>
+
+            <p>
+              For example, “mortality” is not specific enough. A better outcome definition would be:
+            </p>
+
+            <code class="inline-code">All-cause mortality within 1 year of hospital admission.</code>
+
+            <h3>5. Predictors</h3>
+            <p>Predictors are variables used to make predictions.</p>
+
+            <p>In medical datasets, predictors may include demographic characteristics, symptoms, clinical measurements,
+              laboratory values, imaging features, comorbidities, medication history, tumour characteristics, genetic or molecular markers,
+              DNA methylation sites, gene expression values, and healthcare utilisation history.</p>
+
+            <div class="key-takeaway">
+              <p><strong>The most important rule:</strong> predictors must be available at the intended prediction time.</p>
+            </div>
+
+            <p>
+              For example, if we want to predict ICU mortality at ICU admission, we can use variables measured at or before ICU admission.
+              We should not use ICU length of stay, discharge destination, or lab values measured after clinical deterioration because those variables
+              would not be available at the time the prediction is made.
+            </p>
+
+            <h3>6. Prediction time point</h3>
+            <p>
+              The prediction time point is the moment at which the model is intended to make a prediction.
+              This concept is often ignored in poor medical machine learning studies, but it is central to good biostatistical modelling.
+            </p>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Prediction problem</th><th>Prediction time point</th></tr></thead>
+                <tbody>
+                  <tr><td>Predict ICU mortality</td><td>At ICU admission</td></tr>
+                  <tr><td>Predict 30-day readmission</td><td>At hospital discharge</td></tr>
+                  <tr><td>Predict 5-year cancer survival</td><td>At diagnosis or treatment start</td></tr>
+                  <tr><td>Predict treatment response</td><td>Before treatment begins</td></tr>
+                  <tr><td>Predict relapse after surgery</td><td>At surgery or shortly after surgery</td></tr>
+                  <tr><td>Predict disease using methylation</td><td>At sample collection</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              The prediction time point determines which predictors are legitimate.
+              If a variable is measured after the prediction time point, it should usually not be used.
+            </p>
+
+            <h3>7. Regression, classification, and survival prediction</h3>
+            <p>
+              Supervised learning problems are often grouped according to the outcome type.
+            </p>
+
+            <h4>Regression</h4>
+            <p>Regression is used when the outcome is continuous, such as blood pressure, cholesterol level, biomarker concentration, length of stay, or methylation beta values.</p>
+
+            <h4>Classification</h4>
+            <p>Classification is used when the outcome is categorical. Binary classification has two categories, such as disease yes/no or responder/non-responder. Multiclass classification has more than two categories, such as cancer subtype or risk group.</p>
+
+            <h4>Survival prediction</h4>
+            <p>
+              Survival prediction is used when the outcome is time-to-event and censoring is present, such as time to death, relapse, recurrence, progression, or readmission.
+              Survival machine learning will be covered later in the course.
+            </p>
+
+            <h3>8. Binary classification in medical prediction</h3>
+            <p>
+              Binary classification is one of the most common supervised learning tasks in medical statistics.
+              Examples include disease status, death within 1 year, readmission within 30 days, treatment response, and cancer recurrence within 5 years.
+            </p>
+
+            <p>In binary classification, the model usually estimates a probability.</p>
+
+            <code class="inline-code">Predicted probability of 30-day readmission = 0.35</code>
+
+            <p>
+              This means that, based on the model and available predictors, the patient is estimated to have a 35% probability of readmission within 30 days.
+            </p>
+
+            <p>
+              A threshold can be used to convert the predicted probability into a classification.
+              However, the threshold of 0.50 is not automatically appropriate in medicine.
+              The choice of threshold should depend on the clinical context, outcome prevalence, harms of false positives,
+              harms of false negatives, and intended use of the model.
+            </p>
+
+            <h3>9. Train/test split</h3>
+            <p>
+              To estimate how well a model performs on new patients, we usually need to evaluate it on data that were not used to train it.
+              A simple approach is the train/test split.
+            </p>
+
+            <ul>
+              <li><strong>Training set:</strong> used to fit the model.</li>
+              <li><strong>Test set:</strong> used to evaluate model performance.</li>
+            </ul>
+
+            <p>A common split is 80% training and 20% testing.</p>
+
+            <p>
+              The test data are held back and should only be used for final evaluation.
+              If we use the test set repeatedly to choose variables, tune hyperparameters, or decide between many models,
+              it is no longer an honest test set.
+            </p>
+
+            <h3>10. Stratified splitting</h3>
+            <p>
+              In medical classification problems, outcomes are often imbalanced.
+              For example, if disease prevalence is 10%, stratified splitting aims to keep approximately 10%
+              outcome cases in both the training and test datasets.
+            </p>
+
+            <p>
+              This is useful because model training and evaluation can be unstable when too few outcome cases appear in either set.
+            </p>
+
+            <h3>11. Logistic regression as a baseline model</h3>
+            <p>
+              Logistic regression is one of the most important models for binary clinical prediction.
+              Although it is a classical statistical model, it can also be understood as a supervised learning method
+              because it learns a relationship between predictors and a binary outcome.
+            </p>
+
+            <code class="inline-code">P(Y = 1 | X)</code>
+
+            <p>The model uses the logit link:</p>
+
+            <code class="inline-code">logit(p) = log(p / (1 - p))</code>
+
+            <p>Logistic regression is often a strong baseline model in medical prediction because it is:</p>
+
+            <ul>
+              <li>interpretable;</li>
+              <li>relatively stable;</li>
+              <li>familiar to clinicians and statisticians;</li>
+              <li>able to produce predicted probabilities;</li>
+              <li>suitable for tabular clinical data;</li>
+              <li>easy to validate and calibrate;</li>
+              <li>extendable through penalisation such as ridge, lasso, and elastic net.</li>
+            </ul>
+
+            <p>
+              Before using more complex models such as random forests or gradient boosting,
+              it is usually sensible to compare them with logistic regression.
+            </p>
+
+            <h3>12. From probabilities to classes</h3>
+            <p>Many binary classifiers produce probabilities.</p>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Patient</th><th>Predicted probability of disease</th><th>Predicted class at threshold 0.50</th></tr></thead>
+                <tbody>
+                  <tr><td>A</td><td>0.82</td><td>Disease</td></tr>
+                  <tr><td>B</td><td>0.61</td><td>Disease</td></tr>
+                  <tr><td>C</td><td>0.44</td><td>No disease</td></tr>
+                  <tr><td>D</td><td>0.12</td><td>No disease</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              In medicine, the threshold should be chosen carefully.
+              For screening, we may use a lower threshold to identify more possible cases.
+              For treatment decisions with serious side effects, we may use a higher threshold to avoid overtreatment.
+            </p>
+
+            <h3>13. Confusion matrix</h3>
+            <p>A confusion matrix compares predicted classes with observed outcomes.</p>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr><th></th><th>Predicted positive</th><th>Predicted negative</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>Actual positive</strong></td><td>True positive</td><td>False negative</td></tr>
+                  <tr><td><strong>Actual negative</strong></td><td>False positive</td><td>True negative</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <ul>
+              <li><strong>True positive:</strong> the model predicts positive and the outcome is positive.</li>
+              <li><strong>False positive:</strong> the model predicts positive but the outcome is negative.</li>
+              <li><strong>True negative:</strong> the model predicts negative and the outcome is negative.</li>
+              <li><strong>False negative:</strong> the model predicts negative but the outcome is positive.</li>
+            </ul>
+
+            <h3>14. Accuracy</h3>
+            <p>Accuracy is the proportion of all patients correctly classified.</p>
+
+            <code class="inline-code">Accuracy = (True positives + True negatives) / Total</code>
+
+            <p>
+              Accuracy is simple, but it can be misleading. If a disease has prevalence 2%,
+              a model that predicts “no disease” for everyone will be 98% accurate but detects no disease cases.
+            </p>
+
+            <h3>15. Sensitivity</h3>
+            <p>Sensitivity is the proportion of actual positive cases correctly identified.</p>
+
+            <code class="inline-code">Sensitivity = True positives / (True positives + False negatives)</code>
+
+            <p>
+              Sensitivity answers: among patients who truly have the condition, how many did the model detect?
+              High sensitivity is important when missing a case is harmful.
+            </p>
+
+            <h3>16. Specificity</h3>
+            <p>Specificity is the proportion of actual negative cases correctly identified.</p>
+
+            <code class="inline-code">Specificity = True negatives / (True negatives + False positives)</code>
+
+            <p>
+              Specificity answers: among patients who truly do not have the condition, how many did the model correctly classify as negative?
+            </p>
+
+            <h3>17. Positive predictive value</h3>
+            <p>Positive predictive value, or PPV, is the proportion of predicted positives who truly have the outcome.</p>
+
+            <code class="inline-code">PPV = True positives / (True positives + False positives)</code>
+
+            <p>PPV is strongly affected by prevalence.</p>
+
+            <h3>18. Negative predictive value</h3>
+            <p>Negative predictive value, or NPV, is the proportion of predicted negatives who truly do not have the outcome.</p>
+
+            <code class="inline-code">NPV = True negatives / (True negatives + False negatives)</code>
+
+            <p>Like PPV, NPV depends on prevalence and should be interpreted alongside the clinical context.</p>
+
+            <h3>19. ROC curve and AUC</h3>
+            <p>
+              The ROC curve shows how sensitivity and specificity change across different classification thresholds.
+              It plots sensitivity against 1 - specificity.
+            </p>
+
+            <p>
+              The area under the ROC curve is called AUC. AUC measures discrimination:
+              the ability of the model to assign higher risk scores to patients who experience the outcome than to those who do not.
+            </p>
+
+            <ul>
+              <li><strong>AUC = 0.5:</strong> no discrimination.</li>
+              <li><strong>AUC = 1.0:</strong> perfect discrimination.</li>
+            </ul>
+
+            <p>
+              AUC is useful, but it is not enough. A model can have a good AUC but still be poorly calibrated.
+            </p>
+
+            <h3>20. Clinical interpretation of metrics</h3>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead><tr><th>Clinical task</th><th>Important considerations</th></tr></thead>
+                <tbody>
+                  <tr><td>Screening</td><td>High sensitivity may be important.</td></tr>
+                  <tr><td>Confirmatory diagnosis</td><td>High specificity may be important.</td></tr>
+                  <tr><td>Risk prediction</td><td>Discrimination and calibration are both important.</td></tr>
+                  <tr><td>Rare disease prediction</td><td>PPV and sensitivity need careful interpretation.</td></tr>
+                  <tr><td>Treatment decision-making</td><td>Clinical utility and net benefit matter.</td></tr>
+                  <tr><td>Patient reassurance</td><td>NPV may be important, but prevalence matters.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              The key point is that statistical metrics must be interpreted in relation to clinical consequences.
+            </p>
+
+            <h3>21. Common mistakes in supervised medical learning</h3>
+            <ul>
+              <li>Defining the outcome vaguely.</li>
+              <li>Including predictors that are not available at prediction time.</li>
+              <li>Splitting rows instead of patients when there are repeated records.</li>
+              <li>Evaluating only training performance.</li>
+              <li>Using accuracy alone in imbalanced data.</li>
+              <li>Ignoring calibration.</li>
+              <li>Choosing thresholds without clinical justification.</li>
+              <li>Trying complex models without a simple baseline.</li>
+              <li>Performing preprocessing before train/test splitting.</li>
+              <li>Reporting results without enough detail for reproducibility.</li>
+            </ul>
+
+            <h3>22. Practical workflow for a first supervised learning analysis</h3>
+            <ol>
+              <li>Define the clinical prediction question.</li>
+              <li>Define the prediction time point.</li>
+              <li>Define the outcome clearly.</li>
+              <li>Identify candidate predictors available at prediction time.</li>
+              <li>Explore missingness and data quality.</li>
+              <li>Split data into training and test sets.</li>
+              <li>Fit a baseline logistic regression model.</li>
+              <li>Generate predicted probabilities.</li>
+              <li>Choose or examine classification thresholds.</li>
+              <li>Evaluate confusion matrix-based metrics.</li>
+              <li>Evaluate discrimination using ROC AUC.</li>
+              <li>Assess calibration.</li>
+              <li>Interpret results clinically.</li>
+              <li>Report limitations clearly.</li>
+            </ol>
+
+            <h3>23. Summary</h3>
+            <p>
+              Supervised learning is the foundation of many medical machine learning applications.
+              In supervised learning, the model learns from examples where both predictors and outcomes are known.
+              In biostatistics, this framework is commonly used for clinical prediction tasks such as disease classification,
+              readmission prediction, treatment response prediction, cancer recurrence prediction, and survival prediction.
+            </p>
+
+            <p>
+              The most important point is that supervised learning in medicine is not just about fitting a model.
+              It requires careful definition of the clinical question, outcome, prediction time point, and candidate predictors.
+            </p>
+
+            <p>
+              For binary classification, logistic regression is often a useful baseline model.
+              Model performance should be interpreted using clinically meaningful metrics such as sensitivity,
+              specificity, PPV, NPV, ROC AUC, and calibration.
+            </p>
+
+            <h3>Revision questions</h3>
+            <ul>
+              <li>What is supervised learning?</li>
+              <li>Why is supervised learning important in biostatistics?</li>
+              <li>What is the difference between an outcome and a predictor?</li>
+              <li>Why is the prediction time point important?</li>
+              <li>What is the difference between regression and classification?</li>
+              <li>What makes survival prediction different from ordinary classification?</li>
+              <li>Why is logistic regression a good baseline model for binary clinical prediction?</li>
+              <li>What is a confusion matrix?</li>
+              <li>What is sensitivity?</li>
+              <li>What is specificity?</li>
+              <li>Why can accuracy be misleading in imbalanced medical datasets?</li>
+              <li>Why do PPV and NPV depend on disease prevalence?</li>
+              <li>What does ROC AUC measure?</li>
+              <li>Why is AUC not enough for clinical prediction?</li>
+              <li>Why should thresholds be chosen with clinical context in mind?</li>
+            </ul>
+
+            <h3>References</h3>
+            <p class="reference-item">James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An Introduction to Statistical Learning: With Applications in R. Springer.</p>
+            <p class="reference-item">James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). An Introduction to Statistical Learning: With Applications in R (2nd ed.). Springer.</p>
+            <p class="reference-item">Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning: Data Mining, Inference, and Prediction (2nd ed.). Springer.</p>
+            <p class="reference-item">Steyerberg, E. W. (2019). Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating (2nd ed.). Springer.</p>
+            <p class="reference-item">Collins, G. S., Moons, K. G. M., Dhiman, P., et al. (2024). TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods. BMJ, 385, e078378.</p>
+            <p class="reference-item">Moons, K. G. M., Damen, J. A. A. G., Kaul, T., et al. (2025). PROBAST+AI: an updated quality, risk of bias, and applicability assessment tool for prediction models using regression or artificial intelligence methods. BMJ, 388, e082505.</p>
+            <p class="reference-item">Kuhn, M., & Johnson, K. (2013). Applied Predictive Modeling. Springer.</p>
+          </section>
+
+          <section class="lesson-section" id="r-code">
+            <p class="kicker">R code</p>
+            <h2>R practical: a basic supervised learning workflow</h2>
+
+            <div class="practice-note">
+              <p>
+                This R script introduces a basic supervised learning workflow using the Pima Indians Diabetes dataset:
+                define the outcome, define predictors, split the data, fit a logistic regression model, generate predicted probabilities,
+                convert probabilities into classes, and evaluate the model using a confusion matrix and AUC.
+              </p>
+            </div>
+
+            <div class="grid grid-3">
+              <div class="card">
+                <h3>Outcome</h3>
+                <p>The outcome is diabetes status: negative or positive.</p>
+              </div>
+              <div class="card">
+                <h3>Predictors</h3>
+                <p>Predictors include glucose, BMI, age, insulin, blood pressure and related clinical variables.</p>
+              </div>
+              <div class="card">
+                <h3>Evaluation</h3>
+                <p>The script evaluates predictions on test data using a confusion matrix and ROC AUC.</p>
+              </div>
+            </div>
+
+            <p style="margin-top: 1.2rem;">
+              <a class="btn btn-primary" href="../r/03_supervised_learning_basics.R" download>
+                Download R script
+              </a>
+              <button class="btn btn-secondary" data-copy-target="r-code-03" type="button">
+                Copy code
+              </button>
+            </p>
+
+            <pre class="code-block"><code id="r-code-03"># Machine Learning in Biostatistics
+# Script 03: Supervised Learning Basics
+#
+# This script introduces a basic supervised learning workflow:
+# define the outcome, define predictors, split the data, fit a model,
+# and evaluate predictions.
+
+library(tidyverse)
+library(mlbench)
+library(pROC)
+
+set.seed(123)
+
+data("PimaIndiansDiabetes")
+
+diabetes_data &lt;- PimaIndiansDiabetes %&gt;%
+  mutate(
+    diabetes = factor(diabetes, levels = c("neg", "pos"))
+  )
+
+cat("\nDataset overview:\n")
+print(glimpse(diabetes_data))
+
+cat("\nOutcome distribution:\n")
+print(diabetes_data %&gt;% count(diabetes))
+
+predictor_names &lt;- c(
+  "pregnant",
+  "glucose",
+  "pressure",
+  "triceps",
+  "insulin",
+  "mass",
+  "pedigree",
+  "age"
+)
+
+outcome_name &lt;- "diabetes"
+
+cat("\nOutcome:\n")
+print(outcome_name)
+
+cat("\nPredictors:\n")
+print(predictor_names)
+
+n &lt;- nrow(diabetes_data)
+
+train_index &lt;- sample(seq_len(n), size = round(0.80 * n))
+
+train_data &lt;- diabetes_data[train_index, ]
+test_data &lt;- diabetes_data[-train_index, ]
+
+cat("\nTraining outcome distribution:\n")
+print(train_data %&gt;% count(diabetes))
+
+cat("\nTest outcome distribution:\n")
+print(test_data %&gt;% count(diabetes))
+
+model_basic &lt;- glm(
+  diabetes ~ pregnant + glucose + pressure + triceps +
+    insulin + mass + pedigree + age,
+  data = train_data,
+  family = binomial
+)
+
+cat("\nModel summary:\n")
+print(summary(model_basic))
+
+test_data &lt;- test_data %&gt;%
+  mutate(
+    predicted_risk = predict(model_basic, newdata = test_data, type = "response")
+  )
+
+cat("\nFirst few predicted risks:\n")
+print(
+  test_data %&gt;%
+    select(diabetes, predicted_risk) %&gt;%
+    head(10)
+)
+
+threshold &lt;- 0.50
+
+test_data &lt;- test_data %&gt;%
+  mutate(
+    predicted_class = factor(
+      ifelse(predicted_risk &gt;= threshold, "pos", "neg"),
+      levels = c("neg", "pos")
+    )
+  )
+
+cat("\nConfusion matrix at threshold 0.50:\n")
+print(table(Predicted = test_data$predicted_class, Actual = test_data$diabetes))
+
+roc_object &lt;- roc(
+  response = test_data$diabetes,
+  predictor = test_data$predicted_risk,
+  levels = c("neg", "pos"),
+  quiet = TRUE
+)
+
+cat("\nTest AUC:\n")
+print(auc(roc_object))
+
+plot(
+  roc_object,
+  lwd = 2,
+  main = paste0("ROC Curve: Supervised Learning Example, AUC = ", round(auc(roc_object), 3))
+)
+
+abline(a = 0, b = 1, lty = 2)
+
+cat("\nLearning points:\n")
+cat("1. Supervised learning requires predictors and a known outcome.\n")
+cat("2. The model learns from training data.\n")
+cat("3. Test data are used to evaluate performance on unseen patients.\n")
+cat("4. Predicted probabilities can be converted into classes using a threshold.\n")
+cat("5. AUC summarises discrimination across thresholds.\n")</code></pre>
+          </section>
+
+          <section class="lesson-section" id="exercises">
+            <p class="kicker">Exercises</p>
+            <h2>Exercise 3: Supervised Learning for Medical Data</h2>
+
+            <div class="exercise-card">
+              <h3>Exercise 1: Identify outcome and predictors</h3>
+              <p>For each clinical prediction problem, identify the outcome, possible predictors, prediction time point and target population.</p>
+
+              <h4>A. Diabetes prediction</h4>
+              <p><strong>Question:</strong> Can we predict whether a person will develop diabetes within 10 years?</p>
+              <ul>
+                <li><strong>Outcome:</strong></li>
+                <li><strong>Predictors:</strong></li>
+                <li><strong>Prediction time point:</strong></li>
+                <li><strong>Target population:</strong></li>
+              </ul>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <ul>
+                    <li><strong>Outcome:</strong> diabetes diagnosis within 10 years.</li>
+                    <li><strong>Predictors:</strong> age, BMI, glucose, HbA1c, family history, blood pressure, lifestyle factors and previous clinical history.</li>
+                    <li><strong>Prediction time point:</strong> baseline screening or initial clinical assessment.</li>
+                    <li><strong>Target population:</strong> people being assessed for future diabetes risk, such as adults in primary care or screening programmes.</li>
+                  </ul>
+                </div>
+              </details>
+
+              <h4>B. Hospital readmission prediction</h4>
+              <p><strong>Question:</strong> Can we predict whether a patient will be readmitted within 30 days after hospital discharge?</p>
+              <ul>
+                <li><strong>Outcome:</strong></li>
+                <li><strong>Predictors:</strong></li>
+                <li><strong>Prediction time point:</strong></li>
+                <li><strong>Target population:</strong></li>
+              </ul>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <ul>
+                    <li><strong>Outcome:</strong> readmission within 30 days after discharge.</li>
+                    <li><strong>Predictors:</strong> age, diagnosis, comorbidities, previous admissions, length of stay, discharge medications and lab values available before discharge.</li>
+                    <li><strong>Prediction time point:</strong> at hospital discharge.</li>
+                    <li><strong>Target population:</strong> hospitalised patients being discharged from a defined service or hospital.</li>
+                  </ul>
+                </div>
+              </details>
+
+              <h4>C. Breast cancer recurrence prediction</h4>
+              <p><strong>Question:</strong> Can we predict whether a breast cancer patient will experience recurrence within 5 years?</p>
+              <ul>
+                <li><strong>Outcome:</strong></li>
+                <li><strong>Predictors:</strong></li>
+                <li><strong>Prediction time point:</strong></li>
+                <li><strong>Target population:</strong></li>
+              </ul>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <ul>
+                    <li><strong>Outcome:</strong> breast cancer recurrence within 5 years.</li>
+                    <li><strong>Predictors:</strong> age, tumour size, grade, stage, lymph node status, receptor status, treatment plan and baseline biomarkers.</li>
+                    <li><strong>Prediction time point:</strong> at diagnosis, after surgery, or before treatment planning depending on intended use.</li>
+                    <li><strong>Target population:</strong> patients diagnosed with breast cancer in the intended clinical setting.</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 2: Regression, classification, or survival prediction?</h3>
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Task</th><th>Type</th></tr></thead>
+                  <tbody>
+                    <tr><td>Predict systolic blood pressure</td><td></td></tr>
+                    <tr><td>Predict diabetes yes/no</td><td></td></tr>
+                    <tr><td>Predict cancer subtype</td><td></td></tr>
+                    <tr><td>Predict time to cancer recurrence</td><td></td></tr>
+                    <tr><td>Predict hospital readmission yes/no</td><td></td></tr>
+                    <tr><td>Predict cholesterol level</td><td></td></tr>
+                    <tr><td>Predict low/intermediate/high risk group</td><td></td></tr>
+                    <tr><td>Predict time to death after diagnosis</td><td></td></tr>
+                    <tr><td>Predict treatment responder/non-responder</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <ul>
+                    <li><strong>Systolic blood pressure:</strong> regression.</li>
+                    <li><strong>Diabetes yes/no:</strong> binary classification.</li>
+                    <li><strong>Cancer subtype:</strong> multiclass classification.</li>
+                    <li><strong>Time to cancer recurrence:</strong> survival prediction.</li>
+                    <li><strong>Hospital readmission yes/no:</strong> binary classification.</li>
+                    <li><strong>Cholesterol level:</strong> regression.</li>
+                    <li><strong>Low/intermediate/high risk group:</strong> multiclass or ordinal classification.</li>
+                    <li><strong>Time to death after diagnosis:</strong> survival prediction.</li>
+                    <li><strong>Treatment responder/non-responder:</strong> binary classification.</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 3: Prediction time point</h3>
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Problem</th><th>Prediction time point</th></tr></thead>
+                  <tbody>
+                    <tr><td>Predict ICU mortality</td><td></td></tr>
+                    <tr><td>Predict 30-day readmission</td><td></td></tr>
+                    <tr><td>Predict 5-year cancer survival</td><td></td></tr>
+                    <tr><td>Predict response to chemotherapy</td><td></td></tr>
+                    <tr><td>Predict recurrence after surgery</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <ul>
+                    <li><strong>ICU mortality:</strong> at ICU admission.</li>
+                    <li><strong>30-day readmission:</strong> at hospital discharge.</li>
+                    <li><strong>5-year cancer survival:</strong> at diagnosis or treatment start.</li>
+                    <li><strong>Response to chemotherapy:</strong> before chemotherapy begins.</li>
+                    <li><strong>Recurrence after surgery:</strong> at surgery or shortly after surgery, depending on the intended use.</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 4: Appropriate predictors</h3>
+              <p>You are building a model to predict mortality at hospital admission.</p>
+
+              <div class="table-scroll">
+                <table class="lesson-table">
+                  <thead><tr><th>Variable</th><th>Appropriate or leakage risk?</th></tr></thead>
+                  <tbody>
+                    <tr><td>Age at admission</td><td></td></tr>
+                    <tr><td>Sex</td><td></td></tr>
+                    <tr><td>Blood pressure at admission</td><td></td></tr>
+                    <tr><td>Discharge destination</td><td></td></tr>
+                    <tr><td>ICU length of stay</td><td></td></tr>
+                    <tr><td>Comorbidity history</td><td></td></tr>
+                    <tr><td>Lab values at admission</td><td></td></tr>
+                    <tr><td>Lab values after clinical deterioration</td><td></td></tr>
+                    <tr><td>Final diagnosis after discharge</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    <strong>Appropriate:</strong> age at admission, sex, blood pressure at admission,
+                    comorbidity history and lab values at admission.
+                  </p>
+                  <p>
+                    <strong>Leakage risk:</strong> discharge destination, ICU length of stay,
+                    lab values after clinical deterioration and final diagnosis after discharge.
+                    These are not available at hospital admission.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 5: Confusion matrix calculation</h3>
+              <p>A model predicts disease status for 100 patients.</p>
+
+              <code class="inline-code">True positives = 30
+False positives = 10
+True negatives = 50
+False negatives = 10</code>
+
+              <p>Calculate accuracy, sensitivity, specificity, positive predictive value and negative predictive value.</p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <ul>
+                    <li><strong>Accuracy:</strong> (30 + 50) / 100 = 0.80 or 80%.</li>
+                    <li><strong>Sensitivity:</strong> 30 / (30 + 10) = 0.75 or 75%.</li>
+                    <li><strong>Specificity:</strong> 50 / (50 + 10) = 0.833 or 83.3%.</li>
+                    <li><strong>PPV:</strong> 30 / (30 + 10) = 0.75 or 75%.</li>
+                    <li><strong>NPV:</strong> 50 / (50 + 10) = 0.833 or 83.3%.</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 6: Accuracy problem</h3>
+              <p>A disease has prevalence 2%. A model predicts every patient as disease negative.</p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p><strong>Accuracy:</strong> 98%, because 98% of patients do not have the disease.</p>
+                  <p><strong>Sensitivity:</strong> 0%, because the model detects none of the true disease cases.</p>
+                  <p>
+                    The model is clinically useless for screening because it misses every case.
+                    More informative metrics include sensitivity, specificity, PPV, NPV, ROC AUC, calibration and decision-related measures.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 7: Threshold choice</h3>
+              <p>
+                For screening, should we usually prefer a lower threshold with higher sensitivity,
+                or a higher threshold with higher specificity?
+              </p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    For screening, we often prefer a <strong>lower threshold</strong> that gives higher sensitivity,
+                    because missing true cases can be harmful. This may increase false positives, so the threshold still needs clinical justification.
+                    Screening is often followed by more specific confirmatory testing.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 8: PPV and prevalence</h3>
+              <p>
+                Two populations are screened using the same model. The model has the same sensitivity and specificity in both populations.
+                Population A has disease prevalence 20%. Population B has disease prevalence 2%.
+              </p>
+
+              <p>In which population will the positive predictive value usually be higher?</p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    PPV will usually be higher in <strong>Population A</strong>, because disease prevalence is higher.
+                    When a disease is rare, a larger proportion of positive predictions may be false positives, even when sensitivity and specificity are unchanged.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 9: AUC interpretation</h3>
+              <code class="inline-code">AUC = 0.82</code>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    An AUC of 0.82 suggests reasonably good discrimination: the model tends to assign higher predicted risk to patients with the outcome than to patients without the outcome.
+                  </p>
+                  <p>
+                    It does not tell us whether predicted probabilities are well calibrated. Calibration, sensitivity, specificity, predictive values, thresholds and clinical usefulness should also be assessed.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 10: Logistic regression as baseline</h3>
+              <p>Why is logistic regression often a good first model for binary clinical prediction?</p>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    Logistic regression is often a good first model because it is interpretable, familiar, stable and suitable for many tabular clinical datasets.
+                    It produces predicted probabilities, which are important for risk prediction.
+                    It is also easy to validate, calibrate and report transparently.
+                    More complex models should usually be compared against this baseline rather than assumed to be superior.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 11: Short answer questions</h3>
+
+              <div class="short-answer">
+                <h4>Why is the prediction time point important?</h4>
+                <details class="answer-box"><summary>Click to see answer</summary><div class="answer-content">
+                  <p>The prediction time point defines when the model is supposed to make the prediction. It determines which predictors are legitimately available and helps avoid leakage from future information.</p>
+                </div></details>
+              </div>
+
+              <div class="short-answer">
+                <h4>Why should predictors be available at prediction time?</h4>
+                <details class="answer-box"><summary>Click to see answer</summary><div class="answer-content">
+                  <p>A model cannot be used in real practice if it requires information that is not available when the prediction is needed. Using such variables can also make performance look falsely strong.</p>
+                </div></details>
+              </div>
+
+              <div class="short-answer">
+                <h4>Why is accuracy not enough in medical classification?</h4>
+                <details class="answer-box"><summary>Click to see answer</summary><div class="answer-content">
+                  <p>Accuracy can be misleading when outcomes are imbalanced. A model may achieve high accuracy by predicting the majority class while missing clinically important cases.</p>
+                </div></details>
+              </div>
+
+              <div class="short-answer">
+                <h4>Why can PPV be low for rare diseases?</h4>
+                <details class="answer-box"><summary>Click to see answer</summary><div class="answer-content">
+                  <p>When disease prevalence is low, even a small false positive rate can produce many false positives relative to true positives. Therefore, PPV can be low even if sensitivity and specificity look reasonable.</p>
+                </div></details>
+              </div>
+
+              <div class="short-answer">
+                <h4>Why should thresholds be chosen based on clinical context?</h4>
+                <details class="answer-box"><summary>Click to see answer</summary><div class="answer-content">
+                  <p>Thresholds control the trade-off between false positives and false negatives. The best threshold depends on the purpose of the model, disease severity, treatment harms, resource limits and patient safety.</p>
+                </div></details>
+              </div>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Exercise 12: Mini case study</h3>
+              <p>A team develops a model to predict 30-day readmission. The model is intended to be used at hospital discharge.</p>
+
+              <p>Variables:</p>
+              <ul>
+                <li>Age</li>
+                <li>Sex</li>
+                <li>Admission diagnosis</li>
+                <li>Comorbidities</li>
+                <li>Length of stay</li>
+                <li>Discharge medications</li>
+                <li>Number of previous admissions</li>
+                <li>Discharge destination</li>
+                <li>Readmission status</li>
+              </ul>
+
+              <details class="answer-box">
+                <summary>Click to see answer</summary>
+                <div class="answer-content">
+                  <p>
+                    Appropriate predictors include age, sex, admission diagnosis, comorbidities, length of stay,
+                    discharge medications, number of previous admissions, and discharge destination, assuming the prediction is made at discharge.
+                  </p>
+
+                  <p>
+                    Readmission status should not be used as a predictor because it is the outcome.
+                  </p>
+
+                  <p>
+                    Length of stay is appropriate if the prediction is made at discharge because it is known at that time.
+                    If the prediction time point was hospital admission, length of stay, discharge medications,
+                    and discharge destination would not be available and would become leakage-risk variables.
+                  </p>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="quiz">
+            <p class="kicker">Quick quiz</p>
+            <h2>Check your understanding</h2>
+
+            <div class="exercise-card">
+              <h3>Question 1</h3>
+              <p>A dataset has patient predictors and known disease status. What type of learning is this?</p>
+              <details class="answer-box"><summary>Click to see answer</summary><div class="answer-content">
+                <p><strong>Supervised learning.</strong> The outcome is known during training.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Question 2</h3>
+              <p>Which comes first: choosing the model or defining the clinical prediction question?</p>
+              <details class="answer-box"><summary>Click to see answer</summary><div class="answer-content">
+                <p><strong>Define the clinical prediction question first.</strong> The model should follow the question.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Question 3</h3>
+              <p>A model predicts diabetes yes/no. Is this regression, binary classification, multiclass classification or survival prediction?</p>
+              <details class="answer-box"><summary>Click to see answer</summary><div class="answer-content">
+                <p><strong>Binary classification.</strong> The outcome has two categories.</p>
+              </div></details>
+            </div>
+
+            <div class="exercise-card">
+              <h3>Question 4</h3>
+              <p>A variable is only measured after the outcome has occurred. Should it be used as a predictor?</p>
+              <details class="answer-box"><summary>Click to see answer</summary><div class="answer-content">
+                <p><strong>No.</strong> It may cause data leakage because it is not available at the prediction time point.</p>
+              </div></details>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="next-lesson-card">
+              <div>
+                <p class="kicker">Next lesson</p>
+                <h2 style="margin: 0;">Logistic Regression for Clinical Prediction</h2>
+                <p style="margin-bottom: 0;">
+                  Learn how logistic regression estimates predicted probabilities and why it is a strong baseline model for binary medical outcomes.
+                </p>
+              </div>
+
+              <a class="btn btn-primary" href="./2-2-logistic-regression-clinical-prediction.html">
+                Continue
+              </a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <img src="../assets/my-academic-tutor-logo.png" alt="My Academic Tutor logo" class="footer-logo" />
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+</body>
+</html>

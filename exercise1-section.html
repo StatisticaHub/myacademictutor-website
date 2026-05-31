@@ -1,0 +1,480 @@
+<section class="lesson-section" id="exercises">
+  <p class="kicker">Exercises</p>
+  <h2>Exercise 1: Prediction vs Inference</h2>
+
+  <div class="practice-note">
+    <p>
+      This lesson is mainly conceptual, so there is no R script for this page.
+      The aim is to practise recognising the difference between prediction,
+      inference, causal inference, calibration and leakage before moving to coding.
+    </p>
+  </div>
+
+  <div class="exercise-card">
+    <h3>Exercise 1: Classify the research question</h3>
+
+    <p>
+      For each question, decide whether it is mainly <strong>prediction</strong>,
+      <strong>inference</strong>, or <strong>causal inference</strong>.
+    </p>
+
+    <div class="table-scroll">
+      <table class="lesson-table">
+        <thead>
+          <tr>
+            <th>Question</th>
+            <th>Your answer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Does smoking increase lung cancer risk?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>What is this patient’s 10-year diabetes risk?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Does a new treatment reduce mortality?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Which ICU patients are most likely to die during admission?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Is BMI associated with diabetes after adjustment for age and sex?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Can methylation profiles classify disease status?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Does maternal smoking affect offspring DNA methylation?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>What is the predicted 5-year survival probability for a cancer patient?</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <details class="answer-box">
+      <summary>Click to see suggested answers</summary>
+      <div class="answer-content">
+        <div class="table-scroll">
+          <table class="lesson-table">
+            <thead>
+              <tr>
+                <th>Question</th>
+                <th>Suggested answer</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Does smoking increase lung cancer risk?</td>
+                <td>Causal inference</td>
+                <td>The wording asks whether smoking increases risk, which implies an effect of an exposure.</td>
+              </tr>
+              <tr>
+                <td>What is this patient’s 10-year diabetes risk?</td>
+                <td>Prediction</td>
+                <td>The aim is to estimate future risk for an individual patient.</td>
+              </tr>
+              <tr>
+                <td>Does a new treatment reduce mortality?</td>
+                <td>Causal inference</td>
+                <td>The question asks whether an intervention changes the outcome.</td>
+              </tr>
+              <tr>
+                <td>Which ICU patients are most likely to die during admission?</td>
+                <td>Prediction</td>
+                <td>The aim is to identify high-risk patients using available predictors.</td>
+              </tr>
+              <tr>
+                <td>Is BMI associated with diabetes after adjustment for age and sex?</td>
+                <td>Inference</td>
+                <td>The focus is an adjusted association between BMI and diabetes.</td>
+              </tr>
+              <tr>
+                <td>Can methylation profiles classify disease status?</td>
+                <td>Prediction</td>
+                <td>The goal is classification of disease status in individuals.</td>
+              </tr>
+              <tr>
+                <td>Does maternal smoking affect offspring DNA methylation?</td>
+                <td>Causal inference</td>
+                <td>The word “affect” suggests an exposure effect, so causal thinking is needed.</td>
+              </tr>
+              <tr>
+                <td>What is the predicted 5-year survival probability for a cancer patient?</td>
+                <td>Prediction</td>
+                <td>The aim is to estimate a future survival probability for a patient.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <div class="exercise-card">
+    <h3>Exercise 2: Identify the outcome and predictors</h3>
+
+    <p>
+      For each problem, write the <strong>outcome</strong>, candidate
+      <strong>predictors</strong>, <strong>prediction time</strong>, and
+      <strong>target population</strong>.
+    </p>
+
+    <h4>Problem A: Diabetes risk prediction</h4>
+    <ul>
+      <li><strong>Outcome:</strong></li>
+      <li><strong>Predictors:</strong></li>
+      <li><strong>Prediction time:</strong></li>
+      <li><strong>Target population:</strong></li>
+    </ul>
+
+    <h4>Problem B: Breast cancer survival prediction</h4>
+    <ul>
+      <li><strong>Outcome:</strong></li>
+      <li><strong>Predictors:</strong></li>
+      <li><strong>Prediction time:</strong></li>
+      <li><strong>Target population:</strong></li>
+    </ul>
+
+    <h4>Problem C: Hospital readmission prediction</h4>
+    <ul>
+      <li><strong>Outcome:</strong></li>
+      <li><strong>Predictors:</strong></li>
+      <li><strong>Prediction time:</strong></li>
+      <li><strong>Target population:</strong></li>
+    </ul>
+
+    <details class="answer-box">
+      <summary>Click to see suggested answers</summary>
+      <div class="answer-content">
+        <h4>Problem A: Diabetes risk prediction</h4>
+        <ul>
+          <li><strong>Outcome:</strong> Future diabetes status or diabetes diagnosis within a defined time window.</li>
+          <li><strong>Predictors:</strong> Age, BMI, glucose, family history, blood pressure, HbA1c, lifestyle variables, previous clinical history.</li>
+          <li><strong>Prediction time:</strong> At screening, baseline assessment, GP visit, or health check.</li>
+          <li><strong>Target population:</strong> Adults being screened for diabetes risk or patients in primary care.</li>
+        </ul>
+
+        <h4>Problem B: Breast cancer survival prediction</h4>
+        <ul>
+          <li><strong>Outcome:</strong> Survival status, time to death, recurrence, or 5-year survival probability.</li>
+          <li><strong>Predictors:</strong> Age, tumour size, grade, lymph node status, receptor status, treatment, comorbidities.</li>
+          <li><strong>Prediction time:</strong> At diagnosis, after surgery, or before treatment planning.</li>
+          <li><strong>Target population:</strong> Patients newly diagnosed with breast cancer or patients entering a defined treatment pathway.</li>
+        </ul>
+
+        <h4>Problem C: Hospital readmission prediction</h4>
+        <ul>
+          <li><strong>Outcome:</strong> Readmission within a defined period, such as 30 days after discharge.</li>
+          <li><strong>Predictors:</strong> Age, sex, comorbidities, previous admissions, discharge diagnosis, length of stay before discharge, medications, lab values available before discharge.</li>
+          <li><strong>Prediction time:</strong> At discharge or shortly before discharge.</li>
+          <li><strong>Target population:</strong> Hospitalised patients being discharged from a ward or specific clinical service.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <div class="exercise-card">
+    <h3>Exercise 3: Spot the leakage</h3>
+
+    <p>
+      You are building a model to predict <strong>ICU mortality at admission</strong>.
+      Which variables are appropriate, and which may cause leakage?
+    </p>
+
+    <div class="table-scroll">
+      <table class="lesson-table">
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Appropriate or leakage risk?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Age at ICU admission</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Blood pressure at admission</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>ICU length of stay</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Discharge destination</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Comorbidity history</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Lab values measured after deterioration</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Admission diagnosis</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Treatment response after 5 days</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <details class="answer-box">
+      <summary>Click to see suggested answers</summary>
+      <div class="answer-content">
+        <div class="table-scroll">
+          <table class="lesson-table">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Suggested answer</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Age at ICU admission</td>
+                <td>Appropriate</td>
+                <td>It is available at the prediction time.</td>
+              </tr>
+              <tr>
+                <td>Blood pressure at admission</td>
+                <td>Appropriate</td>
+                <td>It is measured at or before ICU admission.</td>
+              </tr>
+              <tr>
+                <td>ICU length of stay</td>
+                <td>Leakage risk</td>
+                <td>Length of stay is only known after the ICU course has unfolded.</td>
+              </tr>
+              <tr>
+                <td>Discharge destination</td>
+                <td>Leakage risk</td>
+                <td>It is known after the outcome process and may directly reveal prognosis.</td>
+              </tr>
+              <tr>
+                <td>Comorbidity history</td>
+                <td>Appropriate</td>
+                <td>It is usually known at admission and can summarise baseline risk.</td>
+              </tr>
+              <tr>
+                <td>Lab values measured after deterioration</td>
+                <td>Leakage risk</td>
+                <td>They occur after the prediction time and may reflect the outcome pathway.</td>
+              </tr>
+              <tr>
+                <td>Admission diagnosis</td>
+                <td>Appropriate</td>
+                <td>It is available at admission, although its definition must be clear.</td>
+              </tr>
+              <tr>
+                <td>Treatment response after 5 days</td>
+                <td>Leakage risk</td>
+                <td>It is future information relative to prediction at ICU admission.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <div class="exercise-card">
+    <h3>Exercise 4: Calibration interpretation</h3>
+
+    <p>
+      A model predicts <strong>20% mortality risk</strong> for 100 patients.
+      Among these 100 patients, <strong>40 die</strong>.
+    </p>
+
+    <p>Answer the following:</p>
+
+    <ul>
+      <li>Is the model well calibrated for this group?</li>
+      <li>Is the model overestimating or underestimating risk?</li>
+      <li>Why could this be clinically harmful?</li>
+    </ul>
+
+    <details class="answer-box">
+      <summary>Click to see suggested answer</summary>
+      <div class="answer-content">
+        <p>
+          The model is <strong>not well calibrated</strong> for this group.
+          It predicted that around 20 out of 100 patients would die, but 40 actually died.
+        </p>
+
+        <p>
+          The model is <strong>underestimating risk</strong>, because the observed mortality
+          is higher than the predicted mortality.
+        </p>
+
+        <p>
+          This could be clinically harmful because patients may be falsely reassured or may not
+          receive the level of monitoring, intervention or follow-up that their true risk requires.
+          In clinical settings, poor calibration can lead to undertreatment, delayed escalation,
+          inappropriate resource allocation and unsafe decision-making.
+        </p>
+      </div>
+    </details>
+  </div>
+
+  <div class="exercise-card">
+    <h3>Exercise 5: Short answer</h3>
+
+    <p>
+      Write 3–5 sentences for each question before opening the suggested answer.
+    </p>
+
+    <div class="short-answer">
+      <h4>Why is prediction different from inference?</h4>
+      <details class="answer-box">
+        <summary>Click to see suggested answer</summary>
+        <div class="answer-content">
+          <p>
+            Prediction focuses on estimating outcomes or risks for new individuals.
+            Inference focuses on estimating and interpreting relationships between variables.
+            A prediction model is judged mainly by performance in new data, including discrimination,
+            calibration and validation. An inference model is judged more by effect estimates,
+            uncertainty, assumptions, confounding and interpretation.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <div class="short-answer">
+      <h4>Why is accuracy not enough in medical machine learning?</h4>
+      <details class="answer-box">
+        <summary>Click to see suggested answer</summary>
+        <div class="answer-content">
+          <p>
+            Accuracy can be misleading when outcomes are rare or class imbalance is present.
+            A model can achieve high accuracy by predicting the majority class for everyone.
+            In medicine, missing true cases may be very harmful, so sensitivity, specificity,
+            predictive values, calibration and clinical usefulness are also needed.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <div class="short-answer">
+      <h4>Why is external validation important?</h4>
+      <details class="answer-box">
+        <summary>Click to see suggested answer</summary>
+        <div class="answer-content">
+          <p>
+            External validation tests whether a model works in data from a different setting,
+            hospital, time period or population. A model may perform well in development data
+            but fail elsewhere because of overfitting, population differences or measurement differences.
+            External validation gives stronger evidence that the model can generalise to real use.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <div class="short-answer">
+      <h4>Why can data leakage make a model look better than it really is?</h4>
+      <details class="answer-box">
+        <summary>Click to see suggested answer</summary>
+        <div class="answer-content">
+          <p>
+            Data leakage occurs when information enters the model that would not be available
+            at the real prediction time. This can allow the model to indirectly see the answer
+            or future information. As a result, performance estimates become falsely high,
+            and the model may fail when used prospectively on real patients.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <div class="short-answer">
+      <h4>Why should interpretability not be confused with causality?</h4>
+      <details class="answer-box">
+        <summary>Click to see suggested answer</summary>
+        <div class="answer-content">
+          <p>
+            An interpretable model may show which variables are associated with predictions,
+            but this does not prove that those variables cause the outcome. A predictor can be
+            useful because it is correlated with disease severity, healthcare use or another cause.
+            Causal interpretation requires a causal question, appropriate design, temporality,
+            confounding control and assumptions that are not guaranteed by interpretability alone.
+          </p>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <section class="lesson-section" id="quiz">
+    <p class="kicker">Quick quiz</p>
+    <h2>Check your understanding</h2>
+
+    <div class="exercise-card">
+      <h3>Question 1</h3>
+      <p>
+        A model estimates a patient’s probability of readmission within 30 days.
+        Is this mainly prediction or inference?
+      </p>
+
+      <details class="answer-box">
+        <summary>Click to see answer</summary>
+        <div class="answer-content">
+          <p><strong>Prediction.</strong> The model estimates a future outcome for an individual patient.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="exercise-card">
+      <h3>Question 2</h3>
+      <p>
+        A variable is selected by a lasso model. Does this prove that the variable causes the outcome?
+      </p>
+
+      <details class="answer-box">
+        <summary>Click to see answer</summary>
+        <div class="answer-content">
+          <p>
+            <strong>No.</strong> Selection in a prediction model does not prove causality.
+            It only suggests the variable may help prediction in that modelling context.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <div class="exercise-card">
+      <h3>Question 3</h3>
+      <p>
+        A model predicts 10% risk in a group, but 30% experience the outcome.
+        What is the main calibration problem?
+      </p>
+
+      <details class="answer-box">
+        <summary>Click to see answer</summary>
+        <div class="answer-content">
+          <p>
+            The model is <strong>underestimating risk</strong>. The observed event rate is higher
+            than the predicted risk.
+          </p>
+        </div>
+      </details>
+    </div>
+  </section>
+</section>
