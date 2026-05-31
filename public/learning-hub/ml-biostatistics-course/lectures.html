@@ -42,7 +42,7 @@
     </tr>
     <tr>
       <td><strong>Confusion Bug</strong></td>
-      <td>Mixes up metrics such as accuracy, AUC, sensitivity, and calibration</td>
+      <td>Mixes up accuracy, AUC, sensitivity, specificity, calibration and clinical usefulness</td>
     </tr>
   </tbody>
 </table>
@@ -52,8 +52,8 @@
 <h2 id="module-1-foundations">Module 1: Foundations</h2>
 
 <ul>
-  <li><a href="lectures/01_ml_in_biostatistics">Lecture 1: What is Machine Learning in Biostatistics?</a></li>
-  <li><a href="lectures/02_validation_overfitting_leakage">Lecture 2: Validation, Overfitting and Data Leakage</a></li>
+  <li><a href="01_ml_in_biostatistics">Lecture 1: What is Machine Learning in Biostatistics?</a></li>
+  <li><a href="02_validation_overfitting_leakage">Lecture 2: Validation, Overfitting and Data Leakage</a></li>
 </ul>
 
 <hr />
@@ -61,9 +61,9 @@
 <h2 id="module-2-supervised-learning-for-medical-data">Module 2: Supervised Learning for Medical Data</h2>
 
 <ul>
-  <li><a href="lectures/03_supervised_learning">Lecture 3: Supervised Learning for Medical Data</a></li>
-  <li><a href="lectures/04_logistic_regression_clinical_prediction">Lecture 4: Logistic Regression for Clinical Prediction</a></li>
-  <li><a href="lectures/05_classification_metrics_in_medicine">Lecture 5: Classification Metrics in Medicine</a></li>
+  <li><a href="03_supervised_learning">Lecture 3: Supervised Learning for Medical Data</a></li>
+  <li><a href="04_logistic_regression_clinical_prediction">Lecture 4: Logistic Regression for Clinical Prediction</a></li>
+  <li><a href="05_classification_metrics_in_medicine">Lecture 5: Classification Metrics in Medicine</a></li>
 </ul>
 
 <hr />
@@ -71,10 +71,10 @@
 <h2 id="module-3-model-evaluation-validation-and-clinical-usefulness">Module 3: Model Evaluation, Validation and Clinical Usefulness</h2>
 
 <ul>
-  <li><a href="lectures/06_cross_validation">Lecture 6: Cross-Validation</a></li>
-  <li><a href="lectures/07_bootstrap_validation">Lecture 7: Bootstrap Validation</a></li>
-  <li><a href="lectures/08_calibration_brier_score">Lecture 8: Calibration and Brier Score</a></li>
-  <li><a href="lectures/09_decision_curve_analysis">Lecture 9: Decision Curve Analysis</a></li>
+  <li><a href="06_cross_validation">Lecture 6: Cross-Validation</a></li>
+  <li><a href="07_bootstrap_validation">Lecture 7: Bootstrap Validation</a></li>
+  <li><a href="08_calibration_brier_score">Lecture 8: Calibration and Brier Score</a></li>
+  <li><a href="09_decision_curve_analysis">Lecture 9: Decision Curve Analysis</a></li>
 </ul>
 
 <hr />
@@ -82,29 +82,34 @@
 <h2 id="module-4-regularisation-and-feature-selection">Module 4: Regularisation and Feature Selection</h2>
 
 <ul>
-  <li><a href="lectures/10_regularisation_feature_selection">Lecture 10: Regularisation and Feature Selection</a></li>
-  <li><a href="lectures/11_ridge_regression">Lecture 11: Ridge Regression</a></li>
-  <li><a href="lectures/12_lasso_regression">Lecture 12: Lasso Regression</a></li>
-  <li><a href="lectures/13_elastic_net">Lecture 13: Elastic Net</a></li>
-  <li><a href="lectures/14_feature_selection_biomedical_data">Lecture 14: Feature Selection in Biomedical Data</a></li>
-  <li><a href="lectures/15_penalised_regression_high_dimensional_data">Lecture 15: Penalised Regression for High-Dimensional Data</a></li>
+  <li><a href="10_regularisation_feature_selection">Lecture 10: Regularisation and Feature Selection</a></li>
+  <li><a href="11_ridge_regression">Lecture 11: Ridge Regression</a></li>
+  <li><a href="12_lasso_regression">Lecture 12: Lasso Regression</a></li>
+  <li><a href="13_elastic_net">Lecture 13: Elastic Net</a></li>
+  <li><a href="14_feature_selection_biomedical_data">Lecture 14: Feature Selection in Biomedical Data</a></li>
+  <li><a href="15_penalised_regression_high_dimensional_data">Lecture 15: Penalised Regression for High-Dimensional Data</a></li>
 </ul>
 
 <hr />
 
 <h2 id="module-5-tree-based-methods">Module 5: Tree-Based Methods</h2>
 
+<p>Planned lecture topics:</p>
+
 <ul>
   <li>Decision Trees</li>
   <li>Random Forests</li>
   <li>Gradient Boosting</li>
   <li>XGBoost</li>
-  <li>Variable Importance and Partial Dependence</li>
+  <li>Variable Importance</li>
+  <li>Partial Dependence</li>
 </ul>
 
 <hr />
 
 <h2 id="module-6-survival-machine-learning">Module 6: Survival Machine Learning</h2>
+
+<p>Planned lecture topics:</p>
 
 <ul>
   <li>Survival Analysis Recap</li>
@@ -117,13 +122,15 @@
 
 <hr />
 
-<h2 id="module-7-high-dimensional-biomedical-ml">Module 7: High-Dimensional Biomedical ML</h2>
+<h2 id="module-7-high-dimensional-biomedical-machine-learning">Module 7: High-Dimensional Biomedical Machine Learning</h2>
+
+<p>Planned lecture topics:</p>
 
 <ul>
-  <li>Omics Data and p » n Problems</li>
+  <li>Omics Data and High-Dimensional Problems</li>
   <li>PCA and Dimension Reduction</li>
   <li>Nested Cross-Validation</li>
-  <li>Batch Effects and Leakage</li>
+  <li>Batch Effects and Data Leakage</li>
   <li>EWAS and Biomedical Prediction Workflows</li>
 </ul>
 
@@ -131,12 +138,15 @@
 
 <h2 id="module-8-reporting-bias-and-reproducibility">Module 8: Reporting, Bias and Reproducibility</h2>
 
+<p>Planned lecture topics:</p>
+
 <ul>
-  <li>TRIPOD+AI</li>
-  <li>PROBAST+AI</li>
-  <li>Model Cards</li>
-  <li>Reproducible Reporting</li>
-  <li>Transparent GitHub Workflows</li>
+  <li>Transparent Model Reporting</li>
+  <li>Risk of Bias in Prediction Models</li>
+  <li>Model Documentation</li>
+  <li>Reproducible Research Workflows</li>
+  <li>Git-Based Project Organisation</li>
+  <li>Communicating Model Limitations</li>
 </ul>
 
 <hr />
@@ -146,11 +156,26 @@
 <p>A good learning pathway is:</p>
 
 <ol>
-  <li>Read the lecture for intuition.</li>
-  <li>Read the detailed note for theory.</li>
-  <li>Complete the exercise page.</li>
-  <li>Run the R code.</li>
-  <li>Work through the related case study.</li>
+  <li>
+    <p><strong>Read the lecture for intuition.</strong><br />
+Start with the story-based explanation to understand the motivation, common doubts and clinical context.</p>
+  </li>
+  <li>
+    <p><strong>Read the detailed note.</strong><br />
+Use the notes for deeper statistical theory, equations, model assumptions and interpretation.</p>
+  </li>
+  <li>
+    <p><strong>Complete the exercise page.</strong><br />
+Test your conceptual understanding before moving to implementation.</p>
+  </li>
+  <li>
+    <p><strong>Run the R code.</strong><br />
+Use the code section to connect the method to reproducible analysis.</p>
+  </li>
+  <li>
+    <p><strong>Work through the related case study.</strong><br />
+Apply the idea to a realistic medical prediction problem.</p>
+  </li>
 </ol>
 
 <hr />
@@ -171,4 +196,16 @@
   <li>reflection question.</li>
 </ul>
 
-<p>This keeps the lectures light and engaging while the notes remain detailed and academic.</p>
+<p>The lectures are designed to be accessible and engaging, while the notes remain more detailed, technical and academic.</p>
+
+<hr />
+
+<h2 id="connect-with-rahul">Connect with Rahul</h2>
+
+<p>This course is developed by <strong>Rahul</strong>, Founder of <strong>My Academic Tutor</strong>.</p>
+
+<p>Rahul holds an <strong>MSc in Statistics</strong> from the <strong>Indian Institute of Technology Kanpur, India</strong>, and is pursuing an <strong>MSc in Medical Statistics and Health Data Science</strong> at the <strong>University of Bristol, United Kingdom</strong>.</p>
+
+<p>For academic support, statistics tutoring, biostatistics guidance or dissertation data analysis support, you can connect through My Academic Tutor.</p>
+
+<p><a href="https://statisticahub.github.io/myacademictutor-website/contact/">Contact Rahul</a></p>

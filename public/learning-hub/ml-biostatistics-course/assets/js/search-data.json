@@ -6777,7 +6777,7 @@
   },"968": {
     "doc": "Home",
     "title": "What this course covers",
-    "content": "Current content . | Machine learning in biostatistics | Prediction versus inference | Validation, overfitting, and data leakage | Supervised learning for medical data | Logistic regression for clinical prediction | Classification metrics in medicine | Cross-validation | Bootstrap internal validation | Calibration and Brier score | Decision curve analysis | Regularisation and feature selection | Ridge regression | Lasso regression | Elastic net | Feature selection in biomedical data | Penalised regression for high-dimensional data | Reproducible R scripts for medical prediction | Diabetes risk prediction case study | . Planned content . | Decision trees | Random forests | Gradient boosting | XGBoost | Variable importance and partial dependence | Survival prediction modelling | Cox proportional hazards models | Penalised Cox models | Random survival forests | C-index and time-dependent AUC | Survival calibration | Omics and EWAS-style prediction workflows | TRIPOD+AI and PROBAST+AI | . ",
+    "content": "Current content . | Machine learning in biostatistics | Prediction versus inference | Validation, overfitting, and data leakage | Supervised learning for medical data | Logistic regression for clinical prediction | Classification metrics in medicine | Cross-validation | Bootstrap internal validation | Calibration and Brier score | Decision curve analysis | Regularisation and feature selection | Ridge regression | Lasso regression | Elastic net | Feature selection in biomedical data | Penalised regression for high-dimensional data | Reproducible R scripts for medical prediction | Diabetes risk prediction case study | . Planned content . | Decision trees | Random forests | Gradient boosting | XGBoost | Variable importance and partial dependence | Survival prediction modelling | Cox proportional hazards models | Penalised Cox models | Random survival forests | C-index and time-dependent AUC | Survival calibration | Omics and EWAS-style prediction workflows | TRIPOD and PROBAST reporting principles | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/#what-this-course-covers",
     
     "relUrl": "/#what-this-course-covers"
@@ -6791,235 +6791,228 @@
   },"970": {
     "doc": "Home",
     "title": "Course format",
-    "content": "This website is designed as a structured written learning resource. The lectures use a conversational teaching style to make the ideas more intuitive and memorable. The notes remain more detailed and academic. The exercises, R scripts, and case studies help connect the concepts to practical medical machine learning. ",
+    "content": "This website is designed as a structured written learning resource. The lectures use a conversational teaching style to make the ideas more intuitive and memorable. The notes remain more detailed and academic. The exercises, R scripts, and case studies help connect the concepts to practical medical machine learning. Developed by Rahul . Founder of My Academic Tutor MSc Statistics, Indian Institute of Technology Kanpur, India MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom . © 2026 My Academic Tutor. All rights reserved. ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/#course-format",
     
     "relUrl": "/#course-format"
   },"971": {
-    "doc": "Home",
-    "title": "About the author",
-    "content": "This course is developed by Rahul, MSc Statistics, Indian Institute of Technology Kanpur, and MSc Medical Statistics and Health Data Science, University of Bristol. Rahul is also the founder of My Academic Tutor, focused on: . My Academic Tutor is an academic tutoring team supporting learners across statistics, biostatistics, programming, data science, bioinformatics and quantitative research methods. ",
-    "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/#about-the-author",
-    
-    "relUrl": "/#about-the-author"
-  },"972": {
-    "doc": "Home",
-    "title": "AI acknowledgement",
-    "content": "Parts of the course wording, visual style, and format were developed with support from AI tools. All content is reviewed, edited, and curated by the author (Rahul) to ensure it aligns with the intended educational purpose, statistical reasoning, and medical machine learning context. ",
-    "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/#ai-acknowledgement",
-    
-    "relUrl": "/#ai-acknowledgement"
-  },"973": {
-    "doc": "Home",
-    "title": "Contact",
-    "content": "For errors, suggestions, or feedback: . rahulbalwan1910@gmail.com . Connect on LinkedIn: . Rahul Rahul . ",
-    "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/#contact",
-    
-    "relUrl": "/#contact"
-  },"974": {
     "doc": "Home",
     "title": "Home",
     "content": " ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/",
     
     "relUrl": "/"
-  },"975": {
+  },"972": {
     "doc": "Case Studies",
     "title": "Case Studies",
     "content": "This section contains applied medical machine learning case studies. The aim is to connect the course concepts with realistic modelling workflows, clinical interpretation, figures, and common problems that occur in biomedical data analysis. Each case study follows a practical structure: . | clinical question; | dataset description; | outcome and predictors; | prediction time point; | model development in R; | performance evaluation; | figures; | clinical interpretation; | limitations; | reflection questions. | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/case-studies/",
     
     "relUrl": "/case-studies/"
-  },"976": {
+  },"973": {
     "doc": "Case Studies",
     "title": "Available case studies",
     "content": ". | Case Study 1: Diabetes Risk Prediction | Case Study 2: Regularised Diabetes Risk Prediction | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/case-studies/#available-case-studies",
     
     "relUrl": "/case-studies/#available-case-studies"
-  },"977": {
+  },"974": {
     "doc": "Case Studies",
     "title": "Current case study progression",
     "content": "Case Study 1: Diabetes Risk Prediction . This case study introduces a complete clinical prediction workflow using logistic regression. It focuses on: . | binary outcome definition; | train/test split; | logistic regression; | predicted probabilities; | confusion matrix; | sensitivity and specificity; | ROC curve and AUC; | calibration plot; | Brier score; | threshold interpretation; | clinical interpretation. | . Case Study 2: Regularised Diabetes Risk Prediction . This case study extends Case Study 1 by comparing ordinary logistic regression with regularised regression methods. It focuses on: . | ridge regression; | lasso regression; | elastic net; | coefficient shrinkage; | feature selection; | AUC comparison; | Brier score comparison; | calibration comparison; | selected predictor interpretation; | why selected features are not automatically causal. | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/case-studies/#current-case-study-progression",
     
     "relUrl": "/case-studies/#current-case-study-progression"
-  },"978": {
+  },"975": {
     "doc": "Case Studies",
     "title": "Planned case studies",
     "content": "Tree-based methods . | Decision tree diabetes prediction | Random forest diabetes prediction | Gradient boosting diabetes prediction | XGBoost for clinical prediction | Variable importance and partial dependence case study | . Survival machine learning . | Survival prediction in oncology | Cox proportional hazards prediction model | Penalised Cox model case study | Random survival forest case study | Time-dependent AUC and survival calibration case study | . High-dimensional biomedical prediction . | Methylation-based exposure prediction | Omics feature selection workflow | Batch effects and leakage in biomedical prediction | EWAS-style prediction workflow | High-dimensional penalised regression case study | . Reporting and reproducibility . | TRIPOD+AI reporting case study | PROBAST+AI risk-of-bias case study | Model card for a clinical prediction model | Reproducible GitHub workflow case study | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/case-studies/#planned-case-studies",
     
     "relUrl": "/case-studies/#planned-case-studies"
-  },"979": {
+  },"976": {
     "doc": "Case Studies",
     "title": "How to use the case studies",
     "content": "A good way to use each case study is: . | Read the clinical question. | Understand the outcome and predictors. | Run the related R script. | Inspect the generated figures. | Read the clinical interpretation. | Answer the reflection questions. | Revisit the related lecture, note, or exercise if needed. | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/case-studies/#how-to-use-the-case-studies",
     
     "relUrl": "/case-studies/#how-to-use-the-case-studies"
-  },"980": {
+  },"977": {
     "doc": "Case Studies",
     "title": "Related R scripts",
     "content": "The current case study scripts are: . r/C1_diabetes_risk_prediction_case_study.R r/C2_regularised_diabetes_prediction_case_study.R . The figures are saved in: . figures/ . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/case-studies/#related-r-scripts",
     
     "relUrl": "/case-studies/#related-r-scripts"
-  },"981": {
+  },"978": {
     "doc": "Case Studies",
     "title": "Key message",
     "content": "The case studies are designed to show that medical machine learning is not only about fitting models. A useful clinical prediction workflow must define the prediction question clearly, avoid leakage, evaluate discrimination and calibration, interpret thresholds carefully, and explain limitations honestly. ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/case-studies/#key-message",
     
     "relUrl": "/case-studies/#key-message"
-  },"982": {
+  },"979": {
     "doc": "Lectures",
     "title": "Lectures",
     "content": "This section contains story-based lecture pages for learning machine learning in biostatistics. The lectures introduce each topic through conversations, common doubts, clinical examples, and modelling mistakes. They are designed to build intuition before you move to the detailed notes, exercises, R code, and case studies. ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html",
     
     "relUrl": "/lectures.html"
-  },"983": {
+  },"980": {
     "doc": "Lectures",
     "title": "Meet the lecture characters",
-    "content": "| Character | Role | . | Prof Stat | Explains the statistical and machine learning ideas | . | Curious Learner | Asks common student doubts | . | Dr Clinic | Connects the method to clinical practice | . | Leakage Monster | Appears when data leakage or future information enters the model | . | Captain Overfit | Appears when a model memorises noise instead of learning patterns | . | Ms Calibration | Explains predicted probabilities and calibration | . | Confusion Bug | Mixes up metrics such as accuracy, AUC, sensitivity, and calibration | . ",
+    "content": "| Character | Role | . | Prof Stat | Explains the statistical and machine learning ideas | . | Curious Learner | Asks common student doubts | . | Dr Clinic | Connects the method to clinical practice | . | Leakage Monster | Appears when data leakage or future information enters the model | . | Captain Overfit | Appears when a model memorises noise instead of learning patterns | . | Ms Calibration | Explains predicted probabilities and calibration | . | Confusion Bug | Mixes up accuracy, AUC, sensitivity, specificity, calibration and clinical usefulness | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html#meet-the-lecture-characters",
     
     "relUrl": "/lectures.html#meet-the-lecture-characters"
-  },"984": {
+  },"981": {
     "doc": "Lectures",
     "title": "Module 1: Foundations",
     "content": ". | Lecture 1: What is Machine Learning in Biostatistics? | Lecture 2: Validation, Overfitting and Data Leakage | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html#module-1-foundations",
     
     "relUrl": "/lectures.html#module-1-foundations"
-  },"985": {
+  },"982": {
     "doc": "Lectures",
     "title": "Module 2: Supervised Learning for Medical Data",
     "content": ". | Lecture 3: Supervised Learning for Medical Data | Lecture 4: Logistic Regression for Clinical Prediction | Lecture 5: Classification Metrics in Medicine | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html#module-2-supervised-learning-for-medical-data",
     
     "relUrl": "/lectures.html#module-2-supervised-learning-for-medical-data"
-  },"986": {
+  },"983": {
     "doc": "Lectures",
     "title": "Module 3: Model Evaluation, Validation and Clinical Usefulness",
     "content": ". | Lecture 6: Cross-Validation | Lecture 7: Bootstrap Validation | Lecture 8: Calibration and Brier Score | Lecture 9: Decision Curve Analysis | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html#module-3-model-evaluation-validation-and-clinical-usefulness",
     
     "relUrl": "/lectures.html#module-3-model-evaluation-validation-and-clinical-usefulness"
-  },"987": {
+  },"984": {
     "doc": "Lectures",
     "title": "Module 4: Regularisation and Feature Selection",
     "content": ". | Lecture 10: Regularisation and Feature Selection | Lecture 11: Ridge Regression | Lecture 12: Lasso Regression | Lecture 13: Elastic Net | Lecture 14: Feature Selection in Biomedical Data | Lecture 15: Penalised Regression for High-Dimensional Data | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html#module-4-regularisation-and-feature-selection",
     
     "relUrl": "/lectures.html#module-4-regularisation-and-feature-selection"
-  },"988": {
+  },"985": {
     "doc": "Lectures",
     "title": "Module 5: Tree-Based Methods",
-    "content": ". | Decision Trees | Random Forests | Gradient Boosting | XGBoost | Variable Importance and Partial Dependence | . ",
+    "content": "Planned lecture topics: . | Decision Trees | Random Forests | Gradient Boosting | XGBoost | Variable Importance | Partial Dependence | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html#module-5-tree-based-methods",
     
     "relUrl": "/lectures.html#module-5-tree-based-methods"
-  },"989": {
+  },"986": {
     "doc": "Lectures",
     "title": "Module 6: Survival Machine Learning",
-    "content": ". | Survival Analysis Recap | Cox Proportional Hazards Model | Penalised Cox Models | Random Survival Forests | Time-Dependent Model Evaluation | Survival Calibration | . ",
+    "content": "Planned lecture topics: . | Survival Analysis Recap | Cox Proportional Hazards Model | Penalised Cox Models | Random Survival Forests | Time-Dependent Model Evaluation | Survival Calibration | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html#module-6-survival-machine-learning",
     
     "relUrl": "/lectures.html#module-6-survival-machine-learning"
-  },"990": {
+  },"987": {
     "doc": "Lectures",
-    "title": "Module 7: High-Dimensional Biomedical ML",
-    "content": ". | Omics Data and p » n Problems | PCA and Dimension Reduction | Nested Cross-Validation | Batch Effects and Leakage | EWAS and Biomedical Prediction Workflows | . ",
-    "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html#module-7-high-dimensional-biomedical-ml",
+    "title": "Module 7: High-Dimensional Biomedical Machine Learning",
+    "content": "Planned lecture topics: . | Omics Data and High-Dimensional Problems | PCA and Dimension Reduction | Nested Cross-Validation | Batch Effects and Data Leakage | EWAS and Biomedical Prediction Workflows | . ",
+    "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html#module-7-high-dimensional-biomedical-machine-learning",
     
-    "relUrl": "/lectures.html#module-7-high-dimensional-biomedical-ml"
-  },"991": {
+    "relUrl": "/lectures.html#module-7-high-dimensional-biomedical-machine-learning"
+  },"988": {
     "doc": "Lectures",
     "title": "Module 8: Reporting, Bias and Reproducibility",
-    "content": ". | TRIPOD+AI | PROBAST+AI | Model Cards | Reproducible Reporting | Transparent GitHub Workflows | . ",
+    "content": "Planned lecture topics: . | Transparent Model Reporting | Risk of Bias in Prediction Models | Model Documentation | Reproducible Research Workflows | Git-Based Project Organisation | Communicating Model Limitations | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html#module-8-reporting-bias-and-reproducibility",
     
     "relUrl": "/lectures.html#module-8-reporting-bias-and-reproducibility"
-  },"992": {
+  },"989": {
     "doc": "Lectures",
     "title": "How to use the lectures",
-    "content": "A good learning pathway is: . | Read the lecture for intuition. | Read the detailed note for theory. | Complete the exercise page. | Run the R code. | Work through the related case study. | . ",
+    "content": "A good learning pathway is: . | Read the lecture for intuition. Start with the story-based explanation to understand the motivation, common doubts and clinical context. | Read the detailed note. Use the notes for deeper statistical theory, equations, model assumptions and interpretation. | Complete the exercise page. Test your conceptual understanding before moving to implementation. | Run the R code. Use the code section to connect the method to reproducible analysis. | Work through the related case study. Apply the idea to a realistic medical prediction problem. | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html#how-to-use-the-lectures",
     
     "relUrl": "/lectures.html#how-to-use-the-lectures"
-  },"993": {
+  },"990": {
     "doc": "Lectures",
     "title": "Lecture style",
-    "content": "Each lecture follows a similar structure: . | opening scene; | today’s big question; | intuition first; | mini conversation; | medical example; | common mistake; | clinical reality check; | key takeaway; | reflection question. | . This keeps the lectures light and engaging while the notes remain detailed and academic. ",
+    "content": "Each lecture follows a similar structure: . | opening scene; | today’s big question; | intuition first; | mini conversation; | medical example; | common mistake; | clinical reality check; | key takeaway; | reflection question. | . The lectures are designed to be accessible and engaging, while the notes remain more detailed, technical and academic. ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html#lecture-style",
     
     "relUrl": "/lectures.html#lecture-style"
-  },"994": {
+  },"991": {
+    "doc": "Lectures",
+    "title": "Connect with Rahul",
+    "content": "This course is developed by Rahul, Founder of My Academic Tutor. Rahul holds an MSc in Statistics from the Indian Institute of Technology Kanpur, India, and is pursuing an MSc in Medical Statistics and Health Data Science at the University of Bristol, United Kingdom. For academic support, statistics tutoring, biostatistics guidance or dissertation data analysis support, you can connect through My Academic Tutor. Contact Rahul . ",
+    "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/lectures.html#connect-with-rahul",
+    
+    "relUrl": "/lectures.html#connect-with-rahul"
+  },"992": {
     "doc": "Notes",
     "title": "Notes",
-    "content": "This section contains detailed theory notes for Machine Learning in Biostatistics. The notes are more detailed than the lecture pages and include: . | definitions; | examples; | mathematical and statistical ideas; | medical applications; | interpretation; | common mistakes; | references. | . ",
+    "content": "This section contains detailed theory notes for Machine Learning in Biostatistics. The notes are more detailed than the lecture pages. They are designed to explain the statistical reasoning behind each method, not only the practical steps. The notes include: . | definitions; | examples; | mathematical and statistical ideas; | medical applications; | interpretation; | common mistakes; | references. | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/notes.html",
     
     "relUrl": "/notes.html"
-  },"995": {
+  },"993": {
     "doc": "Notes",
     "title": "Available notes",
-    "content": "Module 1: Foundations . | Note 1: Prediction vs Inference | Note 2: Validation, Overfitting and Data Leakage | . ",
+    "content": "Module 1: Foundations . | Note 1: Prediction vs Inference | Note 2: Validation, Overfitting and Data Leakage | . Module 2: Supervised Learning for Medical Data . | Note 3: Supervised Learning for Medical Data | Note 4: Logistic Regression for Clinical Prediction | Note 5: Classification Metrics in Medicine | . Module 3: Model Evaluation, Validation and Clinical Usefulness . | Note 6: Cross-Validation | Note 7: Bootstrap Validation | Note 8: Calibration and Brier Score | Note 9: Decision Curve Analysis | . Module 4: Regularisation and Feature Selection . | Note 10: Regularisation and Feature Selection | Note 11: Ridge Regression | Note 12: Lasso Regression | Note 13: Elastic Net | Note 14: Feature Selection in Biomedical Data | Note 15: Penalised Regression for High-Dimensional Data | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/notes.html#available-notes",
     
     "relUrl": "/notes.html#available-notes"
-  },"996": {
+  },"994": {
     "doc": "Notes",
     "title": "Planned notes",
-    "content": "Module 2: Supervised Learning for Medical Data . | Note 3: Supervised Learning for Medical Data . | Note 4: Logistic Regression for Clinical Prediction . | Note 5: Classification Metrics in Medicine . | . Module 3: Model Evaluation and Validation . | Note 6: Cross-Validation | Note 7: Bootstrap Validation | Note 8: Calibration and Brier Score | Note 9: Decision Curve Analysis | . ",
+    "content": "Module 5: Tree-Based Methods . Planned note topics: . | Decision Trees | Random Forests | Gradient Boosting | XGBoost | Variable Importance | Partial Dependence | . Module 6: Survival Machine Learning . Planned note topics: . | Survival Analysis Recap | Cox Proportional Hazards Model | Penalised Cox Models | Random Survival Forests | Time-Dependent Model Evaluation | Survival Calibration | . Module 7: High-Dimensional Biomedical Machine Learning . Planned note topics: . | Omics Data and High-Dimensional Problems | PCA and Dimension Reduction | Nested Cross-Validation | Batch Effects and Data Leakage | EWAS and Biomedical Prediction Workflows | . Module 8: Reporting, Bias and Reproducibility . Planned note topics: . | Transparent Model Reporting | Risk of Bias in Prediction Models | Model Documentation | Reproducible Research Workflows | Reporting Model Limitations | Communicating Results to Clinical and Research Audiences | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/notes.html#planned-notes",
     
     "relUrl": "/notes.html#planned-notes"
-  },"997": {
+  },"995": {
     "doc": "Notes",
-    "title": "Module 4: Regularisation and Feature Selection",
-    "content": ". | Note 10: Regularisation and Feature Selection | Note 11: Ridge Regression | Note 12: Lasso Regression | Note 13: Elastic Net | Note 14: Feature Selection in Biomedical Data | Note 15: Penalised Regression for High-Dimensional Data | . Module 5: Tree-Based Methods . | Decision Trees | Random Forests | Gradient Boosting | XGBoost | Variable Importance and Partial Dependence | . Module 6: Survival Machine Learning . | Survival Analysis Recap | Cox Proportional Hazards Model | Penalised Cox Models | Random Survival Forests | Time-Dependent Model Evaluation | Survival Calibration | . Module 7: High-Dimensional Biomedical ML . | Omics Data and p » n Problems | PCA and Dimension Reduction | Nested Cross-Validation | Batch Effects and Leakage | EWAS and Biomedical Prediction Workflows | . Module 8: Reporting, Bias and Reproducibility . | TRIPOD+AI | PROBAST+AI | Model Cards | Reproducible Reporting | Transparent GitHub Workflows | . ",
-    "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/notes.html#module-4-regularisation-and-feature-selection",
+    "title": "How to use the notes",
+    "content": "A good learning pathway is: . | Read the lecture first. Use the lecture page to understand the intuition and clinical motivation. | Study the note carefully. Use the note for definitions, equations, assumptions, interpretation and deeper statistical explanation. | Complete the exercise page. Check whether you can apply the concept without only memorising terminology. | Run the R code. Connect the theory to implementation and interpretation. | Work through the case study. See how the concept appears in a realistic medical prediction workflow. | . ",
+    "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/notes.html#how-to-use-the-notes",
     
-    "relUrl": "/notes.html#module-4-regularisation-and-feature-selection"
-  },"998": {
+    "relUrl": "/notes.html#how-to-use-the-notes"
+  },"996": {
+    "doc": "Notes",
+    "title": "Note style",
+    "content": "The notes are written in a more academic style than the lectures. Each note usually includes: . | the main statistical idea; | why the method is useful in medical research; | mathematical or conceptual foundations; | interpretation of model output; | common mistakes; | links to exercises, code and case studies where relevant. | . The goal is to help learners move from intuition to careful statistical understanding. Developed by Rahul . Founder of My Academic Tutor MSc Statistics, Indian Institute of Technology Kanpur, India MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom . © 2026 My Academic Tutor. All rights reserved. ",
+    "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/notes.html#note-style",
+    
+    "relUrl": "/notes.html#note-style"
+  },"997": {
     "doc": "Roadmap",
     "title": "Course Roadmap",
     "content": "This roadmap shows the planned structure of the course. The course is built around a simple learning pathway: . Concept → Method → R implementation → Clinical interpretation → Case study . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/roadmap.html#course-roadmap",
     
     "relUrl": "/roadmap.html#course-roadmap"
-  },"999": {
+  },"998": {
     "doc": "Roadmap",
     "title": "Module 1: Foundations",
     "content": "1. What is Machine Learning in Biostatistics? . Topics: . | machine learning in medical research; | prediction versus explanation; | statistical learning; | clinical prediction models; | why medical machine learning is different from general machine learning. | . Materials: . | lecture; | note; | exercise. | . 2. Validation, Overfitting and Data Leakage . Topics: . | training error versus test error; | overfitting; | validation; | internal validation; | external validation; | data leakage; | why leakage is dangerous in medical prediction. | . Materials: . | lecture; | note; | exercise. | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/roadmap.html#module-1-foundations",
     
     "relUrl": "/roadmap.html#module-1-foundations"
-  },"1000": {
+  },"999": {
     "doc": "Roadmap",
     "title": "Module 2: Supervised Learning",
     "content": "3. Supervised Learning for Medical Data . Topics: . | outcomes and predictors; | regression versus classification; | continuous, binary, time-to-event, and high-dimensional outcomes; | training and test data; | supervised learning workflow. | . Materials: . | lecture; | note; | exercise; | R script. | . 4. Logistic Regression for Clinical Prediction . Topics: . | binary outcomes; | logistic regression; | predicted probabilities; | odds and odds ratios; | logistic regression as a prediction model; | clinical interpretation. | . Materials: . | lecture; | note; | exercise; | R script. | . 5. Classification Metrics in Medicine . Topics: . | confusion matrix; | accuracy; | sensitivity; | specificity; | positive predictive value; | negative predictive value; | ROC curve; | AUC; | threshold choice; | calibration. | . Materials: . | lecture; | note; | exercise; | R script. | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/roadmap.html#module-2-supervised-learning",
     
     "relUrl": "/roadmap.html#module-2-supervised-learning"
-  },"1001": {
+  },"1000": {
     "doc": "Roadmap",
     "title": "Applied Case Studies",
     "content": "Case Study 1: Diabetes Risk Prediction . Topics: . | clinical prediction question; | binary classification; | logistic regression; | train/test split; | outcome distribution; | ROC curve; | AUC; | calibration plot; | threshold interpretation; | clinical usefulness; | limitations. | . Materials: . | case study page; | R script; | generated figures. | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/roadmap.html#applied-case-studies",
     
     "relUrl": "/roadmap.html#applied-case-studies"
-  },"1002": {
+  },"1001": {
     "doc": "Roadmap",
     "title": "Later Modules",
     "content": "Module 3: Model Validation . Planned topics: . | cross-validation; | bootstrap validation; | optimism; | calibration slope; | calibration intercept; | Brier score; | internal versus external validation. | . Module 4: Regularisation and Feature Selection . Planned topics: . | overfitting with many predictors; | ridge regression; | lasso regression; | elastic net; | predictor selection; | clinical versus data-driven feature selection. | . Module 5: Tree-Based Machine Learning . Planned topics: . | decision trees; | random forests; | gradient boosting; | variable importance; | interpretability; | performance comparison with regression models. | . Module 6: Survival Machine Learning . Planned topics: . | time-to-event outcomes; | censoring; | Cox proportional hazards model; | survival prediction; | C-index; | time-dependent AUC; | survival calibration; | random survival forests. | . Module 7: High-Dimensional Biomedical Data . Planned topics: . | omics data; | methylation data; | high-dimensional predictors; | feature filtering; | penalised models; | reproducibility; | multiple testing versus prediction. | . Module 8: Reporting and Critical Appraisal . Planned topics: . | TRIPOD+AI; | PROBAST+AI; | transparent reporting; | risk of bias; | clinical usefulness; | external validation; | model deployment considerations. | . ",
     "url": "/myacademictutor-website/learning-hub/ml-biostatistics-course/roadmap.html#later-modules",
     
     "relUrl": "/roadmap.html#later-modules"
-  },"1003": {
+  },"1002": {
     "doc": "Roadmap",
     "title": "Roadmap",
     "content": " ",
