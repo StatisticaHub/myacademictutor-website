@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Case Study 2: Regularised Diabetes Risk Prediction | Machine Learning in Biostatistics</title>
+
+  <meta
+    name="description"
+    content="Case Study 2 for Machine Learning in Biostatistics: regularised diabetes risk prediction using ordinary logistic regression, ridge regression, lasso regression and elastic net with AUC, Brier score, calibration, coefficient shrinkage and feature selection interpretation."
+  />
+
+  <link rel="stylesheet" href="../assets/course.css" />
+
+  <style>
+    .case-study-meta {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .meta-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fff;
+      padding: 1rem;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+    }
+
+    .meta-card span {
+      display: block;
+      color: #8C1515;
+      font-weight: 800;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.045em;
+      margin-bottom: 0.35rem;
+    }
+
+    .result-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin: 1.3rem 0;
+    }
+
+    .result-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fffaf2;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.05);
+    }
+
+    .result-card span {
+      display: block;
+      color: #5b4636;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .result-card strong {
+      display: block;
+      color: #8C1515;
+      font-size: 1.85rem;
+      line-height: 1.1;
+    }
+
+    .result-card small {
+      display: block;
+      margin-top: 0.25rem;
+      color: #5b4636;
+      font-size: 0.78rem;
+    }
+
+    .workflow-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin: 1.4rem 0;
+    }
+
+    .workflow-step {
+      position: relative;
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fffaf2;
+      padding: 1rem;
+      min-height: 145px;
+    }
+
+    .workflow-step::after {
+      content: "→";
+      position: absolute;
+      right: -0.72rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8C1515;
+      font-weight: 900;
+      font-size: 1.35rem;
+      z-index: 2;
+    }
+
+    .workflow-step:nth-child(4)::after,
+    .workflow-step:nth-child(8)::after,
+    .workflow-step:nth-child(12)::after {
+      content: "";
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background: #8C1515;
+      color: #fff;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+    }
+
+    .model-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.4rem 0;
+    }
+
+    .model-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 20px;
+      background: #ffffff;
+      padding: 1rem;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+    }
+
+    .model-card strong {
+      color: #8C1515;
+    }
+
+    .figure-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 22px;
+      background: #ffffff;
+      padding: 1.2rem;
+      margin: 1.4rem 0;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+    }
+
+    .figure-card img {
+      width: 100%;
+      max-width: 980px;
+      display: block;
+      margin: 1rem auto;
+      border: 1px solid #ddcfb8;
+      border-radius: 16px;
+      background: #f8f6f2;
+    }
+
+    .figure-card figcaption {
+      font-size: 0.95rem;
+      color: #5b4636;
+      margin-top: 0.6rem;
+    }
+
+    .figure-note {
+      border: 1px solid #ddcfb8;
+      border-radius: 16px;
+      background: #fffaf2;
+      padding: 0.9rem;
+      margin-top: 0.85rem;
+      font-size: 0.95rem;
+    }
+
+    .clinical-box {
+      border: 1px solid #ddcfb8;
+      border-left: 6px solid #8C1515;
+      border-radius: 18px;
+      background: #fffaf2;
+      padding: 1rem 1.1rem;
+      margin: 1.2rem 0;
+    }
+
+    .success-box {
+      border: 1px solid #bbdfc6;
+      border-left: 6px solid #166534;
+      border-radius: 18px;
+      background: #f0fdf4;
+      padding: 1rem 1.1rem;
+      margin: 1.2rem 0;
+    }
+
+    .warning-box {
+      border: 1px solid #f1c6c6;
+      border-left: 6px solid #991b1b;
+      border-radius: 18px;
+      background: #fff5f5;
+      padding: 1rem 1.1rem;
+      margin: 1.2rem 0;
+    }
+
+    .comparison-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.3rem 0;
+    }
+
+    .summary-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fff;
+      padding: 1rem;
+    }
+
+    .summary-card h3 {
+      margin-top: 0;
+    }
+
+    .coefficient-demo {
+      border: 1px solid #ddcfb8;
+      border-radius: 22px;
+      background: #fff;
+      padding: 1.2rem;
+      margin: 1.4rem 0;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+    }
+
+    .coefficient-row {
+      display: grid;
+      grid-template-columns: 130px 1fr 1fr 110px;
+      gap: 0.8rem;
+      align-items: center;
+      margin: 0.75rem 0;
+    }
+
+    .coef-track {
+      height: 18px;
+      border: 1px solid #ddcfb8;
+      background: #f3eadc;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .ordinary-fill,
+    .ridge-fill {
+      height: 100%;
+      border-radius: 999px;
+    }
+
+    .ordinary-fill {
+      background: #8C1515;
+    }
+
+    .ridge-fill {
+      background: #166534;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 0.8rem 0;
+      font-size: 0.9rem;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .swatch {
+      width: 22px;
+      height: 5px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .swatch.ordinary { background: #8C1515; }
+    .swatch.ridge { background: #166534; }
+
+    .lambda-lab {
+      border: 1px solid #ddcfb8;
+      border-radius: 22px;
+      background: #fffaf2;
+      padding: 1.2rem;
+      margin: 1.4rem 0;
+    }
+
+    .lambda-lab input[type="range"] {
+      width: 100%;
+      margin: 1rem 0;
+    }
+
+    .lambda-output {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .lambda-pill {
+      border: 1px solid #ddcfb8;
+      border-radius: 16px;
+      background: #ffffff;
+      padding: 0.85rem;
+      display: grid;
+      gap: 0.25rem;
+    }
+
+    .lambda-pill strong {
+      color: #8C1515;
+      font-size: 1.15rem;
+    }
+
+    .selected-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.3rem 0;
+    }
+
+    .selected-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fff;
+      padding: 1rem;
+    }
+
+    .selected-card.good {
+      border-left: 6px solid #166534;
+      background: #f0fdf4;
+    }
+
+    .selected-card.warning {
+      border-left: 6px solid #991b1b;
+      background: #fff5f5;
+    }
+
+    .mini-tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 0.8rem;
+    }
+
+    .mini-tag {
+      display: inline-block;
+      border: 1px solid #ddcfb8;
+      border-radius: 999px;
+      background: #fff;
+      padding: 0.35rem 0.7rem;
+      font-weight: 700;
+      color: #5b4636;
+      font-size: 0.92rem;
+    }
+
+    .limitation-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.3rem 0;
+    }
+
+    .limitation-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fff;
+      padding: 1rem;
+    }
+
+    .limitation-card.warning {
+      border-left: 6px solid #991b1b;
+      background: #fff5f5;
+    }
+
+    .code-path {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: #f8f1e7;
+      border: 1px solid #ddcfb8;
+      border-radius: 10px;
+      padding: 0.2rem 0.4rem;
+      font-size: 0.92rem;
+    }
+
+    .small-text {
+      font-size: 0.93rem;
+      color: #5b4636;
+    }
+
+    @media (max-width: 950px) {
+      .case-study-meta,
+      .result-strip,
+      .workflow-map,
+      .model-grid,
+      .comparison-summary,
+      .coefficient-row,
+      .lambda-output,
+      .selected-grid,
+      .limitation-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .workflow-step::after {
+        content: "↓";
+        right: 50%;
+        top: auto;
+        bottom: -1.1rem;
+        transform: translateX(50%);
+      }
+
+      .workflow-step:last-child::after {
+        content: "";
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="course-shell">
+    <header class="course-header">
+      <div class="course-header-inner">
+        <a class="brand" href="../index.html">
+          <img
+            src="../assets/my-academic-tutor-logo.png"
+            alt="My Academic Tutor logo"
+            class="brand-logo"
+          />
+          <span class="brand-text">
+            <span class="brand-title">Machine Learning in Biostatistics</span>
+            <span class="brand-subtitle">Case Study 2</span>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="Course navigation">
+          <a href="../index.html">Home</a>
+          <a href="../module-1/index.html">Module 1</a>
+          <a href="../module-2/index.html">Module 2</a>
+          <a href="../module-3/index.html">Module 3</a>
+          <a href="../module-4/index.html">Module 4</a>
+          <a href="../module-5/index.html">Module 5</a>
+          <a href="./index.html">Case Studies</a>
+          <a href="../../">Learning Hub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Applied regularised prediction case study</p>
+        <h1>Case Study 2: Regularised Diabetes Risk Prediction</h1>
+
+        <p class="hero-intro">
+          This case study extends Case Study 1 by comparing ordinary logistic regression,
+          ridge regression, lasso regression and elastic net. The focus is not just performance,
+          but shrinkage, feature selection, calibration and careful clinical interpretation.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#overview">Start case study</a>
+          <a class="btn btn-secondary" href="../r/C2_regularised_diabetes_prediction_case_study.R" download>Download R script</a>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <div class="lesson-layout">
+        <aside class="lesson-sidebar" aria-label="Case study sections">
+          <h3>Case study sections</h3>
+          <a class="active" href="#overview">Overview</a>
+          <a href="#results-first">Results first</a>
+          <a href="#clinical-question">Clinical question</a>
+          <a href="#regularisation">Why regularisation?</a>
+          <a href="#models">Models compared</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#performance">Performance</a>
+          <a href="#roc">ROC comparison</a>
+          <a href="#ridge">Ridge shrinkage</a>
+          <a href="#selection">Selected features</a>
+          <a href="#calibration">Calibration</a>
+          <a href="#cv">Cross-validation</a>
+          <a href="#limitations">Limitations</a>
+          <a href="#reflection">Reflection</a>
+          <a href="#code">Code</a>
+        </aside>
+
+        <article class="lesson-content">
+          <section class="lesson-section" id="overview">
+            <p class="kicker">Case study overview</p>
+            <h2>From ordinary logistic regression to regularised regression</h2>
+
+            <p>
+              In Case Study 1, ordinary logistic regression was used to predict diabetes status from routinely measured
+              clinical characteristics. This second case study asks whether ridge, lasso and elastic net provide a useful
+              alternative.
+            </p>
+
+            <div class="big-question">
+              <p>
+                Can regularised regression methods improve or stabilise diabetes risk prediction compared with ordinary logistic regression?
+              </p>
+            </div>
+
+            <p>
+              The aim is not simply to find the model with the highest AUC. The aim is to understand what regularisation
+              changes, how shrinkage behaves, how feature selection should be reported, and why selected features are not
+              automatically causal.
+            </p>
+
+            <div class="case-study-meta">
+              <div class="meta-card"><span>Outcome</span>Diabetes status</div>
+              <div class="meta-card"><span>Task</span>Binary prediction</div>
+              <div class="meta-card"><span>Models</span>Ordinary, ridge, lasso, elastic net</div>
+              <div class="meta-card"><span>Main lesson</span>Regularisation did not clearly improve performance here</div>
+            </div>
+
+            <div class="clinical-box">
+              <h3>Core message</h3>
+              <p>
+                Regularisation is useful for stabilising coefficients and demonstrating feature selection, but in this
+                modest predictor set the regularised models performed almost the same as ordinary logistic regression.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="results-first">
+            <p class="kicker">Results first</p>
+            <h2>What happened in this run?</h2>
+
+            <div class="result-strip">
+              <div class="result-card">
+                <span>Best test AUC</span>
+                <strong>0.851</strong>
+                <small>Ordinary logistic regression</small>
+              </div>
+              <div class="result-card">
+                <span>Lowest Brier score</span>
+                <strong>0.149</strong>
+                <small>Ordinary logistic regression</small>
+              </div>
+              <div class="result-card">
+                <span>Ridge AUC</span>
+                <strong>0.850</strong>
+                <small>Very similar discrimination</small>
+              </div>
+              <div class="result-card">
+                <span>Lasso AUC</span>
+                <strong>0.850</strong>
+                <small>Very similar discrimination</small>
+              </div>
+            </div>
+
+            <div class="comparison-summary">
+              <div class="summary-card">
+                <h3>Main statistical result</h3>
+                <p>
+                  Ordinary logistic regression, ridge regression, lasso regression and elastic net all gave very similar
+                  test-set discrimination and Brier scores.
+                </p>
+              </div>
+
+              <div class="summary-card">
+                <h3>Main clinical interpretation</h3>
+                <p>
+                  Regularisation did not clearly improve prediction in this example, but it helped demonstrate shrinkage,
+                  feature selection and the need for cautious interpretation.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="clinical-question">
+            <p class="kicker">Clinical question</p>
+            <h2>Can regularised models improve diabetes risk prediction?</h2>
+
+            <p>The clinical question is:</p>
+
+            <div class="formula-box">
+              Can we predict whether a patient has diabetes using routinely measured clinical characteristics,
+              and do regularised models provide a useful alternative to ordinary logistic regression?
+            </div>
+
+            <p>
+              The outcome is diabetes status, with diabetes positive as the event. The predictors are the same routinely
+              measured clinical variables used in Case Study 1: pregnancies, glucose, blood pressure, triceps, insulin,
+              BMI or mass, pedigree score and age.
+            </p>
+
+            <div class="warning-box">
+              <h3>Teaching-only warning</h3>
+              <p>
+                This is an educational workflow. It should not be interpreted as a deployable diabetes diagnosis
+                or screening model.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="regularisation">
+            <p class="kicker">Why regularisation matters</p>
+            <h2>Ordinary regression can be unstable</h2>
+
+            <p>
+              Ordinary logistic regression is a strong baseline, but it can become unstable when the sample size is limited,
+              predictors are correlated, weak predictors are included, or the model starts fitting dataset-specific noise.
+            </p>
+
+            <p>
+              Regularised regression adds a penalty to discourage overly large coefficients. The goal is not to make the
+              training fit as strong as possible. The goal is to improve stability and generalisation.
+            </p>
+
+            <div class="model-grid">
+              <div class="model-card">
+                <h3>Ordinary logistic</h3>
+                <p><strong>No shrinkage.</strong> Familiar and interpretable baseline.</p>
+              </div>
+
+              <div class="model-card">
+                <h3>Ridge</h3>
+                <p><strong>Shrinks coefficients.</strong> Usually keeps all predictors.</p>
+              </div>
+
+              <div class="model-card">
+                <h3>Lasso</h3>
+                <p><strong>Shrinks and selects.</strong> Some coefficients can become exactly zero.</p>
+              </div>
+
+              <div class="model-card">
+                <h3>Elastic net</h3>
+                <p><strong>Combines ridge and lasso.</strong> Useful with correlated predictors.</p>
+              </div>
+            </div>
+
+            <div class="lambda-lab">
+              <h3>Interactive shrinkage intuition</h3>
+              <p>
+                Move the penalty slider. Larger penalty values shrink coefficients more strongly.
+              </p>
+
+              <label for="lambdaSlider">
+                <strong>Penalty strength:</strong> <span id="lambdaText">medium</span>
+              </label>
+              <input id="lambdaSlider" type="range" min="1" max="5" value="3" />
+
+              <div class="lambda-output">
+                <div class="lambda-pill">
+                  <span>Coefficient size</span>
+                  <strong id="coefText">moderately shrunk</strong>
+                </div>
+                <div class="lambda-pill">
+                  <span>Overfitting risk</span>
+                  <strong id="overfitText">reduced</strong>
+                </div>
+                <div class="lambda-pill">
+                  <span>Underfitting risk</span>
+                  <strong id="underfitText">possible if too strong</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="models">
+            <p class="kicker">Models compared</p>
+            <h2>Four models are fitted and compared</h2>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>Penalty behaviour</th>
+                    <th>Feature selection?</th>
+                    <th>Teaching purpose</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Ordinary logistic regression</td>
+                    <td>No penalty</td>
+                    <td>No</td>
+                    <td>Baseline model</td>
+                  </tr>
+                  <tr>
+                    <td>Ridge regression</td>
+                    <td>L2 penalty</td>
+                    <td>Usually no</td>
+                    <td>Coefficient shrinkage</td>
+                  </tr>
+                  <tr>
+                    <td>Lasso regression</td>
+                    <td>L1 penalty</td>
+                    <td>Yes</td>
+                    <td>Sparse model and feature selection</td>
+                  </tr>
+                  <tr>
+                    <td>Elastic net</td>
+                    <td>Mix of L1 and L2 penalties</td>
+                    <td>Some</td>
+                    <td>Balance shrinkage and selection</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="clinical-box">
+              <h3>Prediction time point</h3>
+              <p>
+                As in Case Study 1, the prediction time point is the time of clinical assessment.
+                Predictors measured after assessment should not be included because that would create data leakage.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="workflow">
+            <p class="kicker">Analysis workflow</p>
+            <h2>Regularised modelling workflow</h2>
+
+            <div class="workflow-map">
+              <div class="workflow-step"><span class="step-badge">1</span><h3>Load data</h3><p>Use the same diabetes dataset.</p></div>
+              <div class="workflow-step"><span class="step-badge">2</span><h3>Split data</h3><p>80% training and 20% testing.</p></div>
+              <div class="workflow-step"><span class="step-badge">3</span><h3>Fit baseline</h3><p>Ordinary logistic regression.</p></div>
+              <div class="workflow-step"><span class="step-badge">4</span><h3>Fit ridge</h3><p>Use alpha = 0.</p></div>
+              <div class="workflow-step"><span class="step-badge">5</span><h3>Fit lasso</h3><p>Use alpha = 1.</p></div>
+              <div class="workflow-step"><span class="step-badge">6</span><h3>Fit elastic net</h3><p>Use alpha = 0.5.</p></div>
+              <div class="workflow-step"><span class="step-badge">7</span><h3>Predict risk</h3><p>Generate test-set probabilities.</p></div>
+              <div class="workflow-step"><span class="step-badge">8</span><h3>Compare</h3><p>Assess AUC and Brier score.</p></div>
+              <div class="workflow-step"><span class="step-badge">9</span><h3>Examine shrinkage</h3><p>Compare ordinary and ridge coefficients.</p></div>
+              <div class="workflow-step"><span class="step-badge">10</span><h3>Selected features</h3><p>Review lasso and elastic net terms.</p></div>
+              <div class="workflow-step"><span class="step-badge">11</span><h3>Calibration</h3><p>Compare predicted and observed risks.</p></div>
+              <div class="workflow-step"><span class="step-badge">12</span><h3>Interpret</h3><p>Explain findings cautiously.</p></div>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="performance">
+            <p class="kicker">Performance comparison</p>
+            <h2>AUC and Brier score were almost identical</h2>
+
+            <p>
+              The four models were compared using test-set AUC and Brier score. AUC measures discrimination,
+              while the Brier score measures probability prediction error.
+            </p>
+
+            <figure class="figure-card">
+              <h3>Model performance comparison</h3>
+              <img
+                src="../figures/regularised_diabetes_model_performance.png"
+                alt="Bar chart comparing AUC and Brier score for ordinary logistic regression, ridge regression, lasso regression and elastic net"
+              />
+              <figcaption>
+                Figure 1. AUC values and Brier scores were very similar across the four models.
+              </figcaption>
+              <div class="figure-note">
+                The bars look very close because the differences are genuinely small. This is the point of the case study:
+                regularisation did not clearly outperform ordinary logistic regression in this modest eight-predictor setting.
+              </div>
+            </figure>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>Test AUC</th>
+                    <th>Brier score</th>
+                    <th>Interpretation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Ordinary logistic regression</td>
+                    <td>0.851</td>
+                    <td>0.149</td>
+                    <td>Highest AUC and lowest Brier score in this split.</td>
+                  </tr>
+                  <tr>
+                    <td>Ridge regression</td>
+                    <td>0.850</td>
+                    <td>0.151</td>
+                    <td>Almost identical discrimination; slightly higher Brier score.</td>
+                  </tr>
+                  <tr>
+                    <td>Lasso regression</td>
+                    <td>0.850</td>
+                    <td>0.150</td>
+                    <td>Almost identical discrimination; demonstrates feature selection.</td>
+                  </tr>
+                  <tr>
+                    <td>Elastic net</td>
+                    <td>0.847</td>
+                    <td>0.152</td>
+                    <td>Slightly lower AUC in this split; still very similar overall.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="success-box">
+              <h3>Best interpretation</h3>
+              <p>
+                The result is not “ordinary logistic regression is always better.” The better interpretation is:
+                in this dataset with a modest number of predictors, regularisation did not provide a clear performance gain.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="roc">
+            <p class="kicker">ROC comparison</p>
+            <h2>The ROC curves overlap strongly</h2>
+
+            <p>
+              The ROC curves are almost on top of each other. This means the models had very similar ability to rank
+              diabetes-positive patients above diabetes-negative patients.
+            </p>
+
+            <figure class="figure-card">
+              <h3>ROC curve comparison</h3>
+              <img
+                src="../figures/regularised_diabetes_roc_comparison.png"
+                alt="ROC curve comparison for ordinary logistic regression, ridge regression, lasso regression and elastic net"
+              />
+              <figcaption>
+                Figure 2. The four ROC curves are very similar, supporting the conclusion that discrimination was almost unchanged.
+              </figcaption>
+              <div class="figure-note">
+                The x-axis is specificity, shown in the usual pROC direction. The main clinical message is not the small visual
+                differences, but the near-identical AUC values: 0.851, 0.850, 0.850 and 0.847.
+              </div>
+            </figure>
+
+            <div class="clinical-box">
+              <h3>Clinical interpretation</h3>
+              <p>
+                A more advanced model is not automatically better. If a simpler logistic regression model performs similarly,
+                is easier to explain and is adequately calibrated, it may remain a strong candidate model.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="ridge">
+            <p class="kicker">Ridge shrinkage</p>
+            <h2>Ridge kept predictors but shrank coefficients</h2>
+
+            <p>
+              Ridge regression shrinks coefficients towards zero. It usually keeps all predictors in the model.
+              In this run, the selected tuning value was:
+            </p>
+
+            <div class="formula-box">
+              ridge lambda.min = 0.02263119
+            </div>
+
+            <figure class="figure-card">
+              <h3>Ordinary logistic regression versus ridge coefficients</h3>
+              <img
+                src="../figures/regularised_diabetes_ridge_shrinkage.png"
+                alt="Coefficient comparison showing ordinary logistic regression coefficients and ridge regression coefficients"
+              />
+              <figcaption>
+                Figure 3. Ridge shrinks most coefficients towards zero compared with ordinary logistic regression.
+              </figcaption>
+              <div class="figure-note">
+                The plot shows the shrinkage idea clearly. Pedigree, pregnant, mass and glucose remain in the model,
+                but their coefficient magnitudes are reduced under ridge.
+              </div>
+            </figure>
+
+            <div class="coefficient-demo">
+              <h3>Coefficient shrinkage examples from the results</h3>
+              <div class="legend">
+                <span class="legend-item"><span class="swatch ordinary"></span>Ordinary logistic coefficient</span>
+                <span class="legend-item"><span class="swatch ridge"></span>Ridge coefficient</span>
+              </div>
+
+              <div class="coefficient-row">
+                <strong>Pedigree</strong>
+                <div class="coef-track"><div class="ordinary-fill" style="width: 78%;"></div></div>
+                <div class="coef-track"><div class="ridge-fill" style="width: 66%;"></div></div>
+                <span>0.781 → 0.657</span>
+              </div>
+
+              <div class="coefficient-row">
+                <strong>Pregnant</strong>
+                <div class="coef-track"><div class="ordinary-fill" style="width: 55%;"></div></div>
+                <div class="coef-track"><div class="ridge-fill" style="width: 46%;"></div></div>
+                <span>0.118 → 0.0979</span>
+              </div>
+
+              <div class="coefficient-row">
+                <strong>Glucose</strong>
+                <div class="coef-track"><div class="ordinary-fill" style="width: 40%;"></div></div>
+                <div class="coef-track"><div class="ridge-fill" style="width: 33%;"></div></div>
+                <span>0.0353 → 0.0290</span>
+              </div>
+
+              <div class="coefficient-row">
+                <strong>Mass</strong>
+                <div class="coef-track"><div class="ordinary-fill" style="width: 50%;"></div></div>
+                <div class="coef-track"><div class="ridge-fill" style="width: 41%;"></div></div>
+                <span>0.0861 → 0.0711</span>
+              </div>
+            </div>
+
+            <div class="clinical-box">
+              <h3>Clinical interpretation</h3>
+              <p>
+                Ridge does not mainly answer “which predictors should be removed?” It answers “can we stabilise the model
+                by shrinking coefficients while retaining the predictor set?”
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="selection">
+            <p class="kicker">Feature selection</p>
+            <h2>Lasso and elastic net removed triceps in this run</h2>
+
+            <p>
+              Lasso and elastic net can shrink some coefficients exactly to zero. This means they can perform feature selection.
+              In this run, both methods retained the same broad predictor set and removed triceps.
+            </p>
+
+            <figure class="figure-card">
+              <h3>Selected features from lasso and elastic net</h3>
+              <img
+                src="../figures/regularised_diabetes_selected_features.png"
+                alt="Selected features from lasso and elastic net based on non-zero coefficients"
+              />
+              <figcaption>
+                Figure 4. Non-zero coefficients are retained by lasso and elastic net. Triceps was not retained in this run.
+              </figcaption>
+              <div class="figure-note">
+                Selected features are predictive features in this model and train/test split. They should not be described as confirmed
+                causal factors, and excluded variables should not automatically be dismissed as clinically irrelevant.
+              </div>
+            </figure>
+
+            <div class="selected-grid">
+              <div class="selected-card good">
+                <h3>Retained by both models</h3>
+                <p>
+                  Lasso and elastic net retained the following non-zero predictors:
+                </p>
+                <div class="mini-tag-list">
+                  <span class="mini-tag">pregnant</span>
+                  <span class="mini-tag">glucose</span>
+                  <span class="mini-tag">pressure</span>
+                  <span class="mini-tag">insulin</span>
+                  <span class="mini-tag">mass</span>
+                  <span class="mini-tag">pedigree</span>
+                  <span class="mini-tag">age</span>
+                </div>
+              </div>
+
+              <div class="selected-card warning">
+                <h3>Removed by both models</h3>
+                <p>
+                  Triceps was removed by lasso and elastic net in this fitted workflow.
+                  This does not prove that skinfold thickness has no clinical relevance.
+                </p>
+              </div>
+            </div>
+
+            <div class="table-scroll">
+              <table class="lesson-table">
+                <thead>
+                  <tr>
+                    <th>Term</th>
+                    <th>Lasso coefficient</th>
+                    <th>Elastic net coefficient</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Intercept</td><td>-7.92</td><td>-7.39</td></tr>
+                  <tr><td>Pregnant</td><td>0.112</td><td>0.101</td></tr>
+                  <tr><td>Glucose</td><td>0.0341</td><td>0.0312</td></tr>
+                  <tr><td>Pressure</td><td>-0.0113</td><td>-0.00874</td></tr>
+                  <tr><td>Insulin</td><td>-0.000693</td><td>-0.000300</td></tr>
+                  <tr><td>Mass</td><td>0.0801</td><td>0.0718</td></tr>
+                  <tr><td>Pedigree</td><td>0.701</td><td>0.605</td></tr>
+                  <tr><td>Age</td><td>0.0142</td><td>0.0136</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="warning-box">
+              <h3>Do not overclaim</h3>
+              <p>
+                “Selected by lasso” means selected for prediction in this dataset and modelling workflow.
+                It does not mean “causal”, “biologically proven” or “the only clinically relevant predictor set”.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="calibration">
+            <p class="kicker">Calibration</p>
+            <h2>Regularisation did not remove calibration uncertainty</h2>
+
+            <p>
+              Calibration assesses whether predicted probabilities agree with observed risks. A regularised model can have
+              a good AUC and still be poorly calibrated.
+            </p>
+
+            <figure class="figure-card">
+              <h3>Calibration comparison</h3>
+              <img
+                src="../figures/regularised_diabetes_calibration_comparison.png"
+                alt="Calibration comparison for ordinary logistic regression, ridge regression, lasso regression and elastic net"
+              />
+              <figcaption>
+                Figure 5. Calibration plots are broadly similar across the four models.
+              </figcaption>
+              <div class="figure-note">
+                The grouped calibration curves are somewhat jagged because the test set is small and each decile contains only a limited
+                number of patients. The middle-risk groups are visibly less stable than the low- and high-risk regions.
+              </div>
+            </figure>
+
+            <div class="clinical-box">
+              <h3>Interpretation</h3>
+              <p>
+                The calibration plots are broadly similar. Some points are close to the diagonal line, but there is visible instability,
+                especially in the middle predicted-risk groups. This supports a cautious interpretation of predicted probabilities.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="cv">
+            <p class="kicker">Cross-validation</p>
+            <h2>Regularised models are chosen across penalty strengths</h2>
+
+            <p>
+              Ridge, lasso and elastic net use cross-validation to select the penalty strength. The vertical dashed lines
+              in the plots show common lambda choices, including the value that minimises cross-validation error and a more
+              regularised value within one standard error.
+            </p>
+
+            <div class="formula-box">
+              ridge lambda.min = 0.02263119<br />
+              lasso lambda.min = 0.003134162<br />
+              elastic net lambda.min = 0.01202208
+            </div>
+
+            <div class="grid grid-3">
+              <figure class="figure-card">
+                <h3>Ridge cross-validation</h3>
+                <img
+                  src="../figures/regularised_diabetes_ridge_cv.png"
+                  alt="Ridge regression cross-validation plot"
+                />
+                <figcaption>
+                  Figure 6. Ridge cross-validation across lambda values. Ridge keeps all eight predictors.
+                </figcaption>
+              </figure>
+
+              <figure class="figure-card">
+                <h3>Lasso cross-validation</h3>
+                <img
+                  src="../figures/regularised_diabetes_lasso_cv.png"
+                  alt="Lasso regression cross-validation plot"
+                />
+                <figcaption>
+                  Figure 7. Lasso cross-validation across lambda values. The number of non-zero coefficients changes with lambda.
+                </figcaption>
+              </figure>
+
+              <figure class="figure-card">
+                <h3>Elastic net cross-validation</h3>
+                <img
+                  src="../figures/regularised_diabetes_elastic_net_cv.png"
+                  alt="Elastic net cross-validation plot"
+                />
+                <figcaption>
+                  Figure 8. Elastic net cross-validation across lambda values. Elastic net balances shrinkage and selection.
+                </figcaption>
+              </figure>
+            </div>
+
+            <div class="clinical-box">
+              <h3>Interpretation</h3>
+              <p>
+                Regularisation is not one fixed model. It is a family of models across different penalty strengths.
+                The chosen lambda should be selected inside the training workflow, not by repeatedly checking the final test set.
+              </p>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="limitations">
+            <p class="kicker">Critical appraisal</p>
+            <h2>What could go wrong?</h2>
+
+            <div class="limitation-grid">
+              <div class="limitation-card warning">
+                <h3>1. Feature selection may be unstable</h3>
+                <p>
+                  Lasso and elastic net may select different predictors if the train/test split changes.
+                </p>
+              </div>
+
+              <div class="limitation-card warning">
+                <h3>2. Selected predictors are not causal</h3>
+                <p>
+                  A selected predictor helped prediction in this dataset. That does not prove it causes diabetes.
+                </p>
+              </div>
+
+              <div class="limitation-card warning">
+                <h3>3. Test-set tuning can bias performance</h3>
+                <p>
+                  If the test set is used repeatedly to choose models, performance estimates can become too optimistic.
+                </p>
+              </div>
+
+              <div class="limitation-card warning">
+                <h3>4. AUC is not enough</h3>
+                <p>
+                  A model with high AUC may still be poorly calibrated and clinically unhelpful.
+                </p>
+              </div>
+
+              <div class="limitation-card warning">
+                <h3>5. Regularisation is not always better</h3>
+                <p>
+                  In this example, ordinary logistic regression performed about as well as regularised models.
+                </p>
+              </div>
+
+              <div class="limitation-card warning">
+                <h3>6. Educational data may not generalise</h3>
+                <p>
+                  The Pima dataset is useful for teaching but should not be treated as a deployable clinical dataset.
+                </p>
+              </div>
+            </div>
+
+            <h3>Before real-world use</h3>
+            <p>A diabetes prediction model would require:</p>
+            <ul>
+              <li>careful data quality assessment;</li>
+              <li>clinically justified predictor selection;</li>
+              <li>missing data handling;</li>
+              <li>internal validation;</li>
+              <li>external validation;</li>
+              <li>calibration assessment;</li>
+              <li>threshold analysis;</li>
+              <li>decision curve analysis;</li>
+              <li>fairness and subgroup performance checks;</li>
+              <li>transparent reporting.</li>
+            </ul>
+          </section>
+
+          <section class="lesson-section" id="reflection">
+            <p class="kicker">Reflection questions</p>
+            <h2>Check your understanding</h2>
+
+            <div class="exercise-card">
+              <h3>Questions</h3>
+              <ol>
+                <li>What is the outcome in this case study?</li>
+                <li>What is the positive class?</li>
+                <li>Why might ordinary logistic regression overfit?</li>
+                <li>What does ridge regression do to coefficients?</li>
+                <li>Does ridge usually remove predictors?</li>
+                <li>What does lasso do differently from ridge?</li>
+                <li>Which predictor was removed by lasso and elastic net in this run?</li>
+                <li>What does elastic net combine?</li>
+                <li>Why are selected predictors not automatically causal?</li>
+                <li>Which model had the highest test AUC in this run?</li>
+                <li>Which model had the lowest Brier score in this run?</li>
+                <li>Why is AUC alone not enough?</li>
+                <li>Why does calibration still matter after regularisation?</li>
+                <li>Why should the test set not be used repeatedly for tuning?</li>
+                <li>What additional validation would be needed before clinical use?</li>
+              </ol>
+
+              <details class="answer-box">
+                <summary>Show suggested answers</summary>
+                <div class="answer-content">
+                  <p>
+                    The outcome is diabetes status, with diabetes positive as the event. Ordinary logistic regression can overfit when
+                    data are limited, predictors are correlated or weak predictors are included. Ridge shrinks coefficients but usually
+                    keeps predictors. Lasso can shrink some coefficients exactly to zero, allowing feature selection. Elastic net combines
+                    ridge and lasso behaviour. In this run, triceps was removed by lasso and elastic net. Ordinary logistic regression had
+                    the highest AUC and lowest Brier score, but differences were small. AUC is not enough because calibration and clinical
+                    usefulness still matter. External validation would be needed before clinical use.
+                  </p>
+                </div>
+              </details>
+            </div>
+
+            <h3>Related course material</h3>
+            <div class="lesson-list">
+              <a class="lesson-link" href="../module-4/4-1-regularisation-feature-selection.html">Lesson 10: Regularisation and Feature Selection</a>
+              <a class="lesson-link" href="../module-4/4-2-ridge-regression.html">Lesson 11: Ridge Regression</a>
+              <a class="lesson-link" href="../module-4/4-3-lasso-regression.html">Lesson 12: Lasso Regression</a>
+              <a class="lesson-link" href="../module-4/4-4-elastic-net.html">Lesson 13: Elastic Net</a>
+              <a class="lesson-link" href="../module-4/4-5-feature-selection-biomedical-data.html">Lesson 14: Feature Selection in Biomedical Data</a>
+            </div>
+          </section>
+
+          <section class="lesson-section" id="code">
+            <p class="kicker">Code and figures</p>
+            <h2>Reproducible R workflow</h2>
+
+            <p>The R code for this case study is:</p>
+
+            <p><span class="code-path">r/C2_regularised_diabetes_prediction_case_study.R</span></p>
+
+            <p>This script compares ordinary logistic regression, ridge regression, lasso regression and elastic net.</p>
+
+            <p>After running the script from the course folder, the figures should be saved in:</p>
+
+            <p><span class="code-path">figures/</span></p>
+
+            <p>Expected output files:</p>
+            <ul>
+              <li><span class="code-path">figures/regularised_diabetes_model_performance.png</span></li>
+              <li><span class="code-path">figures/regularised_diabetes_ridge_shrinkage.png</span></li>
+              <li><span class="code-path">figures/regularised_diabetes_selected_features.png</span></li>
+              <li><span class="code-path">figures/regularised_diabetes_calibration_comparison.png</span></li>
+              <li><span class="code-path">figures/regularised_diabetes_roc_comparison.png</span></li>
+              <li><span class="code-path">figures/regularised_diabetes_ridge_cv.png</span></li>
+              <li><span class="code-path">figures/regularised_diabetes_lasso_cv.png</span></li>
+              <li><span class="code-path">figures/regularised_diabetes_elastic_net_cv.png</span></li>
+            </ul>
+
+            <p>
+              <a class="btn btn-primary" href="../r/C2_regularised_diabetes_prediction_case_study.R" download>
+                Download R script
+              </a>
+              <a class="btn btn-secondary" href="./index.html">
+                Back to case studies
+              </a>
+            </p>
+
+            <div class="key-takeaway">
+              <p>
+                Regularised regression is useful for stabilising prediction models and reducing overfitting, but it does not automatically
+                improve performance. In this case study, ordinary logistic regression, ridge regression, lasso regression and elastic net
+                performed very similarly. Ridge demonstrated coefficient shrinkage, while lasso and elastic net demonstrated feature selection
+                by removing triceps. Selected predictors should be interpreted cautiously, and model performance should be assessed using
+                validation, calibration, Brier score and clinical reasoning rather than AUC alone.
+              </p>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <img
+        src="../assets/my-academic-tutor-logo.png"
+        alt="My Academic Tutor logo"
+        class="footer-logo"
+      />
+
+      <p><strong>Developed by Rahul</strong></p>
+      <p>Founder of My Academic Tutor</p>
+      <p>MSc Statistics, Indian Institute of Technology Kanpur, India</p>
+      <p>MSc Medical Statistics and Health Data Science, University of Bristol, United Kingdom</p>
+      <p>© 2026 My Academic Tutor. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="../assets/course.js"></script>
+
+  <script>
+    const lambdaSlider = document.getElementById("lambdaSlider");
+    const lambdaText = document.getElementById("lambdaText");
+    const coefText = document.getElementById("coefText");
+    const overfitText = document.getElementById("overfitText");
+    const underfitText = document.getElementById("underfitText");
+
+    function updateLambdaLab() {
+      if (!lambdaSlider) return;
+
+      const value = Number(lambdaSlider.value);
+
+      if (value === 1) {
+        lambdaText.textContent = "very weak";
+        coefText.textContent = "almost unchanged";
+        overfitText.textContent = "higher";
+        underfitText.textContent = "low";
+      } else if (value === 2) {
+        lambdaText.textContent = "weak";
+        coefText.textContent = "slightly shrunk";
+        overfitText.textContent = "somewhat reduced";
+        underfitText.textContent = "low";
+      } else if (value === 3) {
+        lambdaText.textContent = "medium";
+        coefText.textContent = "moderately shrunk";
+        overfitText.textContent = "reduced";
+        underfitText.textContent = "possible if too strong";
+      } else if (value === 4) {
+        lambdaText.textContent = "strong";
+        coefText.textContent = "strongly shrunk";
+        overfitText.textContent = "lower";
+        underfitText.textContent = "increasing";
+      } else {
+        lambdaText.textContent = "very strong";
+        coefText.textContent = "possibly overshrunk";
+        overfitText.textContent = "lower";
+        underfitText.textContent = "high";
+      }
+    }
+
+    if (lambdaSlider) {
+      lambdaSlider.addEventListener("input", updateLambdaLab);
+      updateLambdaLab();
+    }
+  </script>
+</body>
+</html>

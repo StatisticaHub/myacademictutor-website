@@ -8,10 +8,174 @@
 
   <meta
     name="description"
-    content="Applied medical machine learning case studies for clinical prediction modelling, validation, calibration, interpretation and reproducible R workflows."
+    content="Applied medical machine learning case studies for clinical prediction modelling, validation, calibration, regularisation, tree-based methods, interpretation and reproducible R workflows."
   />
 
   <link rel="stylesheet" href="../assets/course.css" />
+
+  <style>
+    .case-index-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .case-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 22px;
+      background: #ffffff;
+      padding: 1.25rem;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+    }
+
+    .case-card.planned {
+      background: #fffaf2;
+    }
+
+    .case-card h3 {
+      margin-top: 0.5rem;
+    }
+
+    .case-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.8rem 0 1rem 0;
+    }
+
+    .case-tag {
+      border: 1px solid #ddcfb8;
+      border-radius: 999px;
+      background: #f8f1e7;
+      color: #5b4636;
+      padding: 0.3rem 0.65rem;
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .case-tag.available {
+      background: #f0fdf4;
+      border-color: #bbdfc6;
+      color: #166534;
+    }
+
+    .case-tag.planned {
+      background: #fff5f5;
+      border-color: #f1c6c6;
+      color: #991b1b;
+    }
+
+    .case-focus-list {
+      margin: 1rem 0;
+      padding-left: 1.15rem;
+    }
+
+    .case-focus-list li {
+      margin-bottom: 0.35rem;
+    }
+
+    .workflow-overview {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin: 1.5rem 0;
+    }
+
+    .workflow-item {
+      position: relative;
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fffaf2;
+      padding: 1rem;
+      min-height: 145px;
+    }
+
+    .workflow-item::after {
+      content: "→";
+      position: absolute;
+      right: -0.72rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8C1515;
+      font-weight: 900;
+      font-size: 1.35rem;
+      z-index: 2;
+    }
+
+    .workflow-item:last-child::after {
+      content: "";
+    }
+
+    .workflow-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: #8C1515;
+      color: #fff;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+    }
+
+    .planned-section-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .planned-card {
+      border: 1px solid #ddcfb8;
+      border-radius: 20px;
+      background: #ffffff;
+      padding: 1.15rem;
+      box-shadow: 0 8px 22px rgba(16, 32, 51, 0.05);
+    }
+
+    .planned-card h3 {
+      margin-top: 0.4rem;
+    }
+
+    .script-box {
+      border: 1px solid #ddcfb8;
+      border-radius: 18px;
+      background: #fffaf2;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .code-path {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: #f8f1e7;
+      border: 1px solid #ddcfb8;
+      border-radius: 10px;
+      padding: 0.2rem 0.4rem;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 950px) {
+      .case-index-grid,
+      .workflow-overview,
+      .planned-section-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .workflow-item::after {
+        content: "↓";
+        right: 50%;
+        top: auto;
+        bottom: -1.1rem;
+        transform: translateX(50%);
+      }
+
+      .workflow-item:last-child::after {
+        content: "";
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -49,14 +213,20 @@
         <h1>Case Studies</h1>
 
         <p class="hero-intro">
-          Case studies connect the course methods to full medical prediction workflows:
-          clinical question definition, outcome and predictor choice, model fitting, validation,
-          calibration, threshold interpretation, figures, limitations and reproducible R code.
+          Case studies connect the course methods to complete medical prediction workflows:
+          clinical question definition, outcome and predictor choice, model fitting,
+          validation, calibration, threshold interpretation, figures, limitations and reproducible R code.
+        </p>
+
+        <p class="hero-intro">
+          The aim is to show that medical machine learning is not only about fitting models.
+          A useful workflow must define the prediction question clearly, avoid leakage, evaluate discrimination
+          and calibration, interpret thresholds carefully, and explain limitations honestly.
         </p>
 
         <div class="hero-actions">
           <a class="btn btn-primary" href="./case-study-1-diabetes-risk-prediction.html">Start Case Study 1</a>
-          <a class="btn btn-secondary" href="../index.html">Back to course home</a>
+          <a class="btn btn-secondary" href="./case-study-2-regularised-diabetes-risk-prediction.html">Open Case Study 2</a>
         </div>
       </div>
     </section>
@@ -65,18 +235,42 @@
       <section class="section">
         <div class="section-heading">
           <p class="kicker">Available now</p>
-          <h2>Current case study.</h2>
+          <h2>Current case studies.</h2>
+          <p>
+            These case studies currently support Modules 2–4. They use the same diabetes prediction setting
+            so learners can see how ordinary logistic regression and regularised regression change the modelling workflow.
+          </p>
         </div>
 
-        <div class="grid grid-2">
-          <article class="module-card">
+        <div class="case-index-grid">
+          <article class="case-card">
             <span class="badge">Case Study 1</span>
             <h3>Diabetes Risk Prediction</h3>
+
+            <div class="case-meta">
+              <span class="case-tag available">Available</span>
+              <span class="case-tag">Logistic regression</span>
+              <span class="case-tag">ROC/AUC</span>
+              <span class="case-tag">Calibration</span>
+            </div>
+
             <p>
               A complete logistic regression clinical prediction workflow using the Pima Indians Diabetes dataset.
-              Includes outcome distribution, train/test split, predicted probabilities, confusion matrix,
-              ROC/AUC, Brier score, calibration and threshold interpretation.
+              This case study introduces the full process from prediction question to clinical interpretation.
             </p>
+
+            <ul class="case-focus-list">
+              <li>binary outcome definition;</li>
+              <li>train/test split;</li>
+              <li>logistic regression and odds ratios;</li>
+              <li>confusion matrix;</li>
+              <li>sensitivity, specificity, PPV and NPV;</li>
+              <li>ROC curve and AUC;</li>
+              <li>Brier score and calibration plot;</li>
+              <li>threshold interpretation;</li>
+              <li>clinical limitations and external validation.</li>
+            </ul>
+
             <div class="lesson-list">
               <a class="lesson-link" href="./case-study-1-diabetes-risk-prediction.html">
                 Open Case Study 1
@@ -87,39 +281,243 @@
             </div>
           </article>
 
-          <article class="module-card">
-            <span class="badge">Coming next</span>
+          <article class="case-card">
+            <span class="badge">Case Study 2</span>
             <h3>Regularised Diabetes Risk Prediction</h3>
+
+            <div class="case-meta">
+              <span class="case-tag available">Available</span>
+              <span class="case-tag">Ridge</span>
+              <span class="case-tag">Lasso</span>
+              <span class="case-tag">Elastic net</span>
+            </div>
+
             <p>
-              This case study will extend the logistic regression workflow using ridge regression,
-              lasso regression and elastic net regularisation.
+              Extends Case Study 1 by comparing ordinary logistic regression with ridge regression,
+              lasso regression and elastic net. The focus is shrinkage, feature selection, validation,
+              calibration and careful interpretation.
             </p>
+
+            <ul class="case-focus-list">
+              <li>ordinary logistic regression baseline;</li>
+              <li>ridge coefficient shrinkage;</li>
+              <li>lasso feature selection;</li>
+              <li>elastic net as a compromise between ridge and lasso;</li>
+              <li>AUC and Brier score comparison;</li>
+              <li>ROC curve comparison;</li>
+              <li>selected-feature interpretation;</li>
+              <li>cross-validation of penalty strength;</li>
+              <li>why selected features are not automatically causal.</li>
+            </ul>
+
+            <div class="lesson-list">
+              <a class="lesson-link" href="./case-study-2-regularised-diabetes-risk-prediction.html">
+                Open Case Study 2
+              </a>
+              <a class="lesson-link" href="../r/C2_regularised_diabetes_prediction_case_study.R" download>
+                Download R script
+              </a>
+            </div>
           </article>
         </div>
       </section>
 
       <section class="section">
         <div class="section-heading">
-          <p class="kicker">Planned case studies</p>
-          <h2>Next additions.</h2>
+          <p class="kicker">How to use the case studies</p>
+          <h2>A practical workflow for learners.</h2>
         </div>
 
-        <div class="grid grid-2">
-          <div class="card">
-            <h3>Tree-based diabetes prediction</h3>
-            <p>
-              Decision trees, pruning, random forests, gradient boosting, XGBoost,
-              variable importance and partial dependence.
-            </p>
+        <div class="workflow-overview">
+          <div class="workflow-item">
+            <span class="workflow-number">1</span>
+            <h3>Read the question</h3>
+            <p>Start by understanding the clinical prediction question and prediction time point.</p>
           </div>
 
-          <div class="card">
-            <h3>Reporting and reproducibility</h3>
-            <p>
-              Model cards, transparent GitHub workflows, TRIPOD+AI-style reporting
-              and PROBAST+AI-style risk-of-bias thinking.
-            </p>
+          <div class="workflow-item">
+            <span class="workflow-number">2</span>
+            <h3>Run the R script</h3>
+            <p>Generate the model output and figures from the reproducible script.</p>
           </div>
+
+          <div class="workflow-item">
+            <span class="workflow-number">3</span>
+            <h3>Interpret results</h3>
+            <p>Study AUC, Brier score, calibration, thresholds and clinical meaning.</p>
+          </div>
+
+          <div class="workflow-item">
+            <span class="workflow-number">4</span>
+            <h3>Reflect critically</h3>
+            <p>Ask what could go wrong before any model could be used in practice.</p>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <h3>Current R scripts</h3>
+          <p>
+            <span class="code-path">r/C1_diabetes_risk_prediction_case_study.R</span>
+          </p>
+          <p>
+            <span class="code-path">r/C2_regularised_diabetes_prediction_case_study.R</span>
+          </p>
+          <p>
+            Case study figures are saved in <span class="code-path">figures/</span>.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="kicker">Planned case studies</p>
+          <h2>Future additions.</h2>
+          <p>
+            The planned case studies will extend the course into tree-based prediction, model interpretation,
+            survival prediction, high-dimensional biomedical workflows, and transparent reporting.
+          </p>
+        </div>
+
+        <div class="planned-section-grid">
+          <article class="planned-card">
+            <span class="case-tag planned">Planned</span>
+            <h3>Case Study 3: Tree-Based Diabetes Prediction</h3>
+            <p>
+              This case study will extend the diabetes prediction workflow using decision trees, random forests,
+              gradient boosting and XGBoost.
+            </p>
+            <ul class="case-focus-list">
+              <li>decision tree structure and pruning;</li>
+              <li>random forest prediction;</li>
+              <li>gradient boosting and XGBoost comparison;</li>
+              <li>AUC, Brier score and calibration comparison;</li>
+              <li>why complex models do not automatically outperform simpler models.</li>
+            </ul>
+          </article>
+
+          <article class="planned-card">
+            <span class="case-tag planned">Planned</span>
+            <h3>Case Study 4: Tree-Based Model Interpretation</h3>
+            <p>
+              This case study will focus on explaining tree-based clinical prediction models without making causal overclaims.
+            </p>
+            <ul class="case-focus-list">
+              <li>variable importance;</li>
+              <li>permutation importance;</li>
+              <li>partial dependence plots;</li>
+              <li>ICE curves;</li>
+              <li>correlated predictor cautions;</li>
+              <li>safe clinical interpretation.</li>
+            </ul>
+          </article>
+
+          <article class="planned-card">
+            <span class="case-tag planned">Planned</span>
+            <h3>Case Study 5: Survival Prediction in Oncology</h3>
+            <p>
+              This case study will introduce survival prediction where the outcome is time-to-event rather than a simple binary endpoint.
+            </p>
+            <ul class="case-focus-list">
+              <li>censoring and follow-up time;</li>
+              <li>Cox proportional hazards prediction;</li>
+              <li>penalised Cox models;</li>
+              <li>risk scores and survival probabilities;</li>
+              <li>C-index and time-dependent evaluation;</li>
+              <li>survival calibration.</li>
+            </ul>
+          </article>
+
+          <article class="planned-card">
+            <span class="case-tag planned">Planned</span>
+            <h3>Case Study 6: Random Survival Forest Case Study</h3>
+            <p>
+              This case study will compare classical Cox-based modelling with tree-based survival machine learning.
+            </p>
+            <ul class="case-focus-list">
+              <li>random survival forest fitting;</li>
+              <li>non-linear survival prediction;</li>
+              <li>variable importance in survival models;</li>
+              <li>time-dependent AUC;</li>
+              <li>integrated Brier score;</li>
+              <li>clinical interpretation of survival risk groups.</li>
+            </ul>
+          </article>
+
+          <article class="planned-card">
+            <span class="case-tag planned">Planned</span>
+            <h3>Case Study 7: Omics Feature Selection Workflow</h3>
+            <p>
+              This case study will focus on high-dimensional biomedical prediction where the number of predictors is much larger than the number of patients.
+            </p>
+            <ul class="case-focus-list">
+              <li>p &gt;&gt; n problems;</li>
+              <li>omics and methylation-style predictors;</li>
+              <li>feature filtering inside resampling;</li>
+              <li>nested cross-validation;</li>
+              <li>batch effects and leakage;</li>
+              <li>biological interpretation limits.</li>
+            </ul>
+          </article>
+
+          <article class="planned-card">
+            <span class="case-tag planned">Planned</span>
+            <h3>Case Study 8: EWAS-Style Prediction Workflow</h3>
+            <p>
+              This case study will connect machine learning ideas to epigenome-wide and methylation-based prediction workflows.
+            </p>
+            <ul class="case-focus-list">
+              <li>DNA methylation predictors;</li>
+              <li>exposure or phenotype prediction;</li>
+              <li>high-dimensional penalised regression;</li>
+              <li>batch adjustment and leakage prevention;</li>
+              <li>stability of selected CpG sites;</li>
+              <li>cautious biological interpretation.</li>
+            </ul>
+          </article>
+
+          <article class="planned-card">
+            <span class="case-tag planned">Planned</span>
+            <h3>Case Study 9: Reporting a Clinical Prediction Model</h3>
+            <p>
+              This case study will show how to turn a modelling workflow into a transparent scientific report.
+            </p>
+            <ul class="case-focus-list">
+              <li>clear prediction question;</li>
+              <li>population, outcome and predictors;</li>
+              <li>validation and calibration reporting;</li>
+              <li>threshold and decision context;</li>
+              <li>limitations;</li>
+              <li>TRIPOD+AI-style reporting practice.</li>
+            </ul>
+          </article>
+
+          <article class="planned-card">
+            <span class="case-tag planned">Planned</span>
+            <h3>Case Study 10: Risk of Bias and Reproducibility</h3>
+            <p>
+              This case study will focus on identifying poor reporting, bias, leakage and reproducibility problems in medical machine learning.
+            </p>
+            <ul class="case-focus-list">
+              <li>PROBAST+AI-style risk-of-bias thinking;</li>
+              <li>model card drafting;</li>
+              <li>GitHub project structure;</li>
+              <li>reproducible scripts and figures;</li>
+              <li>transparent limitations;</li>
+              <li>avoiding exaggerated clinical claims.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="kicker">Key message</p>
+          <h2>Case studies are about judgement, not only code.</h2>
+          <p>
+            A useful clinical prediction workflow must define the prediction problem clearly, use predictors available
+            at the prediction time point, avoid leakage, validate performance honestly, examine calibration, choose
+            thresholds based on clinical purpose, and report limitations transparently.
+          </p>
         </div>
       </section>
     </main>
